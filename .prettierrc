@@ -1,0 +1,9 @@
+{
+	"plugins": ["prettier-plugin-classnames", "prettier-plugin-tailwindcss", "prettier-plugin-merge"],
+	"tailwindFunctions": ["clsx", "cn"],
+	"printWidth": 100,
+	"useTabs": true,
+	"semi": false,
+	"singleQuote": false,
+	"trailingComma": "es5"
+}
