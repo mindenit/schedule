@@ -7,7 +7,14 @@ export default defineNuxtConfig({
 	imports: {
 		dirs: ["./core/types", "./core/constants", "./layers/**/types", "./layers/**/queries"],
 	},
-	modules: ["@nuxt/eslint", "@nuxt/icon", "@nuxtjs/color-mode", "@vueuse/nuxt", "shadcn-nuxt"],
+	modules: [
+		"@nuxt/eslint",
+		"@nuxt/icon",
+		"@nuxtjs/color-mode",
+		"@vueuse/nuxt",
+		"shadcn-nuxt",
+		"@pinia/nuxt",
+	],
 	future: {
 		compatibilityVersion: 4,
 	},
@@ -17,6 +24,9 @@ export default defineNuxtConfig({
 	},
 	vite: {
 		plugins: [tailwindcss()],
+	},
+	pinia: {
+		storesDirs: ["./**/stores/**"],
 	},
 	icon: {
 		provider: "iconify",
