@@ -3,7 +3,7 @@ import tailwindcss from "@tailwindcss/vite"
 export default defineNuxtConfig({
 	compatibilityDate: "2024-11-01",
 	devtools: { enabled: true },
-	extends: ["./core", "./layers/site"],
+	extends: ["./core", "./layers/site", "./layers/calendar/"],
 	imports: {
 		dirs: ["./core/types", "./core/constants", "./layers/**/types", "./layers/**/queries"],
 	},
