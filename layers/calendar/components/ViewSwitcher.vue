@@ -10,8 +10,6 @@ const viewOptions = [
 	{ value: "day", label: "День" },
 	{ value: "week", label: "Тиждень" },
 	{ value: "month", label: "Місяць" },
-	{ value: "year", label: "Рік" },
-	{ value: "agenda", label: "Агенда" },
 ]
 
 function updateView(newView: unknown) {
