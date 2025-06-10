@@ -22,13 +22,14 @@ import {
 	differenceInMinutes,
 	eachDayOfInterval,
 	startOfDay,
-	differenceInDays,
 	isValid,
 } from "date-fns"
 import { uk } from "date-fns/locale"
 import type { TCalendarView, ICalendarCell, ICalendarEvent } from "../types"
 
 const FORMAT_STRING = "MMM d, yyyy"
+
+const weekOptions = { weekStartsOn: 1 as const }
 
 export function rangeText(view: TCalendarView, date: Date): string {
 	let start: Date
@@ -40,8 +41,8 @@ export function rangeText(view: TCalendarView, date: Date): string {
 			end = endOfMonth(date)
 			break
 		case "week":
-			start = startOfWeek(date)
-			end = endOfWeek(date)
+			start = startOfWeek(date, weekOptions)
+			end = endOfWeek(date, weekOptions)
 			break
 		case "day":
 			return format(date, FORMAT_STRING, { locale: uk })
@@ -82,7 +83,7 @@ export function navigateDate(
 export function getEventsCount(events: ICalendarEvent[], date: Date, view: TCalendarView): number {
 	const compareFns: Record<TCalendarView, (d1: Date, d2: Date) => boolean> = {
 		day: isSameDay,
-		week: isSameWeek,
+		week: (d1, d2) => isSameWeek(d1, d2, weekOptions),
 		month: isSameMonth,
 		year: isSameYear,
 		agenda: isSameMonth,
@@ -143,11 +144,13 @@ export function getCalendarCells(selectedDate: Date): ICalendarCell[] {
 	const month = selectedDate.getMonth()
 
 	const daysInMonth = endOfMonth(selectedDate).getDate()
-	const firstDayOfMonth = startOfMonth(selectedDate).getDay()
+	const firstDayOfMonth = startOfMonth(selectedDate)
+
+	const firstDayOfWeek = (firstDayOfMonth.getDay() + 6) % 7
 	const daysInPrevMonth = endOfMonth(new Date(year, month - 1)).getDate()
 
-	const prevMonthDays = Array.from({ length: firstDayOfMonth }, (_, i) => {
-		const day = daysInPrevMonth - firstDayOfMonth + i + 1
+	const prevMonthDays = Array.from({ length: firstDayOfWeek }, (_, i) => {
+		const day = daysInPrevMonth - firstDayOfWeek + i + 1
 		return {
 			day,
 			currentMonth: false,
@@ -161,7 +164,7 @@ export function getCalendarCells(selectedDate: Date): ICalendarCell[] {
 		date: new Date(year, month, i + 1),
 	}))
 
-	const totalDays = firstDayOfMonth + daysInMonth
+	const totalDays = firstDayOfWeek + daysInMonth
 	const nextMonthDays = Array.from({ length: (7 - (totalDays % 7)) % 7 }, (_, i) => ({
 		day: i + 1,
 		currentMonth: false,
@@ -172,8 +175,7 @@ export function getCalendarCells(selectedDate: Date): ICalendarCell[] {
 }
 
 export function calculateMonthEventPositions(
-	multiDayEvents: ICalendarEvent[],
-	singleDayEvents: ICalendarEvent[],
+	events: ICalendarEvent[],
 	selectedDate: Date
 ): Record<string, number> {
 	const monthStart = startOfMonth(selectedDate)
@@ -185,48 +187,31 @@ export function calculateMonthEventPositions(
 		occupiedPositions[day.toISOString()] = [false, false, false]
 	})
 
-	const sortedEvents = [
-		...[...multiDayEvents].sort((a, b) => {
-			const aDuration = differenceInDays(parseISO(a.endDate), parseISO(a.startDate))
-			const bDuration = differenceInDays(parseISO(b.endDate), parseISO(b.startDate))
-			return (
-				bDuration - aDuration || parseISO(a.startDate).getTime() - parseISO(b.startDate).getTime()
-			)
-		}),
-		...[...singleDayEvents].sort(
-			(a, b) => parseISO(a.startDate).getTime() - parseISO(b.startDate).getTime()
-		),
-	]
+	const sortedEvents = [...events].sort(
+		(a, b) => parseISO(a.startDate).getTime() - parseISO(b.startDate).getTime()
+	)
 
 	sortedEvents.forEach((event) => {
-		const eventStart = parseISO(event.startDate)
-		const eventEnd = parseISO(event.endDate)
-		const eventDays = eachDayOfInterval({
-			start: eventStart < monthStart ? monthStart : eventStart,
-			end: eventEnd > monthEnd ? monthEnd : eventEnd,
-		})
+		const eventDate = startOfDay(parseISO(event.startDate))
 
-		let position = -1
-		for (let i = 0; i < 3; i++) {
-			if (
-				eventDays.every((day) => {
-					const dayPositions = occupiedPositions[startOfDay(day).toISOString()]
-					return dayPositions && !dayPositions[i]
-				})
-			) {
-				position = i
-				break
-			}
-		}
+		if (eventDate >= monthStart && eventDate <= monthEnd) {
+			const dayKey = eventDate.toISOString()
+			const dayPositions = occupiedPositions[dayKey]
 
-		if (position !== -1) {
-			eventDays.forEach((day) => {
-				const dayKey = startOfDay(day).toISOString()
-				if (occupiedPositions[dayKey]) {
-					occupiedPositions[dayKey][position] = true
+			if (dayPositions) {
+				let position = -1
+				for (let i = 0; i < 3; i++) {
+					if (!dayPositions[i]) {
+						position = i
+						break
+					}
 				}
-			})
-			eventPositions[String(event.id)] = position
+
+				if (position !== -1) {
+					dayPositions[position] = true
+					eventPositions[String(event.id)] = position
+				}
+			}
 		}
 	})
 
@@ -241,21 +226,15 @@ export function getMonthCellEvents(
 	const dayStart = startOfDay(date)
 	const eventsForDate = events.filter((event) => {
 		const eventStart = startOfDay(parseISO(event.startDate))
-		const eventEnd = startOfDay(parseISO(event.endDate))
-		return dayStart >= eventStart && dayStart <= eventEnd
+		return isSameDay(eventStart, dayStart)
 	})
 
 	return eventsForDate
 		.map((event) => ({
 			...event,
 			position: eventPositions[String(event.id)] ?? -1,
-			isMultiDay: !isSameDay(parseISO(event.startDate), parseISO(event.endDate)),
 		}))
-		.sort((a, b) => {
-			if (a.isMultiDay && !b.isMultiDay) return -1
-			if (!a.isMultiDay && b.isMultiDay) return 1
-			return a.position - b.position
-		})
+		.sort((a, b) => a.position - b.position)
 }
 
 export function formatTime(date: Date | string, use24HourFormat: boolean): string {
