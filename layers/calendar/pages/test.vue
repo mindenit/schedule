@@ -122,6 +122,7 @@ onMounted(() => {
 		<div class="rounded-lg p-6">
 			<CalendarMonthView v-if="view === 'month'" :events="allEvents" />
 			<CalendarWeekView v-else-if="view === 'week'" :events="allEvents" />
+			<CalendarDayView v-else-if="view === 'day'" :events="allEvents" />
 			<div v-else class="text-muted-foreground flex h-96 items-center justify-center">
 				<p>{{ view }} view ще не реалізований</p>
 			</div>

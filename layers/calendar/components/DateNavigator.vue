@@ -5,13 +5,21 @@ import { uk } from "date-fns/locale"
 const calendarStore = useCalendarStore()
 const { selectedDate, view } = storeToRefs(calendarStore)
 
-const title = computed(() => {
-	if (view.value === "year") {
-		return formatDate(selectedDate.value, "yyyy рік")
-	}
+const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
-	const formatted = formatDate(selectedDate.value, "LLLL yyyy", { locale: uk })
-	return formatted.charAt(0).toUpperCase() + formatted.slice(1)
+const viewConfigs: Record<string, { format: string; capitalize: boolean }> = {
+	year: { format: "yyyy рік", capitalize: false },
+	month: { format: "LLLL yyyy", capitalize: true },
+	day: { format: "d MMMM yyyy", capitalize: true },
+	default: { format: "LLLL yyyy", capitalize: true },
+}
+
+const title = computed(() => {
+	const config = viewConfigs[view.value as string] ?? viewConfigs.default
+	if (!config) return ""
+	const formatted = formatDate(selectedDate.value, config.format, { locale: uk })
+
+	return config.capitalize ? capitalize(formatted) : formatted
 })
 
 const currentRangeText = computed(() => {
