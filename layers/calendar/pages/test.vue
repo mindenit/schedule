@@ -2,7 +2,7 @@
 import { storeToRefs } from "pinia"
 
 const calendarStore = useCalendarStore()
-const { filteredEvents } = storeToRefs(calendarStore)
+const { filteredEvents, view } = storeToRefs(calendarStore)
 
 const mockEvents: ICalendarEvent[] = [
 	{
@@ -120,7 +120,11 @@ onMounted(() => {
 		</div>
 
 		<div class="rounded-lg p-6">
-			<CalendarMonthView :events="allEvents" />
+			<CalendarMonthView v-if="view === 'month'" :events="allEvents" />
+			<CalendarWeekView v-else-if="view === 'week'" :events="allEvents" />
+			<div v-else class="text-muted-foreground flex h-96 items-center justify-center">
+				<p>{{ view }} view ще не реалізований</p>
+			</div>
 		</div>
 	</div>
 </template>
