@@ -10,13 +10,10 @@ import {
 	isSameWeek,
 	isSameDay,
 	isSameMonth,
-	isSameYear,
 	startOfWeek,
 	startOfMonth,
-	startOfYear,
 	endOfMonth,
 	endOfWeek,
-	endOfYear,
 	format,
 	parseISO,
 	differenceInMinutes,
@@ -46,14 +43,6 @@ export function rangeText(view: TCalendarView, date: Date): string {
 			break
 		case "day":
 			return format(date, FORMAT_STRING, { locale: uk })
-		case "year":
-			start = startOfYear(date)
-			end = endOfYear(date)
-			break
-		case "agenda":
-			start = startOfMonth(date)
-			end = endOfMonth(date)
-			break
 		default:
 			return "Помилка при форматуванні"
 	}
@@ -85,8 +74,6 @@ export function getEventsCount(events: ICalendarEvent[], date: Date, view: TCale
 		day: isSameDay,
 		week: (d1, d2) => isSameWeek(d1, d2, weekOptions),
 		month: isSameMonth,
-		year: isSameYear,
-		agenda: isSameMonth,
 	}
 
 	const compareFn = compareFns[view]
@@ -180,10 +167,14 @@ export function calculateMonthEventPositions(
 ): Record<string, number> {
 	const monthStart = startOfMonth(selectedDate)
 	const monthEnd = endOfMonth(selectedDate)
+
+	const calendarStart = startOfWeek(monthStart, weekOptions)
+	const calendarEnd = endOfWeek(monthEnd, weekOptions)
+
 	const eventPositions: Record<string, number> = {}
 	const occupiedPositions: Record<string, boolean[]> = {}
 
-	eachDayOfInterval({ start: monthStart, end: monthEnd }).forEach((day) => {
+	eachDayOfInterval({ start: calendarStart, end: calendarEnd }).forEach((day) => {
 		occupiedPositions[day.toISOString()] = [false, false, false]
 	})
 
@@ -194,7 +185,7 @@ export function calculateMonthEventPositions(
 	sortedEvents.forEach((event) => {
 		const eventDate = startOfDay(parseISO(event.startDate))
 
-		if (eventDate >= monthStart && eventDate <= monthEnd) {
+		if (eventDate >= calendarStart && eventDate <= calendarEnd) {
 			const dayKey = eventDate.toISOString()
 			const dayPositions = occupiedPositions[dayKey]
 

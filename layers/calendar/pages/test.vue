@@ -76,7 +76,7 @@ function generateYearlyMockEvents(year: number = 2025): ICalendarEvent[] {
 		return `${year}-${month}-${day}T${timeString}:00`
 	}
 
-	const semesters = [{ start: 1, end: 12 }]
+	const semesters = [{ start: 5, end: 7 }]
 
 	semesters.forEach((semester) => {
 		subjects.forEach((subject) => {

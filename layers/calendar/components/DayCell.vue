@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { computed } from "vue"
-import { isToday, startOfDay } from "date-fns"
+import { isToday, startOfDay, parseISO, isSameDay } from "date-fns"
 import type { ICalendarCell, ICalendarEvent } from "../types"
 
 interface Props {
@@ -11,9 +10,31 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const cellEvents = computed(() =>
-	getMonthCellEvents(props.cell.date, props.events, props.eventPositions)
-)
+function groupEventsBySameTime(events: ICalendarEvent[]): ICalendarEvent[][] {
+	const timeGroups = new Map<string, ICalendarEvent[]>()
+
+	events.forEach((event) => {
+		const timeKey = `${event.startDate}-${event.endDate}`
+
+		if (!timeGroups.has(timeKey)) {
+			timeGroups.set(timeKey, [])
+		}
+		timeGroups.get(timeKey)!.push(event)
+	})
+
+	return Array.from(timeGroups.values()).sort(
+		(a, b) => parseISO(a[0]!.startDate).getTime() - parseISO(b[0]!.startDate).getTime()
+	)
+}
+
+const groupedCellEvents = computed(() => {
+	const eventsForDate = props.events.filter((event) => {
+		const eventStart = startOfDay(parseISO(event.startDate))
+		return isSameDay(eventStart, startOfDay(props.cell.date))
+	})
+
+	return groupEventsBySameTime(eventsForDate)
+})
 
 const isCurrentMonth = computed(() => props.cell.currentMonth)
 const isDateToday = computed(() => isToday(props.cell.date))
@@ -25,19 +46,17 @@ const dayClasses = computed(() => ({
 }))
 
 const containerClasses = computed(() => ({
-	"opacity-50": !isCurrentMonth.value,
+	"opacity-80": !isCurrentMonth.value,
 }))
 
-function getEventForPosition(position: number) {
-	return cellEvents.value.find((e) => e.position === position)
-}
+const displayGroups = computed(() => groupedCellEvents.value.slice(0, 10))
 </script>
 
 <template>
 	<div class="bg-card flex flex-col gap-1 overflow-hidden p-2.5" :class="containerClasses">
 		<div class="flex w-full items-center justify-center">
 			<span
-				class="mb-1 flex size-6 items-center justify-center rounded-full text-xs font-semibold"
+				class="mb-1 flex size-6 items-center justify-center rounded-full text-xs font-medium"
 				:class="dayClasses"
 			>
 				{{ cell.day }}
@@ -48,20 +67,39 @@ function getEventForPosition(position: number) {
 			class="flex h-6 gap-1 lg:min-h-[94px] lg:flex-col lg:gap-2"
 			:class="{ 'opacity-50': !isCurrentMonth }"
 		>
-			<div
-				v-for="position in [0, 1, 2]"
-				:key="`position-${position}`"
-				class="transition-all duration-200 lg:flex-1"
-			>
-				<template v-if="getEventForPosition(position)">
-					<CalendarEventBullet class="lg:hidden" :type="getEventForPosition(position)!.type" />
+			<div class="flex flex-wrap gap-1 lg:hidden">
+				<span
+					v-if="displayGroups.length > 0"
+					class="bg-primary/10 text-primary flex size-5 items-center justify-center rounded-full text-xs
+						font-semibold"
+				>
+					{{ displayGroups.reduce((total, group) => total + group.length, 0) }}
+				</span>
+			</div>
+
+			<div class="hidden lg:flex lg:flex-1 lg:flex-col lg:gap-1">
+				<div
+					v-for="(group, groupIndex) in displayGroups"
+					:key="groupIndex"
+					class="flex min-h-0 gap-1"
+				>
+					<template v-if="group.length > 1">
+						<CalendarMonthEventBadge
+							v-for="event in group"
+							:key="event.id"
+							:event="event"
+							:cell-date="startOfDay(cell.date)"
+							class="hide-time min-w-0 flex-1"
+						/>
+					</template>
 
 					<CalendarMonthEventBadge
-						class="hidden lg:flex"
-						:event="getEventForPosition(position)!"
+						v-else-if="group[0]"
+						:event="group[0]"
 						:cell-date="startOfDay(cell.date)"
+						class="w-full"
 					/>
-				</template>
+				</div>
 			</div>
 		</div>
 	</div>

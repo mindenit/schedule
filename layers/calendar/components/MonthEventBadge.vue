@@ -23,7 +23,7 @@ const typeColorMap: Record<TEventType, string> = {
 }
 
 const badgeClasses = computed(() => [
-	"flex w-full h-6.5 select-none items-center gap-1 rounded-md px-2 text-xs font-medium cursor-pointer transition-all duration-200 hover:shadow-sm",
+	"group flex w-full h-6.5 select-none items-center gap-1 rounded-md px-2 text-xs font-medium cursor-pointer transition-all duration-200 hover:shadow-sm",
 	typeColorMap[props.event.type],
 	props.class,
 ])
@@ -47,9 +47,9 @@ function handleClick() {
 		@keydown.enter="handleClick"
 		@keydown.space.prevent="handleClick"
 	>
-		<span class="flex-1 truncate">
+		<span class="flex-1 shrink-0 truncate">
 			{{ event.title }}
 		</span>
-		<span class="shrink-0">{{ formattedTime }}</span>
+		<span class="shrink-0 truncate group-[.hide-time]:hidden">{{ formattedTime }}</span>
 	</div>
 </template>
