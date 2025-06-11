@@ -49,7 +49,13 @@ const containerClasses = computed(() => ({
 	"opacity-80": !isCurrentMonth.value,
 }))
 
-const displayGroups = computed(() => groupedCellEvents.value.slice(0, 10))
+const allGroups = computed(() => groupedCellEvents.value)
+const displayGroups = computed(() => allGroups.value.slice(0, 2))
+const hasMoreEvents = computed(() => allGroups.value.length > 2)
+const remainingEventsCount = computed(() => {
+	if (!hasMoreEvents.value) return 0
+	return allGroups.value.slice(2).reduce((total, group) => total + group.length, 0)
+})
 </script>
 
 <template>
@@ -73,7 +79,7 @@ const displayGroups = computed(() => groupedCellEvents.value.slice(0, 10))
 					class="bg-primary/10 text-primary flex size-5 items-center justify-center rounded-full text-xs
 						font-semibold"
 				>
-					{{ displayGroups.reduce((total, group) => total + group.length, 0) }}
+					{{ allGroups.reduce((total, group) => total + group.length, 0) }}
 				</span>
 			</div>
 
@@ -99,6 +105,13 @@ const displayGroups = computed(() => groupedCellEvents.value.slice(0, 10))
 						:cell-date="startOfDay(cell.date)"
 						class="w-full"
 					/>
+				</div>
+				<div v-if="hasMoreEvents" class="last-group flex min-h-0 gap-1">
+					<CalendarMonthEventBadge>
+						<span class="flex-1 shrink-0 truncate">
+							ще {{ remainingEventsCount }} {{ remainingEventsCount === 1 ? "заняття" : "занять" }}
+						</span>
+					</CalendarMonthEventBadge>
 				</div>
 			</div>
 		</div>

@@ -4,7 +4,7 @@ import { storeToRefs } from "pinia"
 import type { ICalendarEvent, TEventType } from "../types"
 
 interface Props {
-	event: ICalendarEvent
+	event?: ICalendarEvent
 	class?: string
 }
 
@@ -24,14 +24,14 @@ const typeColorMap: Record<TEventType, string> = {
 
 const badgeClasses = computed(() => [
 	"group flex w-full h-6.5 select-none items-center gap-1 rounded-md px-2 text-xs font-medium cursor-pointer transition-all duration-200 hover:shadow-sm",
-	typeColorMap[props.event.type],
+	props.event ? typeColorMap[props.event.type] : "bg-muted text-muted-foreground w-full",
 	props.class,
 ])
 
-const formattedTime = computed(
-	() =>
-		`${formatTime(new Date(props.event.startDate), use24HourFormat.value)} - ${formatTime(new Date(props.event.endDate), use24HourFormat.value)}`
-)
+const formattedTime = computed(() => {
+	if (!props.event) return ""
+	return `${formatTime(new Date(props.event.startDate), use24HourFormat.value)} - ${formatTime(new Date(props.event.endDate), use24HourFormat.value)}`
+})
 
 function handleClick() {
 	console.log("Event clicked:", props.event)
@@ -47,9 +47,12 @@ function handleClick() {
 		@keydown.enter="handleClick"
 		@keydown.space.prevent="handleClick"
 	>
-		<span class="flex-1 shrink-0 truncate">
-			{{ event.title }}
-		</span>
-		<span class="shrink-0 truncate group-[.hide-time]:hidden">{{ formattedTime }}</span>
+		<slot v-if="$slots.default" />
+		<template v-else>
+			<span class="flex-1 shrink-0 truncate">
+				{{ event!.title }}
+			</span>
+			<span class="shrink-0 truncate group-[.hide-time]:hidden">{{ formattedTime }}</span>
+		</template>
 	</div>
 </template>
