@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue"
 import { areIntervalsOverlapping, parseISO } from "date-fns"
-import type { ICalendarEvent } from "../types"
 
 interface Props {
 	groupedEvents: ICalendarEvent[][]

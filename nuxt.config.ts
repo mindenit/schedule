@@ -5,7 +5,13 @@ export default defineNuxtConfig({
 	devtools: { enabled: true },
 	extends: ["./core", "./layers/site", "./layers/calendar/"],
 	imports: {
-		dirs: ["./core/types", "./core/constants", "./layers/**/types", "./layers/**/queries"],
+		dirs: [
+			"./core/types",
+			"./core/constants",
+			"./layers/**/types",
+			"./layers/**/queries",
+			"./layers/**/constants",
+		],
 	},
 	modules: [
 		"@nuxt/eslint",

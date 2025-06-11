@@ -2,8 +2,6 @@
 import { computed } from "vue"
 import { storeToRefs } from "pinia"
 import { differenceInMinutes, parseISO } from "date-fns"
-import type { ICalendarEvent, TEventType } from "../types"
-import { WEEK_VIEW_ROW_HEIGHT } from "../constants"
 
 interface Props {
 	event: ICalendarEvent

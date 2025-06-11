@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { isToday, startOfDay, parseISO, isSameDay } from "date-fns"
-import type { ICalendarCell, ICalendarEvent } from "../types"
 
 interface Props {
 	cell: ICalendarCell

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue"
 import { storeToRefs } from "pinia"
-import type { ICalendarEvent, TEventType } from "../types"
 
 interface Props {
 	event?: ICalendarEvent

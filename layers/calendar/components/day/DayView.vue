@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia"
 import { parseISO, format, isSameDay } from "date-fns"
-import type { ICalendarEvent } from "../types"
 
 interface Props {
 	events: ICalendarEvent[]
@@ -55,7 +54,7 @@ function formatHour(hour: number): string {
 					</div>
 
 					<div class="absolute inset-0">
-						<CalendarWeekEventRenderer :grouped-events="groupedEvents" :day="selectedDate" />
+						<CalendarEventRenderer :grouped-events="groupedEvents" :day="selectedDate" />
 					</div>
 
 					<CalendarTimeline />

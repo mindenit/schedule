@@ -3,8 +3,6 @@ import { computed } from "vue"
 import { storeToRefs } from "pinia"
 import { startOfWeek, addDays, format, parseISO, isSameDay } from "date-fns"
 import { uk } from "date-fns/locale"
-import type { ICalendarEvent } from "../types"
-import { WEEK_VIEW_ROW_HEIGHT } from "../constants"
 
 interface Props {
 	events: ICalendarEvent[]
@@ -92,10 +90,7 @@ function formatHour(hour: number): string {
 									/>
 								</div>
 
-								<CalendarWeekEventRenderer
-									:grouped-events="getGroupedEventsForDay(day)"
-									:day="day"
-								/>
+								<CalendarEventRenderer :grouped-events="getGroupedEventsForDay(day)" :day="day" />
 							</div>
 						</div>
 
