@@ -9,6 +9,8 @@ interface Props {
 
 const props = defineProps<Props>()
 
+const calendarStore = useCalendarStore()
+
 function groupEventsBySameTime(events: ICalendarEvent[]): ICalendarEvent[][] {
 	const timeGroups = new Map<string, ICalendarEvent[]>()
 
@@ -55,6 +57,14 @@ const remainingEventsCount = computed(() => {
 	if (!hasMoreEvents.value) return 0
 	return allGroups.value.slice(2).reduce((total, group) => total + group.length, 0)
 })
+const hiddenEvents = computed(() => {
+	return allGroups.value.slice(2).flat()
+})
+
+function handleMobileClick() {
+	calendarStore.setSelectedDate(props.cell.date)
+	calendarStore.setView("day" as TCalendarView)
+}
 </script>
 
 <template>
@@ -72,7 +82,8 @@ const remainingEventsCount = computed(() => {
 			class="flex h-6 gap-1 lg:min-h-[94px] lg:flex-col lg:gap-2"
 			:class="{ 'opacity-50': !isCurrentMonth }"
 		>
-			<div class="flex flex-wrap gap-1 lg:hidden">
+			<!-- Mobile: клік на день відкриває day view -->
+			<div class="flex cursor-pointer flex-wrap gap-1 lg:hidden" @click="handleMobileClick">
 				<span
 					v-if="displayGroups.length > 0"
 					class="bg-primary/10 text-primary flex size-5 items-center justify-center rounded-full text-xs
@@ -82,6 +93,7 @@ const remainingEventsCount = computed(() => {
 				</span>
 			</div>
 
+			<!-- Desktop: показуємо івенти з Popover -->
 			<div class="hidden lg:flex lg:flex-1 lg:flex-col lg:gap-1">
 				<div
 					v-for="(group, groupIndex) in displayGroups"
@@ -89,28 +101,47 @@ const remainingEventsCount = computed(() => {
 					class="flex min-h-0 gap-1"
 				>
 					<template v-if="group.length > 1">
-						<CalendarMonthEventBadge
-							v-for="event in group"
-							:key="event.id"
-							:event="event"
-							:cell-date="startOfDay(cell.date)"
-							class="hide-time min-w-0 flex-1"
-						/>
+						<Popover v-for="event in group" :key="event.id">
+							<PopoverTrigger as-child>
+								<CalendarMonthEventBadge
+									:event="event"
+									:cell-date="startOfDay(cell.date)"
+									class="hide-time min-w-0 flex-1"
+								/>
+							</PopoverTrigger>
+							<PopoverContent class="w-80"> <CalendarEventPopover :event /> </PopoverContent>
+						</Popover>
 					</template>
 
-					<CalendarMonthEventBadge
-						v-else-if="group[0]"
-						:event="group[0]"
-						:cell-date="startOfDay(cell.date)"
-						class="w-full"
-					/>
+					<template v-else-if="group[0]">
+						<Popover>
+							<PopoverTrigger as-child>
+								<CalendarMonthEventBadge
+									:event="group[0]"
+									:cell-date="startOfDay(cell.date)"
+									class="w-full"
+								/>
+							</PopoverTrigger>
+							<PopoverContent class="w-80">
+								<CalendarEventPopover :event="group[0]" />
+							</PopoverContent>
+						</Popover>
+					</template>
 				</div>
 				<div v-if="hasMoreEvents" class="last-group flex min-h-0 gap-1">
-					<CalendarMonthEventBadge>
-						<span class="flex-1 shrink-0 truncate">
-							ще {{ remainingEventsCount }} {{ remainingEventsCount === 1 ? "заняття" : "занять" }}
-						</span>
-					</CalendarMonthEventBadge>
+					<Popover>
+						<PopoverTrigger as-child>
+							<CalendarMonthEventBadge>
+								<span class="flex-1 shrink-0 truncate">
+									ще {{ remainingEventsCount }}
+									{{ remainingEventsCount === 1 ? "заняття" : "занять" }}
+								</span>
+							</CalendarMonthEventBadge>
+						</PopoverTrigger>
+						<PopoverContent class="w-80">
+							<CalendarMoreEventsPopover :events="hiddenEvents" :date="cell.date" />
+						</PopoverContent>
+					</Popover>
 				</div>
 			</div>
 		</div>
