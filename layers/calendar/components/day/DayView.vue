@@ -36,7 +36,7 @@ function formatHour(hour: number): string {
 					<div
 						v-for="(hour, index) in hours"
 						:key="hour"
-						class="bg-card relative flex flex-1 items-start justify-end pr-2"
+						class="bg-muted/50 relative flex flex-1 items-start justify-end pr-2"
 						:style="{ minHeight: `${100 / hours.length}%` }"
 					>
 						<span v-if="index !== 0" class="text-muted-foreground mt-1 text-xs">

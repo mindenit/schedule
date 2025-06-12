@@ -39,7 +39,7 @@ const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 	<div class="flex flex-col">
 		<div class="overflow-x-auto">
 			<div class="min-w-[800px]">
-				<div class="bg-card relative z-20 mb-1 grid grid-cols-[72px_1fr] gap-1">
+				<div class="bg-muted/50 relative z-20 mb-1 grid grid-cols-[72px_1fr] gap-1 rounded-t-lg">
 					<div class="col-start-2 grid grid-cols-7 gap-1">
 						<span
 							v-for="(day, index) in weekDays"
@@ -70,8 +70,11 @@ const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 						<div
 							v-for="(hour, index) in hours"
 							:key="hour"
-							class="bg-card relative"
+							class="bg-muted/50 relative"
 							:style="{ height: WEEK_VIEW_ROW_HEIGHT + 'px' }"
+							:class="{
+								'rounded-bl-lg': index === hours.length - 1,
+							}"
 						>
 							<div class="absolute -top-3 right-2 flex h-6 items-center">
 								<span v-if="index !== 0" class="text-muted-foreground text-xs whitespace-nowrap">
@@ -83,9 +86,17 @@ const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 
 					<div class="relative">
 						<div class="grid h-full grid-cols-7 gap-1">
-							<div v-for="day in weekDays" :key="day" class="relative min-w-[100px]">
+							<div v-for="(day, dayIndex) in weekDays" :key="day" class="relative min-w-[100px]">
 								<div class="grid h-full grid-rows-24 gap-1">
-									<div v-for="hour in hours" :key="hour" class="bg-card relative"></div>
+									<div
+										v-for="(hour, hourIndex) in hours"
+										:key="hour"
+										class="bg-card relative"
+										:class="{
+											'rounded-br-lg':
+												dayIndex === weekDays.length - 1 && hourIndex === hours.length - 1,
+										}"
+									></div>
 								</div>
 								<CalendarEventRenderer :grouped-events="getGroupedEventsForDay(day)" :day="day" />
 							</div>
