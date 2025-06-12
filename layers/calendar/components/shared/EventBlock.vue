@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from "vue"
 import { storeToRefs } from "pinia"
 import { differenceInMinutes, parseISO } from "date-fns"
 
@@ -13,14 +12,7 @@ const props = defineProps<Props>()
 const calendarStore = useCalendarStore()
 const { use24HourFormat } = storeToRefs(calendarStore)
 
-const typeColorMap: Record<TEventType, string> = {
-	practise: "bg-event-practise",
-	lecture: "bg-event-lecture",
-	lab: "bg-event-lab",
-	consultation: "bg-event-consultation",
-	exam: "bg-event-exam",
-	credit: "bg-event-credit",
-}
+const { formatTimeRange, getEventTypeColor } = useEventFormatting()
 
 const start = computed(() => parseISO(props.event.startDate))
 const end = computed(() => parseISO(props.event.endDate))
@@ -29,14 +21,11 @@ const heightInPixels = computed(() => (durationInMinutes.value / 60) * WEEK_VIEW
 
 const blockClasses = computed(() => [
 	"flex flex-col gap-0.5 items-center justify-center select-none rounded-md px-2 text-xs focus-visible:outline-offset-2 transition-all duration-200 cursor-pointer overflow-hidden min-w-0",
-	typeColorMap[props.event.type] || "border-gray-200 bg-gray-100/50 text-gray-700",
+	getEventTypeColor(props.event.type),
 	props.class,
 ])
 
-const formattedTimeRange = computed(
-	() =>
-		`${formatTime(start.value, use24HourFormat.value)} - ${formatTime(end.value, use24HourFormat.value)}`
-)
+const formattedTimeRange = computed(() => formatTimeRange(props.event, use24HourFormat.value))
 </script>
 
 <template>

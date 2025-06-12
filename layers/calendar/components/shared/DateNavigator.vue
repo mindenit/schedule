@@ -1,29 +1,19 @@
 <script setup lang="ts">
+import { storeToRefs } from "pinia"
 import { formatDate } from "date-fns"
 import { uk } from "date-fns/locale"
 
 const calendarStore = useCalendarStore()
 const { selectedDate, view } = storeToRefs(calendarStore)
 
-const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
-
-const viewConfigs: Record<string, { format: string; capitalize: boolean }> = {
-	year: { format: "yyyy рік", capitalize: false },
-	month: { format: "LLLL yyyy", capitalize: true },
-	day: { format: "d MMMM yyyy", capitalize: true },
-	default: { format: "LLLL yyyy", capitalize: true },
-}
+const { capitalize } = useEventFormatting()
 
 const title = computed(() => {
-	const config = viewConfigs[view.value as string] ?? viewConfigs.default
+	const config = VIEW_CONFIGS[view.value as string] ?? VIEW_CONFIGS.default
 	if (!config) return ""
+
 	const formatted = formatDate(selectedDate.value, config.format, { locale: uk })
-
 	return config.capitalize ? capitalize(formatted) : formatted
-})
-
-const currentRangeText = computed(() => {
-	return rangeText(view.value, selectedDate.value)
 })
 
 function handlePrevious() {
@@ -35,8 +25,6 @@ function handleNext() {
 	const newDate = navigateDate(selectedDate.value, view.value, "next")
 	calendarStore.setSelectedDate(newDate)
 }
-
-console.log(currentRangeText.value)
 </script>
 
 <template>

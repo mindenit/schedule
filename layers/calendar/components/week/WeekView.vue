@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { computed } from "vue"
 import { storeToRefs } from "pinia"
-import { startOfWeek, addDays, format, parseISO, isSameDay } from "date-fns"
+import { format, isSameDay } from "date-fns"
 import { uk } from "date-fns/locale"
 
 interface Props {
@@ -13,26 +12,20 @@ const props = defineProps<Props>()
 const calendarStore = useCalendarStore()
 const { selectedDate, use24HourFormat } = storeToRefs(calendarStore)
 
-const weekOptions = { weekStartsOn: 1 as const }
-const weekStart = computed(() => startOfWeek(selectedDate.value, weekOptions))
-const weekDays = computed(() => Array.from({ length: 7 }, (_, i) => addDays(weekStart.value, i)))
+const { getWeekDaysDetailed } = useCalendarCells()
+const { getEventsForDate, groupEvents } = useEventGrouping()
+const { formatTime, capitalize } = useEventFormatting()
+
+const weekDays = computed(() => getWeekDaysDetailed(selectedDate.value))
 const hours = Array.from({ length: 24 }, (_, i) => i)
 
-const getDayEvents = (day: Date) => {
-	return props.events.filter((event) => isSameDay(parseISO(event.startDate), day))
-}
-
-const getGroupedEventsForDay = (day: Date) => {
-	const dayEvents = getDayEvents(day)
-	return groupEvents(dayEvents)
-}
+const getDayEvents = (day: Date) => getEventsForDate(props.events, day)
+const getGroupedEventsForDay = (day: Date) => groupEvents(getDayEvents(day))
 
 function formatHour(hour: number): string {
 	const date = new Date().setHours(hour, 0, 0, 0)
-	return format(date, use24HourFormat.value ? "HH:00" : "h a")
+	return formatTime(date, use24HourFormat.value)
 }
-
-const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 </script>
 
 <template>

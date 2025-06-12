@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isToday, startOfDay, parseISO, isSameDay } from "date-fns"
+import { isToday, startOfDay } from "date-fns"
 
 interface Props {
 	cell: ICalendarCell
@@ -10,30 +10,10 @@ interface Props {
 const props = defineProps<Props>()
 
 const calendarStore = useCalendarStore()
-
-function groupEventsBySameTime(events: ICalendarEvent[]): ICalendarEvent[][] {
-	const timeGroups = new Map<string, ICalendarEvent[]>()
-
-	events.forEach((event) => {
-		const timeKey = `${event.startDate}-${event.endDate}`
-
-		if (!timeGroups.has(timeKey)) {
-			timeGroups.set(timeKey, [])
-		}
-		timeGroups.get(timeKey)!.push(event)
-	})
-
-	return Array.from(timeGroups.values()).sort(
-		(a, b) => parseISO(a[0]!.startDate).getTime() - parseISO(b[0]!.startDate).getTime()
-	)
-}
+const { groupEventsBySameTime, getEventsForDate } = useEventGrouping()
 
 const groupedCellEvents = computed(() => {
-	const eventsForDate = props.events.filter((event) => {
-		const eventStart = startOfDay(parseISO(event.startDate))
-		return isSameDay(eventStart, startOfDay(props.cell.date))
-	})
-
+	const eventsForDate = getEventsForDate(props.events, props.cell.date)
 	return groupEventsBySameTime(eventsForDate)
 })
 
@@ -51,14 +31,22 @@ const containerClasses = computed(() => ({
 }))
 
 const allGroups = computed(() => groupedCellEvents.value)
-const displayGroups = computed(() => allGroups.value.slice(0, 2))
-const hasMoreEvents = computed(() => allGroups.value.length > 2)
+const displayGroups = computed(() => allGroups.value.slice(0, MAX_VISIBLE_EVENTS_PER_DAY))
+const hasMoreEvents = computed(() => allGroups.value.length > MAX_VISIBLE_EVENTS_PER_DAY)
+
 const remainingEventsCount = computed(() => {
 	if (!hasMoreEvents.value) return 0
-	return allGroups.value.slice(2).reduce((total, group) => total + group.length, 0)
+	return allGroups.value
+		.slice(MAX_VISIBLE_EVENTS_PER_DAY)
+		.reduce((total, group) => total + group.length, 0)
 })
+
 const hiddenEvents = computed(() => {
-	return allGroups.value.slice(2).flat()
+	return allGroups.value.slice(MAX_VISIBLE_EVENTS_PER_DAY).flat()
+})
+
+const totalEventsCount = computed(() => {
+	return allGroups.value.reduce((total, group) => total + group.length, 0)
 })
 
 function handleMobileClick() {
@@ -84,11 +72,11 @@ function handleMobileClick() {
 		>
 			<div class="flex cursor-pointer flex-wrap gap-1 lg:hidden" @click="handleMobileClick">
 				<span
-					v-if="displayGroups.length > 0"
+					v-if="totalEventsCount > 0"
 					class="bg-primary/10 text-primary flex size-5 items-center justify-center rounded-full text-xs
 						font-semibold"
 				>
-					{{ allGroups.reduce((total, group) => total + group.length, 0) }}
+					{{ totalEventsCount }}
 				</span>
 			</div>
 
@@ -107,7 +95,9 @@ function handleMobileClick() {
 									class="hide-time min-w-0 flex-1"
 								/>
 							</PopoverTrigger>
-							<PopoverContent class="w-80"> <CalendarEventPopover :event /> </PopoverContent>
+							<PopoverContent class="w-80">
+								<CalendarEventPopover :event />
+							</PopoverContent>
 						</Popover>
 					</template>
 
@@ -126,6 +116,7 @@ function handleMobileClick() {
 						</Popover>
 					</template>
 				</div>
+
 				<div v-if="hasMoreEvents" class="last-group flex min-h-0 gap-1">
 					<Popover>
 						<PopoverTrigger as-child>

@@ -1,26 +1,17 @@
-import { ref, computed } from "vue"
 import { defineStore } from "pinia"
 import { useStorage } from "@vueuse/core"
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek } from "date-fns"
-import type { ICalendarEvent, TCalendarView, TEventType } from "../types"
 
 interface CalendarSettings {
 	view: TCalendarView
 	use24HourFormat: boolean
 }
 
-const DEFAULT_SETTINGS: CalendarSettings = {
-	view: "month",
-	use24HourFormat: true,
-}
-
-const weekOptions = { weekStartsOn: 1 as const }
-
 export const useCalendarStore = defineStore("calendar", () => {
 	const allEvents = ref<ICalendarEvent[]>([])
 	const selectedDate = ref(new Date())
 	const selectedEventTypes = ref<TEventType[]>([])
-	const settings = useStorage("calendar-settings", DEFAULT_SETTINGS)
+	const settings = useStorage<CalendarSettings>("calendar-settings", DEFAULT_CALENDAR_SETTINGS)
 
 	const view = computed(() => settings.value.view)
 	const use24HourFormat = computed(() => settings.value.use24HourFormat)
@@ -32,19 +23,26 @@ export const useCalendarStore = defineStore("calendar", () => {
 				: allEvents.value
 
 		if (view.value === "month") {
-			const monthStart = startOfMonth(selectedDate.value)
-			const monthEnd = endOfMonth(selectedDate.value)
-
-			const calendarStart = startOfWeek(monthStart, weekOptions)
-			const calendarEnd = endOfWeek(monthEnd, weekOptions)
-
-			return eventsFilteredByType.filter((event) => {
-				const eventStartDate = new Date(event.startDate)
-				const eventEndDate = new Date(event.endDate)
-				return eventStartDate <= calendarEnd && eventEndDate >= calendarStart
-			})
+			return getEventsForMonthView(eventsFilteredByType)
 		}
 
+		return getEventsForCurrentMonth(eventsFilteredByType)
+	})
+
+	function getEventsForMonthView(events: ICalendarEvent[]): ICalendarEvent[] {
+		const monthStart = startOfMonth(selectedDate.value)
+		const monthEnd = endOfMonth(selectedDate.value)
+		const calendarStart = startOfWeek(monthStart, WEEK_OPTIONS)
+		const calendarEnd = endOfWeek(monthEnd, WEEK_OPTIONS)
+
+		return events.filter((event) => {
+			const eventStartDate = new Date(event.startDate)
+			const eventEndDate = new Date(event.endDate)
+			return eventStartDate <= calendarEnd && eventEndDate >= calendarStart
+		})
+	}
+
+	function getEventsForCurrentMonth(events: ICalendarEvent[]): ICalendarEvent[] {
 		const monthStart = new Date(selectedDate.value.getFullYear(), selectedDate.value.getMonth(), 1)
 		const monthEnd = new Date(
 			selectedDate.value.getFullYear(),
@@ -52,12 +50,12 @@ export const useCalendarStore = defineStore("calendar", () => {
 			0
 		)
 
-		return eventsFilteredByType.filter((event) => {
+		return events.filter((event) => {
 			const eventStartDate = new Date(event.startDate)
 			const eventEndDate = new Date(event.endDate)
 			return eventStartDate <= monthEnd && eventEndDate >= monthStart
 		})
-	})
+	}
 
 	function setEvents(initialEvents: ICalendarEvent[]) {
 		allEvents.value = initialEvents
@@ -110,9 +108,11 @@ export const useCalendarStore = defineStore("calendar", () => {
 		allEvents,
 		selectedDate,
 		selectedEventTypes,
+
 		view,
 		use24HourFormat,
 		filteredEvents,
+
 		setEvents,
 		setView,
 		toggleTimeFormat,

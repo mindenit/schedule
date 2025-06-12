@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from "vue"
-
 const currentTime = ref(new Date())
 let timer: number | null = null
 

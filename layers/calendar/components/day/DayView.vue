@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia"
-import { parseISO, format, isSameDay } from "date-fns"
 
 interface Props {
 	events: ICalendarEvent[]
@@ -11,20 +10,17 @@ const props = defineProps<Props>()
 const calendarStore = useCalendarStore()
 const { selectedDate, use24HourFormat } = storeToRefs(calendarStore)
 
+const { getEventsForDate, groupEvents } = useEventGrouping()
+const { formatTime } = useEventFormatting()
+
 const hours = Array.from({ length: 24 }, (_, i) => i)
 
-const dayEvents = computed(() => {
-	return props.events.filter((event) => {
-		const eventDate = parseISO(event.startDate)
-		return isSameDay(eventDate, selectedDate.value)
-	})
-})
-
+const dayEvents = computed(() => getEventsForDate(props.events, selectedDate.value))
 const groupedEvents = computed(() => groupEvents(dayEvents.value))
 
 function formatHour(hour: number): string {
 	const date = new Date().setHours(hour, 0, 0, 0)
-	return format(date, use24HourFormat.value ? "HH:00" : "h a")
+	return formatTime(date, use24HourFormat.value)
 }
 </script>
 

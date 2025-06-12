@@ -4,12 +4,6 @@ import { storeToRefs } from "pinia"
 const calendarStore = useCalendarStore()
 const { view } = storeToRefs(calendarStore)
 
-const viewOptions = [
-	{ value: "day", label: "День" },
-	{ value: "week", label: "Тиждень" },
-	{ value: "month", label: "Місяць" },
-]
-
 function updateView(newView: unknown) {
 	if (typeof newView === "string" && newView) {
 		calendarStore.setView(newView as TCalendarView)
@@ -23,7 +17,7 @@ function updateView(newView: unknown) {
 			<SelectValue placeholder="Обрати вигляд" />
 		</SelectTrigger>
 		<SelectContent>
-			<SelectItem v-for="option in viewOptions" :key="option.value" :value="option.value">
+			<SelectItem v-for="option in VIEW_OPTIONS" :key="option.value" :value="option.value">
 				{{ option.label }}
 			</SelectItem>
 		</SelectContent>

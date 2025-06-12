@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from "vue"
 import { areIntervalsOverlapping, parseISO } from "date-fns"
 
 interface Props {
@@ -8,6 +7,8 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+
+const { getEventBlockStyle } = useEventGrouping()
 
 const renderEvents = computed(() => {
 	return props.groupedEvents.flatMap((group, groupIndex) =>
