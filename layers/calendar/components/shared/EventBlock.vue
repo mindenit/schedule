@@ -27,12 +27,8 @@ const end = computed(() => parseISO(props.event.endDate))
 const durationInMinutes = computed(() => differenceInMinutes(end.value, start.value))
 const heightInPixels = computed(() => (durationInMinutes.value / 60) * WEEK_VIEW_ROW_HEIGHT - 8)
 
-const isShortEvent = computed(() => durationInMinutes.value < 35)
-const showTime = computed(() => durationInMinutes.value > 25)
-
 const blockClasses = computed(() => [
-	"flex select-none truncate whitespace-nowrap rounded-md border px-2 text-xs focus-visible:outline-offset-2 transition-all duration-200 cursor-pointer",
-	isShortEvent.value ? "py-0 justify-center items-center" : "flex-col gap-0.5 py-1.5",
+	"flex flex-col gap-0.5 items-center justify-center select-none rounded-md px-2 text-xs focus-visible:outline-offset-2 transition-all duration-200 cursor-pointer overflow-hidden min-w-0",
 	typeColorMap[props.event.type] || "border-gray-200 bg-gray-100/50 text-gray-700",
 	props.class,
 ])
@@ -41,28 +37,25 @@ const formattedTimeRange = computed(
 	() =>
 		`${formatTime(start.value, use24HourFormat.value)} - ${formatTime(end.value, use24HourFormat.value)}`
 )
-
-function handleClick() {
-	console.log("Event clicked:", props.event)
-}
 </script>
 
 <template>
-	<div
-		role="button"
-		tabindex="0"
-		:class="blockClasses"
-		:style="{ height: `${heightInPixels}px` }"
-		@click="handleClick"
-		@keydown.enter="handleClick"
-		@keydown.space.prevent="handleClick"
-	>
-		<div class="flex items-center gap-1.5 truncate">
-			<p class="truncate font-semibold">{{ event.title }}</p>
-		</div>
-
-		<p v-if="showTime">
-			{{ formattedTimeRange }}
-		</p>
-	</div>
+	<Popover>
+		<PopoverTrigger as-child>
+			<div
+				role="button"
+				tabindex="0"
+				:class="blockClasses"
+				:style="{ height: `${heightInPixels}px` }"
+			>
+				<p class="w-full truncate text-center font-semibold">{{ event.title }}</p>
+				<p class="w-full truncate text-center">
+					{{ formattedTimeRange }}
+				</p>
+			</div>
+		</PopoverTrigger>
+		<PopoverContent class="w-80">
+			<CalendarEventPopover :event />
+		</PopoverContent>
+	</Popover>
 </template>

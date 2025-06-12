@@ -181,7 +181,7 @@ onMounted(() => {
 				<span>Подій завантажено: {{ mockEvents.length }}</span>
 			</div>
 		</div>
-		<div class="rounded-lg p-6">
+		<div class="rounded-lg">
 			<CalendarMonthView v-if="view === 'month'" :events="allEvents" />
 			<CalendarWeekView v-else-if="view === 'week'" :events="allEvents" />
 			<CalendarDayView v-else-if="view === 'day'" :events="allEvents" />

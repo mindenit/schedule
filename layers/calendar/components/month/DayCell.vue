@@ -82,7 +82,6 @@ function handleMobileClick() {
 			class="flex h-6 gap-1 lg:min-h-[94px] lg:flex-col lg:gap-2"
 			:class="{ 'opacity-50': !isCurrentMonth }"
 		>
-			<!-- Mobile: клік на день відкриває day view -->
 			<div class="flex cursor-pointer flex-wrap gap-1 lg:hidden" @click="handleMobileClick">
 				<span
 					v-if="displayGroups.length > 0"
@@ -93,7 +92,6 @@ function handleMobileClick() {
 				</span>
 			</div>
 
-			<!-- Desktop: показуємо івенти з Popover -->
 			<div class="hidden lg:flex lg:flex-1 lg:flex-col lg:gap-1">
 				<div
 					v-for="(group, groupIndex) in displayGroups"

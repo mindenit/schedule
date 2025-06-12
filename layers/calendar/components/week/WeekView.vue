@@ -13,12 +13,9 @@ const props = defineProps<Props>()
 const calendarStore = useCalendarStore()
 const { selectedDate, use24HourFormat } = storeToRefs(calendarStore)
 
-// Week options for Monday start
 const weekOptions = { weekStartsOn: 1 as const }
-
 const weekStart = computed(() => startOfWeek(selectedDate.value, weekOptions))
 const weekDays = computed(() => Array.from({ length: 7 }, (_, i) => addDays(weekStart.value, i)))
-
 const hours = Array.from({ length: 24 }, (_, i) => i)
 
 const getDayEvents = (day: Date) => {
@@ -34,67 +31,65 @@ function formatHour(hour: number): string {
 	const date = new Date().setHours(hour, 0, 0, 0)
 	return format(date, use24HourFormat.value ? "HH:00" : "h a")
 }
+
+const capitalize = (str: string) => str.charAt(0).toUpperCase() + str.slice(1)
 </script>
 
 <template>
 	<div class="flex flex-col">
-		<div class="flex flex-col">
-			<div class="relative z-20 flex border-b">
-				<div class="w-18"></div>
-				<div class="grid flex-1 grid-cols-7">
-					<span
-						v-for="(day, index) in weekDays"
-						:key="index"
-						class="text-muted-foreground py-2 text-center text-xs font-medium transition-all duration-200"
-						:class="{
-							'bg-primary/5': isSameDay(day, new Date()),
-						}"
-					>
-						{{ format(day, "E", { locale: uk }) }}
-						<span class="text-foreground ml-1 font-semibold">
-							{{ format(day, "d") }}
+		<div class="overflow-x-auto">
+			<div class="min-w-[800px]">
+				<div class="bg-card relative z-20 mb-1 grid grid-cols-[72px_1fr] gap-1">
+					<div class="col-start-2 grid grid-cols-7 gap-1">
+						<span
+							v-for="(day, index) in weekDays"
+							:key="index"
+							class="text-muted-foreground flex min-w-[100px] flex-col items-center gap-1 py-2 text-center text-xs
+								font-medium transition-all duration-200"
+						>
+							<span class="hidden sm:block">{{
+								capitalize(format(day, "EEEE", { locale: uk }))
+							}}</span>
+							<span class="block sm:hidden">{{
+								capitalize(format(day, "EEE", { locale: uk }))
+							}}</span>
+							<span
+								class="text-md flex size-5 items-center justify-center rounded-full font-semibold"
+								:class="{
+									'bg-primary text-foreground': isSameDay(day, new Date()),
+								}"
+							>
+								{{ format(day, "d") }}
+							</span>
 						</span>
-					</span>
+					</div>
 				</div>
-			</div>
 
-			<div class="h-[736px] overflow-auto">
-				<div class="flex">
-					<div class="relative w-18">
+				<div class="grid grid-cols-[72px_1fr] gap-1">
+					<div class="relative">
 						<div
 							v-for="(hour, index) in hours"
 							:key="hour"
-							class="relative"
+							class="bg-card relative"
 							:style="{ height: WEEK_VIEW_ROW_HEIGHT + 'px' }"
 						>
 							<div class="absolute -top-3 right-2 flex h-6 items-center">
-								<span v-if="index !== 0" class="text-muted-foreground text-xs">
+								<span v-if="index !== 0" class="text-muted-foreground text-xs whitespace-nowrap">
 									{{ formatHour(hour) }}
 								</span>
 							</div>
 						</div>
 					</div>
 
-					<div class="relative flex-1 border-l">
-						<div class="grid grid-cols-7 divide-x">
-							<div v-for="(day, dayIndex) in weekDays" :key="dayIndex" class="relative">
-								<div
-									v-for="(hour, index) in hours"
-									:key="hour"
-									class="relative"
-									:style="{ height: WEEK_VIEW_ROW_HEIGHT + 'px' }"
-								>
-									<div
-										v-if="index !== 0"
-										class="pointer-events-none absolute inset-x-0 top-0 border-b"
-									/>
+					<div class="relative">
+						<div class="grid h-full grid-cols-7 gap-1">
+							<div v-for="day in weekDays" :key="day" class="relative min-w-[100px]">
+								<div class="grid h-full grid-rows-24 gap-1">
+									<div v-for="hour in hours" :key="hour" class="bg-card relative"></div>
 								</div>
-
 								<CalendarEventRenderer :grouped-events="getGroupedEventsForDay(day)" :day="day" />
 							</div>
 						</div>
-
-						<!-- Current time line -->
 						<CalendarTimeline />
 					</div>
 				</div>
@@ -102,4 +97,3 @@ function formatHour(hour: number): string {
 		</div>
 	</div>
 </template>
-ч
