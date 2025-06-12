@@ -1,18 +1,4 @@
-<script setup lang="ts">
-import { storeToRefs } from "pinia"
-
-const calendarStore = useCalendarStore()
-const { filteredEvents, view } = storeToRefs(calendarStore)
-
-interface ICalendarEvent {
-	id: number
-	title: string
-	type: "lecture" | "practise" | "lab" | "consultation" | "exam" | "credit"
-	startDate: string
-	endDate: string
-}
-
-function generateYearlyMockEvents(year: number = 2025): ICalendarEvent[] {
+export function generateYearlyMockEvents(year: number = 2025): ICalendarEvent[] {
 	const events: ICalendarEvent[] = []
 	let eventId = 1
 
@@ -142,7 +128,6 @@ function generateYearlyMockEvents(year: number = 2025): ICalendarEvent[] {
 			timeSlot = timeSlots[Math.floor(Math.random() * timeSlots.length)]
 		}
 
-		// Provide fallback if timeSlot is undefined
 		const safeTimeSlot = timeSlot ?? { start: "08:30", end: "10:00" }
 
 		if (event) {
@@ -158,33 +143,3 @@ function generateYearlyMockEvents(year: number = 2025): ICalendarEvent[] {
 
 	return events.sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime())
 }
-
-const yearlyEvents = generateYearlyMockEvents(2025)
-
-const mockEvents = yearlyEvents
-
-const allEvents = computed(() => filteredEvents.value)
-
-onMounted(() => {
-	calendarStore.setEvents(mockEvents)
-})
-</script>
-
-<template>
-	<div class="bg-background min-h-screen p-6">
-		<div class="mb-6 flex flex-wrap items-center justify-between gap-4">
-			<div class="flex items-center gap-4">
-				<CalendarDateNavigator />
-				<CalendarViewSwitcher />
-			</div>
-			<div class="text-muted-foreground flex items-center gap-2 text-sm">
-				<span>Подій завантажено: {{ mockEvents.length }}</span>
-			</div>
-		</div>
-		<div class="rounded-lg">
-			<CalendarMonthView v-if="view === 'month'" :events="allEvents" />
-			<CalendarWeekView v-else-if="view === 'week'" :events="allEvents" />
-			<CalendarDayView v-else-if="view === 'day'" :events="allEvents" />
-		</div>
-	</div>
-</template>
