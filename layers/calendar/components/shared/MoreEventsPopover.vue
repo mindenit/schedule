@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { storeToRefs } from "pinia"
-import type { ICalendarEvent } from "../types"
-
 interface Props {
 	events: ICalendarEvent[]
 	date: Date
@@ -9,15 +6,12 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const calendarStore = useCalendarStore()
-const { use24HourFormat } = storeToRefs(calendarStore)
-
 const { formatTime, formatDate, getEventTypeColor } = useEventFormatting()
 
 const formattedDate = computed(() => formatDate(props.date))
 
 function getEventTimeRange(event: ICalendarEvent): string {
-	return `${formatTime(event.startDate, use24HourFormat.value)} - ${formatTime(event.endDate, use24HourFormat.value)}`
+	return `${formatTime(event.startDate)} - ${formatTime(event.endDate)}`
 }
 </script>
 

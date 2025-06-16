@@ -1,22 +1,16 @@
 <script setup lang="ts">
-import { storeToRefs } from "pinia"
-import type { ICalendarEvent } from "../types"
-
 interface Props {
 	event: ICalendarEvent
 }
 
 const props = defineProps<Props>()
 
-const calendarStore = useCalendarStore()
-const { use24HourFormat } = storeToRefs(calendarStore)
-
 const { formatTimeRange, formatDate, getEventTypeColor, getEventTypeLabel } = useEventFormatting()
 
 const eventTypeLabel = computed(() => getEventTypeLabel(props.event.type))
 const eventTypeColor = computed(() => getEventTypeColor(props.event.type))
 
-const formattedTimeRange = computed(() => formatTimeRange(props.event, use24HourFormat.value))
+const formattedTimeRange = computed(() => formatTimeRange(props.event))
 
 const formattedDate = computed(() => formatDate(props.event.startDate))
 </script>
@@ -43,16 +37,6 @@ const formattedDate = computed(() => formatDate(props.event.startDate))
 		<div class="flex items-center gap-3 text-sm">
 			<Icon name="lucide:calendar" class="text-muted-foreground h-4 w-4" />
 			<span>{{ formattedDate }}</span>
-		</div>
-
-		<div v-if="event.location" class="flex items-center gap-3 text-sm">
-			<Icon name="lucide:map-pin" class="text-muted-foreground h-4 w-4" />
-			<span>{{ event.location }}</span>
-		</div>
-
-		<div v-if="event.teacher" class="flex items-center gap-3 text-sm">
-			<Icon name="lucide:user" class="text-muted-foreground h-4 w-4" />
-			<span>{{ event.teacher }}</span>
 		</div>
 	</div>
 </template>

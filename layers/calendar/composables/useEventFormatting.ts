@@ -2,16 +2,22 @@ import { format, parseISO, isValid } from "date-fns"
 import { uk } from "date-fns/locale"
 
 export const useEventFormatting = () => {
-	const formatTime = (date: Date | string, use24HourFormat: boolean): string => {
+	const formatTime = (date: Date | string): string => {
 		const parsedDate = typeof date === "string" ? parseISO(date) : date
 		if (!isValid(parsedDate)) return ""
-		return format(parsedDate, use24HourFormat ? "HH:mm" : "h:mm a")
+		return format(parsedDate, "HH:mm")
 	}
 
-	const formatTimeRange = (event: ICalendarEvent, use24HourFormat: boolean): string => {
+	const formatHour = (hour: number): string => {
+		const date = new Date()
+		date.setHours(hour, 0, 0, 0)
+		return formatTime(date)
+	}
+
+	const formatTimeRange = (event: ICalendarEvent): string => {
 		const start = new Date(event.startDate)
 		const end = new Date(event.endDate)
-		return `${formatTime(start, use24HourFormat)} - ${formatTime(end, use24HourFormat)}`
+		return `${formatTime(start)} - ${formatTime(end)}`
 	}
 
 	const formatDate = (date: Date | string, formatString: string = "d MMMM yyyy"): string => {
@@ -42,6 +48,7 @@ export const useEventFormatting = () => {
 
 	return {
 		formatTime,
+		formatHour,
 		formatTimeRange,
 		formatDate,
 		getEventTypeColor,

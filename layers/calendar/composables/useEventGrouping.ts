@@ -42,14 +42,14 @@ export const useEventGrouping = () => {
 	const groupEventsBySameTime = (events: ICalendarEvent[]): ICalendarEvent[][] => {
 		const timeGroups = new Map<string, ICalendarEvent[]>()
 
-		events.forEach((event) => {
+		for (const event of events) {
 			const timeKey = `${event.startDate}-${event.endDate}`
 
 			if (!timeGroups.has(timeKey)) {
 				timeGroups.set(timeKey, [])
 			}
 			timeGroups.get(timeKey)!.push(event)
-		})
+		}
 
 		return Array.from(timeGroups.values()).sort(
 			(a, b) => parseISO(a[0]!.startDate).getTime() - parseISO(b[0]!.startDate).getTime()
@@ -87,15 +87,15 @@ export const useEventGrouping = () => {
 		const positions: Record<string, number> = {}
 		const occupiedPositions: Record<string, boolean[]> = {}
 
-		eachDayOfInterval({ start: calendarStart, end: calendarEnd }).forEach((day) => {
+		for (const day of eachDayOfInterval({ start: calendarStart, end: calendarEnd })) {
 			occupiedPositions[day.toISOString()] = Array(MAX_EVENT_POSITIONS).fill(false)
-		})
+		}
 
 		const sortedEvents = [...events].sort(
 			(a, b) => parseISO(a.startDate).getTime() - parseISO(b.startDate).getTime()
 		)
 
-		sortedEvents.forEach((event) => {
+		for (const event of sortedEvents) {
 			const eventDate = startOfDay(parseISO(event.startDate))
 
 			if (eventDate >= calendarStart && eventDate <= calendarEnd) {
@@ -117,7 +117,7 @@ export const useEventGrouping = () => {
 					}
 				}
 			}
-		})
+		}
 
 		return positions
 	}

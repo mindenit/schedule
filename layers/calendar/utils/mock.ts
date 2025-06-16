@@ -64,9 +64,9 @@ export function generateYearlyMockEvents(year: number = 2025): ICalendarEvent[] 
 
 	const semesters = [{ start: 5, end: 7 }]
 
-	semesters.forEach((semester) => {
-		subjects.forEach((subject) => {
-			subject.types.forEach((type) => {
+	for (const semester of semesters) {
+		for (const subject of subjects) {
+			for (const type of subject.types) {
 				const eventsCount =
 					type === "lecture"
 						? 12
@@ -110,9 +110,9 @@ export function generateYearlyMockEvents(year: number = 2025): ICalendarEvent[] 
 						endDate: formatDateTime(eventDate, timeSlot?.end ?? "10:00"),
 					})
 				}
-			})
-		})
-	})
+			}
+		}
+	}
 
 	for (let i = 0; i < 15; i++) {
 		const event = additionalEvents[Math.floor(Math.random() * additionalEvents.length)]

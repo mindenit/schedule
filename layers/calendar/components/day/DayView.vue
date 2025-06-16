@@ -8,20 +8,15 @@ interface Props {
 const props = defineProps<Props>()
 
 const calendarStore = useCalendarStore()
-const { selectedDate, use24HourFormat } = storeToRefs(calendarStore)
+const { selectedDate } = storeToRefs(calendarStore)
 
 const { getEventsForDate, groupEvents } = useEventGrouping()
-const { formatTime } = useEventFormatting()
+const { formatHour } = useEventFormatting()
 
 const hours = Array.from({ length: 24 }, (_, i) => i)
 
 const dayEvents = computed(() => getEventsForDate(props.events, selectedDate.value))
 const groupedEvents = computed(() => groupEvents(dayEvents.value))
-
-function formatHour(hour: number): string {
-	const date = new Date().setHours(hour, 0, 0, 0)
-	return formatTime(date, use24HourFormat.value)
-}
 </script>
 
 <template>

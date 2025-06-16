@@ -16,13 +16,8 @@ onMounted(() => {
 <template>
 	<div class="min-h-screen p-6">
 		<div class="mb-6 flex flex-wrap items-center justify-between gap-4">
-			<div class="flex items-center gap-4">
-				<CalendarDateNavigator />
-				<CalendarViewSwitcher />
-			</div>
-			<div class="text-muted-foreground flex items-center gap-2 text-sm">
-				<span>Подій завантажено: {{ mockEvents.length }}</span>
-			</div>
+			<CalendarDateNavigator />
+			<CalendarViewSwitcher />
 		</div>
 		<CalendarRoot :events="allEvents" />
 	</div>

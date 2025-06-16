@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { storeToRefs } from "pinia"
 import { differenceInMinutes, parseISO } from "date-fns"
 
 interface Props {
@@ -8,9 +7,6 @@ interface Props {
 }
 
 const props = defineProps<Props>()
-
-const calendarStore = useCalendarStore()
-const { use24HourFormat } = storeToRefs(calendarStore)
 
 const { formatTimeRange, getEventTypeColor } = useEventFormatting()
 
@@ -25,7 +21,7 @@ const blockClasses = computed(() => [
 	props.class,
 ])
 
-const formattedTimeRange = computed(() => formatTimeRange(props.event, use24HourFormat.value))
+const formattedTimeRange = computed(() => formatTimeRange(props.event))
 </script>
 
 <template>

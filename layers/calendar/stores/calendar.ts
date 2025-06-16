@@ -4,7 +4,6 @@ import { startOfMonth, endOfMonth, startOfWeek, endOfWeek } from "date-fns"
 
 interface CalendarSettings {
 	view: TCalendarView
-	use24HourFormat: boolean
 }
 
 export const useCalendarStore = defineStore("calendar", () => {
@@ -14,7 +13,6 @@ export const useCalendarStore = defineStore("calendar", () => {
 	const settings = useStorage<CalendarSettings>("calendar-settings", DEFAULT_CALENDAR_SETTINGS)
 
 	const view = computed(() => settings.value.view)
-	const use24HourFormat = computed(() => settings.value.use24HourFormat)
 
 	const filteredEvents = computed(() => {
 		const eventsFilteredByType =
@@ -65,10 +63,6 @@ export const useCalendarStore = defineStore("calendar", () => {
 		settings.value.view = newView
 	}
 
-	function toggleTimeFormat() {
-		settings.value.use24HourFormat = !settings.value.use24HourFormat
-	}
-
 	function setSelectedDate(date: Date | undefined) {
 		if (date) {
 			selectedDate.value = date
@@ -110,12 +104,10 @@ export const useCalendarStore = defineStore("calendar", () => {
 		selectedEventTypes,
 
 		view,
-		use24HourFormat,
 		filteredEvents,
 
 		setEvents,
 		setView,
-		toggleTimeFormat,
 		setSelectedDate,
 		filterByEventType,
 		clearFilter,

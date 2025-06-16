@@ -10,22 +10,17 @@ interface Props {
 const props = defineProps<Props>()
 
 const calendarStore = useCalendarStore()
-const { selectedDate, use24HourFormat } = storeToRefs(calendarStore)
+const { selectedDate } = storeToRefs(calendarStore)
 
 const { getWeekDaysDetailed } = useCalendarCells()
 const { getEventsForDate, groupEvents } = useEventGrouping()
-const { formatTime, capitalize } = useEventFormatting()
+const { formatHour, capitalize } = useEventFormatting()
 
 const weekDays = computed(() => getWeekDaysDetailed(selectedDate.value))
 const hours = Array.from({ length: 24 }, (_, i) => i)
 
 const getDayEvents = (day: Date) => getEventsForDate(props.events, day)
 const getGroupedEventsForDay = (day: Date) => groupEvents(getDayEvents(day))
-
-function formatHour(hour: number): string {
-	const date = new Date().setHours(hour, 0, 0, 0)
-	return formatTime(date, use24HourFormat.value)
-}
 </script>
 
 <template>
@@ -79,7 +74,11 @@ function formatHour(hour: number): string {
 
 					<div class="relative">
 						<div class="grid h-full grid-cols-7 gap-1">
-							<div v-for="(day, dayIndex) in weekDays" :key="day" class="relative min-w-[100px]">
+							<div
+								v-for="(day, dayIndex) in weekDays"
+								:key="day.getTime()"
+								class="relative min-w-[100px]"
+							>
 								<div class="grid h-full grid-rows-24 gap-1">
 									<div
 										v-for="(hour, hourIndex) in hours"

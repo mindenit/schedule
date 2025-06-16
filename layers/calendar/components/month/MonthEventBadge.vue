@@ -1,15 +1,10 @@
 <script setup lang="ts">
-import { storeToRefs } from "pinia"
-
 interface Props {
 	event?: ICalendarEvent
 	class?: string
 }
 
 const props = defineProps<Props>()
-
-const calendarStore = useCalendarStore()
-const { use24HourFormat } = storeToRefs(calendarStore)
 
 const { formatTimeRange, getEventTypeColor } = useEventFormatting()
 
@@ -21,7 +16,7 @@ const badgeClasses = computed(() => [
 
 const formattedTime = computed(() => {
 	if (!props.event) return ""
-	return formatTimeRange(props.event, use24HourFormat.value)
+	return formatTimeRange(props.event)
 })
 </script>
 
