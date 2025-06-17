@@ -25,7 +25,7 @@ const formattedTime = computed(() => {
 		<slot v-if="$slots.default" />
 		<template v-else>
 			<span class="flex-1 shrink-0 truncate">
-				{{ event!.title }}
+				{{ event!.subject.title }}
 			</span>
 			<span class="shrink-0 truncate group-[.hide-time]:hidden">{{ formattedTime }}</span>
 		</template>

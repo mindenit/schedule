@@ -11,7 +11,7 @@ const { formatTime, formatDate, getEventTypeColor } = useEventFormatting()
 const formattedDate = computed(() => formatDate(props.date))
 
 function getEventTimeRange(event: ICalendarEvent): string {
-	return `${formatTime(event.startDate)} - ${formatTime(event.endDate)}`
+	return `${formatTime(event.startedAt)} - ${formatTime(event.endedAt)}`
 }
 </script>
 
@@ -34,7 +34,7 @@ function getEventTimeRange(event: ICalendarEvent): string {
 							:class="getEventTypeColor(event.type)"
 						/>
 						<div class="min-w-0 flex-1">
-							<p class="truncate text-sm font-medium">{{ event.title }}</p>
+							<p class="truncate text-sm font-medium">{{ event.subject.title }}</p>
 							<p class="text-muted-foreground text-xs">
 								{{ getEventTimeRange(event) }}
 							</p>

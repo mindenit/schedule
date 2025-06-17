@@ -4,12 +4,11 @@ import { storeToRefs } from "pinia"
 const calendarStore = useCalendarStore()
 const { filteredEvents } = storeToRefs(calendarStore)
 
-const yearlyEvents = generateYearlyMockEvents(2025)
-const mockEvents = yearlyEvents
+const yearlyEvents = generateYearlyMockSchedule()
 const allEvents = computed(() => filteredEvents.value)
 
 onMounted(() => {
-	calendarStore.setEvents(mockEvents)
+	calendarStore.setEvents(yearlyEvents)
 })
 </script>
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { differenceInMinutes, parseISO } from "date-fns"
+import { differenceInMinutes } from "date-fns"
 
 interface Props {
 	event: ICalendarEvent
@@ -10,8 +10,8 @@ const props = defineProps<Props>()
 
 const { formatTimeRange, getEventTypeColor } = useEventFormatting()
 
-const start = computed(() => parseISO(props.event.startDate))
-const end = computed(() => parseISO(props.event.endDate))
+const start = computed(() => new Date(props.event.startedAt))
+const end = computed(() => new Date(props.event.endedAt))
 const durationInMinutes = computed(() => differenceInMinutes(end.value, start.value))
 const heightInPixels = computed(() => (durationInMinutes.value / 60) * WEEK_VIEW_ROW_HEIGHT - 8)
 
@@ -33,7 +33,7 @@ const formattedTimeRange = computed(() => formatTimeRange(props.event))
 				:class="blockClasses"
 				:style="{ height: `${heightInPixels}px` }"
 			>
-				<p class="w-full truncate text-center font-semibold">{{ event.title }}</p>
+				<p class="w-full truncate text-center font-semibold">{{ event.subject.title }}</p>
 				<p class="w-full truncate text-center">
 					{{ formattedTimeRange }}
 				</p>

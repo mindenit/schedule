@@ -11,7 +11,6 @@ import {
 	isSameDay,
 	isSameMonth,
 	format,
-	parseISO,
 	startOfMonth,
 	endOfMonth,
 	startOfWeek,
@@ -70,5 +69,5 @@ export function getEventsCount(events: ICalendarEvent[], date: Date, view: TCale
 	}
 
 	const compareFn = compareFns[view]
-	return events.filter((event) => compareFn(parseISO(event.startDate), date)).length
+	return events.filter((event) => compareFn(new Date(event.startedAt), date)).length
 }

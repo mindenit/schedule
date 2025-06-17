@@ -28,6 +28,7 @@
 		"date-fns": "^4.1.0",
 		"eslint": "^9.28.0",
 		"lucide-vue-next": "^0.507.0",
+		"nurekit": "^0.6.0",
 		"nuxt": "^3.17.5",
 		"pinia": "^3.0.3",
 		"reka-ui": "^2.3.1",

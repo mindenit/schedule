@@ -34,9 +34,9 @@ export const useCalendarStore = defineStore("calendar", () => {
 		const calendarEnd = endOfWeek(monthEnd, WEEK_OPTIONS)
 
 		return events.filter((event) => {
-			const eventStartDate = new Date(event.startDate)
-			const eventEndDate = new Date(event.endDate)
-			return eventStartDate <= calendarEnd && eventEndDate >= calendarStart
+			const eventStartedAt = new Date(event.startedAt)
+			const eventEndedAt = new Date(event.endedAt)
+			return eventStartedAt <= calendarEnd && eventEndedAt >= calendarStart
 		})
 	}
 
@@ -49,9 +49,9 @@ export const useCalendarStore = defineStore("calendar", () => {
 		)
 
 		return events.filter((event) => {
-			const eventStartDate = new Date(event.startDate)
-			const eventEndDate = new Date(event.endDate)
-			return eventStartDate <= monthEnd && eventEndDate >= monthStart
+			const eventStartedAt = new Date(event.startedAt)
+			const eventEndedAt = new Date(event.endedAt)
+			return eventStartedAt <= monthEnd && eventEndedAt >= monthStart
 		})
 	}
 

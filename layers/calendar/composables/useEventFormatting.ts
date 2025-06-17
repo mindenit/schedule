@@ -1,9 +1,18 @@
-import { format, parseISO, isValid } from "date-fns"
+import { format, isValid } from "date-fns"
 import { uk } from "date-fns/locale"
 
 export const useEventFormatting = () => {
-	const formatTime = (date: Date | string): string => {
-		const parsedDate = typeof date === "string" ? parseISO(date) : date
+	const formatTime = (date: Date | string | number): string => {
+		let parsedDate: Date
+
+		if (typeof date === "number") {
+			parsedDate = new Date(date)
+		} else if (typeof date === "string") {
+			parsedDate = new Date(date)
+		} else {
+			parsedDate = date
+		}
+
 		if (!isValid(parsedDate)) return ""
 		return format(parsedDate, "HH:mm")
 	}
@@ -15,13 +24,25 @@ export const useEventFormatting = () => {
 	}
 
 	const formatTimeRange = (event: ICalendarEvent): string => {
-		const start = new Date(event.startDate)
-		const end = new Date(event.endDate)
+		const start = new Date(event.startedAt)
+		const end = new Date(event.endedAt)
 		return `${formatTime(start)} - ${formatTime(end)}`
 	}
 
-	const formatDate = (date: Date | string, formatString: string = "d MMMM yyyy"): string => {
-		const parsedDate = typeof date === "string" ? parseISO(date) : date
+	const formatDate = (
+		date: Date | string | number,
+		formatString: string = "d MMMM yyyy"
+	): string => {
+		let parsedDate: Date
+
+		if (typeof date === "number") {
+			parsedDate = new Date(date)
+		} else if (typeof date === "string") {
+			parsedDate = new Date(date)
+		} else {
+			parsedDate = date
+		}
+
 		if (!isValid(parsedDate)) return ""
 		return format(parsedDate, formatString, { locale: uk })
 	}

@@ -21,12 +21,12 @@ const renderEvents = computed(() => {
 					otherGroup.some((otherEvent) =>
 						areIntervalsOverlapping(
 							{
-								start: parseISO(event.startDate),
-								end: parseISO(event.endDate),
+								start: parseISO(String(event.startedAt)),
+								end: parseISO(String(event.endedAt)),
 							},
 							{
-								start: parseISO(otherEvent.startDate),
-								end: parseISO(otherEvent.endDate),
+								start: parseISO(String(otherEvent.startedAt)),
+								end: parseISO(String(otherEvent.endedAt)),
 							}
 						)
 					)
