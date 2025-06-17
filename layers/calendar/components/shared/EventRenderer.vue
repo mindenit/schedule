@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { areIntervalsOverlapping, parseISO } from "date-fns"
+import { areIntervalsOverlapping } from "date-fns"
 
 interface Props {
 	groupedEvents: ICalendarEvent[][]
@@ -21,12 +21,12 @@ const renderEvents = computed(() => {
 					otherGroup.some((otherEvent) =>
 						areIntervalsOverlapping(
 							{
-								start: parseISO(String(event.startedAt)),
-								end: parseISO(String(event.endedAt)),
+								start: new Date(event.startedAt),
+								end: new Date(event.endedAt),
 							},
 							{
-								start: parseISO(String(otherEvent.startedAt)),
-								end: parseISO(String(otherEvent.endedAt)),
+								start: new Date(otherEvent.startedAt),
+								end: new Date(otherEvent.endedAt),
 							}
 						)
 					)
