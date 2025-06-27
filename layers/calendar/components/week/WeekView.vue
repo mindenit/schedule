@@ -2,9 +2,10 @@
 import { storeToRefs } from "pinia"
 import { format, isSameDay } from "date-fns"
 import { uk } from "date-fns/locale"
+import type { Schedule } from "nurekit"
 
 interface Props {
-	events: ICalendarEvent[]
+	events: Schedule[]
 }
 
 const props = defineProps<Props>()

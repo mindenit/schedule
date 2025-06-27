@@ -1,6 +1,8 @@
 <script setup lang="ts">
+import type { Schedule } from "nurekit"
+
 interface Props {
-	event?: ICalendarEvent
+	event?: Schedule
 	class?: string
 }
 

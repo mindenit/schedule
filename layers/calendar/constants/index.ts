@@ -3,21 +3,21 @@ export const WEEK_VIEW_ROW_HEIGHT = 63
 export const WEEK_OPTIONS = { weekStartsOn: 1 as const }
 
 export const EVENT_TYPE_COLORS: Record<TEventType, string> = {
-	practise: "bg-event-practise",
-	lecture: "bg-event-lecture",
-	lab: "bg-event-lab",
-	consultation: "bg-event-consultation",
-	exam: "bg-event-exam",
-	credit: "bg-event-credit",
+	Лб: "bg-event-lab",
+	Лк: "bg-event-lecture",
+	Пз: "bg-event-practise",
+	Зал: "bg-event-credit",
+	Екз: "bg-event-exam",
+	Конс: "bg-event-consultation",
 }
 
 export const EVENT_TYPE_LABELS: Record<TEventType, string> = {
-	practise: "Практичне заняття",
-	lecture: "Лекція",
-	lab: "Лабораторна робота",
-	consultation: "Консультація",
-	exam: "Екзамен",
-	credit: "Залік",
+	Лб: "Лабораторна робота",
+	Лк: "Лекція",
+	Пз: "Практичне заняття",
+	Зал: "Залік",
+	Екз: "Екзамен",
+	Конс: "Консультація",
 }
 
 export const VIEW_OPTIONS = [

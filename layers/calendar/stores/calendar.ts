@@ -1,13 +1,14 @@
 import { defineStore } from "pinia"
 import { useStorage } from "@vueuse/core"
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek } from "date-fns"
+import type { Schedule } from "nurekit"
 
 interface CalendarSettings {
 	view: TCalendarView
 }
 
 export const useCalendarStore = defineStore("calendar", () => {
-	const allEvents = ref<ICalendarEvent[]>([])
+	const allEvents = ref<Schedule[]>([])
 	const selectedDate = ref(new Date())
 	const selectedEventTypes = ref<TEventType[]>([])
 	const settings = useStorage<CalendarSettings>("calendar-settings", DEFAULT_CALENDAR_SETTINGS)
@@ -17,7 +18,9 @@ export const useCalendarStore = defineStore("calendar", () => {
 	const filteredEvents = computed(() => {
 		const eventsFilteredByType =
 			selectedEventTypes.value.length > 0
-				? allEvents.value.filter((event) => selectedEventTypes.value.includes(event.type))
+				? allEvents.value.filter((event) =>
+						selectedEventTypes.value.includes(event.type as TEventType)
+					)
 				: allEvents.value
 
 		if (view.value === "month") {
@@ -27,20 +30,20 @@ export const useCalendarStore = defineStore("calendar", () => {
 		return getEventsForCurrentMonth(eventsFilteredByType)
 	})
 
-	function getEventsForMonthView(events: ICalendarEvent[]): ICalendarEvent[] {
+	function getEventsForMonthView(events: Schedule[]): Schedule[] {
 		const monthStart = startOfMonth(selectedDate.value)
 		const monthEnd = endOfMonth(selectedDate.value)
 		const calendarStart = startOfWeek(monthStart, WEEK_OPTIONS)
 		const calendarEnd = endOfWeek(monthEnd, WEEK_OPTIONS)
 
 		return events.filter((event) => {
-			const eventStartedAt = new Date(event.startedAt)
-			const eventEndedAt = new Date(event.endedAt)
+			const eventStartedAt = new Date(event.startedAt * 1000)
+			const eventEndedAt = new Date(event.endedAt * 1000)
 			return eventStartedAt <= calendarEnd && eventEndedAt >= calendarStart
 		})
 	}
 
-	function getEventsForCurrentMonth(events: ICalendarEvent[]): ICalendarEvent[] {
+	function getEventsForCurrentMonth(events: Schedule[]): Schedule[] {
 		const monthStart = new Date(selectedDate.value.getFullYear(), selectedDate.value.getMonth(), 1)
 		const monthEnd = new Date(
 			selectedDate.value.getFullYear(),
@@ -49,13 +52,13 @@ export const useCalendarStore = defineStore("calendar", () => {
 		)
 
 		return events.filter((event) => {
-			const eventStartedAt = new Date(event.startedAt)
-			const eventEndedAt = new Date(event.endedAt)
+			const eventStartedAt = new Date(event.startedAt * 1000)
+			const eventEndedAt = new Date(event.endedAt * 1000)
 			return eventStartedAt <= monthEnd && eventEndedAt >= monthStart
 		})
 	}
 
-	function setEvents(initialEvents: ICalendarEvent[]) {
+	function setEvents(initialEvents: Schedule[]) {
 		allEvents.value = initialEvents
 	}
 
@@ -83,11 +86,11 @@ export const useCalendarStore = defineStore("calendar", () => {
 		selectedEventTypes.value = []
 	}
 
-	function addEvent(event: ICalendarEvent) {
+	function addEvent(event: Schedule) {
 		allEvents.value.push(event)
 	}
 
-	function updateEvent(updatedEvent: ICalendarEvent) {
+	function updateEvent(updatedEvent: Schedule) {
 		const index = allEvents.value.findIndex((e) => e.id === updatedEvent.id)
 		if (index !== -1) {
 			allEvents.value[index] = updatedEvent

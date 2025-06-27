@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { isToday, startOfDay } from "date-fns"
+import type { Schedule } from "nurekit"
 
 interface Props {
 	cell: ICalendarCell
-	events: ICalendarEvent[]
+	events: Schedule[]
 	eventPositions: Record<string, number>
 }
 

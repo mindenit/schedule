@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import type { Schedule } from "nurekit"
 import { storeToRefs } from "pinia"
 
 interface Props {
-	events: ICalendarEvent[]
+	events: Schedule[]
 }
 
 const props = defineProps<Props>()

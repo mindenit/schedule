@@ -12,7 +12,10 @@ const title = computed(() => {
 	const config = VIEW_CONFIGS[view.value as string] ?? VIEW_CONFIGS.default
 	if (!config) return ""
 
-	const formatted = formatDate(selectedDate.value, config.format, { locale: uk })
+	const dateToFormat =
+		selectedDate.value instanceof Date ? selectedDate.value : new Date(selectedDate.value)
+
+	const formatted = formatDate(dateToFormat, config.format, { locale: uk })
 	return config.capitalize ? capitalize(formatted) : formatted
 })
 

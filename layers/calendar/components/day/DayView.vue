@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import type { Schedule } from "nurekit"
 import { storeToRefs } from "pinia"
 
 interface Props {
-	events: ICalendarEvent[]
+	events: Schedule[]
 }
 
 const props = defineProps<Props>()
@@ -30,7 +31,7 @@ const groupedEvents = computed(() => groupEvents(dayEvents.value))
 						class="bg-muted/50 relative flex flex-1 items-start justify-end pr-2"
 						:style="{ minHeight: `${100 / hours.length}%` }"
 					>
-						<span v-if="index !== 0" class="text-muted-foreground mt-1 text-xs">
+						<span v-if="index !== 0" class="text-muted-foreground text-xs">
 							{{ formatHour(hour) }}
 						</span>
 					</div>
@@ -41,7 +42,7 @@ const groupedEvents = computed(() => groupEvents(dayEvents.value))
 						<div
 							v-for="hour in hours"
 							:key="hour"
-							class="bg-card relative min-h-[48px]"
+							class="bg-card relative min-h-[52px]"
 							:style="{ height: `${(100 - (hours.length - 1) * 0.25) / hours.length}%` }"
 						></div>
 					</div>

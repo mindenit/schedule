@@ -1,18 +1,23 @@
 <script setup lang="ts">
 import { differenceInMinutes } from "date-fns"
+import type { Schedule } from "nurekit"
 
 interface Props {
-	event: ICalendarEvent
+	event: Schedule
 	class?: string
 }
 
 const props = defineProps<Props>()
 
-const { formatTimeRange, getEventTypeColor } = useEventFormatting()
+const { formatTimeRange, getEventTypeColor, parseDate } = useEventFormatting()
 
-const start = computed(() => new Date(props.event.startedAt))
-const end = computed(() => new Date(props.event.endedAt))
-const durationInMinutes = computed(() => differenceInMinutes(end.value, start.value))
+const start = computed(() => parseDate(props.event.startedAt))
+const end = computed(() => parseDate(props.event.endedAt))
+const durationInMinutes = computed(() => {
+	const startDate = start.value
+	const endDate = end.value
+	return startDate && endDate ? differenceInMinutes(endDate, startDate) : 0
+})
 const heightInPixels = computed(() => (durationInMinutes.value / 60) * WEEK_VIEW_ROW_HEIGHT - 8)
 
 const blockClasses = computed(() => [

@@ -1,15 +1,47 @@
 <script setup lang="ts">
+import { Nurekit } from "nurekit"
 import { storeToRefs } from "pinia"
 
 const calendarStore = useCalendarStore()
-const { filteredEvents } = storeToRefs(calendarStore)
+const { filteredEvents, selectedDate, view } = storeToRefs(calendarStore)
 
-const yearlyEvents = generateYearlyMockSchedule()
-const allEvents = computed(() => filteredEvents.value)
+async function loadEvents() {
+	try {
+		console.log("🔄 Loading events for:", {
+			selectedDate: selectedDate.value,
+			view: view.value,
+		})
 
-onMounted(() => {
-	calendarStore.setEvents(yearlyEvents)
+		const { start, end } = getCalendarGridRange(selectedDate.value, view.value)
+
+		const startTimestamp = Math.floor(start.getTime() / 1000)
+		const endTimestamp = Math.floor(end.getTime() / 1000)
+
+		const nurekit = new Nurekit()
+		// TODO: Use store for group ID
+		const serverEvents = await nurekit.groups.getSchedule({
+			id: 10887098,
+			startedAt: startTimestamp,
+			endedAt: endTimestamp,
+		})
+
+		calendarStore.setEvents(serverEvents)
+	} catch (error) {
+		console.error("❌ Failed to fetch events:", error)
+	}
+}
+
+onMounted(async () => {
+	await loadEvents()
 })
+
+watch(
+	[selectedDate, view],
+	async () => {
+		await loadEvents()
+	},
+	{ deep: true }
+)
 </script>
 
 <template>
@@ -18,6 +50,6 @@ onMounted(() => {
 			<CalendarDateNavigator />
 			<CalendarViewSwitcher />
 		</div>
-		<CalendarRoot :events="allEvents" />
+		<CalendarRoot :events="filteredEvents" />
 	</div>
 </template>

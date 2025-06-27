@@ -1,19 +1,22 @@
 <script setup lang="ts">
 import { areIntervalsOverlapping } from "date-fns"
+import type { Schedule } from "nurekit"
 
 interface Props {
-	groupedEvents: ICalendarEvent[][]
-	day: Date
+	groupedEvents: Schedule[][]
+	day: Date | string | number
 }
 
 const props = defineProps<Props>()
 
-const { getEventBlockStyle } = useEventGrouping()
+const { getEventBlockStyle, parseDate } = useEventGrouping()
 
 const renderEvents = computed(() => {
+	const dayDate = parseDate(props.day)
+
 	return props.groupedEvents.flatMap((group, groupIndex) =>
 		group.map((event) => {
-			let style = getEventBlockStyle(event, props.day, groupIndex, props.groupedEvents.length)
+			let style = getEventBlockStyle(event, dayDate, groupIndex, props.groupedEvents.length)
 
 			const hasOverlap = props.groupedEvents.some(
 				(otherGroup, otherIndex) =>
@@ -21,12 +24,12 @@ const renderEvents = computed(() => {
 					otherGroup.some((otherEvent) =>
 						areIntervalsOverlapping(
 							{
-								start: new Date(event.startedAt),
-								end: new Date(event.endedAt),
+								start: parseDate(event.startedAt),
+								end: parseDate(event.endedAt),
 							},
 							{
-								start: new Date(otherEvent.startedAt),
-								end: new Date(otherEvent.endedAt),
+								start: parseDate(otherEvent.startedAt),
+								end: parseDate(otherEvent.endedAt),
 							}
 						)
 					)
@@ -47,7 +50,12 @@ const renderEvents = computed(() => {
 </script>
 
 <template>
-	<div v-for="{ event, style, key } in renderEvents" :key="key" class="absolute p-1" :style="style">
+	<div
+		v-for="{ event, style, key } in renderEvents"
+		:key="key"
+		class="absolute px-1"
+		:style="style"
+	>
 		<CalendarEventBlock :event="event" />
 	</div>
 </template>

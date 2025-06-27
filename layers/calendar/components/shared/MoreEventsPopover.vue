@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import type { Schedule } from "nurekit"
+
 interface Props {
-	events: ICalendarEvent[]
-	date: Date
+	events: Schedule[]
+	date: Date | string | number
 }
 
 const props = defineProps<Props>()
@@ -10,7 +12,7 @@ const { formatTime, formatDate, getEventTypeColor } = useEventFormatting()
 
 const formattedDate = computed(() => formatDate(props.date))
 
-function getEventTimeRange(event: ICalendarEvent): string {
+function getEventTimeRange(event: Schedule): string {
 	return `${formatTime(event.startedAt)} - ${formatTime(event.endedAt)}`
 }
 </script>
