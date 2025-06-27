@@ -2,11 +2,9 @@ import {
 	addDays,
 	addMonths,
 	addWeeks,
-	addYears,
 	subDays,
 	subMonths,
 	subWeeks,
-	subYears,
 	isSameWeek,
 	isSameDay,
 	isSameMonth,
@@ -15,17 +13,47 @@ import {
 	endOfMonth,
 	startOfWeek,
 	endOfWeek,
+	isValid,
 } from "date-fns"
 import { uk } from "date-fns/locale"
 import type { Schedule } from "nurekit"
 
 const FORMAT_STRING = "MMM d, yyyy"
 
-const parseDate = (date: Date | string | number): Date => {
-	if (date instanceof Date) return date
-	if (typeof date === "number") return new Date(date * 1000)
-	if (typeof date === "string") return new Date(date)
-	return new Date()
+const NEXT_OPERATIONS = {
+	month: addMonths,
+	week: addWeeks,
+	day: addDays,
+} as const
+
+const PREV_OPERATIONS = {
+	month: subMonths,
+	week: subWeeks,
+	day: subDays,
+} as const
+
+const COMPARE_FUNCTIONS: Record<TCalendarView, (d1: Date, d2: Date) => boolean> = {
+	day: isSameDay,
+	week: (d1, d2) => isSameWeek(d1, d2, WEEK_OPTIONS),
+	month: isSameMonth,
+}
+
+export const parseDate = (date: Date | string | number | null | undefined): Date => {
+	if (!date) return new Date()
+
+	let parsedDate: Date
+
+	if (date instanceof Date) {
+		parsedDate = date
+	} else if (typeof date === "number") {
+		parsedDate = new Date(date * 1000)
+	} else if (typeof date === "string") {
+		parsedDate = new Date(date)
+	} else {
+		return new Date()
+	}
+
+	return isValid(parsedDate) ? parsedDate : new Date()
 }
 
 export function rangeText(view: TCalendarView, date: Date | string | number): string {
@@ -60,16 +88,14 @@ export function navigateDate(
 	direction: "previous" | "next"
 ): Date {
 	const parsedDate = parseDate(date)
+	const operations = direction === "next" ? NEXT_OPERATIONS : PREV_OPERATIONS
+	const operation = operations[view]
 
-	const operations = {
-		month: direction === "next" ? addMonths : subMonths,
-		week: direction === "next" ? addWeeks : subWeeks,
-		day: direction === "next" ? addDays : subDays,
-		year: direction === "next" ? addYears : subYears,
-		agenda: direction === "next" ? addMonths : subMonths,
+	if (!operation) {
+		throw new Error(`Unsupported view for navigation: ${view}`)
 	}
 
-	return operations[view](parsedDate, 1)
+	return operation(parsedDate, 1)
 }
 
 export function getEventsCount(
@@ -77,20 +103,28 @@ export function getEventsCount(
 	date: Date | string | number,
 	view: TCalendarView
 ): number {
-	const parsedDate = parseDate(date)
+	if (!events.length) return 0
 
-	const compareFns: Record<TCalendarView, (d1: Date, d2: Date) => boolean> = {
-		day: isSameDay,
-		week: (d1, d2) => isSameWeek(d1, d2, WEEK_OPTIONS),
-		month: isSameMonth,
+	const parsedDate = parseDate(date)
+	const compareFn = COMPARE_FUNCTIONS[view]
+
+	if (!compareFn) {
+		throw new Error(`Unsupported view for events count: ${view}`)
 	}
 
-	const compareFn = compareFns[view] || isSameDay
+	let count = 0
+	for (let i = 0; i < events.length; i++) {
+		try {
+			const eventDate = parseDate(events[i]!.startedAt)
+			if (compareFn(eventDate, parsedDate)) {
+				count++
+			}
+		} catch {
+			console.warn(`Invalid date in event ${events[i]!.id}:`, events[i]!.startedAt)
+		}
+	}
 
-	return events.filter((event) => {
-		const eventDate = parseDate(event.startedAt)
-		return compareFn(eventDate, parsedDate)
-	}).length
+	return count
 }
 
 export function isDateInRange(

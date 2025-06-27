@@ -1,28 +1,10 @@
-import { format, isValid } from "date-fns"
+import { format } from "date-fns"
 import { uk } from "date-fns/locale"
 import type { Schedule } from "nurekit"
 
 export const useEventFormatting = () => {
-	const parseDate = (date: Date | string | number): Date | null => {
-		let parsedDate: Date
-
-		if (date instanceof Date) {
-			parsedDate = date
-		} else if (typeof date === "number") {
-			parsedDate = new Date(date * 1000)
-		} else if (typeof date === "string") {
-			parsedDate = new Date(date)
-		} else {
-			return null
-		}
-
-		return isValid(parsedDate) ? parsedDate : null
-	}
-
 	const formatTime = (date: Date | string | number): string => {
 		const parsedDate = parseDate(date)
-		if (!parsedDate) return ""
-
 		return format(parsedDate, "HH:mm")
 	}
 
@@ -36,8 +18,6 @@ export const useEventFormatting = () => {
 		const start = parseDate(event.startedAt)
 		const end = parseDate(event.endedAt)
 
-		if (!start || !end) return ""
-
 		return `${formatTime(start)} - ${formatTime(end)}`
 	}
 
@@ -46,8 +26,6 @@ export const useEventFormatting = () => {
 		formatString: string = "d MMMM yyyy"
 	): string => {
 		const parsedDate = parseDate(date)
-		if (!parsedDate) return ""
-
 		return format(parsedDate, formatString, { locale: uk })
 	}
 
@@ -76,14 +54,11 @@ export const useEventFormatting = () => {
 		formatString: string = "d MMMM yyyy, HH:mm"
 	): string => {
 		const parsedDate = parseDate(date)
-		if (!parsedDate) return ""
-
 		return format(parsedDate, formatString, { locale: uk })
 	}
 
 	const formatRelativeTime = (date: Date | string | number): string => {
 		const parsedDate = parseDate(date)
-		if (!parsedDate) return ""
 
 		const now = new Date()
 		const diffInMinutes = Math.floor((now.getTime() - parsedDate.getTime()) / (1000 * 60))
@@ -102,12 +77,12 @@ export const useEventFormatting = () => {
 
 	const toTimestamp = (date: Date | string | number): number => {
 		const parsedDate = parseDate(date)
-		return parsedDate ? parsedDate.getTime() : 0
+		return parsedDate.getTime()
 	}
 
 	const toISOString = (date: Date | string | number): string => {
 		const parsedDate = parseDate(date)
-		return parsedDate ? parsedDate.toISOString() : ""
+		return parsedDate.toISOString()
 	}
 
 	return {

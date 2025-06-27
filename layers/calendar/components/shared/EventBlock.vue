@@ -9,7 +9,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const { formatTimeRange, getEventTypeColor, parseDate } = useEventFormatting()
+const { formatTimeRange, getEventTypeColor } = useEventFormatting()
 
 const start = computed(() => parseDate(props.event.startedAt))
 const end = computed(() => parseDate(props.event.endedAt))

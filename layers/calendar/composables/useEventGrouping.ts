@@ -11,13 +11,6 @@ import {
 import type { Schedule } from "nurekit"
 
 export const useEventGrouping = () => {
-	const parseDate = (date: Date | string | number): Date => {
-		if (date instanceof Date) return date
-		if (typeof date === "number") return new Date(date * 1000)
-		if (typeof date === "string") return new Date(date)
-		return new Date()
-	}
-
 	const groupEvents = (dayEvents: Schedule[]): Schedule[][] => {
 		const sortedEvents = [...dayEvents].sort((a, b) => {
 			const startA = parseDate(a.startedAt).getTime()
