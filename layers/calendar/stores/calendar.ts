@@ -1,19 +1,22 @@
 import { defineStore } from "pinia"
-import { useStorage } from "@vueuse/core"
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek } from "date-fns"
 import type { Schedule } from "nurekit"
-
-interface CalendarSettings {
-	view: TCalendarView
-}
 
 export const useCalendarStore = defineStore("calendar", () => {
 	const allEvents = ref<Schedule[]>([])
 	const selectedDate = ref(new Date())
 	const selectedEventTypes = ref<TEventType[]>([])
-	const settings = useStorage<CalendarSettings>("calendar-settings", DEFAULT_CALENDAR_SETTINGS)
 
-	const view = computed(() => settings.value.view)
+	const view = ref<TCalendarView>("month")
+
+	onMounted(() => {
+		if (import.meta.client) {
+			const savedView = localStorage.getItem("calendar-view")
+			if (savedView && ["month", "week", "day"].includes(savedView)) {
+				view.value = savedView as TCalendarView
+			}
+		}
+	})
 
 	const filteredEvents = computed(() => {
 		const eventsFilteredByType =
@@ -63,7 +66,11 @@ export const useCalendarStore = defineStore("calendar", () => {
 	}
 
 	function setView(newView: TCalendarView) {
-		settings.value.view = newView
+		view.value = newView
+
+		if (import.meta.client) {
+			localStorage.setItem("calendar-view", newView)
+		}
 	}
 
 	function setSelectedDate(date: Date | undefined) {

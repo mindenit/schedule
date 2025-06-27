@@ -34,7 +34,7 @@ export const VIEW_CONFIGS: Record<string, { format: string; capitalize: boolean 
 }
 
 export const DEFAULT_CALENDAR_SETTINGS = {
-	view: "month" as const,
+	view: "month" as TCalendarView,
 }
 
 export const MAX_VISIBLE_EVENTS_PER_DAY = 2
