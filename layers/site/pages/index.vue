@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { Nurekit } from "nurekit"
+import { useQuery } from "@tanstack/vue-query"
 import { storeToRefs } from "pinia"
+import { groupScheduleOptions } from "~/core/queries/groups"
 
 const calendarStore = useCalendarStore()
 const { filteredEvents, selectedDate, view } = storeToRefs(calendarStore)
@@ -11,21 +12,16 @@ async function loadEvents() {
 			selectedDate: selectedDate.value,
 			view: view.value,
 		})
-
 		const { start, end } = getCalendarGridRange(selectedDate.value, view.value)
-
 		const startTimestamp = Math.floor(start.getTime() / 1000)
 		const endTimestamp = Math.floor(end.getTime() / 1000)
 
-		const nurekit = new Nurekit()
-		// TODO: Use store for group ID
-		const serverEvents = await nurekit.groups.getSchedule({
-			id: 10887098,
-			startedAt: startTimestamp,
-			endedAt: endTimestamp,
-		})
+		const { data, suspense } = useQuery(groupScheduleOptions(startTimestamp, endTimestamp))
+		await suspense()
 
-		calendarStore.setEvents(serverEvents)
+		if (data.value) {
+			calendarStore.setEvents(data.value)
+		}
 	} catch (error) {
 		console.error("❌ Failed to fetch events:", error)
 	}
