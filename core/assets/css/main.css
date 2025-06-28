@@ -167,6 +167,12 @@
 	--color-color-royal-blue-200: var(--color-royal-blue-200);
 	--color-color-royal-blue-100: var(--color-royal-blue-100);
 	--color-color-royal-blue-50: var(--color-royal-blue-50);
+	--color-event-credit: var(--event-credit);
+	--color-event-lab: var(--event-lab);
+	--color-event-exam: var(--event-exam);
+	--color-event-lecture: var(--event-lecture);
+	--color-event-practise: var(--event-practise);
+	--color-event-consultation: var(--event-consultation);
 }
 
 :root {
@@ -208,6 +214,12 @@
 	--warning: var(--color-amber-500);
 	--warning-foreground: var(--color-fiord-950);
 	--selection: var(--color-royal-blue-200);
+	--event-credit: #EBB997;
+	--event-exam: #E7A9B1;
+	--event-lecture: #A7BAE3;
+	--event-lab: #CEB3DD;
+	--event-practise: #ACC89A;
+	--event-consultation: #A5C4CF;
 }
 
 .dark {
@@ -248,6 +260,12 @@
 	--warning: var(--color-amber-600);
 	--warning-foreground: var(--color-amber-100);
 	--selection: var(--color-royal-blue-900);
+	--event-credit: #723D1A;
+	--event-exam: #742532;
+	--event-lecture: #2A4271;
+	--event-lab: #513066;
+	--event-practise: #3D572F;
+	--event-consultation: #234E5C;
 }
 
 @layer base {

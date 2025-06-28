@@ -1,4 +1,4 @@
 export default defineNuxtConfig({
 	extends: ["../site"],
-	components: [{ path: "./components", prefix: "Calendar" }],
+	components: [{ path: "./components", prefix: "Calendar", pathPrefix: false }],
 })
