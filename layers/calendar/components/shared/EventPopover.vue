@@ -15,17 +15,17 @@ const formattedTimeRange = computed(() => formatTimeRange(props.event))
 const formattedDate = computed(() => formatDate(props.event.startedAt))
 
 const teachersText = computed(() => {
-	if (!props.event.teachers || props.event.teachers.length === 0) return "Не указан"
+	if (!props.event.teachers || props.event.teachers.length === 0) return "Не вказані"
 	return props.event.teachers.map((teacher) => teacher.shortName).join(", ")
 })
 
 const groupsText = computed(() => {
-	if (!props.event.groups || props.event.groups.length === 0) return "Не указаны"
+	if (!props.event.groups || props.event.groups.length === 0) return "Не вказані"
 	return props.event.groups.map((group) => group.name).join(", ")
 })
 
 const auditoriumText = computed(() => {
-	return props.event.auditorium?.name || "Не указана"
+	return props.event.auditorium?.name || "Не вказана"
 })
 
 const pairNumber = computed(() => {
