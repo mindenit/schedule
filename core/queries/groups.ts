@@ -1,4 +1,5 @@
 import { queryOptions } from "@tanstack/vue-query"
+import type { MaybeRefOrGetter } from "vue"
 
 const groupsOptions = () => {
 	const { $nurekit } = useNuxtApp()
@@ -9,17 +10,37 @@ const groupsOptions = () => {
 	})
 }
 
-const groupScheduleOptions = (startedAt: number | string, endedAt: number | string) => {
+const groupScheduleOptions = (
+	groupId: MaybeRefOrGetter<number | string>,
+	startedAt: MaybeRefOrGetter<number | string>,
+	endedAt: MaybeRefOrGetter<number | string>
+) => {
 	const { $nurekit } = useNuxtApp()
 
 	return queryOptions({
-		queryKey: ["groupSchedule", startedAt, endedAt],
-		queryFn: () =>
-			$nurekit.groups.getSchedule({
-				id: 10887098, // TODO: Use store for group ID
-				startedAt: Number(startedAt),
-				endedAt: Number(endedAt),
-			}),
+		queryKey: ["groupSchedule", groupId, startedAt, endedAt],
+		queryFn: async () => {
+			const resolvedGroupId = toValue(groupId)
+			const resolvedStartedAt = toValue(startedAt)
+			const resolvedEndedAt = toValue(endedAt)
+
+			if (!resolvedGroupId || !resolvedStartedAt || !resolvedEndedAt) {
+				return []
+			}
+
+			return $nurekit.groups.getSchedule({
+				id: Number(resolvedGroupId),
+				startedAt: Number(resolvedStartedAt),
+				endedAt: Number(resolvedEndedAt),
+			})
+		},
+		enabled: computed(() => {
+			const resolvedGroupId = toValue(groupId)
+			const resolvedStartedAt = toValue(startedAt)
+			const resolvedEndedAt = toValue(endedAt)
+
+			return !!(resolvedGroupId && resolvedStartedAt && resolvedEndedAt)
+		}),
 	})
 }
 
