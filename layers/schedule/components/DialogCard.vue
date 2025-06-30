@@ -1,4 +1,6 @@
 <script lang="ts" setup>
+import { SCHEDULE_ICONS } from "../constants"
+
 interface Props {
 	id: number
 	name: string
@@ -8,12 +10,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const icon = computed(() => {
-	const icons = {
-		group: "lucide:users",
-		teacher: "lucide:user-check",
-		auditorium: "lucide:building",
-	}
-	return icons[props.icon]
+	return SCHEDULE_ICONS[props.icon]
 })
 </script>
 

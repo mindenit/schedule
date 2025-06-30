@@ -5,6 +5,7 @@ import { groupsOptions } from "~/core/queries/groups"
 import { teachersOptions } from "~/core/queries/teachers"
 import { auditoriumsOptions } from "~/core/queries/auditoriums"
 import type { Group, Teacher, Auditorium } from "nurekit"
+import { ITEMS_PER_PAGE } from "../constants"
 
 const {
 	data: groups,
@@ -29,7 +30,6 @@ const scheduleStore = useScheduleStore()
 
 const searchQuery = ref("")
 const activeTab = ref<ScheduleTabType>("group")
-const ITEMS_PER_PAGE = 20
 
 const isDialogOpen = ref(false)
 
