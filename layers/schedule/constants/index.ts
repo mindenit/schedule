@@ -1,12 +1,12 @@
 export const SCHEDULE_ICONS: Record<string, string> = {
-	groups: "lucide:users",
-	teachers: "lucide:user-check",
+	group: "lucide:users",
+	teacher: "lucide:user-check",
 	auditorium: "lucide:building",
 }
 
 export const SCHEDULE_TYPES: Record<string, string> = {
-	groups: "Група",
-	teachers: "Викладач",
+	group: "Група",
+	teacher: "Викладач",
 	auditorium: "Аудиторія",
 }
 

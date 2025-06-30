@@ -1,4 +1,5 @@
 import { queryOptions } from "@tanstack/vue-query"
+import type { MaybeRefOrGetter } from "vue"
 
 const auditoriumsOptions = () => {
 	const { $nurekit } = useNuxtApp()
@@ -9,17 +10,37 @@ const auditoriumsOptions = () => {
 	})
 }
 
-const auditoriumScheduleOptions = (startedAt: number | string, endedAt: number | string) => {
+const auditoriumScheduleOptions = (
+	auditoriumId: MaybeRefOrGetter<number | string>,
+	startedAt: MaybeRefOrGetter<number | string>,
+	endedAt: MaybeRefOrGetter<number | string>
+) => {
 	const { $nurekit } = useNuxtApp()
 
 	return queryOptions({
-		queryKey: ["auditorySchedule", startedAt, endedAt],
-		queryFn: () =>
-			$nurekit.auditoriums.getSchedule({
-				id: 10887098, // TODO: Use store for auditorium ID
-				startedAt: Number(startedAt),
-				endedAt: Number(endedAt),
-			}),
+		queryKey: ["auditorySchedule", auditoriumId, startedAt, endedAt],
+		queryFn: async () => {
+			const resolvedAuditoriumId = toValue(auditoriumId)
+			const resolvedStartedAt = toValue(startedAt)
+			const resolvedEndedAt = toValue(endedAt)
+
+			if (!resolvedAuditoriumId || !resolvedStartedAt || !resolvedEndedAt) {
+				return []
+			}
+
+			return $nurekit.auditoriums.getSchedule({
+				id: Number(resolvedAuditoriumId),
+				startedAt: Number(resolvedStartedAt),
+				endedAt: Number(resolvedEndedAt),
+			})
+		},
+		enabled: computed(() => {
+			const resolvedAuditoriumId = toValue(auditoriumId)
+			const resolvedStartedAt = toValue(startedAt)
+			const resolvedEndedAt = toValue(endedAt)
+
+			return !!(resolvedAuditoriumId && resolvedStartedAt && resolvedEndedAt)
+		}),
 	})
 }
 

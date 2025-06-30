@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { useQuery } from "@tanstack/vue-query"
 import { storeToRefs } from "pinia"
+import { auditoriumScheduleOptions } from "~/core/queries/auditoriums"
 import { groupScheduleOptions } from "~/core/queries/groups"
+import { teacherScheduleOptions } from "~/core/queries/teachers"
 
 const calendarStore = useCalendarStore()
 const scheduleStore = useScheduleStore()
@@ -18,24 +20,63 @@ const queryParams = computed(() => {
 
 	const { start, end } = getCalendarGridRange(selectedDate.value, view.value)
 	return {
-		groupId: selectedSchedule.value!.id,
+		id: selectedSchedule.value!.id,
+		type: selectedSchedule.value!.type,
 		startTimestamp: Math.floor(start.getTime() / 1000),
 		endTimestamp: Math.floor(end.getTime() / 1000),
 	}
 })
 
+const createQueryOptions = () => {
+	if (!queryParams.value) return null
+
+	const { id, type, startTimestamp, endTimestamp } = queryParams.value
+
+	switch (type) {
+		case "group":
+			return groupScheduleOptions(
+				computed(() => id),
+				computed(() => startTimestamp),
+				computed(() => endTimestamp)
+			)
+		case "teacher":
+			return teacherScheduleOptions(
+				computed(() => id),
+				computed(() => startTimestamp),
+				computed(() => endTimestamp)
+			)
+		case "auditorium":
+			return auditoriumScheduleOptions(
+				computed(() => id),
+				computed(() => startTimestamp),
+				computed(() => endTimestamp)
+			)
+	}
+}
+
+const queryOptions = computed(() => createQueryOptions())
+
 const {
 	data: scheduleData,
 	error,
 	isLoading,
-} = useQuery({
-	...groupScheduleOptions(
-		computed(() => queryParams.value?.groupId || ""),
-		computed(() => queryParams.value?.startTimestamp || 0),
-		computed(() => queryParams.value?.endTimestamp || 0)
-	),
-	enabled: computed(() => !!hasActiveSchedule.value),
-})
+} = useQuery(
+	computed(() => {
+		const options = queryOptions.value
+		if (!options || !hasActiveSchedule.value) {
+			return {
+				queryKey: ["disabled"],
+				queryFn: () => Promise.resolve([]),
+				enabled: false,
+			}
+		}
+
+		return {
+			...options,
+			enabled: true,
+		}
+	})
+)
 
 watchEffect(() => {
 	if (scheduleData.value) {
@@ -80,7 +121,10 @@ watch(
 		</div>
 
 		<div class="mb-6 flex flex-wrap items-center justify-between gap-4">
-			<ScheduleAddDialog />
+			<div class="flex items-center gap-1">
+				<ScheduleAddDialog />
+				<ScheduleSelect />
+			</div>
 			<CalendarDateNavigator />
 			<CalendarViewSwitcher />
 		</div>
