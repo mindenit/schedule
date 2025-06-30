@@ -42,6 +42,7 @@ watch(
 
 <template>
 	<div class="min-h-screen p-6">
+		<ScheduleAddDialog />
 		<div class="mb-6 flex flex-wrap items-center justify-between gap-4">
 			<CalendarDateNavigator />
 			<CalendarViewSwitcher />
