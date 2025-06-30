@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useQuery } from "@tanstack/vue-query"
 import { storeToRefs } from "pinia"
-import { auditoriumScheduleOptions } from "~/core/queries/auditoriums"
 import { groupScheduleOptions } from "~/core/queries/groups"
 import { teacherScheduleOptions } from "~/core/queries/teachers"
+import { auditoriumScheduleOptions } from "~/core/queries/auditoriums"
 
 const calendarStore = useCalendarStore()
 const scheduleStore = useScheduleStore()
@@ -12,7 +12,7 @@ const { filteredEvents, selectedDate, view } = storeToRefs(calendarStore)
 const { selectedSchedule } = storeToRefs(scheduleStore)
 
 const hasActiveSchedule = computed(() => {
-	return selectedSchedule.value && selectedSchedule.value.id
+	return selectedSchedule.value && selectedSchedule.value.id && selectedSchedule.value.type
 })
 
 const queryParams = computed(() => {
@@ -60,6 +60,7 @@ const {
 	data: scheduleData,
 	error,
 	isLoading,
+	refetch,
 } = useQuery(
 	computed(() => {
 		const options = queryOptions.value
@@ -87,7 +88,10 @@ watchEffect(() => {
 watch(
 	selectedSchedule,
 	(newSchedule, oldSchedule) => {
-		if (newSchedule?.id !== oldSchedule?.id) {
+		const newKey = newSchedule ? `${newSchedule.type}-${newSchedule.id}` : null
+		const oldKey = oldSchedule ? `${oldSchedule.type}-${oldSchedule.id}` : null
+
+		if (newKey !== oldKey) {
 			calendarStore.setEvents([])
 		}
 	},
@@ -97,38 +101,20 @@ watch(
 
 <template>
 	<div class="min-h-screen p-6">
-		<div
-			v-if="!hasActiveSchedule"
-			class="mb-6 rounded-lg border border-yellow-200 bg-yellow-50 p-4"
-		>
-			warning will be here eventually
-		</div>
-
-		<div
-			v-if="isLoading && hasActiveSchedule"
-			class="mb-6 rounded-lg border border-blue-200 bg-blue-50 p-4"
-		>
-			<div class="flex items-center">
-				<TheLoader />
-			</div>
-		</div>
-
-		<div
-			v-if="error && hasActiveSchedule"
-			class="mb-6 rounded-lg border border-red-200 bg-red-50 p-4"
-		>
-			error here
-		</div>
-
 		<div class="mb-6 flex flex-wrap items-center justify-between gap-4">
-			<div class="flex items-center gap-1">
-				<ScheduleAddDialog />
-				<ScheduleSelect />
-			</div>
+			<ScheduleAddDialog />
 			<CalendarDateNavigator />
 			<CalendarViewSwitcher />
+			<ScheduleSelect />
 		</div>
 
-		<CalendarRoot :events="filteredEvents" />
+		<CalendarRoot
+			:events="filteredEvents"
+			:has-active-schedule="!!hasActiveSchedule"
+			:is-loading="isLoading"
+			:error="error"
+			:schedule-name="selectedSchedule?.name"
+			@refetch="refetch"
+		/>
 	</div>
 </template>
