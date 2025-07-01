@@ -32,7 +32,7 @@ const eventPositions = computed(() => calculateEventPositions(props.events, sele
 			</div>
 		</div>
 		<div class="grid grid-cols-7 gap-1 overflow-hidden rounded-b-2xl">
-			<CalendarDayCell
+			<BigCalendarDayCell
 				v-for="(cell, index) in cells"
 				:key="index"
 				:cell="cell"

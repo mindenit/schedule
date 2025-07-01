@@ -45,7 +45,7 @@ const formattedTimeRange = computed(() => formatTimeRange(props.event))
 			</div>
 		</PopoverTrigger>
 		<PopoverContent class="w-80">
-			<CalendarEventPopover :event />
+			<BigCalendarEventPopover :event />
 		</PopoverContent>
 	</Popover>
 </template>

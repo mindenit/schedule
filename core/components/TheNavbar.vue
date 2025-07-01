@@ -6,11 +6,11 @@
 		</div>
 
 		<div class="flex items-center justify-center">
-			<CalendarDateNavigator />
+			<BigCalendarDateNavigator />
 		</div>
 
 		<div class="flex items-center justify-end gap-3">
-			<CalendarViewSwitcher />
+			<BigCalendarViewSwitcher />
 			<ThemeSwitcher />
 		</div>
 	</div>

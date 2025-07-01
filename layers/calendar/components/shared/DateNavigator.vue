@@ -39,7 +39,7 @@ function handleNext() {
 				<Icon name="lucide:chevron-left" />
 			</Button>
 
-			<CalendarTodayButton />
+			<BigCalendarTodayButton />
 
 			<Button variant="secondary" size="icon" @click="handleNext">
 				<Icon name="lucide:chevron-right" />

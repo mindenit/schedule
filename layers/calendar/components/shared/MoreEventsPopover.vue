@@ -44,7 +44,7 @@ function getEventTimeRange(event: Schedule): string {
 					</div>
 				</PopoverTrigger>
 				<PopoverContent class="w-80" side="left">
-					<CalendarEventPopover :event="event" />
+					<BigCalendarEventPopover :event="event" />
 				</PopoverContent>
 			</Popover>
 		</div>

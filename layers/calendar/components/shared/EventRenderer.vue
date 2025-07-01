@@ -56,6 +56,6 @@ const renderEvents = computed(() => {
 		class="absolute px-1"
 		:style="style"
 	>
-		<CalendarEventBlock :event="event" />
+		<BigCalendarEventBlock :event="event" />
 	</div>
 </template>

@@ -90,14 +90,14 @@ function handleMobileClick() {
 					<template v-if="group.length > 1">
 						<Popover v-for="event in group" :key="event.id">
 							<PopoverTrigger as-child>
-								<CalendarMonthEventBadge
+								<BigCalendarMonthEventBadge
 									:event="event"
 									:cell-date="startOfDay(cell.date)"
 									class="hide-time min-w-0 flex-1"
 								/>
 							</PopoverTrigger>
 							<PopoverContent class="w-80">
-								<CalendarEventPopover :event />
+								<BigCalendarEventPopover :event />
 							</PopoverContent>
 						</Popover>
 					</template>
@@ -105,14 +105,14 @@ function handleMobileClick() {
 					<template v-else-if="group[0]">
 						<Popover>
 							<PopoverTrigger as-child>
-								<CalendarMonthEventBadge
+								<BigCalendarMonthEventBadge
 									:event="group[0]"
 									:cell-date="startOfDay(cell.date)"
 									class="w-full"
 								/>
 							</PopoverTrigger>
 							<PopoverContent class="w-80">
-								<CalendarEventPopover :event="group[0]" />
+								<BigCalendarEventPopover :event="group[0]" />
 							</PopoverContent>
 						</Popover>
 					</template>
@@ -121,15 +121,15 @@ function handleMobileClick() {
 				<div v-if="hasMoreEvents" class="last-group flex min-h-0 gap-1">
 					<Popover>
 						<PopoverTrigger as-child>
-							<CalendarMonthEventBadge>
+							<BigCalendarMonthEventBadge>
 								<span class="flex-1 shrink-0 truncate">
 									ще {{ remainingEventsCount }}
 									{{ remainingEventsCount === 1 ? "заняття" : "занять" }}
 								</span>
-							</CalendarMonthEventBadge>
+							</BigCalendarMonthEventBadge>
 						</PopoverTrigger>
 						<PopoverContent class="w-80">
-							<CalendarMoreEventsPopover :events="hiddenEvents" :date="cell.date" />
+							<BigCalendarMoreEventsPopover :events="hiddenEvents" :date="cell.date" />
 						</PopoverContent>
 					</Popover>
 				</div>

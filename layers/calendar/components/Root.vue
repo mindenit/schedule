@@ -23,9 +23,9 @@ const showOverlay = computed(() => {
 <template>
 	<div class="relative size-full overflow-hidden rounded-lg">
 		<div class="transition-all duration-300 ease-in-out" :class="{ 'blur-sm': showOverlay }">
-			<CalendarMonthView v-if="view === 'month'" :events="props.events" />
-			<CalendarWeekView v-else-if="view === 'week'" :events="props.events" />
-			<CalendarDayView v-else-if="view === 'day'" :events="props.events" />
+			<BigCalendarMonthView v-if="view === 'month'" :events="props.events" />
+			<BigCalendarWeekView v-else-if="view === 'week'" :events="props.events" />
+			<BigCalendarDayView v-else-if="view === 'day'" :events="props.events" />
 		</div>
 
 		<Transition

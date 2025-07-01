@@ -100,7 +100,7 @@ watch(
 </script>
 
 <template>
-	<CalendarRoot
+	<BigCalendarRoot
 		:events="filteredEvents"
 		:has-active-schedule="!!hasActiveSchedule"
 		:is-loading="isLoading"
