@@ -1,8 +1,8 @@
 <template>
-	<div class="h-dvh p-6">
+	<div class="flex h-dvh flex-col overflow-hidden p-6">
 		<TheNavbar />
 
-		<div class="mt-6 grid grid-cols-[250px_1fr] gap-6">
+		<div class="mt-6 grid min-h-0 flex-1 grid-cols-[250px_1fr] gap-6">
 			<aside class="flex flex-col gap-4">
 				<div class="flex flex-col gap-2">
 					<ScheduleAddDialog />
@@ -15,7 +15,7 @@
 				<SidebarCalendar />
 			</aside>
 
-			<main class="min-h-0">
+			<main class="flex min-h-0 flex-col">
 				<slot />
 			</main>
 		</div>

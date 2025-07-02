@@ -57,10 +57,10 @@ function handleMobileClick() {
 </script>
 
 <template>
-	<div class="bg-card flex flex-col gap-1 overflow-hidden p-2.5" :class="containerClasses">
-		<div class="flex w-full items-center justify-center">
+	<div class="bg-card flex h-full flex-col overflow-hidden p-2.5" :class="containerClasses">
+		<div class="flex h-8 w-full flex-shrink-0 items-center justify-center">
 			<span
-				class="mb-1 flex size-6 items-center justify-center rounded-full text-xs font-medium"
+				class="flex size-6 items-center justify-center rounded-full text-xs font-medium"
 				:class="dayClasses"
 			>
 				{{ cell.day }}
@@ -68,7 +68,7 @@ function handleMobileClick() {
 		</div>
 
 		<div
-			class="flex h-6 gap-1 lg:min-h-[94px] lg:flex-col lg:gap-2"
+			class="flex flex-1 gap-1 overflow-hidden lg:flex-col lg:gap-1"
 			:class="{ 'opacity-50': !isCurrentMonth }"
 		>
 			<div class="flex cursor-pointer flex-wrap gap-1 lg:hidden" @click="handleMobileClick">
@@ -81,11 +81,11 @@ function handleMobileClick() {
 				</span>
 			</div>
 
-			<div class="hidden lg:flex lg:flex-1 lg:flex-col lg:gap-1">
+			<div class="hidden lg:flex lg:h-full lg:flex-col lg:gap-1 lg:overflow-hidden">
 				<div
 					v-for="(group, groupIndex) in displayGroups"
 					:key="groupIndex"
-					class="flex min-h-0 gap-1"
+					class="flex h-6 flex-shrink-0 gap-1"
 				>
 					<template v-if="group.length > 1">
 						<Popover v-for="event in group" :key="event.id">
@@ -118,7 +118,7 @@ function handleMobileClick() {
 					</template>
 				</div>
 
-				<div v-if="hasMoreEvents" class="last-group flex min-h-0 gap-1">
+				<div v-if="hasMoreEvents" class="flex h-6 flex-shrink-0 gap-1">
 					<Popover>
 						<PopoverTrigger as-child>
 							<BigCalendarMonthEventBadge>

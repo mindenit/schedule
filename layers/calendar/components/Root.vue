@@ -21,11 +21,11 @@ const showOverlay = computed(() => {
 </script>
 
 <template>
-	<div class="relative size-full overflow-hidden rounded-lg">
-		<div class="transition-all duration-300 ease-in-out" :class="{ 'blur-sm': showOverlay }">
-			<BigCalendarMonthView v-if="view === 'month'" :events="props.events" />
-			<BigCalendarWeekView v-else-if="view === 'week'" :events="props.events" />
-			<BigCalendarDayView v-else-if="view === 'day'" :events="props.events" />
+	<div class="relative flex h-full flex-col overflow-hidden rounded-lg">
+		<div class="flex-1 transition-all duration-300 ease-in-out" :class="{ 'blur-sm': showOverlay }">
+			<BigCalendarMonthView v-if="view === 'month'" :events="props.events" class="h-full" />
+			<BigCalendarWeekView v-else-if="view === 'week'" :events="props.events" class="h-full" />
+			<BigCalendarDayView v-else-if="view === 'day'" :events="props.events" class="h-full" />
 		</div>
 
 		<Transition
