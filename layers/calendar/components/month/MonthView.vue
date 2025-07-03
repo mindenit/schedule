@@ -17,11 +17,13 @@ const { calculateEventPositions } = useEventGrouping()
 const cells = computed(() => getCalendarCells(selectedDate.value))
 const weekDays = computed(() => getWeekDays(selectedDate.value))
 const eventPositions = computed(() => calculateEventPositions(props.events, selectedDate.value))
+
+const weeksCount = computed(() => Math.ceil(cells.value.length / 7))
 </script>
 
 <template>
-	<div class="w-full">
-		<div class="mb-1 grid grid-cols-7 gap-1">
+	<div class="flex h-full flex-col">
+		<div class="mb-1 grid flex-shrink-0 grid-cols-7 gap-1">
 			<div
 				v-for="day in weekDays"
 				:key="day"
@@ -31,13 +33,18 @@ const eventPositions = computed(() => calculateEventPositions(props.events, sele
 				{{ day }}
 			</div>
 		</div>
-		<div class="grid grid-cols-7 gap-1 overflow-hidden rounded-b-2xl">
-			<CalendarDayCell
+
+		<div
+			class="grid min-h-0 flex-1 grid-cols-7 gap-1 overflow-hidden rounded-b-2xl"
+			:style="`grid-template-rows: repeat(${weeksCount}, 1fr)`"
+		>
+			<BigCalendarDayCell
 				v-for="(cell, index) in cells"
 				:key="index"
 				:cell="cell"
 				:events="events"
 				:event-positions="eventPositions"
+				class="min-h-0"
 			/>
 		</div>
 	</div>

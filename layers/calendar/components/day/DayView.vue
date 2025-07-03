@@ -47,9 +47,9 @@ const groupedEvents = computed(() => groupEvents(dayEvents.value))
 						></div>
 					</div>
 					<div class="absolute inset-0">
-						<CalendarEventRenderer :grouped-events="groupedEvents" :day="selectedDate" />
+						<BigCalendarEventRenderer :grouped-events="groupedEvents" :day="selectedDate" />
 					</div>
-					<CalendarTimeline />
+					<BigCalendarTimeline />
 				</div>
 			</div>
 		</div>

@@ -91,10 +91,13 @@ const getGroupedEventsForDay = (day: Date) => groupEvents(getDayEvents(day))
 										}"
 									></div>
 								</div>
-								<CalendarEventRenderer :grouped-events="getGroupedEventsForDay(day)" :day="day" />
+								<BigCalendarEventRenderer
+									:grouped-events="getGroupedEventsForDay(day)"
+									:day="day"
+								/>
 							</div>
 						</div>
-						<CalendarTimeline />
+						<BigCalendarTimeline />
 					</div>
 				</div>
 			</div>
