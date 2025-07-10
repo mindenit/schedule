@@ -3,7 +3,7 @@
 		<TheNavbar />
 
 		<div class="mt-6 grid min-h-0 flex-1 grid-cols-[250px_1fr] gap-6">
-			<aside class="flex flex-col gap-4">
+			<aside class="flex min-h-0 flex-col gap-4">
 				<div class="flex flex-col gap-2">
 					<ScheduleAddDialog />
 
@@ -12,7 +12,10 @@
 						<ScheduleDeleteButton />
 					</div>
 				</div>
+
 				<SidebarCalendar />
+
+				<SidebarTodayEvents />
 			</aside>
 
 			<main class="flex min-h-0 flex-col">
