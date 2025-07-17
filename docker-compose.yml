@@ -6,7 +6,7 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=production
-      - PORT=${PORT:-3000}
+      - PORT=${PORT}
     ports:
       - "${PORT:-3000}:3000"
     env_file:
