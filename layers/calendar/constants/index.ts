@@ -11,6 +11,15 @@ export const EVENT_TYPE_COLORS: Record<TEventType, string> = {
 	Конс: "bg-event-consultation",
 }
 
+export const EVENT_TYPE_BORDERS: Record<TEventType, string> = {
+	Лб: "border-event-lab",
+	Лк: "border-event-lecture",
+	Пз: "border-event-practise",
+	Зал: "border-event-credit",
+	Екз: "border-event-exam",
+	Конс: "border-event-consultation",
+}
+
 export const EVENT_TYPE_LABELS: Record<TEventType, string> = {
 	Лб: "Лабораторна робота",
 	Лк: "Лекція",
