@@ -13,7 +13,7 @@ function updateView(newView: unknown) {
 
 <template>
 	<Select :model-value="view" @update:model-value="updateView">
-		<SelectTrigger>
+		<SelectTrigger class="max-md:w-full">
 			<SelectValue placeholder="Обрати вигляд" />
 		</SelectTrigger>
 		<SelectContent>

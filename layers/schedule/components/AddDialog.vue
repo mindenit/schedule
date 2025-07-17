@@ -198,7 +198,7 @@ const handleCardClick = (item: GenericScheduleItem) => {
 					<TabsTrigger value="teacher"> Викладачі </TabsTrigger>
 					<TabsTrigger value="auditorium"> Аудиторії </TabsTrigger>
 				</TabsList>
-
+				
 				<TabsContent v-for="(config, tabType) in tabConfig" :key="tabType" :value="tabType">
 					<div v-if="config.isLoading.value" class="flex justify-center p-4">
 						<TheLoader />

@@ -53,13 +53,15 @@ export const useCalendarStore = defineStore("calendar", () => {
 	}
 
 	function getEventsForCurrentMonth(events: Schedule[]): Schedule[] {
-		const monthStart = new Date(selectedDate.value.getFullYear(), selectedDate.value.getMonth(), 1)
+		const monthStart = startOfMonth(selectedDate.value);
+	  const monthEnd = endOfMonth(selectedDate.value);
 
-		return events.filter((event) => {
-			const eventStartedAt = new Date(event.startedAt * 1000)
-			const eventEndedAt = new Date(event.endedAt * 1000)
-			return eventStartedAt <= monthStart && eventEndedAt >= monthStart
-		})
+  return events.filter((event) => {
+    const eventStartedAt = new Date(event.startedAt * 1000);
+    const eventEndedAt = new Date(event.endedAt * 1000);
+
+    return eventStartedAt <= monthEnd && eventEndedAt >= monthStart;
+  });
 	}
 
 	function setEvents(initialEvents: Schedule[]) {

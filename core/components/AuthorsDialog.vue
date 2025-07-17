@@ -1,19 +1,24 @@
 <script setup lang="ts">
+import { buttonVariants } from './ui/button';
+
 const authors = [
 	{
 		name: "Роман Трашутін",
 		role: "Frontend Developer",
 		avatar: "/authors/roman.png",
+		linkedin: "https://www.linkedin.com/in/roman-trashutin",
 	},
 	{
 		name: "Кирило Савєльєв",
 		role: "Backend Developer",
 		avatar: "/authors/kyrylo.jpg",
+		linkedin: "https://www.linkedin.com/in/kyrylo-savieliev",
 	},
 	{
 		name: "Артем Дадаш'янц",
 		role: "CEO / DevOps",
 		avatar: "/authors/artem.jpg",
+		linkedin: "https://www.linkedin.com/in/artem-dadashjants/",
 	},
 ]
 </script>
@@ -57,6 +62,9 @@ const authors = [
 						<p class="font-medium">{{ author.name }}</p>
 						<p class="text-muted-foreground text-sm">{{ author.role }}</p>
 					</div>
+					<NuxtLink :to="author.linkedin" external class="ml-auto" :class="buttonVariants({ variant: 'ghost', size: 'icon' })">
+						<Icon name="brandico:linkedin-rect" />
+					</NuxtLink>
 				</div>
 
 				<div class="text-muted-foreground text-center text-sm">

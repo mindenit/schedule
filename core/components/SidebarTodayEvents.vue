@@ -7,7 +7,6 @@ import { groupScheduleOptions } from "../queries/groups"
 import { teacherScheduleOptions } from "../queries/teachers"
 import { auditoriumScheduleOptions } from "../queries/auditoriums"
 
-const isDevMode = computed(() => import.meta.env.DEV)
 const value = ref(today(getLocalTimeZone())) as Ref<DateValue>
 const scheduleStore = useScheduleStore()
 const { selectedSchedule } = storeToRefs(scheduleStore)
@@ -103,37 +102,39 @@ watchEffect(() => {
 	<div class="flex min-h-0 flex-1 flex-col gap-4">
 		<div class="text-base font-semibold">{{ formattedDate }}</div>
 
-		<div class="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
-			<div v-if="isLoading && hasActiveSchedule" class="flex justify-center p-4">
-				<TheLoader />
+		<ClientOnly>
+			<div class="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
+				<div v-if="isLoading && hasActiveSchedule" class="flex justify-center p-4">
+					<TheLoader />
+				</div>
+				<template v-else-if="hasActiveSchedule && todayEvents.length > 0">
+					<SidebarEvent
+						v-for="event in todayEvents"
+						:key="event.id"
+						:start-time="formatTime(event.startedAt)"
+						:end-time="formatTime(event.endedAt)"
+						:auditorium="event.auditorium.name"
+						:type="event.type as TEventType"
+						:name="event.subject.title"
+					/>
+				</template>
+				<div
+					v-else-if="hasActiveSchedule && todayEvents.length === 0 && !isLoading"
+					class="text-muted-foreground flex flex-col items-center justify-center gap-2 p-6 text-center"
+				>
+					<Icon name="lucide:smile" class="!size-8 opacity-50" />
+					<p class="text-sm">
+						Пар на сьогодні <br /><span class="text-lg font-semibold">немає</span>
+					</p>
+				</div>
+				<div
+					v-else
+					class="text-muted-foreground flex flex-col items-center justify-center gap-2 p-6 text-center"
+				>
+					<Icon name="lucide:calendar-plus" class="!size-8 opacity-50" />
+					<p class="text-sm">Оберіть розклад для перегляду пар</p>
+				</div>
 			</div>
-			<template v-else-if="hasActiveSchedule && todayEvents.length > 0">
-				<SidebarEvent
-					v-for="event in todayEvents"
-					:key="event.id"
-					:start-time="formatTime(event.startedAt)"
-					:end-time="formatTime(event.endedAt)"
-					:auditorium="event.auditorium.name"
-					:type="event.type as TEventType"
-					:name="event.subject.title"
-				/>
-			</template>
-			<div
-				v-else-if="hasActiveSchedule && todayEvents.length === 0 && !isLoading"
-				class="text-muted-foreground flex flex-col items-center justify-center gap-2 p-6 text-center"
-			>
-				<Icon name="lucide:smile" class="!size-8 opacity-50" />
-				<p class="text-sm">
-					Пар на сьогодні <br /><span class="text-lg font-semibold">немає</span>
-				</p>
-			</div>
-			<div
-				v-else
-				class="text-muted-foreground flex flex-col items-center justify-center gap-2 p-6 text-center"
-			>
-				<Icon name="lucide:calendar-plus" class="!size-8 opacity-50" />
-				<p class="text-sm">Оберіть розклад для перегляду пар</p>
-			</div>
-		</div>
+		</ClientOnly>
 	</div>
 </template>

@@ -15,6 +15,7 @@ defineProps<Props>()
 			</div>
 		</div>
 		<div v-else class="flex flex-col gap-2">
+			<BigCalendarViewSwitcher />
 			<div class="flex items-center gap-2">
 				<ScheduleSelect />
 				<ScheduleDeleteButton />
