@@ -62,7 +62,7 @@ const authors = [
 						<p class="font-medium">{{ author.name }}</p>
 						<p class="text-muted-foreground text-sm">{{ author.role }}</p>
 					</div>
-					<NuxtLink :to="author.linkedin" external class="ml-auto" :class="buttonVariants({ variant: 'ghost', size: 'icon' })">
+					<NuxtLink :to="author.linkedin" external class="ml-auto" :class="buttonVariants({ variant: 'ghost', size: 'icon' })" target="_blank">
 						<Icon name="brandico:linkedin-rect" />
 					</NuxtLink>
 				</div>
