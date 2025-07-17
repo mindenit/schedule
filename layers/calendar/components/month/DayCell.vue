@@ -71,11 +71,13 @@ function handleMobileClick() {
 			class="flex flex-1 gap-1 overflow-hidden lg:flex-col lg:gap-1"
 			:class="{ 'opacity-50': !isCurrentMonth }"
 		>
-			<div class="flex cursor-pointer flex-wrap gap-1 lg:hidden" @click="handleMobileClick">
+			<div
+				class="flex w-full cursor-pointer flex-wrap justify-center gap-1 lg:hidden"
+				@click="handleMobileClick"
+			>
 				<span
 					v-if="totalEventsCount > 0"
-					class="bg-primary/10 text-primary flex size-5 items-center justify-center rounded-full text-xs
-						font-semibold"
+					class="bg-primary flex size-5 items-center justify-center rounded-full text-xs font-semibold"
 				>
 					{{ totalEventsCount }}
 				</span>

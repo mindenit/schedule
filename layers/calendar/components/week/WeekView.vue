@@ -28,7 +28,7 @@ const getGroupedEventsForDay = (day: Date) => groupEvents(getDayEvents(day))
 	<div class="flex flex-col">
 		<div class="overflow-x-auto">
 			<div class="min-w-[800px]">
-				<div class="bg-muted/50 relative z-20 mb-1 grid grid-cols-[72px_1fr] gap-1 rounded-t-lg">
+				<div class="bg-muted/50 relative z-20 mb-1 grid grid-cols-[72px_1fr] gap-1 md:rounded-t-lg">
 					<div class="col-start-2 grid grid-cols-7 gap-1">
 						<span
 							v-for="(day, index) in weekDays"

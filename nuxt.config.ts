@@ -20,6 +20,7 @@ export default defineNuxtConfig({
 		"@vueuse/nuxt",
 		"shadcn-nuxt",
 		"@pinia/nuxt",
+		"@nuxt/image",
 	],
 	future: {
 		compatibilityVersion: 4,
@@ -27,6 +28,7 @@ export default defineNuxtConfig({
 	css: ["~/core/assets/css/main.css"],
 	shadcn: {
 		prefix: "",
+		componentDir: "./core/components/ui",
 	},
 	vite: {
 		plugins: [tailwindcss()],

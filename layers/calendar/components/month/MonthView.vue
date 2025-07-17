@@ -28,7 +28,7 @@ const weeksCount = computed(() => Math.ceil(cells.value.length / 7))
 				v-for="day in weekDays"
 				:key="day"
 				class="bg-muted/50 text-muted-foreground flex items-center justify-center py-2 text-xs font-medium
-					first:rounded-tl-2xl last:rounded-tr-2xl"
+					md:first:rounded-tl-2xl md:last:rounded-tr-2xl"
 			>
 				{{ day }}
 			</div>

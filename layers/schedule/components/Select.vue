@@ -27,41 +27,43 @@ const getTypeLabel = (type: string) => {
 </script>
 
 <template>
-	<Select v-model="selectedValue">
-		<SelectTrigger class="w-full">
-			<SelectValue placeholder="Оберіть розклад">
-				<template v-if="scheduleStore.selectedSchedule">
-					<div class="flex items-center gap-2">
-						<Icon :name="getIconByType(scheduleStore.selectedSchedule.type)" class="h-4 w-4" />
-						<span>{{ scheduleStore.selectedSchedule.name }}</span>
-					</div>
-				</template>
-			</SelectValue>
-		</SelectTrigger>
-		<SelectContent>
-			<template v-if="scheduleStore.allSchedules.length > 0">
-				<SelectItem
-					v-for="schedule in scheduleStore.allSchedules"
-					:key="`${schedule.type}-${schedule.id}`"
-					:value="schedule.id.toString()"
-				>
-					<div class="flex items-center gap-2">
-						<Icon :name="getIconByType(schedule.type)" class="flex-shrink-0" />
-						<div class="flex flex-col">
-							<span>{{ schedule.name }}</span>
-							<span class="text-muted-foreground text-xs">
-								{{ getTypeLabel(schedule.type) }}
-							</span>
+	<ClientOnly>
+		<Select v-model="selectedValue">
+			<SelectTrigger class="w-full">
+				<SelectValue placeholder="Оберіть розклад">
+						<template v-if="scheduleStore.selectedSchedule">
+							<div class="flex items-center gap-2">
+								<Icon :name="getIconByType(scheduleStore.selectedSchedule.type)" class="h-4 w-4" />
+								<span>{{ scheduleStore.selectedSchedule.name }}</span>
+							</div>
+						</template>
+				</SelectValue>
+			</SelectTrigger>
+			<SelectContent>
+				<template v-if="scheduleStore.allSchedules.length > 0">
+					<SelectItem
+						v-for="schedule in scheduleStore.allSchedules"
+						:key="`${schedule.type}-${schedule.id}`"
+						:value="schedule.id.toString()"
+					>
+						<div class="flex items-center gap-2">
+							<Icon :name="getIconByType(schedule.type)" class="flex-shrink-0" />
+							<div class="flex flex-col">
+								<span>{{ schedule.name }}</span>
+								<span class="text-muted-foreground text-xs">
+									{{ getTypeLabel(schedule.type) }}
+								</span>
+							</div>
 						</div>
-					</div>
-				</SelectItem>
-			</template>
-			<template v-else-if="scheduleStore.isInitialized">
-				<div class="text-muted-foreground p-2 text-center text-sm">Немає доданих розкладів</div>
-			</template>
-			<template v-else>
-				<TheLoader />
-			</template>
-		</SelectContent>
-	</Select>
+					</SelectItem>
+				</template>
+				<template v-else-if="scheduleStore.isInitialized">
+					<div class="text-muted-foreground p-2 text-center text-sm">Немає доданих розкладів</div>
+				</template>
+				<template v-else>
+					<TheLoader />
+				</template>
+			</SelectContent>
+		</Select>
+	</ClientOnly>
 </template>
