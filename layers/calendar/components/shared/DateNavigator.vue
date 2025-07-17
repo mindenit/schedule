@@ -32,7 +32,7 @@ function handleNext() {
 
 <template>
 	<div class="flex items-center gap-4">
-		<span class="text-lg font-semibold"> {{ title }} </span>
+		<span class="text-base font-semibold whitespace-nowrap md:text-lg"> {{ title }} </span>
 
 		<div class="flex items-center gap-1">
 			<Button variant="secondary" size="icon" @click="handlePrevious">

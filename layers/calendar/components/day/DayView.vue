@@ -21,7 +21,7 @@ const groupedEvents = computed(() => groupEvents(dayEvents.value))
 </script>
 
 <template>
-	<div class="flex h-full overflow-hidden rounded-lg">
+	<div class="flex h-full overflow-hidden md:rounded-lg">
 		<div class="flex flex-1 flex-col overflow-hidden">
 			<div class="flex min-h-0 flex-1 gap-1 overflow-hidden">
 				<div class="relative flex w-18 flex-shrink-0 flex-col">

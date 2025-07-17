@@ -2,11 +2,33 @@
 import { storeToRefs } from "pinia"
 
 const scheduleStore = useScheduleStore()
-const { selectedSchedule } = storeToRefs(scheduleStore)
-
+const { selectedSchedule, isInitialized } = storeToRefs(scheduleStore)
 const showDialog = ref(false)
 
-const hasActiveSchedule = computed(() => !!selectedSchedule.value)
+const isReady = ref(false)
+
+const hasActiveSchedule = computed(() => {
+	return isReady.value && !!selectedSchedule.value
+})
+
+onMounted(() => {
+	nextTick(() => {
+		const checkInitialization = () => {
+			if (isInitialized.value) {
+				isReady.value = true
+			} else {
+				setTimeout(checkInitialization, 100)
+			}
+		}
+		checkInitialization()
+	})
+})
+
+watch(isInitialized, (newVal) => {
+	if (newVal) {
+		isReady.value = true
+	}
+})
 
 const removeActiveSchedule = () => {
 	if (selectedSchedule.value) {
@@ -28,10 +50,9 @@ const getScheduleTypeName = (type: string) => {
 	<AlertDialog v-model:open="showDialog">
 		<AlertDialogTrigger as-child>
 			<Button size="icon" variant="destructive" :disabled="!hasActiveSchedule">
-				<Icon name="lucide:trash" class="h-4 w-4" />
+				<Icon name="lucide:trash" class="!size-4" />
 			</Button>
 		</AlertDialogTrigger>
-
 		<AlertDialogContent>
 			<AlertDialogHeader>
 				<AlertDialogTitle class="flex items-center gap-2">
@@ -42,7 +63,6 @@ const getScheduleTypeName = (type: string) => {
 					Ви впевнені, що хочете видалити цей розклад зі збережених?
 				</AlertDialogDescription>
 			</AlertDialogHeader>
-
 			<div v-if="selectedSchedule" class="bg-muted rounded-lg p-4">
 				<div class="flex items-center gap-3">
 					<Icon
@@ -57,7 +77,6 @@ const getScheduleTypeName = (type: string) => {
 					</div>
 				</div>
 			</div>
-
 			<AlertDialogFooter>
 				<AlertDialogCancel>Скасувати</AlertDialogCancel>
 				<AlertDialogAction class="bg-destructive" @click="removeActiveSchedule">

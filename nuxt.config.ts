@@ -20,6 +20,7 @@ export default defineNuxtConfig({
 		"@vueuse/nuxt",
 		"shadcn-nuxt",
 		"@pinia/nuxt",
+		"@nuxt/image",
 	],
 	future: {
 		compatibilityVersion: 4,
