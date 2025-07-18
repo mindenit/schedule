@@ -13,12 +13,34 @@ const { selectedSchedule } = storeToRefs(scheduleStore)
 
 const formattedDate = computed(() => {
 	const jsDate = value.value.toDate(getLocalTimeZone())
+
 	const options: Intl.DateTimeFormatOptions = {
 		weekday: "long",
 		day: "numeric",
 		month: "long",
 	}
-	const dateString = new Intl.DateTimeFormat("uk-UA", options).format(jsDate)
+
+	const weekdayMap: Record<string, string> = {
+		"понеділок": "понеділок",
+		"вівторок": "вівторок",
+		"середу": "середа",
+		"четвер": "четвер",
+		"пʼятницю": "пʼятниця",
+		"суботу": "субота",
+		"неділю": "неділя",
+	}
+
+	let dateString = new Intl.DateTimeFormat("uk-UA", options).format(jsDate)
+
+	const matched = Object.entries(weekdayMap).find(([accusative]) =>
+		dateString.includes(accusative)
+	)
+
+	if (matched) {
+		const [accusative, nominative] = matched
+		dateString = dateString.replace(accusative, nominative)
+	}
+
 	return dateString.charAt(0).toUpperCase() + dateString.slice(1)
 })
 
