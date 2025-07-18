@@ -173,6 +173,8 @@
 	--color-event-lecture: var(--event-lecture);
 	--color-event-practise: var(--event-practise);
 	--color-event-consultation: var(--event-consultation);
+	---animate-swipe-left: swipe-left 0.247s ease-in-out;
+	---animate-swipe-right: swipe-right 0.247s ease-in-out;
 }
 
 :root {
