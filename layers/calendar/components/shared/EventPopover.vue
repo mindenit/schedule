@@ -39,7 +39,7 @@ const pairNumber = computed(() => {
 			<div class="mt-1.5 h-3 w-3 flex-shrink-0 rounded-full" :class="eventTypeColor" />
 			<div class="min-w-0 flex-1">
 				<h3 class="text-base leading-tight font-semibold">
-					{{ event.subject.title }}
+					{{ `(${event.subject.brief}) ${event.subject.title}` }}
 				</h3>
 				<div class="mt-1 flex items-center gap-2">
 					<p class="text-muted-foreground text-sm">
