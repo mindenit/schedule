@@ -28,12 +28,12 @@ const dayViewEl = useTemplateRef("dayView")
 const { direction, isSwiping } = useSwipe(dayViewEl)
 
 watch(isSwiping, (swiping) => {
-	if (swiping && direction.value === "left") {
+	if (swiping && direction.value === "right") {
 		const newDate = navigateDate(selectedDate.value, 'day', "previous")
 		calendarStore.setSelectedDate(newDate)
 	}
 
-	if (swiping && direction.value === "right") {
+	if (swiping && direction.value === "left") {
 		const newDate = navigateDate(selectedDate.value, 'day', "next")
 		calendarStore.setSelectedDate(newDate)
 	}
