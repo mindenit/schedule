@@ -25,7 +25,6 @@ const groupedEvents = computed(() => groupEvents(dayEvents.value))
 
 const dayViewEl = useTemplateRef("dayView")
 
-
 const { direction, isSwiping } = useSwipe(dayViewEl)
 
 watch(isSwiping, (swiping) => {

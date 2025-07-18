@@ -19,6 +19,24 @@ const weekDays = computed(() => getWeekDays(selectedDate.value))
 const eventPositions = computed(() => calculateEventPositions(props.events, selectedDate.value))
 
 const weeksCount = computed(() => Math.ceil(cells.value.length / 7))
+
+const monthViewEl = useTemplateRef("monthView")
+
+const { direction, isSwiping } = useSwipe(monthViewEl)
+
+watch(isSwiping, (swiping) => {
+	if (swiping) {
+		if (direction.value === "right") {
+			const newDate = navigateDate(selectedDate.value, 'month', "previous")
+			calendarStore.setSelectedDate(newDate)
+		}
+
+		if (direction.value === "left") {
+			const newDate = navigateDate(selectedDate.value, 'month', "next")
+			calendarStore.setSelectedDate(newDate)
+		}
+	}
+})
 </script>
 
 <template>
@@ -35,6 +53,7 @@ const weeksCount = computed(() => Math.ceil(cells.value.length / 7))
 		</div>
 
 		<div
+			ref="monthView"
 			class="grid min-h-0 flex-1 grid-cols-7 gap-1 overflow-hidden rounded-b-2xl"
 			:style="`grid-template-rows: repeat(${weeksCount}, 1fr)`"
 		>
