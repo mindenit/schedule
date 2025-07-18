@@ -27,7 +27,7 @@ const getGroupedEventsForDay = (day: Date) => groupEvents(getDayEvents(day))
 <template>
 	<div class="flex flex-col">
 		<div class="overflow-x-auto">
-			<div class="min-w-[800px]">
+			<div ref="" class="min-w-[800px]">
 				<div class="bg-muted/50 relative z-20 mb-1 grid grid-cols-[72px_1fr] gap-1 md:rounded-t-lg">
 					<div class="col-start-2 grid grid-cols-7 gap-1">
 						<span
@@ -36,12 +36,12 @@ const getGroupedEventsForDay = (day: Date) => groupEvents(getDayEvents(day))
 							class="text-muted-foreground flex min-w-[100px] flex-col items-center gap-1 py-2 text-center text-xs
 								font-medium transition-all duration-200"
 						>
-							<span class="hidden sm:block">{{
-								capitalize(format(day, "EEEE", { locale: uk }))
-							}}</span>
-							<span class="block sm:hidden">{{
-								capitalize(format(day, "EEE", { locale: uk }))
-							}}</span>
+							<span class="hidden sm:block">
+								{{ capitalize(format(day, "EEEE", { locale: uk })) }}
+							</span>
+							<span class="block sm:hidden">
+								{{ capitalize(format(day, "EEE", { locale: uk })) }}
+							</span>
 							<span
 								class="text-md flex size-5 items-center justify-center rounded-full font-semibold"
 								:class="{

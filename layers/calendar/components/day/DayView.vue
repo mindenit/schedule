@@ -22,10 +22,26 @@ const hours = Array.from({ length: 24 }, (_, i) => i)
 
 const dayEvents = computed(() => getEventsForDate(props.events, selectedDate.value))
 const groupedEvents = computed(() => groupEvents(dayEvents.value))
+
+const dayViewEl = useTemplateRef("dayView")
+
+const { direction, isSwiping } = useSwipe(dayViewEl)
+
+watch(isSwiping, (swiping) => {
+	if (swiping && direction.value === "left") {
+		const newDate = navigateDate(selectedDate.value, 'day', "previous")
+		calendarStore.setSelectedDate(newDate)
+	}
+
+	if (swiping && direction.value === "right") {
+		const newDate = navigateDate(selectedDate.value, 'day', "next")
+		calendarStore.setSelectedDate(newDate)
+	}
+})
 </script>
 
 <template>
-	<div class="flex h-full overflow-hidden md:rounded-lg">
+	<div ref="dayView" class="flex h-full overflow-hidden md:rounded-lg">
 		<div class="flex flex-1 flex-col overflow-hidden">
 			<div class="flex min-h-0 flex-1 gap-1 overflow-hidden">
 				<div class="relative flex w-18 flex-shrink-0 flex-col">
