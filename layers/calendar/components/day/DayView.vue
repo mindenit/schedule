@@ -14,6 +14,10 @@ const { selectedDate } = storeToRefs(calendarStore)
 const { getEventsForDate, groupEvents } = useEventGrouping()
 const { formatHour } = useEventFormatting()
 
+const isToday = computed(() => {
+	return selectedDate.value.toDateString() === new Date().toDateString()
+})
+
 const hours = Array.from({ length: 24 }, (_, i) => i)
 
 const dayEvents = computed(() => getEventsForDate(props.events, selectedDate.value))
@@ -49,7 +53,7 @@ const groupedEvents = computed(() => groupEvents(dayEvents.value))
 					<div class="absolute inset-0">
 						<BigCalendarEventRenderer :grouped-events="groupedEvents" :day="selectedDate" />
 					</div>
-					<BigCalendarTimeline />
+					<BigCalendarTimeline v-if="isToday" />
 				</div>
 			</div>
 		</div>
