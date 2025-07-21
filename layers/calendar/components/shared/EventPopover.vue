@@ -1,6 +1,5 @@
-'''
 <script setup lang="ts">
-import type { Schedule } from "nurekit"
+import type { Schedule, Subject } from "nurekit"
 import { useLinksStore, type Link } from "~/core/stores/links"
 
 interface Props {
@@ -51,16 +50,27 @@ const editLink = (link: Link) => {
 }
 
 const saveLink = (linkData: Partial<Link>) => {
+	const subjectInfo: Subject = {
+		id: props.event.subject.id,
+		title: props.event.subject.title,
+		brief: props.event.subject.brief,
+	}
+
 	if (editingLink.value) {
 		linksStore.updateLink(props.event.subject.id, props.event.type, {
 			...editingLink.value,
 			...linkData,
 		})
 	} else {
-		linksStore.addLink(props.event.subject.id, props.event.type, {
-			url: linkData.url || "",
-			name: linkData.name || "",
-		})
+		linksStore.addLink(
+			props.event.subject.id,
+			props.event.type,
+			{
+				url: linkData.url || "",
+				name: linkData.name || "",
+			},
+			subjectInfo
+		)
 	}
 }
 
@@ -160,4 +170,3 @@ const deleteLink = (linkId: string) => {
 		<LinkDialog v-model="showLinkDialog" :link="editingLink" @save="saveLink" />
 	</div>
 </template>
-''

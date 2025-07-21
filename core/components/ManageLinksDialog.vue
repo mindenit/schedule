@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Subject } from "nurekit"
 import { ref, computed } from "vue"
 import { useLinksStore, type Link } from "~/core/stores/links"
 
@@ -18,6 +19,7 @@ interface TreeNode {
 		subjectId?: string
 		eventType?: string
 		link?: Link
+		subject?: Subject
 	}
 }
 
@@ -32,21 +34,25 @@ const generateTreeData = () => {
 		return tree
 	}
 
-	Object.entries(linksStore.links).forEach(([subjectId, subjects]) => {
-		console.log(`Processing subject ${subjectId}:`, subjects)
+	Object.entries(linksStore.links).forEach(([subjectId, subjectData]) => {
+		console.log(`Processing subject ${subjectId}:`, subjectData)
+
+		const subjectInfo = subjectData.subject
+		const subjectTitle = subjectInfo.title || `Предмет ${subjectId}`
+		const subjectLabel = subjectInfo.brief ? `(${subjectInfo.brief}) ${subjectTitle}` : subjectTitle
 
 		const subjectNode: TreeNode = {
 			id: `subject-${subjectId}`,
-			label: `Предмет ${subjectId}`,
+			label: subjectLabel,
 			type: "subject",
 			checked: false,
 			indeterminate: false,
 			children: [],
-			data: { subjectId },
+			data: { subjectId, subject: subjectInfo },
 		}
 
-		if (subjects && typeof subjects === "object") {
-			Object.entries(subjects).forEach(([eventType, links]) => {
+		if (subjectData.events && typeof subjectData.events === "object") {
+			Object.entries(subjectData.events).forEach(([eventType, links]) => {
 				console.log(`Processing event type ${eventType}:`, links)
 
 				const eventTypeNode: TreeNode = {
@@ -141,21 +147,49 @@ const handleNodeCheck = (node: TreeNode, checked: boolean) => {
 }
 
 const getSelectedData = () => {
-	const result: Record<string, Record<string, Link[]>> = {}
+	const result: Record<string, { subject: Subject; events: Record<string, Link[]> }> = {}
 
 	const collectSelected = (nodes: TreeNode[]) => {
 		nodes.forEach((node) => {
 			if (node.type === "link" && node.checked && node.data?.link) {
 				const { subjectId, eventType, link } = node.data
 				if (subjectId && eventType && link) {
-					if (!result[subjectId]) result[subjectId] = {}
-					if (!result[subjectId][eventType]) result[subjectId][eventType] = []
-					result[subjectId][eventType].push(link)
+					if (!result[subjectId]) {
+						const subjectInfo = findSubjectInfo(subjectId)
+						result[subjectId] = {
+							subject: subjectInfo || {
+								id: parseInt(subjectId),
+								title: `Предмет ${subjectId}`,
+								brief: "",
+							},
+							events: {},
+						}
+					}
+					if (!result[subjectId].events[eventType]) {
+						result[subjectId].events[eventType] = []
+					}
+					result[subjectId].events[eventType].push(link)
 				}
 			} else if (node.children) {
 				collectSelected(node.children)
 			}
 		})
+	}
+
+	const findSubjectInfo = (subjectId: string): Subject | null => {
+		const findInTree = (nodes: TreeNode[]): Subject | null => {
+			for (const node of nodes) {
+				if (node.type === "subject" && node.data?.subjectId === subjectId && node.data?.subject) {
+					return node.data.subject
+				}
+				if (node.children) {
+					const found = findInTree(node.children)
+					if (found) return found
+				}
+			}
+			return null
+		}
+		return findInTree(treeData.value)
 	}
 
 	collectSelected(treeData.value)
@@ -226,6 +260,10 @@ const handleImport = (event: Event) => {
 		const result = linksStore.importLinks(e.target?.result as string)
 		if (!result.success) {
 			alert(`Помилка імпорту: ${result.error}`)
+		} else {
+			if (showExportTree.value) {
+				treeData.value = generateTreeData()
+			}
 		}
 	}
 	reader.readAsText(file)
@@ -274,7 +312,7 @@ const flatTreeData = computed(() => {
 					Експортувати всі посилання
 				</Button>
 
-				<Button @click="showExportTreeView" variant="outline">
+				<Button variant="outline" @click="showExportTreeView">
 					<Icon name="lucide:tree-pine" />
 					Вибірковий експорт
 				</Button>
@@ -283,7 +321,7 @@ const flatTreeData = computed(() => {
 					<Icon name="lucide:download" />
 					Імпортувати посилання
 				</Button>
-				<input type="file" ref="fileInput" @change="handleImport" accept=".json" class="hidden" />
+				<input ref="fileInput" type="file" class="hidden" accept=".json" @change="handleImport" />
 			</div>
 
 			<div v-else class="py-4">

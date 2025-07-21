@@ -1,5 +1,6 @@
 import { defineStore } from "pinia"
 import { useStorage } from "@vueuse/core"
+import type { Subject } from "nurekit"
 
 export interface Link {
 	id: string
@@ -7,21 +8,40 @@ export interface Link {
 	name: string
 }
 
-type LinksStore = Record<string, Record<string, Link[]>>
+type LinksStore = Record<
+	string,
+	{
+		subject: Subject
+		events: Record<string, Link[]>
+	}
+>
 
 export const useLinksStore = defineStore("links", () => {
 	const links = useStorage<LinksStore>("schedule-links", {})
 
 	function getLinks(subjectId: number, eventType: string): Link[] {
-		return links.value[subjectId]?.[eventType] || []
+		return links.value[subjectId]?.events[eventType] || []
 	}
 
-	function addLink(subjectId: number, eventType: string, link: Omit<Link, "id">) {
-		if (!links.value[subjectId]) {
-			links.value[subjectId] = {}
+	function addLink(
+		subjectId: number,
+		eventType: string,
+		link: Omit<Link, "id">,
+		subjectInfo?: Subject
+	) {
+		const subjectKey = subjectId.toString()
+
+		if (!links.value[subjectKey]) {
+			links.value[subjectKey] = {
+				subject: subjectInfo || { id: subjectId, title: "", brief: "" },
+				events: {},
+			}
+		} else if (subjectInfo) {
+			links.value[subjectKey].subject = subjectInfo
 		}
-		if (!links.value[subjectId][eventType]) {
-			links.value[subjectId][eventType] = []
+
+		if (!links.value[subjectKey].events[eventType]) {
+			links.value[subjectKey].events[eventType] = []
 		}
 
 		const newLink: Link = {
@@ -30,11 +50,12 @@ export const useLinksStore = defineStore("links", () => {
 			name: link.name || getLinkName(link.url),
 		}
 
-		links.value[subjectId][eventType].push(newLink)
+		links.value[subjectKey].events[eventType].push(newLink)
 	}
 
 	function updateLink(subjectId: number, eventType: string, updatedLink: Link) {
-		const eventLinks = links.value[subjectId]?.[eventType]
+		const subjectKey = subjectId.toString()
+		const eventLinks = links.value[subjectKey]?.events[eventType]
 		if (!eventLinks) return
 
 		const index = eventLinks.findIndex((l) => l.id === updatedLink.id)
@@ -47,11 +68,12 @@ export const useLinksStore = defineStore("links", () => {
 	}
 
 	function deleteLink(subjectId: number, eventType: string, linkId: string) {
-		const eventLinks = links.value[subjectId]?.[eventType]
+		const subjectKey = subjectId.toString()
+		const eventLinks = links.value[subjectKey]?.events[eventType]
 		if (!eventLinks) return
 
-		if (links.value[subjectId] && links.value[subjectId][eventType]) {
-			links.value[subjectId][eventType] = eventLinks.filter((l) => l.id !== linkId)
+		if (links.value[subjectKey] && links.value[subjectKey].events[eventType]) {
+			links.value[subjectKey].events[eventType] = eventLinks.filter((l) => l.id !== linkId)
 		}
 	}
 
@@ -78,7 +100,13 @@ export const useLinksStore = defineStore("links", () => {
 	function importLinks(jsonString: string): { success: boolean; error?: string } {
 		try {
 			const newLinks = JSON.parse(jsonString)
-			links.value = newLinks
+
+			if (isOldFormat(newLinks)) {
+				links.value = convertFromOldFormat(newLinks)
+			} else {
+				links.value = newLinks
+			}
+
 			return { success: true }
 		} catch (e) {
 			if (e instanceof Error) {
@@ -86,6 +114,40 @@ export const useLinksStore = defineStore("links", () => {
 			}
 			return { success: false, error: "An unknown error occurred during import." }
 		}
+	}
+
+	function isOldFormat(data: any): boolean {
+		if (!data || typeof data !== "object") return false
+
+		const firstKey = Object.keys(data)[0]
+		if (!firstKey) return false
+
+		const firstValue = data[firstKey]
+		return (
+			Array.isArray(firstValue) ||
+			(firstValue && !Object.prototype.hasOwnProperty.call(firstValue, "subject"))
+		)
+	}
+
+	function convertFromOldFormat(oldData: Record<string, Record<string, Link[]>>): LinksStore {
+		const newData: LinksStore = {}
+
+		Object.entries(oldData).forEach(([subjectId, eventTypes]) => {
+			newData[subjectId] = {
+				subject: {
+					id: parseInt(subjectId),
+					title: `Предмет ${subjectId}`,
+					brief: "",
+				},
+				events: eventTypes,
+			}
+		})
+
+		return newData
+	}
+
+	function getSubjectInfo(subjectId: number): Subject | null {
+		return links.value[subjectId.toString()]?.subject || null
 	}
 
 	return {
@@ -96,5 +158,6 @@ export const useLinksStore = defineStore("links", () => {
 		deleteLink,
 		exportLinks,
 		importLinks,
+		getSubjectInfo,
 	}
 })
