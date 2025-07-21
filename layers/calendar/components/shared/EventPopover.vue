@@ -1,5 +1,7 @@
+'''
 <script setup lang="ts">
 import type { Schedule } from "nurekit"
+import { useLinksStore, type Link } from "~/core/stores/links"
 
 interface Props {
 	event: Schedule
@@ -8,6 +10,9 @@ interface Props {
 const props = defineProps<Props>()
 
 const { formatTimeRange, formatDate, getEventTypeColor, getEventTypeLabel } = useEventFormatting()
+const linksStore = useLinksStore()
+
+const eventLinks = computed(() => linksStore.getLinks(props.event.subject.id, props.event.type))
 
 const eventTypeLabel = computed(() => getEventTypeLabel(props.event.type))
 const eventTypeColor = computed(() => getEventTypeColor(props.event.type))
@@ -31,6 +36,37 @@ const auditoriumText = computed(() => {
 const pairNumber = computed(() => {
 	return `${props.event.numberPair} пара`
 })
+
+const showLinkDialog = ref(false)
+const editingLink = ref<Link | null>(null)
+
+const addLink = () => {
+	editingLink.value = null
+	showLinkDialog.value = true
+}
+
+const editLink = (link: Link) => {
+	editingLink.value = link
+	showLinkDialog.value = true
+}
+
+const saveLink = (linkData: Partial<Link>) => {
+	if (editingLink.value) {
+		linksStore.updateLink(props.event.subject.id, props.event.type, {
+			...editingLink.value,
+			...linkData,
+		})
+	} else {
+		linksStore.addLink(props.event.subject.id, props.event.type, {
+			url: linkData.url || "",
+			name: linkData.name || "",
+		})
+	}
+}
+
+const deleteLink = (linkId: string) => {
+	linksStore.deleteLink(props.event.subject.id, props.event.type, linkId)
+}
 </script>
 
 <template>
@@ -89,5 +125,39 @@ const pairNumber = computed(() => {
 				</span>
 			</div>
 		</div>
+
+		<div class="space-y-2">
+			<div class="flex items-center justify-between">
+				<h4 class="text-sm font-medium">Посилання</h4>
+				<Button size="icon" variant="outline" @click="addLink">
+					<Icon name="lucide:plus" />
+				</Button>
+			</div>
+			<div v-if="eventLinks.length" class="space-y-2">
+				<div
+					v-for="link in eventLinks"
+					:key="link.id"
+					class="flex items-center justify-between gap-2"
+				>
+					<a :href="link.url" target="_blank" class="text-primary truncate hover:underline">
+						{{ link.name }}
+					</a>
+					<div class="flex gap-1">
+						<Button size="icon" variant="ghost" @click="editLink(link)">
+							<Icon name="lucide:pencil" />
+						</Button>
+						<Button size="icon" variant="ghost" @click="deleteLink(link.id)">
+							<Icon name="lucide:trash" />
+						</Button>
+					</div>
+				</div>
+			</div>
+			<p v-else class="text-muted-foreground py-2 text-center text-xs">
+				Немає збережених посилань для цього заняття.
+			</p>
+		</div>
+
+		<LinkDialog v-model="showLinkDialog" :link="editingLink" @save="saveLink" />
 	</div>
 </template>
+''
