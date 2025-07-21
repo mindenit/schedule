@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Subject } from "nurekit"
 import { ref, computed } from "vue"
+import { toast } from "vue-sonner"
 import { useLinksStore, type Link } from "~/core/stores/links"
 
 const linksStore = useLinksStore()
@@ -209,6 +210,10 @@ const handleExportSelected = () => {
 	document.body.removeChild(a)
 	URL.revokeObjectURL(url)
 	showExportTree.value = false
+
+	toast.success("Експорт завершено", {
+		description: "Вибрані посилання успішно експортовано",
+	})
 }
 
 const showExportTreeView = () => {
@@ -244,6 +249,9 @@ const deselectAll = () => {
 
 const handleExport = () => {
 	linksStore.exportLinks()
+	toast.success("Експорт завершено", {
+		description: "Всі посилання успішно експортовано",
+	})
 }
 
 const triggerImport = () => {
@@ -259,8 +267,13 @@ const handleImport = (event: Event) => {
 	reader.onload = (e) => {
 		const result = linksStore.importLinks(e.target?.result as string)
 		if (!result.success) {
-			alert(`Помилка імпорту: ${result.error}`)
+			toast.error("Помилка імпорту", {
+				description: result.error || "Не вдалося імпортувати посилання",
+			})
 		} else {
+			toast.success("Імпорт завершено", {
+				description: "Посилання успішно імпортовані",
+			})
 			if (showExportTree.value) {
 				treeData.value = generateTreeData()
 			}
@@ -321,7 +334,7 @@ const flatTreeData = computed(() => {
 					<Icon name="lucide:download" />
 					Імпортувати посилання
 				</Button>
-				<input ref="fileInput" type="file" class="hidden" accept=".json" @change="handleImport" />
+				<input ref="fileInput" type="file" accept=".json" class="hidden" @change="handleImport" />
 			</div>
 
 			<div v-else class="py-4">
