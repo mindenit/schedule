@@ -3,8 +3,17 @@ import type { Subject } from "nurekit"
 import { ref, computed } from "vue"
 import { toast } from "vue-sonner"
 import { useLinksStore, type Link } from "~/core/stores/links"
+import { storeToRefs } from "pinia"
 
 const linksStore = useLinksStore()
+const calendarStore = useCalendarStore()
+const scheduleStore = useScheduleStore()
+
+const { allEvents } = storeToRefs(calendarStore)
+const { selectedSchedule } = storeToRefs(scheduleStore)
+
+const { exportCurrentSchedule, exportAcademicYearSchedule, isLoading } = useScheduleIcsExport()
+
 const showDialog = ref(false)
 const showExportTree = ref(false)
 const fileInput = ref<HTMLInputElement | null>(null)
@@ -282,6 +291,25 @@ const handleImport = (event: Event) => {
 	reader.readAsText(file)
 }
 
+const handleIcsExportCurrent = () => {
+	exportCurrentSchedule(allEvents.value)
+}
+
+const handleIcsExportAcademicYear = async () => {
+	if (!selectedSchedule.value) {
+		toast.warning("Оберіть розкладання", {
+			description: "Спочатку оберіть групу, викладача або аудиторію",
+		})
+		return
+	}
+
+	const schedule = selectedSchedule.value
+
+	await exportAcademicYearSchedule(schedule.id, schedule.type, {
+		customFilename: `academic-schedule-${schedule.name}-${new Date().getFullYear()}.ics`,
+	})
+}
+
 const renderTreeNode = (node: TreeNode, level: number = 0) => {
 	const marginLeft = level * 16
 	return {
@@ -311,29 +339,49 @@ const flatTreeData = computed(() => {
 <template>
 	<Dialog v-model:open="showDialog">
 		<DialogTrigger as-child>
-			<slot />
+			<Button size="icon" variant="outline">
+				<Icon name="lucide:settings" class="!size-4" />
+			</Button>
 		</DialogTrigger>
 		<DialogContent class="max-w-2xl">
 			<DialogHeader>
-				<DialogTitle>Керування посиланнями</DialogTitle>
-				<DialogDescription> Імпорт та експорт ваших збережених посилань. </DialogDescription>
+				<DialogTitle>Налаштування</DialogTitle>
 			</DialogHeader>
 
 			<div v-if="!showExportTree" class="flex flex-col gap-4 py-4">
-				<Button @click="handleExport">
-					<Icon name="lucide:upload" />
-					Експортувати всі посилання
-				</Button>
+				<div class="space-y-2">
+					<h3 class="text-muted-foreground text-sm font-medium">Експорт розкладання (ICS)</h3>
+					<div class="flex flex-col gap-2">
+						<Button variant="default" :disabled="isLoading" @click="handleIcsExportAcademicYear">
+							<Icon name="lucide:calendar-export" />
+							Експорт на навчальний рік
+						</Button>
+						<Button variant="outline" @click="handleIcsExportCurrent">
+							<Icon name="lucide:calendar" />
+							Експорт поточних подій
+						</Button>
+					</div>
+				</div>
 
-				<Button variant="outline" @click="showExportTreeView">
-					<Icon name="lucide:tree-pine" />
-					Вибірковий експорт
-				</Button>
+				<div class="space-y-2 border-t pt-4">
+					<h3 class="text-muted-foreground text-sm font-medium">Керування посиланнями</h3>
+					<div class="flex flex-col gap-2">
+						<Button variant="outline" @click="handleExport">
+							<Icon name="lucide:upload" />
+							Експортувати всі посилання
+						</Button>
 
-				<Button @click="triggerImport">
-					<Icon name="lucide:download" />
-					Імпортувати посилання
-				</Button>
+						<Button variant="outline" @click="showExportTreeView">
+							<Icon name="lucide:tree-pine" />
+							Вибірковий експорт посилань
+						</Button>
+
+						<Button variant="outline" @click="triggerImport">
+							<Icon name="lucide:download" />
+							Імпортувати посилання
+						</Button>
+					</div>
+				</div>
 				<input ref="fileInput" type="file" accept=".json" class="hidden" @change="handleImport" />
 			</div>
 

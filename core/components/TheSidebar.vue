@@ -30,11 +30,7 @@ defineProps<Props>()
 				<AuthorsDialog />
 			</div>
 			<div class="flex-shrink-0">
-				<ManageLinksDialog>
-					<Button size="icon" variant="outline">
-						<Icon name="lucide:settings" class="!size-4" />
-					</Button>
-				</ManageLinksDialog>
+				<SettingsDialog />
 			</div>
 		</div>
 	</div>
