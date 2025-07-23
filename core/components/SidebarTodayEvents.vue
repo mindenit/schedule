@@ -1,123 +1,34 @@
 <script lang="ts" setup>
-import { getLocalTimeZone, today, type DateValue } from "@internationalized/date"
-import { useQuery } from "@tanstack/vue-query"
 import { storeToRefs } from "pinia"
-import type { Schedule } from "nurekit"
-import { groupScheduleOptions } from "../queries/groups"
-import { teacherScheduleOptions } from "../queries/teachers"
-import { auditoriumScheduleOptions } from "../queries/auditoriums"
+import { startOfDay, endOfDay } from "date-fns"
+import { useScheduleQuery } from "../composables/useScheduleQuery"
 
-const value = ref(today(getLocalTimeZone())) as Ref<DateValue>
 const scheduleStore = useScheduleStore()
 const { selectedSchedule } = storeToRefs(scheduleStore)
+const { formatTime, formatDate, capitalize } = useEventFormatting()
+
+const today = new Date()
 
 const formattedDate = computed(() => {
-	const jsDate = value.value.toDate(getLocalTimeZone())
-
-	const options: Intl.DateTimeFormatOptions = {
-		weekday: "long",
-		day: "numeric",
-		month: "long",
-	}
-
-	const weekdayMap: Record<string, string> = {
-		"понеділок": "понеділок",
-		"вівторок": "вівторок",
-		"середу": "середа",
-		"четвер": "четвер",
-		"пʼятницю": "пʼятниця",
-		"суботу": "субота",
-		"неділю": "неділя",
-	}
-
-	let dateString = new Intl.DateTimeFormat("uk-UA", options).format(jsDate)
-
-	const matched = Object.entries(weekdayMap).find(([accusative]) =>
-		dateString.includes(accusative)
-	)
-
-	if (matched) {
-		const [accusative, nominative] = matched
-		dateString = dateString.replace(accusative, nominative)
-	}
-
-	return dateString.charAt(0).toUpperCase() + dateString.slice(1)
+	const day = capitalize(formatDate(today, "EEEE"))
+	const date = formatDate(today, "d MMMM")
+	return `${day}, ${date}`
 })
 
-const todayEvents = ref<Schedule[]>([])
-
-const hasActiveSchedule = computed(() => {
-	return selectedSchedule.value && selectedSchedule.value.id && selectedSchedule.value.type
+const startTimestamp = computed(() => {
+	return Math.floor(startOfDay(today).getTime() / 1000)
 })
 
-const queryParams = computed(() => {
-	if (!hasActiveSchedule.value) return null
-	const startOfDay = new Date(value.value.toDate(getLocalTimeZone()))
-	startOfDay.setHours(0, 0, 0, 0)
-	const endOfDay = new Date(startOfDay)
-	endOfDay.setHours(23, 59, 59, 999)
-	return {
-		id: selectedSchedule.value!.id,
-		type: selectedSchedule.value!.type,
-		startTimestamp: Math.floor(startOfDay.getTime() / 1000),
-		endTimestamp: Math.floor(endOfDay.getTime() / 1000),
-	}
+const endTimestamp = computed(() => {
+	return Math.floor(endOfDay(today).getTime() / 1000)
 })
 
-const createQueryOptions = () => {
-	if (!queryParams.value) return null
-	const { id, type, startTimestamp, endTimestamp } = queryParams.value
-	switch (type) {
-		case "group":
-			return groupScheduleOptions(
-				computed(() => id),
-				computed(() => startTimestamp),
-				computed(() => endTimestamp)
-			)
-		case "teacher":
-			return teacherScheduleOptions(
-				computed(() => id),
-				computed(() => startTimestamp),
-				computed(() => endTimestamp)
-			)
-		case "auditorium":
-			return auditoriumScheduleOptions(
-				computed(() => id),
-				computed(() => startTimestamp),
-				computed(() => endTimestamp)
-			)
-	}
-}
+const scheduleId = computed(() => selectedSchedule.value?.id)
 
-const queryOptions = computed(() => createQueryOptions())
+const { data: todayEvents, isLoading } = useScheduleQuery(scheduleId, startTimestamp, endTimestamp)
 
-const { data: scheduleData, isLoading } = useQuery(
-	computed(() => {
-		const options = queryOptions.value
-		if (!options || !hasActiveSchedule.value) {
-			return {
-				queryKey: ["disabled"],
-				queryFn: () => Promise.resolve([]),
-				enabled: false,
-			}
-		}
-		return {
-			...options,
-			enabled: true,
-		}
-	})
-)
-
-const formatTime = (date: Date | string | number): string => {
-	const parsed = parseDate(date)
-	return new Intl.DateTimeFormat("uk-UA", { hour: "2-digit", minute: "2-digit" }).format(parsed)
-}
-
-watchEffect(() => {
-	if (scheduleData.value) {
-		todayEvents.value = scheduleData.value
-	}
-})
+const hasActiveSchedule = computed(() => !!selectedSchedule.value)
+const hasEvents = computed(() => todayEvents.value && todayEvents.value.length > 0)
 </script>
 
 <template>
@@ -129,7 +40,7 @@ watchEffect(() => {
 				<div v-if="isLoading && hasActiveSchedule" class="flex justify-center p-4">
 					<TheLoader />
 				</div>
-				<template v-else-if="hasActiveSchedule && todayEvents.length > 0">
+				<template v-else-if="hasActiveSchedule && hasEvents">
 					<SidebarEvent
 						v-for="event in todayEvents"
 						:key="event.id"
@@ -141,7 +52,7 @@ watchEffect(() => {
 					/>
 				</template>
 				<div
-					v-else-if="hasActiveSchedule && todayEvents.length === 0 && !isLoading"
+					v-else-if="hasActiveSchedule && !hasEvents && !isLoading"
 					class="text-muted-foreground flex flex-col items-center justify-center gap-2 p-6 text-center"
 				>
 					<Icon name="lucide:smile" class="!size-8 opacity-50" />

@@ -25,8 +25,13 @@ defineProps<Props>()
 		<SidebarCalendar />
 		<SidebarTodayEvents />
 
-		<div class="mt-auto">
-			<AuthorsDialog />
+		<div class="mt-auto flex items-center justify-between gap-2">
+			<div class="min-w-0 flex-1">
+				<AuthorsDialog />
+			</div>
+			<div class="flex-shrink-0">
+				<SettingsDialog />
+			</div>
 		</div>
 	</div>
 </template>

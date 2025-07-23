@@ -7,6 +7,6 @@ services:
     environment:
       - NODE_ENV=production
     ports:
-      - "${PORT:-3000}:4175"
+      - "${EXTERNAL_PORT:-3000}:3000"
     env_file:
       - .env

@@ -1,26 +1,6 @@
 <script setup lang="ts">
-import { buttonVariants } from './ui/button';
-
-const authors = [
-	{
-		name: "Роман Трашутін",
-		role: "Frontend Developer",
-		avatar: "/authors/roman.png",
-		linkedin: "https://www.linkedin.com/in/roman-trashutin",
-	},
-	{
-		name: "Кирило Савєльєв",
-		role: "Backend Developer",
-		avatar: "/authors/kyrylo.jpg",
-		linkedin: "https://www.linkedin.com/in/kyrylo-savieliev",
-	},
-	{
-		name: "Артем Дадаш'янц",
-		role: "CEO / DevOps",
-		avatar: "/authors/artem.jpg",
-		linkedin: "https://www.linkedin.com/in/artem-dadashjants/",
-	},
-]
+import { AUTHORS } from "../constants"
+import { buttonVariants } from "./ui/button"
 </script>
 
 <template>
@@ -42,7 +22,7 @@ const authors = [
 
 			<div class="space-y-4">
 				<div
-					v-for="author in authors"
+					v-for="author in AUTHORS"
 					:key="author.name"
 					class="bg-muted flex items-center gap-3 rounded-lg p-3"
 				>
@@ -52,17 +32,17 @@ const authors = [
 						class="pointer-events-none size-10 rounded-full object-cover"
 						loading="lazy"
 					/>
-					<div
-						class="bg-muted-foreground/20 flex hidden h-10 w-10 items-center justify-center rounded-full"
-					>
-						<Icon name="lucide:user" class="text-muted-foreground !size-5" />
-					</div>
-
 					<div>
 						<p class="font-medium">{{ author.name }}</p>
 						<p class="text-muted-foreground text-sm">{{ author.role }}</p>
 					</div>
-					<NuxtLink :to="author.linkedin" external class="ml-auto" :class="buttonVariants({ variant: 'ghost', size: 'icon' })" target="_blank">
+					<NuxtLink
+						:to="author.linkedin"
+						external
+						class="ml-auto"
+						:class="buttonVariants({ variant: 'ghost', size: 'icon' })"
+						target="_blank"
+					>
 						<Icon name="brandico:linkedin-rect" />
 					</NuxtLink>
 				</div>
