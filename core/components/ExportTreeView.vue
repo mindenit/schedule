@@ -13,11 +13,32 @@ interface Props {
 	flatTreeData: Array<{ node: TreeNode; level: number; marginLeft: number }>
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 
 const emit = defineEmits<{
 	nodeCheck: [node: TreeNode, checked: boolean]
 }>()
+
+watch(
+	() => props.flatTreeData,
+	() => {
+		nextTick(() => {
+			updateIndeterminateStates()
+		})
+	},
+	{ deep: true }
+)
+
+const updateIndeterminateStates = () => {
+	props.flatTreeData.forEach((item) => {
+		const checkbox = document.querySelector(
+			`input[data-node-id="${item.node.id}"]`
+		) as HTMLInputElement
+		if (checkbox) {
+			checkbox.indeterminate = item.node.indeterminate
+		}
+	})
+}
 </script>
 
 <template>
@@ -33,9 +54,13 @@ const emit = defineEmits<{
 			:style="{ marginLeft: item.marginLeft + 'px' }"
 		>
 			<input
+				:data-node-id="item.node.id"
 				type="checkbox"
 				:checked="item.node.checked"
-				:class="{ 'opacity-50': item.node.indeterminate }"
+				class="peer border-input data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground
+					data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50
+					accent-primary size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none
+					focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
 				@change="emit('nodeCheck', item.node, ($event.target as HTMLInputElement).checked)"
 			/>
 			<Icon
@@ -48,7 +73,9 @@ const emit = defineEmits<{
 				"
 				class="!size-4"
 			/>
-			<span class="text-sm">{{ item.node.label }}</span>
+			<label :for="item.node.id" class="cursor-pointer text-sm select-none">
+				{{ item.node.label }}
+			</label>
 		</div>
 	</div>
 </template>

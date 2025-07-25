@@ -1,18 +1,5 @@
-<script setup lang="ts">
-const showDialog = ref(false)
-const currentView = ref<"main" | "links" | "export-tree">("main")
-
-const handleViewChange = (view: typeof currentView.value) => {
-	currentView.value = view
-}
-
-const goBack = () => {
-	currentView.value = "main"
-}
-</script>
-
 <template>
-	<Dialog v-model:open="showDialog">
+	<Dialog>
 		<DialogTrigger as-child>
 			<Button size="icon" variant="outline">
 				<Icon name="lucide:settings" class="!size-4" />
@@ -22,9 +9,7 @@ const goBack = () => {
 			<DialogHeader>
 				<DialogTitle>Налаштування</DialogTitle>
 			</DialogHeader>
-			<SettingsMainView v-if="currentView === 'main'" @navigate="handleViewChange" />
-			<SettingsLinksManagement v-else-if="currentView === 'links'" @back="goBack" />
-			<SettingsExportTree v-else-if="currentView === 'export-tree'" @back="goBack" />
+			<SettingsMainView />
 		</DialogContent>
 	</Dialog>
 </template>

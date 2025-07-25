@@ -25,6 +25,7 @@ interface TreeNode {
 }
 
 const treeData = ref<TreeNode[]>([])
+const fileInput = ref<HTMLInputElement | null>(null)
 
 const { generateTreeData, handleNodeCheck, selectAll, deselectAll, getSelectedData, flatTreeData } =
 	useExportTree(treeData, linksStore)
@@ -49,13 +50,39 @@ const handleExportSelected = () => {
 	emit("back")
 }
 
+const triggerImport = () => {
+	fileInput.value?.click()
+}
+
+const handleImport = (event: Event) => {
+	const target = event.target as HTMLInputElement
+	const file = target.files?.[0]
+	if (!file) return
+
+	const reader = new FileReader()
+	reader.onload = (e) => {
+		const result = linksStore.importLinks(e.target?.result as string)
+		if (!result.success) {
+			toast.error("Помилка імпорту", {
+				description: result.error || "Не вдалося імпортувати посилання",
+			})
+		} else {
+			toast.success("Імпорт завершено", {
+				description: "Посилання успішно імпортовані",
+			})
+			treeData.value = generateTreeData()
+		}
+	}
+	reader.readAsText(file)
+}
+
 onMounted(() => {
 	treeData.value = generateTreeData()
 })
 </script>
 
 <template>
-	<div class="flex flex-col overflow-hidden py-4">
+	<div class="flex flex-col overflow-hidden">
 		<div class="mb-4 flex items-center justify-between">
 			<h3 class="text-lg font-medium">Оберіть дані для експорту</h3>
 			<div class="flex gap-2">
@@ -66,15 +93,17 @@ onMounted(() => {
 
 		<ExportTreeView :flat-tree-data="flatTreeData" @node-check="handleNodeCheck" />
 
-		<div class="flex justify-between border-t pt-4">
-			<Button variant="outline" @click="emit('back')">
-				<Icon name="lucide:arrow-left" />
-				Назад
+		<div class="flex justify-between pt-4">
+			<Button variant="outline" @click="triggerImport">
+				<Icon name="lucide:download" />
+				Імпортувати посилання
 			</Button>
 			<Button @click="handleExportSelected">
-				<Icon name="lucide:download" />
+				<Icon name="lucide:upload" />
 				Експортувати вибране
 			</Button>
 		</div>
+
+		<input ref="fileInput" type="file" accept=".json" class="hidden" @change="handleImport" />
 	</div>
 </template>
