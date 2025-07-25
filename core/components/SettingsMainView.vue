@@ -70,44 +70,59 @@ const handleIcsExportAcademicYear = async () => {
 
 <template>
 	<div class="flex flex-col gap-4 overflow-y-auto py-4">
-		<div class="space-y-2">
-			<h3 class="text-muted-foreground text-sm font-medium">Експорт розкладання (ICS)</h3>
-			<div class="flex flex-col gap-2">
-				<Button variant="default" :disabled="isLoading" @click="handleIcsExportAcademicYear">
-					<Icon name="lucide:calendar-export" />
-					Експорт на навчальний рік
-				</Button>
-				<Button variant="outline" @click="handleIcsExportCurrent">
+		<Tabs default-value="schedule" class="w-full">
+			<TabsList class="grid w-full grid-cols-2">
+				<TabsTrigger value="schedule">
 					<Icon name="lucide:calendar" />
-					Експорт поточних подій
-				</Button>
-			</div>
-		</div>
-
-		<div class="space-y-2 border-t pt-4">
-			<h3 class="text-muted-foreground text-sm font-medium">Керування посиланнями</h3>
-			<div class="flex flex-col gap-2">
-				<Button variant="outline" @click="emit('navigate', 'links')">
+					Розклад
+				</TabsTrigger>
+				<TabsTrigger value="links">
 					<Icon name="lucide:link" />
-					Переглянути та редагувати посилання
-				</Button>
+					Посилання
+				</TabsTrigger>
+			</TabsList>
 
-				<Button variant="outline" @click="handleExport">
-					<Icon name="lucide:upload" />
-					Експортувати всі посилання
-				</Button>
+			<TabsContent value="schedule" class="space-y-4">
+				<div class="space-y-2">
+					<h3 class="text-muted-foreground text-sm font-medium">Експорт розкладання (ICS)</h3>
+					<div class="flex flex-col gap-2">
+						<Button variant="default" :disabled="isLoading" @click="handleIcsExportAcademicYear">
+							<Icon name="lucide:calendar-export" />
+							Експорт на навчальний рік
+						</Button>
+						<Button variant="outline" @click="handleIcsExportCurrent">
+							<Icon name="lucide:calendar" />
+							Експорт поточних подій
+						</Button>
+					</div>
+				</div>
+			</TabsContent>
 
-				<Button variant="outline" @click="emit('navigate', 'export-tree')">
-					<Icon name="lucide:tree-pine" />
-					Вибірковий експорт посилань
-				</Button>
+			<TabsContent value="links" class="space-y-4">
+				<div class="space-y-2">
+					<h3 class="text-muted-foreground text-sm font-medium">Керування посиланнями</h3>
+					<div class="flex flex-col gap-2">
+						<Button variant="outline" @click="emit('navigate', 'links')">
+							<Icon name="lucide:link" />
+							Переглянути та редагувати посилання
+						</Button>
+						<Button variant="outline" @click="handleExport">
+							<Icon name="lucide:upload" />
+							Експортувати всі посилання
+						</Button>
+						<Button variant="outline" @click="emit('navigate', 'export-tree')">
+							<Icon name="lucide:tree-pine" />
+							Вибірковий експорт посилань
+						</Button>
+						<Button variant="outline" @click="triggerImport">
+							<Icon name="lucide:download" />
+							Імпортувати посилання
+						</Button>
+					</div>
+				</div>
+			</TabsContent>
+		</Tabs>
 
-				<Button variant="outline" @click="triggerImport">
-					<Icon name="lucide:download" />
-					Імпортувати посилання
-				</Button>
-			</div>
-		</div>
 		<input ref="fileInput" type="file" accept=".json" class="hidden" @change="handleImport" />
 	</div>
 </template>
