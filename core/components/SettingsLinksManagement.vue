@@ -120,9 +120,9 @@ const handleMainImport = (event: Event) => {
 
 <template>
 	<div class="flex flex-col overflow-hidden">
-		<div class="flex items-center justify-between max-md:flex-col">
+		<div class="flex items-center justify-between max-md:flex-col max-md:gap-2 max-md:pb-2">
 			<h3 class="text-lg font-medium">Управління посиланнями</h3>
-			<Button variant="outline" size="sm" @click="triggerImport">
+			<Button size="sm" @click="triggerImport">
 				<Icon name="lucide:download" class="!size-4" />
 				Імпортувати
 			</Button>

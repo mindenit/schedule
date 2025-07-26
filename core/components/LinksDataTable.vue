@@ -503,9 +503,8 @@ const handleImport = (event: Event) => {
 
 			<Button
 				v-if="table.getFilteredSelectedRowModel().rows.length > 0"
-				variant="outline"
+				variant="destructive"
 				size="sm"
-				class="text-destructive hover:text-destructive"
 				@click="deleteSelectedLinks"
 			>
 				<Icon name="lucide:trash-2" class="!size-4" />

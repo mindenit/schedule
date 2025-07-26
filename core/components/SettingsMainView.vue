@@ -2,16 +2,10 @@
 import { storeToRefs } from "pinia"
 import { toast } from "vue-sonner"
 
-const calendarStore = useCalendarStore()
 const scheduleStore = useScheduleStore()
 
-const { allEvents } = storeToRefs(calendarStore)
 const { selectedSchedule } = storeToRefs(scheduleStore)
-const { exportCurrentSchedule, exportAcademicYearSchedule, isLoading } = useScheduleIcsExport()
-
-const handleIcsExportCurrent = () => {
-	exportCurrentSchedule(allEvents.value)
-}
+const { exportAcademicYearSchedule, isLoading } = useScheduleIcsExport()
 
 const handleIcsExportAcademicYear = async () => {
 	if (!selectedSchedule.value) {
@@ -48,10 +42,6 @@ const handleIcsExportAcademicYear = async () => {
 					<Button variant="default" :disabled="isLoading" @click="handleIcsExportAcademicYear">
 						<Icon name="lucide:calendar-export" />
 						Експорт на навчальний рік
-					</Button>
-					<Button variant="outline" @click="handleIcsExportCurrent">
-						<Icon name="lucide:calendar" />
-						Експорт поточних подій
 					</Button>
 				</div>
 			</TabsContent>
