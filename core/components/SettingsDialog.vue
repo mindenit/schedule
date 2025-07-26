@@ -5,7 +5,7 @@
 				<Icon name="lucide:settings" class="!size-4" />
 			</Button>
 		</DialogTrigger>
-		<DialogContent class="flex max-h-[80vh] max-w-2xl flex-col overflow-hidden">
+		<DialogContent class="flex max-h-[80vh] flex-col overflow-hidden md:max-w-4xl">
 			<DialogHeader>
 				<DialogTitle>Налаштування</DialogTitle>
 			</DialogHeader>

@@ -42,9 +42,9 @@ const handleIcsExportAcademicYear = async () => {
 				</TabsTrigger>
 			</TabsList>
 
-			<TabsContent value="schedule" class="space-y-4">
-				<h3 class="text-muted-foreground text-sm font-medium">Експорт розкладання (ICS)</h3>
-				<div class="flex flex-col gap-2">
+			<TabsContent value="schedule">
+				<h3 class="text-muted-foreground mb-2 text-sm font-medium">Експорт розкладання (ICS)</h3>
+				<div class="flex flex-wrap items-center justify-center gap-2">
 					<Button variant="default" :disabled="isLoading" @click="handleIcsExportAcademicYear">
 						<Icon name="lucide:calendar-export" />
 						Експорт на навчальний рік
@@ -56,9 +56,8 @@ const handleIcsExportAcademicYear = async () => {
 				</div>
 			</TabsContent>
 
-			<TabsContent value="links" class="space-y-4">
-				<h3 class="text-muted-foreground text-sm font-medium">Керування посиланнями</h3>
-				<SettingsExportTree />
+			<TabsContent value="links">
+				<SettingsLinksManagement />
 			</TabsContent>
 		</Tabs>
 	</div>

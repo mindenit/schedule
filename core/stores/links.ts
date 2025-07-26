@@ -99,12 +99,40 @@ export const useLinksStore = defineStore("links", () => {
 
 	function importLinks(jsonString: string): { success: boolean; error?: string } {
 		try {
-			const newLinks = JSON.parse(jsonString)
+			const data = JSON.parse(jsonString)
 
-			if (isOldFormat(newLinks)) {
-				links.value = convertFromOldFormat(newLinks)
+			if (Array.isArray(data)) {
+				data.forEach((item) => {
+					if (item.subjectId && item.subject && item.eventType && item.link) {
+						const subjectKey = item.subjectId.toString()
+
+						if (!links.value[subjectKey]) {
+							links.value[subjectKey] = {
+								subject: item.subject,
+								events: {},
+							}
+						}
+
+						if (!links.value[subjectKey].events[item.eventType]) {
+							links.value[subjectKey].events[item.eventType] = []
+						}
+
+						const existingLink = links.value[subjectKey].events[item.eventType]!.find(
+							(l) => l.id === item.link.id
+						)
+
+						if (!existingLink) {
+							links.value[subjectKey].events[item.eventType]!.push(item.link)
+						}
+					}
+				})
+				return { success: true }
+			}
+
+			if (isOldFormat(data)) {
+				links.value = convertFromOldFormat(data)
 			} else {
-				links.value = newLinks
+				links.value = data
 			}
 
 			return { success: true }
