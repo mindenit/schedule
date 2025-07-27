@@ -10,7 +10,9 @@ export const useScheduleQuery = (
 	endTimestamp: Ref<number | undefined>
 ) => {
 	const scheduleStore = useScheduleStore()
+	const filtersStore = useFiltersStore()
 	const { selectedSchedule } = storeToRefs(scheduleStore)
+	const { version, activeFilters } = storeToRefs(filtersStore)
 
 	const queryOptions = computed(() => {
 		if (!selectedSchedule.value || !id.value || !startTimestamp.value || !endTimestamp.value) {
@@ -18,19 +20,42 @@ export const useScheduleQuery = (
 		}
 
 		const { type } = selectedSchedule.value
+		const scheduleId = id.value
+
+		filtersStore.loadFilters(scheduleId, type)
+
 		const options = {
-			id: computed(() => id.value as string | number),
+			id: computed(() => scheduleId as string | number),
 			startTimestamp: computed(() => startTimestamp.value as string | number),
 			endTimestamp: computed(() => endTimestamp.value as string | number),
 		}
 
+		const filters = {
+			lessonTypes: computed(() => activeFilters.value as string[]),
+		}
+
 		switch (type) {
 			case "group":
-				return groupScheduleOptions(options.id, options.startTimestamp, options.endTimestamp)
+				return groupScheduleOptions(
+					options.id,
+					options.startTimestamp,
+					options.endTimestamp,
+					filters
+				)
 			case "teacher":
-				return teacherScheduleOptions(options.id, options.startTimestamp, options.endTimestamp)
+				return teacherScheduleOptions(
+					options.id,
+					options.startTimestamp,
+					options.endTimestamp,
+					filters
+				)
 			case "auditorium":
-				return auditoriumScheduleOptions(options.id, options.startTimestamp, options.endTimestamp)
+				return auditoriumScheduleOptions(
+					options.id,
+					options.startTimestamp,
+					options.endTimestamp,
+					filters
+				)
 			default:
 				return null
 		}
@@ -55,8 +80,11 @@ export const useScheduleQuery = (
 					enabled: false,
 				}
 			}
+
+			const originalOptions = queryOptions.value
 			return {
-				...queryOptions.value,
+				...originalOptions,
+				queryKey: [...originalOptions.queryKey, version.value],
 				enabled: true,
 			}
 		})

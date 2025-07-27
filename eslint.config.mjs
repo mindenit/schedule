@@ -7,6 +7,7 @@ export default withNuxt(
 		rules: {
 			"vue/multi-word-component-names": "off",
 			"vue/require-default-prop": "off",
+			"vue/multi-word-component-names": "off",
 		},
 		ignores: [
 			"dist",
