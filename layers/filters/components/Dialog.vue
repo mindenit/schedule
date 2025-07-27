@@ -15,6 +15,7 @@ import {
 	auditoriumTeachersOptions,
 	auditoriumSubjectsOptions,
 } from "~/core/queries/auditoriums"
+import { FILTERS_LESSON_TYPES } from "../constants"
 
 const props = defineProps<{ class?: string }>()
 
@@ -22,15 +23,6 @@ const filtersStore = useFiltersStore()
 const scheduleStore = useScheduleStore()
 
 const isOpen = ref(false)
-
-const lessonTypes = [
-	{ id: "Лк", name: "Лекція" },
-	{ id: "Пз", name: "Практичне заняття" },
-	{ id: "Лб", name: "Лабораторна робота" },
-	{ id: "Конс", name: "Консультація" },
-	{ id: "Зал", name: "Залік" },
-	{ id: "Екз", name: "Екзамен" },
-]
 
 const selectedSchedule = computed(() => scheduleStore.selectedSchedule)
 
@@ -114,7 +106,7 @@ watch(isOpen, (open) => {
 			</Button>
 		</DialogTrigger>
 
-		<DialogContent class="max-w-md">
+		<DialogContent>
 			<DialogHeader>
 				<DialogTitle class="flex items-center gap-2">
 					<Icon name="lucide:filter" class="!size-5" />
@@ -137,26 +129,25 @@ watch(isOpen, (open) => {
 				Фільтри в розробці для цього типу розкладу
 			</div>
 
-			<div v-else class="max-h-96 space-y-4 overflow-y-auto">
+			<div v-else class="max-h-96 space-y-6 overflow-y-auto">
 				<div class="space-y-3">
-					<h3 class="text-sm font-medium">Типи занять</h3>
-					<div class="space-y-2">
-						<div
-							v-for="lessonType in lessonTypes"
+					<h3 class="text-foreground text-sm font-semibold">Типи занять</h3>
+					<div class="flex flex-wrap gap-2">
+						<Button
+							v-for="lessonType in FILTERS_LESSON_TYPES"
 							:key="lessonType.id"
-							class="flex items-center space-x-2"
+							:variant="filtersStore.isLessonTypeActive(lessonType.id) ? 'default' : 'outline'"
+							size="sm"
+							class="h-8 text-xs"
+							@click="filtersStore.toggleLessonTypeFilter(lessonType.id)"
 						>
-							<input
-								:id="`lesson-${lessonType.id}`"
-								type="checkbox"
-								:checked="filtersStore.isLessonTypeActive(lessonType.id)"
-								class="size-4 rounded border-gray-300"
-								@change="filtersStore.toggleLessonTypeFilter(lessonType.id)"
+							<Icon
+								v-if="filtersStore.isLessonTypeActive(lessonType.id)"
+								name="lucide:check"
+								class="!size-4"
 							/>
-							<label :for="`lesson-${lessonType.id}`" class="cursor-pointer text-sm font-medium">
-								{{ lessonType.name }}
-							</label>
-						</div>
+							{{ lessonType.name }}
+						</Button>
 					</div>
 				</div>
 
@@ -168,62 +159,51 @@ watch(isOpen, (open) => {
 					"
 					class="space-y-3"
 				>
-					<h3 class="text-sm font-medium">Групи</h3>
-					<div class="space-y-2">
-						<div v-for="group in groups" :key="group.id" class="flex items-center space-x-2">
-							<input
-								:id="`group-${group.id}`"
-								type="checkbox"
-								:checked="filtersStore.isGroupActive(group.id)"
-								class="size-4 rounded border-gray-300"
-								@change="filtersStore.toggleGroupFilter(group.id)"
+					<h3 class="text-foreground text-sm font-semibold">Групи</h3>
+					<div class="flex flex-wrap gap-2">
+						<Button
+							v-for="group in groups"
+							:key="group.id"
+							:variant="filtersStore.isGroupActive(group.id) ? 'default' : 'outline'"
+							size="sm"
+							class="h-8 text-xs"
+							@click="filtersStore.toggleGroupFilter(group.id)"
+						>
+							<Icon
+								v-if="filtersStore.isGroupActive(group.id)"
+								name="lucide:check"
+								class="!size-4"
 							/>
-							<label :for="`group-${group.id}`" class="cursor-pointer text-sm font-medium">
-								{{ group.name }}
-							</label>
-						</div>
+							{{ group.name }}
+						</Button>
 					</div>
 				</div>
 
 				<div
-					v-if="teachers && teachers.length > 0 && selectedSchedule.type === 'group'"
+					v-if="
+						teachers &&
+						teachers.length > 0 &&
+						(selectedSchedule.type === 'group' || selectedSchedule.type === 'auditorium')
+					"
 					class="space-y-3"
 				>
-					<h3 class="text-sm font-medium">Викладачі</h3>
-					<div class="space-y-2">
-						<div v-for="teacher in teachers" :key="teacher.id" class="flex items-center space-x-2">
-							<input
-								:id="`teacher-${teacher.id}`"
-								type="checkbox"
-								:checked="filtersStore.isTeacherActive(teacher.id)"
-								class="size-4 rounded border-gray-300"
-								@change="filtersStore.toggleTeacherFilter(teacher.id)"
+					<h3 class="text-foreground text-sm font-semibold">Викладачі</h3>
+					<div class="flex flex-wrap gap-2">
+						<Button
+							v-for="teacher in teachers"
+							:key="teacher.id"
+							:variant="filtersStore.isTeacherActive(teacher.id) ? 'default' : 'outline'"
+							size="sm"
+							class="h-8 text-xs"
+							@click="filtersStore.toggleTeacherFilter(teacher.id)"
+						>
+							<Icon
+								v-if="filtersStore.isTeacherActive(teacher.id)"
+								name="lucide:check"
+								class="!size-4"
 							/>
-							<label :for="`teacher-${teacher.id}`" class="cursor-pointer text-sm font-medium">
-								{{ teacher.shortName }}
-							</label>
-						</div>
-					</div>
-				</div>
-
-				<div
-					v-if="teachers && teachers.length > 0 && selectedSchedule.type === 'auditorium'"
-					class="space-y-3"
-				>
-					<h3 class="text-sm font-medium">Викладачі</h3>
-					<div class="space-y-2">
-						<div v-for="teacher in teachers" :key="teacher.id" class="flex items-center space-x-2">
-							<input
-								:id="`teacher-${teacher.id}`"
-								type="checkbox"
-								:checked="filtersStore.isTeacherActive(teacher.id)"
-								class="size-4 rounded border-gray-300"
-								@change="filtersStore.toggleTeacherFilter(teacher.id)"
-							/>
-							<label :for="`teacher-${teacher.id}`" class="cursor-pointer text-sm font-medium">
-								{{ teacher.shortName }}
-							</label>
-						</div>
+							{{ teacher.shortName }}
+						</Button>
 					</div>
 				</div>
 
@@ -235,45 +215,44 @@ watch(isOpen, (open) => {
 					"
 					class="space-y-3"
 				>
-					<h3 class="text-sm font-medium">Аудиторії</h3>
-					<div class="space-y-2">
-						<div
+					<h3 class="text-foreground text-sm font-semibold">Аудиторії</h3>
+					<div class="flex flex-wrap gap-2">
+						<Button
 							v-for="auditorium in auditoriums"
 							:key="auditorium.id"
-							class="flex items-center space-x-2"
+							:variant="filtersStore.isAuditoriumActive(auditorium.id) ? 'default' : 'outline'"
+							size="sm"
+							class="h-8 text-xs"
+							@click="filtersStore.toggleAuditoriumFilter(auditorium.id)"
 						>
-							<input
-								:id="`auditorium-${auditorium.id}`"
-								type="checkbox"
-								:checked="filtersStore.isAuditoriumActive(auditorium.id)"
-								class="size-4 rounded border-gray-300"
-								@change="filtersStore.toggleAuditoriumFilter(auditorium.id)"
+							<Icon
+								v-if="filtersStore.isAuditoriumActive(auditorium.id)"
+								name="lucide:check"
+								class="!size-4"
 							/>
-							<label
-								:for="`auditorium-${auditorium.id}`"
-								class="cursor-pointer text-sm font-medium"
-							>
-								{{ auditorium.name }}
-							</label>
-						</div>
+							{{ auditorium.name }}
+						</Button>
 					</div>
 				</div>
 
 				<div v-if="subjects && subjects.length > 0" class="space-y-3">
-					<h3 class="text-sm font-medium">Предмети</h3>
-					<div class="space-y-2">
-						<div v-for="subject in subjects" :key="subject.id" class="flex items-center space-x-2">
-							<input
-								:id="`subject-${subject.id}`"
-								type="checkbox"
-								:checked="filtersStore.isSubjectActive(subject.id)"
-								class="size-4 rounded border-gray-300"
-								@change="filtersStore.toggleSubjectFilter(subject.id)"
+					<h3 class="text-foreground text-sm font-semibold">Предмети</h3>
+					<div class="flex flex-wrap gap-2">
+						<Button
+							v-for="subject in subjects"
+							:key="subject.id"
+							:variant="filtersStore.isSubjectActive(subject.id) ? 'default' : 'outline'"
+							size="sm"
+							class="h-8 text-xs"
+							@click="filtersStore.toggleSubjectFilter(subject.id)"
+						>
+							<Icon
+								v-if="filtersStore.isSubjectActive(subject.id)"
+								name="lucide:check"
+								class="!size-4"
 							/>
-							<label :for="`subject-${subject.id}`" class="cursor-pointer text-sm font-medium">
-								{{ subject.brief }}
-							</label>
-						</div>
+							{{ subject.brief }}
+						</Button>
 					</div>
 				</div>
 			</div>
@@ -285,13 +264,13 @@ watch(isOpen, (open) => {
 				class="flex gap-2"
 			>
 				<Button variant="outline" @click="filtersStore.clearAll">
-					<Icon name="lucide:rotate-ccw" class="mr-2 !size-4" />
+					<Icon name="lucide:rotate-ccw" class="!size-4" />
 					Скинути
 				</Button>
 				<DialogClose as-child>
 					<Button>
-						<Icon name="lucide:check" class="mr-2 !size-4" />
-						Закрити
+						<Icon name="lucide:check" class="!size-4" />
+						Зберегти
 					</Button>
 				</DialogClose>
 			</DialogFooter>

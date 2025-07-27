@@ -99,6 +99,17 @@ export const useFiltersStore = defineStore("filters", () => {
 		version.value++
 	}
 
+	const toggleGroupFilter = (filterId: number) => {
+		const index = groupsFilters.value.indexOf(filterId)
+		if (index > -1) {
+			groupsFilters.value.splice(index, 1)
+		} else {
+			groupsFilters.value.push(filterId)
+		}
+		saveFilters()
+		version.value++
+	}
+
 	const isLessonTypeActive = (filterId: string) => {
 		return lessonTypesFilters.value.includes(filterId)
 	}
@@ -113,6 +124,10 @@ export const useFiltersStore = defineStore("filters", () => {
 
 	const isSubjectActive = (filterId: number) => {
 		return subjectsFilters.value.includes(filterId)
+	}
+
+	const isGroupActive = (filterId: number) => {
+		return groupsFilters.value.includes(filterId)
 	}
 
 	const clearAll = () => {
@@ -138,31 +153,17 @@ export const useFiltersStore = defineStore("filters", () => {
 		groups: groupsFilters.value,
 	}))
 
-	const isGroupActive = (filterId: number) => {
-		return groupsFilters.value.includes(filterId)
-	}
-
-	const toggleGroupFilter = (filterId: number) => {
-		const index = groupsFilters.value.indexOf(filterId)
-		if (index > -1) {
-			groupsFilters.value.splice(index, 1)
-		} else {
-			groupsFilters.value.push(filterId)
-		}
-		saveFilters()
-		version.value++
-	}
-
 	return {
-		lessonTypesFilters: readonly(lessonTypesFilters),
-		teachersFilters: readonly(teachersFilters),
-		auditoriumsFilters: readonly(auditoriumsFilters),
-		subjectsFilters: readonly(subjectsFilters),
-		groupsFilters: readonly(groupsFilters),
+		lessonTypesFilters,
+		teachersFilters,
+		auditoriumsFilters,
+		subjectsFilters,
+		groupsFilters,
 		activeFilters: readonly(activeFilters),
 		version: readonly(version),
 		hasActive: readonly(hasActive),
 		loadFilters,
+		saveFilters,
 		toggleLessonTypeFilter,
 		toggleTeacherFilter,
 		toggleAuditoriumFilter,
