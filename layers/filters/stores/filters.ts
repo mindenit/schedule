@@ -1,5 +1,9 @@
 export const useFiltersStore = defineStore("filters", () => {
-	const activeFilters = ref<string[]>([])
+	const lessonTypesFilters = ref<string[]>([])
+	const teachersFilters = ref<number[]>([])
+	const auditoriumsFilters = ref<number[]>([])
+	const subjectsFilters = ref<number[]>([])
+	const groupsFilters = ref<number[]>([])
 	const version = ref(0)
 
 	let currentScheduleKey = ""
@@ -14,12 +18,17 @@ export const useFiltersStore = defineStore("filters", () => {
 				const saved = localStorage.getItem(`filters-${key}`)
 				if (saved) {
 					try {
-						activeFilters.value = JSON.parse(saved)
+						const parsed = JSON.parse(saved)
+						lessonTypesFilters.value = parsed.lessonTypes || []
+						teachersFilters.value = parsed.teachers || []
+						auditoriumsFilters.value = parsed.auditoriums || []
+						subjectsFilters.value = parsed.subjects || []
+						groupsFilters.value = parsed.groups || []
 					} catch {
-						activeFilters.value = []
+						clearAllFilters()
 					}
 				} else {
-					activeFilters.value = []
+					clearAllFilters()
 				}
 			}
 		}
@@ -27,42 +36,143 @@ export const useFiltersStore = defineStore("filters", () => {
 
 	const saveFilters = () => {
 		if (import.meta.client && currentScheduleKey) {
-			localStorage.setItem(`filters-${currentScheduleKey}`, JSON.stringify(activeFilters.value))
+			const filters = {
+				lessonTypes: lessonTypesFilters.value,
+				teachers: teachersFilters.value,
+				auditoriums: auditoriumsFilters.value,
+				subjects: subjectsFilters.value,
+				groups: groupsFilters.value,
+			}
+			localStorage.setItem(`filters-${currentScheduleKey}`, JSON.stringify(filters))
 		}
 	}
 
-	const toggleFilter = (filterId: string) => {
-		const index = activeFilters.value.indexOf(filterId)
+	const clearAllFilters = () => {
+		lessonTypesFilters.value = []
+		teachersFilters.value = []
+		auditoriumsFilters.value = []
+		subjectsFilters.value = []
+		groupsFilters.value = []
+	}
 
+	const toggleLessonTypeFilter = (filterId: string) => {
+		const index = lessonTypesFilters.value.indexOf(filterId)
 		if (index > -1) {
-			activeFilters.value.splice(index, 1)
+			lessonTypesFilters.value.splice(index, 1)
 		} else {
-			activeFilters.value.push(filterId)
+			lessonTypesFilters.value.push(filterId)
 		}
-
 		saveFilters()
 		version.value++
 	}
 
-	const isActive = (filterId: string) => {
-		return activeFilters.value.includes(filterId)
+	const toggleTeacherFilter = (filterId: number) => {
+		const index = teachersFilters.value.indexOf(filterId)
+		if (index > -1) {
+			teachersFilters.value.splice(index, 1)
+		} else {
+			teachersFilters.value.push(filterId)
+		}
+		saveFilters()
+		version.value++
+	}
+
+	const toggleAuditoriumFilter = (filterId: number) => {
+		const index = auditoriumsFilters.value.indexOf(filterId)
+		if (index > -1) {
+			auditoriumsFilters.value.splice(index, 1)
+		} else {
+			auditoriumsFilters.value.push(filterId)
+		}
+		saveFilters()
+		version.value++
+	}
+
+	const toggleSubjectFilter = (filterId: number) => {
+		const index = subjectsFilters.value.indexOf(filterId)
+		if (index > -1) {
+			subjectsFilters.value.splice(index, 1)
+		} else {
+			subjectsFilters.value.push(filterId)
+		}
+		saveFilters()
+		version.value++
+	}
+
+	const isLessonTypeActive = (filterId: string) => {
+		return lessonTypesFilters.value.includes(filterId)
+	}
+
+	const isTeacherActive = (filterId: number) => {
+		return teachersFilters.value.includes(filterId)
+	}
+
+	const isAuditoriumActive = (filterId: number) => {
+		return auditoriumsFilters.value.includes(filterId)
+	}
+
+	const isSubjectActive = (filterId: number) => {
+		return subjectsFilters.value.includes(filterId)
 	}
 
 	const clearAll = () => {
-		activeFilters.value = []
+		clearAllFilters()
 		saveFilters()
 		version.value++
 	}
 
-	const hasActive = computed(() => activeFilters.value.length > 0)
+	const hasActive = computed(
+		() =>
+			lessonTypesFilters.value.length > 0 ||
+			teachersFilters.value.length > 0 ||
+			auditoriumsFilters.value.length > 0 ||
+			subjectsFilters.value.length > 0 ||
+			groupsFilters.value.length > 0
+	)
+
+	const activeFilters = computed(() => ({
+		lessonTypes: lessonTypesFilters.value,
+		teachers: teachersFilters.value,
+		auditoriums: auditoriumsFilters.value,
+		subjects: subjectsFilters.value,
+		groups: groupsFilters.value,
+	}))
+
+	const isGroupActive = (filterId: number) => {
+		return groupsFilters.value.includes(filterId)
+	}
+
+	const toggleGroupFilter = (filterId: number) => {
+		const index = groupsFilters.value.indexOf(filterId)
+		if (index > -1) {
+			groupsFilters.value.splice(index, 1)
+		} else {
+			groupsFilters.value.push(filterId)
+		}
+		saveFilters()
+		version.value++
+	}
 
 	return {
+		lessonTypesFilters: readonly(lessonTypesFilters),
+		teachersFilters: readonly(teachersFilters),
+		auditoriumsFilters: readonly(auditoriumsFilters),
+		subjectsFilters: readonly(subjectsFilters),
+		groupsFilters: readonly(groupsFilters),
 		activeFilters: readonly(activeFilters),
 		version: readonly(version),
 		hasActive: readonly(hasActive),
 		loadFilters,
-		toggleFilter,
-		isActive,
+		toggleLessonTypeFilter,
+		toggleTeacherFilter,
+		toggleAuditoriumFilter,
+		toggleSubjectFilter,
+		toggleGroupFilter,
+		isLessonTypeActive,
+		isTeacherActive,
+		isAuditoriumActive,
+		isSubjectActive,
+		isGroupActive,
 		clearAll,
 	}
 })
