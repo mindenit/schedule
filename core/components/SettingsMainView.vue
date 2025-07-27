@@ -1,56 +1,46 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia"
 import { toast } from "vue-sonner"
-import { useLinksStore } from "~/core/stores/links"
 
-const emit = defineEmits<{
-	navigate: [view: "links" | "export-tree"]
-}>()
-
-const calendarStore = useCalendarStore()
 const scheduleStore = useScheduleStore()
-const linksStore = useLinksStore()
 
-const { allEvents } = storeToRefs(calendarStore)
-const { selectedSchedule } = storeToRefs(scheduleStore)
-const { exportCurrentSchedule, exportAcademicYearSchedule, isLoading } = useScheduleIcsExport()
+const { selectedSchedule, allSchedules } = storeToRefs(scheduleStore)
+const { exportAcademicYearSchedule, isLoading } = useScheduleIcsExport()
 
-const fileInput = ref<HTMLInputElement | null>(null)
-
-const handleExport = () => {
-	linksStore.exportLinks()
-	toast.success("Експорт завершено", {
-		description: "Всі посилання успішно експортовано",
-	})
+const getIconByType = (type: string) => {
+	return SCHEDULE_ICONS[type] || "lucide:calendar"
 }
 
-const triggerImport = () => {
-	fileInput.value?.click()
-}
-
-const handleImport = (event: Event) => {
-	const target = event.target as HTMLInputElement
-	const file = target.files?.[0]
-	if (!file) return
-
-	const reader = new FileReader()
-	reader.onload = (e) => {
-		const result = linksStore.importLinks(e.target?.result as string)
-		if (!result.success) {
-			toast.error("Помилка імпорту", {
-				description: result.error || "Не вдалося імпортувати посилання",
-			})
-		} else {
-			toast.success("Імпорт завершено", {
-				description: "Посилання успішно імпортовані",
-			})
-		}
+const copyAllSchedulesToClipboard = async () => {
+	if (allSchedules.value.length === 0) {
+		toast.warning("Немає даних для копіювання")
+		return
 	}
-	reader.readAsText(file)
-}
 
-const handleIcsExportCurrent = () => {
-	exportCurrentSchedule(allEvents.value)
+	const markdownContent = allSchedules.value
+		.map((schedule) => {
+			const isActive =
+				selectedSchedule.value &&
+				String(selectedSchedule.value.id) === String(schedule.id) &&
+				selectedSchedule.value.type === schedule.type
+
+			const prefix = isActive ? "🔥 " : "- "
+			return `${prefix}**${schedule.type}** • ID: \`${schedule.id}\` • ${schedule.name}`
+		})
+		.join("\n")
+
+	const fullMarkdown = `# Збережені розклади\n\n${markdownContent}`
+
+	try {
+		await navigator.clipboard.writeText(fullMarkdown)
+		toast.success("Інформацію скопійовано", {
+			description: "Дані про всі розклади скопійовано у буфер обміну",
+		})
+	} catch {
+		toast.error("Помилка копіювання", {
+			description: "Не вдалося скопіювати дані у буфер обміну",
+		})
+	}
 }
 
 const handleIcsExportAcademicYear = async () => {
@@ -70,44 +60,70 @@ const handleIcsExportAcademicYear = async () => {
 
 <template>
 	<div class="flex flex-col gap-4 overflow-y-auto py-4">
-		<div class="space-y-2">
-			<h3 class="text-muted-foreground text-sm font-medium">Експорт розкладання (ICS)</h3>
-			<div class="flex flex-col gap-2">
-				<Button variant="default" :disabled="isLoading" @click="handleIcsExportAcademicYear">
-					<Icon name="lucide:calendar-export" />
-					Експорт на навчальний рік
-				</Button>
-				<Button variant="outline" @click="handleIcsExportCurrent">
+		<Tabs default-value="schedule" class="w-full">
+			<TabsList class="grid w-full grid-cols-3">
+				<TabsTrigger value="schedule">
 					<Icon name="lucide:calendar" />
-					Експорт поточних подій
-				</Button>
-			</div>
-		</div>
-
-		<div class="space-y-2 border-t pt-4">
-			<h3 class="text-muted-foreground text-sm font-medium">Керування посиланнями</h3>
-			<div class="flex flex-col gap-2">
-				<Button variant="outline" @click="emit('navigate', 'links')">
+					Розклад
+				</TabsTrigger>
+				<TabsTrigger value="links">
 					<Icon name="lucide:link" />
-					Переглянути та редагувати посилання
-				</Button>
+					Посилання
+				</TabsTrigger>
+				<TabsTrigger value="bug">
+					<Icon name="lucide:bug" />
+					Debug
+				</TabsTrigger>
+			</TabsList>
 
-				<Button variant="outline" @click="handleExport">
-					<Icon name="lucide:upload" />
-					Експортувати всі посилання
-				</Button>
+			<TabsContent value="schedule">
+				<h3 class="text-muted-foreground mb-2 text-sm font-medium">Експорт розкладання (ICS)</h3>
+				<div class="flex flex-wrap items-center justify-center gap-2">
+					<Button variant="default" :disabled="isLoading" @click="handleIcsExportAcademicYear">
+						<Icon name="lucide:calendar-export" />
+						Експорт на навчальний рік
+					</Button>
+				</div>
+			</TabsContent>
 
-				<Button variant="outline" @click="emit('navigate', 'export-tree')">
-					<Icon name="lucide:tree-pine" />
-					Вибірковий експорт посилань
-				</Button>
+			<TabsContent value="links">
+				<SettingsLinksManagement />
+			</TabsContent>
 
-				<Button variant="outline" @click="triggerImport">
-					<Icon name="lucide:download" />
-					Імпортувати посилання
-				</Button>
-			</div>
-		</div>
-		<input ref="fileInput" type="file" accept=".json" class="hidden" @change="handleImport" />
+			<TabsContent value="bug">
+				<h3 class="text-muted-foreground mb-2 text-sm font-medium">Активні елементи розкладу</h3>
+				<div class="space-y-3">
+					<div v-if="allSchedules.length === 0" class="text-muted-foreground py-4 text-center">
+						Немає збережених розкладів
+					</div>
+					<div v-else class="space-y-2">
+						<div
+							v-for="schedule in allSchedules"
+							:key="`${schedule.type}-${schedule.id}`"
+							:class="[
+								'bg-card flex items-center gap-3 rounded-lg border-2 p-3',
+								selectedSchedule &&
+								String(selectedSchedule.id) === String(schedule.id) &&
+								selectedSchedule.type === schedule.type
+									? 'border-primary'
+									: 'border-border',
+							]"
+						>
+							<Icon :name="getIconByType(schedule.type)" class="text-muted-foreground h-4 w-4" />
+							<div class="min-w-0 flex-1">
+								<div class="text-sm font-medium">{{ schedule.name }}</div>
+								<div class="text-muted-foreground text-xs">
+									{{ schedule.type }} • ID: {{ schedule.id }}
+								</div>
+							</div>
+						</div>
+						<Button variant="outline" class="mt-4 w-full" @click="copyAllSchedulesToClipboard">
+							<Icon name="lucide:copy" class="!size-4" />
+							Скопіювати все
+						</Button>
+					</div>
+				</div>
+			</TabsContent>
+		</Tabs>
 	</div>
 </template>

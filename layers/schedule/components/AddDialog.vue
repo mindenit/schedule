@@ -174,7 +174,7 @@ const handleCardClick = (item: GenericScheduleItem) => {
 <template>
 	<Dialog v-model:open="isDialogOpen">
 		<DialogTrigger as-child>
-			<Button class="w-full gap-1 max-md:hidden">
+			<Button class="flex-1 min-w-0 gap-1 max-md:hidden">
 				<Icon name="lucide:plus" class="!size-4" /> Додати розклад
 			</Button>
 		</DialogTrigger>

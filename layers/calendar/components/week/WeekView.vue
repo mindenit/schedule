@@ -22,12 +22,104 @@ const hours = Array.from({ length: 24 }, (_, i) => i)
 
 const getDayEvents = (day: Date) => getEventsForDate(props.events, day)
 const getGroupedEventsForDay = (day: Date) => groupEvents(getDayEvents(day))
+
+const weekViewEl = useTemplateRef("weekView")
+
+const getEarliestEventOfWeek = () => {
+	let earliestEvent: Schedule | null = null
+
+	const allWeekEvents: Schedule[] = []
+
+	for (const day of weekDays.value) {
+		const dayEvents = getDayEvents(day)
+		allWeekEvents.push(...dayEvents)
+	}
+
+	if (allWeekEvents.length === 0) {
+		return null
+	}
+
+	earliestEvent = allWeekEvents.reduce((earliest, current) => {
+		const currentStart = parseDate(current.startedAt)
+		const earliestStart = parseDate(earliest.startedAt)
+
+		const currentTime = currentStart.getHours() * 60 + currentStart.getMinutes()
+		const earliestTime = earliestStart.getHours() * 60 + earliestStart.getMinutes()
+
+		return currentTime < earliestTime ? current : earliest
+	})
+
+	return earliestEvent
+}
+
+const findScrollableParent = (element: HTMLElement | null): HTMLElement | null => {
+	if (!element) return null
+
+	const style = window.getComputedStyle(element)
+	const hasOverflow = style.overflowY === "auto" || style.overflowY === "scroll"
+	const isScrollable = element.scrollHeight > element.clientHeight
+
+	if (hasOverflow && isScrollable) {
+		return element
+	}
+
+	return findScrollableParent(element.parentElement)
+}
+
+const scrollToFirstEvent = () => {
+	const firstEvent = getEarliestEventOfWeek()
+	if (!firstEvent) {
+		return false
+	}
+
+	const scrollContainer = findScrollableParent(weekViewEl.value)
+
+	if (!scrollContainer) {
+		return false
+	}
+
+	const eventStart = parseDate(firstEvent.startedAt)
+	const hour = eventStart.getHours()
+	const minutes = eventStart.getMinutes()
+
+	console.log("Scrolling to earliest event:", {
+		subject: firstEvent.subject,
+		time: `${hour}:${minutes.toString().padStart(2, "0")}`,
+		date: eventStart.toDateString(),
+	})
+
+	const rowHeight = typeof WEEK_VIEW_ROW_HEIGHT !== "undefined" ? WEEK_VIEW_ROW_HEIGHT : 60
+	const scrollPosition = hour * rowHeight + (minutes / 60) * rowHeight - 100
+
+	scrollContainer.scrollTo({
+		top: Math.max(0, scrollPosition),
+		behavior: "smooth",
+	})
+
+	return true
+}
+
+const scheduleScroll = () => {
+	nextTick(() => {
+		setTimeout(() => {
+			scrollToFirstEvent()
+		}, 100)
+	})
+}
+
+watch([selectedDate, () => props.events], scheduleScroll, { immediate: true })
+
+onMounted(() => {
+	setTimeout(() => {
+		scrollToFirstEvent()
+	}, 500)
+})
 </script>
 
 <template>
-	<div class="flex flex-col">
+	<div ref="weekView" class="flex flex-col">
 		<div class="overflow-x-auto">
-			<div ref="" class="min-w-[800px]">
+			<div class="min-w-[800px]">
 				<div class="bg-muted/50 relative z-20 mb-1 grid grid-cols-[72px_1fr] gap-1 md:rounded-t-lg">
 					<div class="col-start-2 grid grid-cols-7 gap-1">
 						<span
