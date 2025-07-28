@@ -21,7 +21,7 @@ const icon = computed(() => {
 	>
 		<div class="flex items-center gap-2">
 			<div class="bg-primary/10 text-primary flex size-10 items-center justify-center rounded-lg">
-				<Icon :name="icon" class="!size-5" />
+				<AppIcon :name="icon!" />
 			</div>
 
 			<h3 class="text-foreground text-lg font-semibold">{{ name }}</h3>

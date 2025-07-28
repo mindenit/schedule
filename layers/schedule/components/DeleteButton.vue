@@ -50,13 +50,13 @@ const getScheduleTypeName = (type: string) => {
 	<AlertDialog v-model:open="showDialog">
 		<AlertDialogTrigger as-child>
 			<Button size="icon" variant="destructive" :disabled="!hasActiveSchedule">
-				<Icon name="lucide:trash" class="!size-4" />
+				<AppIcon name="lucide:trash" />
 			</Button>
 		</AlertDialogTrigger>
 		<AlertDialogContent>
 			<AlertDialogHeader>
 				<AlertDialogTitle class="flex items-center gap-2">
-					<Icon name="lucide:alert-triangle" class="text-destructive size-5" />
+					<AppIcon name="lucide:alert-triangle" class="text-destructive" />
 					Видалити розклад
 				</AlertDialogTitle>
 				<AlertDialogDescription>
@@ -65,9 +65,9 @@ const getScheduleTypeName = (type: string) => {
 			</AlertDialogHeader>
 			<div v-if="selectedSchedule" class="bg-muted rounded-lg p-4">
 				<div class="flex items-center gap-3">
-					<Icon
+					<AppIcon
 						:name="getScheduleIcon(selectedSchedule.type)"
-						class="text-muted-foreground h-6 w-6 flex-shrink-0"
+						class="text-muted-foreground flex-shrink-0"
 					/>
 					<div>
 						<p class="font-medium">{{ selectedSchedule.name }}</p>
@@ -80,7 +80,7 @@ const getScheduleTypeName = (type: string) => {
 			<AlertDialogFooter>
 				<AlertDialogCancel>Скасувати</AlertDialogCancel>
 				<AlertDialogAction class="bg-destructive" @click="removeActiveSchedule">
-					<Icon name="lucide:trash" />
+					<AppIcon name="lucide:trash" />
 					Видалити
 				</AlertDialogAction>
 			</AlertDialogFooter>

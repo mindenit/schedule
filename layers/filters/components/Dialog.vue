@@ -101,14 +101,14 @@ watch(isOpen, (open) => {
 	<Dialog v-model:open="isOpen">
 		<DialogTrigger as-child>
 			<Button size="icon" :class="props.class">
-				<Icon name="lucide:filter" class="!size-4" />
+				<AppIcon name="lucide:filter" />
 			</Button>
 		</DialogTrigger>
 
 		<DialogContent>
 			<DialogHeader>
 				<DialogTitle class="flex items-center gap-2">
-					<Icon name="lucide:filter" class="!size-5" />
+					<AppIcon name="lucide:filter" />
 					Фільтри
 				</DialogTitle>
 				<DialogDescription> Налаштуйте фільтри для відображення розкладу. </DialogDescription>
@@ -228,12 +228,12 @@ watch(isOpen, (open) => {
 				class="flex gap-2"
 			>
 				<Button variant="outline" @click="filtersStore.clearAll">
-					<Icon name="lucide:rotate-ccw" class="!size-4" />
+					<AppIcon name="lucide:rotate-ccw" />
 					Скинути
 				</Button>
 				<DialogClose as-child>
 					<Button>
-						<Icon name="lucide:check" class="!size-4" />
+						<AppIcon name="lucide:check" />
 						Зберегти
 					</Button>
 				</DialogClose>

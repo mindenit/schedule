@@ -55,7 +55,7 @@ const hasEvents = computed(() => todayEvents.value && todayEvents.value.length >
 					v-else-if="hasActiveSchedule && !hasEvents && !isLoading"
 					class="text-muted-foreground flex flex-col items-center justify-center gap-2 p-6 text-center"
 				>
-					<Icon name="lucide:smile" class="!size-8 opacity-50" />
+					<AppIcon name="lucide:smile" size="xl" class="opacity-50" />
 					<p class="text-sm">
 						Пар на сьогодні <br /><span class="text-lg font-semibold">немає</span>
 					</p>
@@ -64,7 +64,7 @@ const hasEvents = computed(() => todayEvents.value && todayEvents.value.length >
 					v-else
 					class="text-muted-foreground flex flex-col items-center justify-center gap-2 p-6 text-center"
 				>
-					<Icon name="lucide:calendar-plus" class="!size-8 opacity-50" />
+					<AppIcon name="lucide:calendar-plus" size="xl" class="opacity-50" />
 					<p class="text-sm">Оберіть розклад для перегляду пар</p>
 				</div>
 			</div>

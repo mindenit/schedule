@@ -40,7 +40,9 @@ const overlayContent = computed(() => {
 </script>
 
 <template>
-	<div class="relative flex h-full flex-col overflow-x-hidden rounded-lg max-md:rounded-t-none hide-scrollbar">
+	<div
+		class="hide-scrollbar relative flex h-full flex-col overflow-x-hidden rounded-lg max-md:rounded-t-none"
+	>
 		<div class="flex-1 transition-all duration-300 ease-in-out" :class="{ 'blur-sm': showOverlay }">
 			<BigCalendarMonthView
 				v-if="view === 'month'"
@@ -65,13 +67,13 @@ const overlayContent = computed(() => {
 					class="bg-background/70 absolute inset-0 flex items-center justify-center backdrop-blur-sm"
 				>
 					<TheLoader v-if="overlayContent === 'initializing'" size="lg" />
-			
+
 					<div
 						v-if="overlayContent === 'no-schedule'"
 						class="border-border bg-card rounded-lg border p-6 shadow-lg"
 					>
 						<div class="flex items-center">
-							<Icon name="lucide:alert-circle" class="flex-shrink-0" />
+							<AppIcon name="lucide:alert-circle" class="flex shrink-0" />
 							<div class="ml-4">
 								<h3 class="text-lg font-semibold">Розклад не обрано</h3>
 								<div class="text-sm">
@@ -80,9 +82,9 @@ const overlayContent = computed(() => {
 							</div>
 						</div>
 					</div>
-				
+
 					<TheLoader v-else-if="overlayContent === 'loading'" size="lg" />
-				
+
 					<Alert v-else-if="overlayContent === 'error'" variant="destructive" class="mx-2 w-sm">
 						<AlertTitle>Помилка</AlertTitle>
 						<AlertDescription>

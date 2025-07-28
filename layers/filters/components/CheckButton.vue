@@ -15,10 +15,10 @@ const emit = defineEmits<{
 	<Button
 		:variant="isActive ? 'default' : 'outline'"
 		size="sm"
-		class="h-8 text-xs"
+		class="text-xs"
 		@click="emit('toggle')"
 	>
-		<Icon v-if="isActive" name="lucide:check" class="!size-3" />
+		<AppIcon v-if="isActive" name="lucide:check" size="xs" />
 		{{ label }}
 	</Button>
 </template>

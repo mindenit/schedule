@@ -63,15 +63,15 @@ const handleIcsExportAcademicYear = async () => {
 		<Tabs default-value="schedule" class="w-full">
 			<TabsList class="grid w-full grid-cols-3">
 				<TabsTrigger value="schedule">
-					<Icon name="lucide:calendar" />
+					<AppIcon name="lucide:calendar" size="xs" />
 					Розклад
 				</TabsTrigger>
 				<TabsTrigger value="links">
-					<Icon name="lucide:link" />
+					<AppIcon name="lucide:link" size="xs" />
 					Посилання
 				</TabsTrigger>
 				<TabsTrigger value="bug">
-					<Icon name="lucide:bug" />
+					<AppIcon name="lucide:bug" size="xs" />
 					Debug
 				</TabsTrigger>
 			</TabsList>
@@ -80,7 +80,7 @@ const handleIcsExportAcademicYear = async () => {
 				<h3 class="text-muted-foreground mb-2 text-sm font-medium">Експорт розкладання (ICS)</h3>
 				<div class="flex flex-wrap items-center justify-center gap-2">
 					<Button variant="default" :disabled="isLoading" @click="handleIcsExportAcademicYear">
-						<Icon name="lucide:calendar-export" />
+						<AppIcon name="lucide:calendar-export" />
 						Експорт на навчальний рік
 					</Button>
 				</div>
@@ -109,7 +109,7 @@ const handleIcsExportAcademicYear = async () => {
 									: 'border-border',
 							]"
 						>
-							<Icon :name="getIconByType(schedule.type)" class="text-muted-foreground h-4 w-4" />
+							<AppIcon :name="getIconByType(schedule.type)" class="text-muted-foreground" />
 							<div class="min-w-0 flex-1">
 								<div class="text-sm font-medium">{{ schedule.name }}</div>
 								<div class="text-muted-foreground text-xs">
@@ -118,7 +118,7 @@ const handleIcsExportAcademicYear = async () => {
 							</div>
 						</div>
 						<Button variant="outline" class="mt-4 w-full" @click="copyAllSchedulesToClipboard">
-							<Icon name="lucide:copy" class="!size-4" />
+							<AppIcon name="lucide:copy" />
 							Скопіювати все
 						</Button>
 					</div>

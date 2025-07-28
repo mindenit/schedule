@@ -10,6 +10,6 @@ const themeIcon = computed(() => (colorMode.value !== "light" ? "lucide:moon" : 
 
 <template>
 	<Button variant="ghost" size="icon" @click="handleClick()">
-		<Icon :name="themeIcon" class="!size-5" />
+		<AppIcon :name="themeIcon" />
 	</Button>
 </template>
