@@ -143,7 +143,7 @@ const deleteLink = (linkId: string) => {
 					<AppIcon name="lucide:plus" />
 				</Button>
 			</div>
-			<div v-if="eventLinks.length" class="space-y-2">
+			<div v-if="eventLinks.length" class="max-h-[200px] space-y-2 overflow-auto">
 				<div
 					v-for="link in eventLinks"
 					:key="link.id"
