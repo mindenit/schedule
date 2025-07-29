@@ -21,6 +21,7 @@ export default defineNuxtConfig({
 		"shadcn-nuxt",
 		"@pinia/nuxt",
 		"@nuxt/image",
+		"@nuxtjs/seo",
 	],
 	future: {
 		compatibilityVersion: 4,
@@ -47,5 +48,30 @@ export default defineNuxtConfig({
 		fallback: "light",
 		classSuffix: "",
 		storageKey: "nuxt-color-mode",
+	},
+
+	site: {
+		url: "https://sh.mindenit.org",
+		name: "Mindenit Schedule",
+		description:
+			"Зручний перегляд розкладу занять для студентів та викладачів. Додавайте розклади груп, викладачів та аудиторій, переглядайте їх у зручному форматі по днях, тижнях або на місяць. Швидкий доступ до розкладу у будь-який час.",
+		defaultLocale: "uk",
+		trailingSlash: false,
+		indexable: true,
+		debug: process.env.NODE_ENV === "development",
+	},
+	robots: {
+		sitemap: "/sitemap.xml",
+	},
+	seo: {
+		redirectToCanonicalSiteUrl: true,
+		fallbackTitle: true,
+		automaticDefaults: true,
+		metaDataFiles: true,
+		meta: {
+			ogType: "website",
+			twitterCard: "summary_large_image",
+			ogLocale: "uk_UA",
+		},
 	},
 })
