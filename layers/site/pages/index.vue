@@ -2,6 +2,15 @@
 import { storeToRefs } from "pinia"
 import { useScheduleQuery } from "~/core/composables/useScheduleQuery"
 
+const pageTitle = `Головна`
+
+useSeoMeta({
+	title: pageTitle,
+	ogTitle: pageTitle,
+})
+
+defineOgImageComponent("Mindenit")
+
 const calendarStore = useCalendarStore()
 const scheduleStore = useScheduleStore()
 
