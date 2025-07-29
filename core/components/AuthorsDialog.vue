@@ -46,11 +46,6 @@ import { buttonVariants } from "./ui/button"
 						<AppIcon name="brandico:linkedin-rect" />
 					</NuxtLink>
 				</div>
-
-				<div class="text-muted-foreground text-center text-sm">
-					<p>Застосунок розроблено за підтримки</p>
-					<p>Харківського національного університету радіоелектроніки</p>
-				</div>
 			</div>
 
 			<DialogFooter class="flex items-center justify-center">
