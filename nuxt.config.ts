@@ -51,7 +51,7 @@ export default defineNuxtConfig({
 	},
 
 	site: {
-		url: "https://sh.mindenit.org",
+		url: "https://new-sh.mindenit.org",
 		name: "Mindenit Schedule",
 		description:
 			"Зручний перегляд розкладу занять для студентів та викладачів. Додавайте розклади груп, викладачів та аудиторій, переглядайте їх у зручному форматі по днях, тижнях або на місяць. Швидкий доступ до розкладу у будь-який час.",
