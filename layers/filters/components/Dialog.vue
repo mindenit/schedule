@@ -15,7 +15,6 @@ import {
 	auditoriumTeachersOptions,
 	auditoriumSubjectsOptions,
 } from "~/core/queries/auditoriums"
-import { FILTERS_LESSON_TYPES } from "../constants"
 
 const props = defineProps<{ class?: string }>()
 
@@ -102,14 +101,14 @@ watch(isOpen, (open) => {
 	<Dialog v-model:open="isOpen">
 		<DialogTrigger as-child>
 			<Button size="icon" :class="props.class">
-				<Icon name="lucide:filter" class="!size-4" />
+				<AppIcon name="lucide:filter" />
 			</Button>
 		</DialogTrigger>
 
 		<DialogContent>
 			<DialogHeader>
 				<DialogTitle class="flex items-center gap-2">
-					<Icon name="lucide:filter" class="!size-5" />
+					<AppIcon name="lucide:filter" />
 					Фільтри
 				</DialogTitle>
 				<DialogDescription> Налаштуйте фільтри для відображення розкладу. </DialogDescription>
@@ -122,139 +121,104 @@ watch(isOpen, (open) => {
 				Оберіть розклад для налаштування фільтрів
 			</div>
 
-			<div
-				v-else-if="!['group', 'teacher', 'auditorium'].includes(selectedSchedule.type)"
-				class="text-muted-foreground flex items-center justify-center py-8"
-			>
-				Фільтри в розробці для цього типу розкладу
-			</div>
+			<div v-else class="max-h-96 overflow-x-hidden overflow-y-auto">
+				<Accordion type="multiple" class="space-y-2">
+					<AccordionItem value="lesson-types">
+						<AccordionTrigger class="text-sm font-semibold">Типи занять</AccordionTrigger>
+						<AccordionContent>
+							<div class="flex flex-wrap gap-2 pt-2">
+								<FiltersCheckButton
+									v-for="lessonType in FILTERS_LESSON_TYPES"
+									:key="lessonType.id"
+									:label="lessonType.name"
+									:is-active="filtersStore.isLessonTypeActive(lessonType.id)"
+									@toggle="filtersStore.toggleLessonTypeFilter(lessonType.id)"
+								/>
+							</div>
+						</AccordionContent>
+					</AccordionItem>
 
-			<div v-else class="max-h-96 space-y-6 overflow-y-auto">
-				<div class="space-y-3">
-					<h3 class="text-foreground text-sm font-semibold">Типи занять</h3>
-					<div class="flex flex-wrap gap-2">
-						<Button
-							v-for="lessonType in FILTERS_LESSON_TYPES"
-							:key="lessonType.id"
-							:variant="filtersStore.isLessonTypeActive(lessonType.id) ? 'default' : 'outline'"
-							size="sm"
-							class="h-8 text-xs"
-							@click="filtersStore.toggleLessonTypeFilter(lessonType.id)"
-						>
-							<Icon
-								v-if="filtersStore.isLessonTypeActive(lessonType.id)"
-								name="lucide:check"
-								class="!size-4"
-							/>
-							{{ lessonType.name }}
-						</Button>
-					</div>
-				</div>
+					<AccordionItem
+						v-if="
+							groups &&
+							groups.length > 0 &&
+							(selectedSchedule.type === 'teacher' || selectedSchedule.type === 'auditorium')
+						"
+						value="groups"
+					>
+						<AccordionTrigger class="text-sm font-semibold">Групи</AccordionTrigger>
+						<AccordionContent>
+							<div class="flex flex-wrap gap-2 pt-2">
+								<FiltersCheckButton
+									v-for="group in groups"
+									:key="group.id"
+									:label="group.name"
+									:is-active="filtersStore.isGroupActive(group.id)"
+									@toggle="filtersStore.toggleGroupFilter(group.id)"
+								/>
+							</div>
+						</AccordionContent>
+					</AccordionItem>
 
-				<div
-					v-if="
-						groups &&
-						groups.length > 0 &&
-						(selectedSchedule.type === 'teacher' || selectedSchedule.type === 'auditorium')
-					"
-					class="space-y-3"
-				>
-					<h3 class="text-foreground text-sm font-semibold">Групи</h3>
-					<div class="flex flex-wrap gap-2">
-						<Button
-							v-for="group in groups"
-							:key="group.id"
-							:variant="filtersStore.isGroupActive(group.id) ? 'default' : 'outline'"
-							size="sm"
-							class="h-8 text-xs"
-							@click="filtersStore.toggleGroupFilter(group.id)"
-						>
-							<Icon
-								v-if="filtersStore.isGroupActive(group.id)"
-								name="lucide:check"
-								class="!size-4"
-							/>
-							{{ group.name }}
-						</Button>
-					</div>
-				</div>
+					<AccordionItem
+						v-if="
+							teachers &&
+							teachers.length > 0 &&
+							(selectedSchedule.type === 'group' || selectedSchedule.type === 'auditorium')
+						"
+						value="teachers"
+					>
+						<AccordionTrigger class="text-sm font-semibold">Викладачі</AccordionTrigger>
+						<AccordionContent>
+							<div class="flex flex-wrap gap-2 pt-2">
+								<FiltersCheckButton
+									v-for="teacher in teachers"
+									:key="teacher.id"
+									:label="teacher.shortName"
+									:is-active="filtersStore.isTeacherActive(teacher.id)"
+									@toggle="filtersStore.toggleTeacherFilter(teacher.id)"
+								/>
+							</div>
+						</AccordionContent>
+					</AccordionItem>
 
-				<div
-					v-if="
-						teachers &&
-						teachers.length > 0 &&
-						(selectedSchedule.type === 'group' || selectedSchedule.type === 'auditorium')
-					"
-					class="space-y-3"
-				>
-					<h3 class="text-foreground text-sm font-semibold">Викладачі</h3>
-					<div class="flex flex-wrap gap-2">
-						<Button
-							v-for="teacher in teachers"
-							:key="teacher.id"
-							:variant="filtersStore.isTeacherActive(teacher.id) ? 'default' : 'outline'"
-							size="sm"
-							class="h-8 text-xs"
-							@click="filtersStore.toggleTeacherFilter(teacher.id)"
-						>
-							<Icon
-								v-if="filtersStore.isTeacherActive(teacher.id)"
-								name="lucide:check"
-								class="!size-4"
-							/>
-							{{ teacher.shortName }}
-						</Button>
-					</div>
-				</div>
+					<AccordionItem
+						v-if="
+							auditoriums &&
+							auditoriums.length > 0 &&
+							(selectedSchedule.type === 'group' || selectedSchedule.type === 'teacher')
+						"
+						value="auditoriums"
+					>
+						<AccordionTrigger class="text-sm font-semibold">Аудиторії</AccordionTrigger>
+						<AccordionContent>
+							<div class="flex flex-wrap gap-2 pt-2">
+								<FiltersCheckButton
+									v-for="auditorium in auditoriums"
+									:key="auditorium.id"
+									:label="auditorium.name"
+									:is-active="filtersStore.isAuditoriumActive(auditorium.id)"
+									@toggle="filtersStore.toggleAuditoriumFilter(auditorium.id)"
+								/>
+							</div>
+						</AccordionContent>
+					</AccordionItem>
 
-				<div
-					v-if="
-						auditoriums &&
-						auditoriums.length > 0 &&
-						(selectedSchedule.type === 'group' || selectedSchedule.type === 'teacher')
-					"
-					class="space-y-3"
-				>
-					<h3 class="text-foreground text-sm font-semibold">Аудиторії</h3>
-					<div class="flex flex-wrap gap-2">
-						<Button
-							v-for="auditorium in auditoriums"
-							:key="auditorium.id"
-							:variant="filtersStore.isAuditoriumActive(auditorium.id) ? 'default' : 'outline'"
-							size="sm"
-							class="h-8 text-xs"
-							@click="filtersStore.toggleAuditoriumFilter(auditorium.id)"
-						>
-							<Icon
-								v-if="filtersStore.isAuditoriumActive(auditorium.id)"
-								name="lucide:check"
-								class="!size-4"
-							/>
-							{{ auditorium.name }}
-						</Button>
-					</div>
-				</div>
-
-				<div v-if="subjects && subjects.length > 0" class="space-y-3">
-					<h3 class="text-foreground text-sm font-semibold">Предмети</h3>
-					<div class="flex flex-wrap gap-2">
-						<Button
-							v-for="subject in subjects"
-							:key="subject.id"
-							:variant="filtersStore.isSubjectActive(subject.id) ? 'default' : 'outline'"
-							size="sm"
-							class="h-8 text-xs"
-							@click="filtersStore.toggleSubjectFilter(subject.id)"
-						>
-							<Icon
-								v-if="filtersStore.isSubjectActive(subject.id)"
-								name="lucide:check"
-								class="!size-4"
-							/>
-							{{ subject.brief }}
-						</Button>
-					</div>
-				</div>
+					<AccordionItem v-if="subjects && subjects.length > 0" value="subjects">
+						<AccordionTrigger class="text-sm font-semibold">Предмети</AccordionTrigger>
+						<AccordionContent>
+							<div class="flex flex-wrap gap-2 pt-2">
+								<FiltersCheckButton
+									v-for="subject in subjects"
+									:key="subject.id"
+									:label="subject.brief"
+									:is-active="filtersStore.isSubjectActive(subject.id)"
+									@toggle="filtersStore.toggleSubjectFilter(subject.id)"
+								/>
+							</div>
+						</AccordionContent>
+					</AccordionItem>
+				</Accordion>
 			</div>
 
 			<DialogFooter
@@ -264,12 +228,12 @@ watch(isOpen, (open) => {
 				class="flex gap-2"
 			>
 				<Button variant="outline" @click="filtersStore.clearAll">
-					<Icon name="lucide:rotate-ccw" class="!size-4" />
+					<AppIcon name="lucide:rotate-ccw" />
 					Скинути
 				</Button>
 				<DialogClose as-child>
 					<Button>
-						<Icon name="lucide:check" class="!size-4" />
+						<AppIcon name="lucide:check" />
 						Зберегти
 					</Button>
 				</DialogClose>

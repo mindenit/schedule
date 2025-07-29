@@ -7,14 +7,14 @@ import { buttonVariants } from "./ui/button"
 	<Dialog>
 		<DialogTrigger as-child>
 			<Button variant="ghost" size="sm" class="w-full justify-start gap-2">
-				<Icon name="lucide:info" class="!size-4" />
+				<AppIcon name="lucide:info" />
 				Про авторів
 			</Button>
 		</DialogTrigger>
 		<DialogContent class="max-w-md">
 			<DialogHeader>
 				<DialogTitle class="flex items-center gap-2">
-					<Icon name="lucide:users" class="!size-5" />
+					<AppIcon name="lucide:users" />
 					Про авторів
 				</DialogTitle>
 				<DialogDescription> Інформація про розробників цього застосунку </DialogDescription>
@@ -43,19 +43,14 @@ import { buttonVariants } from "./ui/button"
 						:class="buttonVariants({ variant: 'ghost', size: 'icon' })"
 						target="_blank"
 					>
-						<Icon name="brandico:linkedin-rect" />
+						<AppIcon name="brandico:linkedin-rect" />
 					</NuxtLink>
-				</div>
-
-				<div class="text-muted-foreground text-center text-sm">
-					<p>Застосунок розроблено за підтримки</p>
-					<p>Харківського національного університету радіоелектроніки</p>
 				</div>
 			</div>
 
 			<DialogFooter class="flex items-center justify-center">
 				<div class="text-muted-foreground flex items-center gap-2 text-sm">
-					<Icon name="lucide:heart" class="!size-4 text-red-500" />
+					<AppIcon name="lucide:heart" class="text-red-500" />
 					Зроблено з любов'ю
 				</div>
 			</DialogFooter>

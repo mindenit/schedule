@@ -123,7 +123,7 @@ const handleMainImport = (event: Event) => {
 		<div class="flex items-center justify-between max-md:flex-col max-md:gap-2 max-md:pb-2">
 			<h3 class="text-lg font-medium">Управління посиланнями</h3>
 			<Button size="sm" @click="triggerImport">
-				<Icon name="lucide:download" class="!size-4" />
+				<AppIcon name="lucide:download" />
 				Імпортувати
 			</Button>
 		</div>

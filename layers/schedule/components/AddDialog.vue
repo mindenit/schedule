@@ -174,8 +174,8 @@ const handleCardClick = (item: GenericScheduleItem) => {
 <template>
 	<Dialog v-model:open="isDialogOpen">
 		<DialogTrigger as-child>
-			<Button class="flex-1 min-w-0 gap-1 max-md:hidden">
-				<Icon name="lucide:plus" class="!size-4" /> Додати розклад
+			<Button class="min-w-0 flex-1 gap-1 max-md:hidden">
+				<AppIcon name="lucide:plus" /> Додати розклад
 			</Button>
 		</DialogTrigger>
 
@@ -184,7 +184,7 @@ const handleCardClick = (item: GenericScheduleItem) => {
 				class="size-12 rounded-full shadow-lg transition-all duration-200 hover:shadow-xl md:hidden"
 				size="icon"
 			>
-				<Icon name="lucide:plus" class="!size-6" />
+				<AppIcon name="lucide:plus" size="lg" />
 			</Button>
 		</DialogTrigger>
 
@@ -198,7 +198,7 @@ const handleCardClick = (item: GenericScheduleItem) => {
 					<TabsTrigger value="teacher"> Викладачі </TabsTrigger>
 					<TabsTrigger value="auditorium"> Аудиторії </TabsTrigger>
 				</TabsList>
-				
+
 				<TabsContent v-for="(config, tabType) in tabConfig" :key="tabType" :value="tabType">
 					<div v-if="config.isLoading.value" class="flex justify-center p-4">
 						<TheLoader />

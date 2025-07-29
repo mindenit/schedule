@@ -4,7 +4,7 @@
 			<Drawer direction="left">
 				<DrawerTrigger as-child>
 					<Button variant="ghost" size="icon">
-						<Icon class="!size-4" name="lucide:menu" />
+						<AppIcon name="lucide:menu" />
 					</Button>
 				</DrawerTrigger>
 				<DrawerContent>

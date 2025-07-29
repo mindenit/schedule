@@ -36,13 +36,13 @@ function handleNext() {
 
 		<div class="flex items-center gap-1">
 			<Button variant="secondary" size="icon" @click="handlePrevious">
-				<Icon name="lucide:chevron-left" />
+				<AppIcon name="lucide:chevron-left" />
 			</Button>
 
 			<BigCalendarTodayButton />
 
 			<Button variant="secondary" size="icon" @click="handleNext">
-				<Icon name="lucide:chevron-right" />
+				<AppIcon name="lucide:chevron-right" />
 			</Button>
 		</div>
 	</div>

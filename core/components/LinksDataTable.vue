@@ -13,7 +13,7 @@ import {
 	getSortedRowModel,
 	useVueTable,
 } from "@tanstack/vue-table"
-import { h, ref, computed, resolveComponent } from "vue"
+import { h, ref, computed } from "vue"
 import { toast } from "vue-sonner"
 
 import { Button } from "@/core/components/ui/button"
@@ -38,6 +38,7 @@ import { Badge } from "@/core/components/ui/badge"
 import type { Link } from "~/core/stores/links"
 import type { Subject } from "nurekit"
 import { valueUpdater } from "./ui/table/utils"
+import AppIcon from "./AppIcon.vue"
 
 interface LinkTableRow {
 	id: string
@@ -86,9 +87,12 @@ const tableData = computed<LinkTableRow[]>(() => {
 	return result
 })
 
-const createIcon = (name: string, className: string = "") => {
-	const IconComponent = resolveComponent("Icon")
-	return h(IconComponent, { name, class: className })
+const createAppIcon = (
+	name: string,
+	size: "xs" | "sm" | "md" | "lg" | "xl" | "2xl" = "sm",
+	className: string = ""
+) => {
+	return h(AppIcon, { name, size, class: className })
 }
 
 const deleteSelectedLinks = () => {
@@ -153,7 +157,7 @@ const columns: ColumnDef<LinkTableRow>[] = [
 					variant: "ghost",
 					onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
 				},
-				() => ["Назва", createIcon("lucide:arrow-up-down", "!size-4")]
+				() => ["Назва", createAppIcon("lucide:arrow-up-down", "sm")]
 			)
 		},
 		cell: ({ row }) => {
@@ -168,7 +172,7 @@ const columns: ColumnDef<LinkTableRow>[] = [
 						rel: "noopener noreferrer",
 						class: "font-medium text-primary hover:underline flex items-center gap-1",
 					},
-					[name, createIcon("lucide:external-link", "!size-3")]
+					[name, createAppIcon("lucide:external-link", "xs")]
 				),
 			])
 		},
@@ -182,7 +186,7 @@ const columns: ColumnDef<LinkTableRow>[] = [
 					variant: "ghost",
 					onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
 				},
-				() => ["Предмет", createIcon("lucide:arrow-up-down", "!size-4")]
+				() => ["Предмет", createAppIcon("lucide:arrow-up-down", "sm")]
 			)
 		},
 		cell: ({ row }) => {
@@ -258,7 +262,7 @@ const columns: ColumnDef<LinkTableRow>[] = [
 											{
 												default: () => [
 													h("span", { class: "sr-only" }, "Open menu"),
-													createIcon("lucide:menu", "!size-4"),
+													createAppIcon("lucide:menu", "sm"),
 												],
 											}
 										),
@@ -282,7 +286,7 @@ const columns: ColumnDef<LinkTableRow>[] = [
 													),
 											},
 											{
-												default: () => [createIcon("lucide:edit", "!size-4"), "Редагувати"],
+												default: () => [createAppIcon("lucide:edit", "sm"), "Редагувати"],
 											}
 										),
 										h(
@@ -294,7 +298,7 @@ const columns: ColumnDef<LinkTableRow>[] = [
 												class: "text-destructive",
 											},
 											{
-												default: () => [createIcon("lucide:trash-2", "!size-4"), "Видалити"],
+												default: () => [createAppIcon("lucide:trash-2", "sm"), "Видалити"],
 											}
 										),
 									],
@@ -473,7 +477,7 @@ const handleImport = (event: Event) => {
 					:disabled="!table.getCanPreviousPage()"
 					@click="table.previousPage()"
 				>
-					<Icon name="lucide:chevron-left" />
+					<AppIcon name="lucide:chevron-left" size="sm" />
 				</Button>
 				<Button
 					variant="outline"
@@ -481,7 +485,7 @@ const handleImport = (event: Event) => {
 					:disabled="!table.getCanNextPage()"
 					@click="table.nextPage()"
 				>
-					<Icon name="lucide:chevron-right" />
+					<AppIcon name="lucide:chevron-right" size="sm" />
 				</Button>
 			</div>
 		</div>
@@ -492,12 +496,12 @@ const handleImport = (event: Event) => {
 				size="sm"
 				@click="exportSelected"
 			>
-				<Icon name="lucide:upload" class="mr-2 h-4 w-4" />
+				<AppIcon name="lucide:upload" size="sm" />
 				Експортувати вибрані ({{ table.getFilteredSelectedRowModel().rows.length }})
 			</Button>
 
 			<Button v-if="tableData.length > 0" variant="outline" size="sm" @click="exportAll">
-				<Icon name="lucide:upload" class="mr-2 h-4 w-4" />
+				<AppIcon name="lucide:upload" size="sm" />
 				Експортувати все
 			</Button>
 
@@ -507,7 +511,7 @@ const handleImport = (event: Event) => {
 				size="sm"
 				@click="deleteSelectedLinks"
 			>
-				<Icon name="lucide:trash-2" class="!size-4" />
+				<AppIcon name="lucide:trash-2" size="sm" />
 				Видалити вибрані ({{ table.getFilteredSelectedRowModel().rows.length }})
 			</Button>
 		</div>

@@ -31,12 +31,12 @@ const getTypeLabel = (type: string) => {
 		<Select v-model="selectedValue">
 			<SelectTrigger class="w-full">
 				<SelectValue placeholder="Оберіть розклад">
-						<template v-if="scheduleStore.selectedSchedule">
-							<div class="flex items-center gap-2">
-								<Icon :name="getIconByType(scheduleStore.selectedSchedule.type)" class="h-4 w-4" />
-								<span>{{ scheduleStore.selectedSchedule.name }}</span>
-							</div>
-						</template>
+					<template v-if="scheduleStore.selectedSchedule">
+						<div class="flex items-center gap-2">
+							<AppIcon :name="getIconByType(scheduleStore.selectedSchedule.type)" />
+							<span>{{ scheduleStore.selectedSchedule.name }}</span>
+						</div>
+					</template>
 				</SelectValue>
 			</SelectTrigger>
 			<SelectContent>
@@ -47,7 +47,7 @@ const getTypeLabel = (type: string) => {
 						:value="schedule.id.toString()"
 					>
 						<div class="flex items-center gap-2">
-							<Icon :name="getIconByType(schedule.type)" class="flex-shrink-0" />
+							<AppIcon :name="getIconByType(schedule.type)" class="flex shrink-0" />
 							<div class="flex flex-col">
 								<span>{{ schedule.name }}</span>
 								<span class="text-muted-foreground text-xs">

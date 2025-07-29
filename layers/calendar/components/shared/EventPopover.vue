@@ -96,7 +96,7 @@ const deleteLink = (linkId: string) => {
 		</div>
 
 		<div class="flex items-center gap-3 text-sm">
-			<Icon name="lucide:clock" class="text-muted-foreground h-4 w-4 flex-shrink-0" />
+			<AppIcon name="lucide:clock" class="text-muted-foreground flex-shrink-0" />
 			<div class="flex flex-col gap-1">
 				<span>{{ formattedTimeRange }}</span>
 				<span class="text-muted-foreground text-xs">{{ pairNumber }}</span>
@@ -104,12 +104,12 @@ const deleteLink = (linkId: string) => {
 		</div>
 
 		<div class="flex items-center gap-3 text-sm">
-			<Icon name="lucide:calendar" class="text-muted-foreground h-4 w-4 flex-shrink-0" />
+			<AppIcon name="lucide:calendar" class="text-muted-foreground flex-shrink-0" />
 			<span>{{ formattedDate }}</span>
 		</div>
 
 		<div class="flex items-center gap-3 text-sm">
-			<Icon name="lucide:map-pin" class="text-muted-foreground h-4 w-4 flex-shrink-0" />
+			<AppIcon name="lucide:map-pin" class="text-muted-foreground flex-shrink-0" />
 			<div class="flex flex-col gap-1">
 				<span class="font-medium">{{ auditoriumText }}</span>
 				<span class="text-muted-foreground text-xs">Аудиторія</span>
@@ -117,7 +117,7 @@ const deleteLink = (linkId: string) => {
 		</div>
 
 		<div class="flex items-center gap-3 text-sm">
-			<Icon name="lucide:user" class="text-muted-foreground mt-0.5 h-4 w-4 flex-shrink-0" />
+			<AppIcon name="lucide:user" class="text-muted-foreground mt-0.5 flex-shrink-0" />
 			<div class="flex flex-col gap-1">
 				<span>{{ teachersText }}</span>
 				<span class="text-muted-foreground text-xs">
@@ -127,7 +127,7 @@ const deleteLink = (linkId: string) => {
 		</div>
 
 		<div class="flex items-center gap-3 text-sm">
-			<Icon name="lucide:users" class="text-muted-foreground mt-0.5 h-4 w-4 flex-shrink-0" />
+			<AppIcon name="lucide:users" class="text-muted-foreground mt-0.5 flex-shrink-0" />
 			<div class="flex flex-col gap-1">
 				<span>{{ groupsText }}</span>
 				<span class="text-muted-foreground text-xs">
@@ -140,10 +140,10 @@ const deleteLink = (linkId: string) => {
 			<div class="flex items-center justify-between">
 				<h4 class="text-sm font-medium">Посилання</h4>
 				<Button size="icon" variant="outline" @click="addLink">
-					<Icon name="lucide:plus" />
+					<AppIcon name="lucide:plus" />
 				</Button>
 			</div>
-			<div v-if="eventLinks.length" class="space-y-2">
+			<div v-if="eventLinks.length" class="max-h-[200px] space-y-2 overflow-auto">
 				<div
 					v-for="link in eventLinks"
 					:key="link.id"
@@ -154,10 +154,10 @@ const deleteLink = (linkId: string) => {
 					</a>
 					<div class="flex gap-1">
 						<Button size="icon" variant="ghost" @click="editLink(link)">
-							<Icon name="lucide:pencil" />
+							<AppIcon name="lucide:pencil" />
 						</Button>
 						<Button size="icon" variant="ghost" @click="deleteLink(link.id)">
-							<Icon name="lucide:trash" />
+							<AppIcon name="lucide:trash" />
 						</Button>
 					</div>
 				</div>

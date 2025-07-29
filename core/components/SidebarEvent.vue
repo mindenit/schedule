@@ -24,7 +24,7 @@ defineProps<Props>()
 
 		<div class="flex flex-col justify-between gap-[6px]">
 			<span class="text-muted-foreground text-sm">
-				{{ auditorium }} <Icon name="lucide:dot" /> {{ EVENT_TYPE_LABELS[type as TEventType] }}
+				{{ auditorium }} <AppIcon name="lucide:dot" /> {{ EVENT_TYPE_LABELS[type as TEventType] }}
 			</span>
 			<span class="text-base">{{ name }}</span>
 		</div>
