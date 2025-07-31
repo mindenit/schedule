@@ -12,7 +12,7 @@ export const useScheduleStore = defineStore("schedule", () => {
 				try {
 					const parsed = JSON.parse(savedSchedules)
 					allSchedules.value = Array.isArray(parsed) ? parsed : []
-				} catch (error) {
+				} catch {
 					localStorage.removeItem("all-schedules")
 					allSchedules.value = []
 				}
@@ -105,7 +105,9 @@ export const useScheduleStore = defineStore("schedule", () => {
 	}
 
 	if (import.meta.client) {
-		initializeStore()
+		nextTick(() => {
+			initializeStore()
+		})
 	}
 
 	return {
@@ -115,5 +117,6 @@ export const useScheduleStore = defineStore("schedule", () => {
 		addSchedule,
 		removeSchedule,
 		selectSchedule,
+		initializeStore,
 	}
 })
