@@ -189,7 +189,7 @@ onMounted(() => {
 								/>
 							</div>
 						</div>
-						<BigCalendarTimeline />
+						<BigCalendarTimeline :week-days="weekDays" />
 					</div>
 				</div>
 			</div>
