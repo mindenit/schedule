@@ -38,7 +38,7 @@ const formattedTimeRange = computed(() => formatTimeRange(props.event))
 				:class="blockClasses"
 				:style="{ height: `${heightInPixels}px` }"
 			>
-				<p class="w-full truncate text-center font-semibold">{{ event.subject.title }}</p>
+				<p class="w-full truncate text-center font-semibold">{{ event.subject.brief }}</p>
 				<p class="w-full truncate text-center">
 					{{ formattedTimeRange }}
 				</p>

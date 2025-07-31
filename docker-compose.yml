@@ -1,0 +1,12 @@
+services:
+  nuxt-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    ports:
+      - "${EXTERNAL_PORT:-3000}:3000"
+    env_file:
+      - .env

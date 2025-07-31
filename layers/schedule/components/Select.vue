@@ -27,26 +27,41 @@ const getTypeLabel = (type: string) => {
 </script>
 
 <template>
-	<Select v-model="selectedValue">
+	<Select v-model="selectedValue" :disabled="!scheduleStore.isInitialized">
 		<SelectTrigger class="w-full">
-			<SelectValue placeholder="Оберіть розклад">
-				<template v-if="scheduleStore.selectedSchedule">
+			<SelectValue>
+				<template v-if="!scheduleStore.isInitialized">
 					<div class="flex items-center gap-2">
-						<Icon :name="getIconByType(scheduleStore.selectedSchedule.type)" class="h-4 w-4" />
+						<AppIcon name="lucide:loader-2" class="animate-spin" />
+						<span class="text-muted-foreground">Завантаження...</span>
+					</div>
+				</template>
+				<template v-else-if="scheduleStore.selectedSchedule">
+					<div class="flex items-center gap-2">
+						<AppIcon :name="getIconByType(scheduleStore.selectedSchedule.type)" />
 						<span>{{ scheduleStore.selectedSchedule.name }}</span>
 					</div>
+				</template>
+				<template v-else>
+					<span class="text-muted-foreground">Оберіть розклад</span>
 				</template>
 			</SelectValue>
 		</SelectTrigger>
 		<SelectContent>
-			<template v-if="scheduleStore.allSchedules.length > 0">
+			<template v-if="!scheduleStore.isInitialized">
+				<div class="flex items-center justify-center gap-2 p-4">
+					<AppIcon name="lucide:loader-2" class="animate-spin" />
+					<span class="text-muted-foreground text-sm">Завантаження...</span>
+				</div>
+			</template>
+			<template v-else-if="scheduleStore.allSchedules.length > 0">
 				<SelectItem
 					v-for="schedule in scheduleStore.allSchedules"
 					:key="`${schedule.type}-${schedule.id}`"
 					:value="schedule.id.toString()"
 				>
 					<div class="flex items-center gap-2">
-						<Icon :name="getIconByType(schedule.type)" class="flex-shrink-0" />
+						<AppIcon :name="getIconByType(schedule.type)" class="flex shrink-0" />
 						<div class="flex flex-col">
 							<span>{{ schedule.name }}</span>
 							<span class="text-muted-foreground text-xs">
@@ -56,11 +71,8 @@ const getTypeLabel = (type: string) => {
 					</div>
 				</SelectItem>
 			</template>
-			<template v-else-if="scheduleStore.isInitialized">
-				<div class="text-muted-foreground p-2 text-center text-sm">Немає доданих розкладів</div>
-			</template>
 			<template v-else>
-				<TheLoader />
+				<div class="text-muted-foreground p-2 text-center text-sm">Немає доданих розкладів</div>
 			</template>
 		</SelectContent>
 	</Select>

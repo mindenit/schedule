@@ -1,10 +1,10 @@
-@import 'tailwindcss';
-@import 'tw-animate-css';
+@import "tailwindcss";
+@import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
-	--font-accent: 'Afacad', 'sans-serif';
+	--font-accent: "Afacad", "sans-serif";
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
 	--color-card: var(--card);
@@ -90,7 +90,7 @@
 	--color-amaranth-900: oklch(39.2% 0.1208 10.98);
 	--color-amaranth-950: oklch(26.2% 0.081 13.17);
 	--radius: 0.625rem;
-	--font-inter: 'Inter', 'sans-serif';
+	--font-inter: "Inter", "sans-serif";
 	--sidebar-ring: var(--sidebar-ring);
 	--sidebar-border: var(--sidebar-border);
 	--sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -173,7 +173,45 @@
 	--color-event-lecture: var(--event-lecture);
 	--color-event-practise: var(--event-practise);
 	--color-event-consultation: var(--event-consultation);
-}
+	---animate-swipe-left: swipe-left 0.247s ease-in-out;
+	---animate-swipe-right: swipe-right 0.247s ease-in-out;
+
+	@keyframes swipe-left {
+		0% {
+			transform: translateX(100%);
+			opacity: 0;
+		}
+		100% {
+			transform: translateX(0);
+			opacity: 1;
+		}
+	}
+
+	@keyframes swipe-right {
+		0% {
+			transform: translateX(-100%);
+			opacity: 0;
+		}
+		100% {
+			transform: translateX(0);
+			opacity: 1;
+		}
+	}
+
+	--animate-accordion-down: accordion-down 0.2s ease-out;
+
+	--animate-accordion-up: accordion-up 0.2s ease-out
+;
+  @keyframes accordion-down {
+  from {
+    height: 0;}
+  to {
+    height: var(--reka-accordion-content-height);}}
+  @keyframes accordion-up {
+  from {
+    height: var(--reka-accordion-content-height);}
+  to {
+    height: 0;}}}
 
 :root {
 	--background: var(--color-fiord-50);
@@ -214,12 +252,12 @@
 	--warning: var(--color-amber-500);
 	--warning-foreground: var(--color-fiord-950);
 	--selection: var(--color-royal-blue-200);
-	--event-credit: #EBB997;
-	--event-exam: #E7A9B1;
-	--event-lecture: #A7BAE3;
-	--event-lab: #CEB3DD;
-	--event-practise: #ACC89A;
-	--event-consultation: #A5C4CF;
+	--event-credit: #ebb997;
+	--event-exam: #e7a9b1;
+	--event-lecture: #a7bae3;
+	--event-lab: #ceb3dd;
+	--event-practise: #acc89a;
+	--event-consultation: #a5c4cf;
 }
 
 .dark {
@@ -260,12 +298,12 @@
 	--warning: var(--color-amber-600);
 	--warning-foreground: var(--color-amber-100);
 	--selection: var(--color-royal-blue-900);
-	--event-credit: #723D1A;
+	--event-credit: #723d1a;
 	--event-exam: #742532;
-	--event-lecture: #2A4271;
+	--event-lecture: #2a4271;
 	--event-lab: #513066;
-	--event-practise: #3D572F;
-	--event-consultation: #234E5C;
+	--event-practise: #3d572f;
+	--event-consultation: #234e5c;
 }
 
 @layer base {
@@ -275,5 +313,15 @@
 
 	body {
 		@apply bg-background text-foreground;
+	}
+
+	.hide-scrollbar {
+		@apply overflow-auto;
+		scrollbar-width: none;
+		-ms-overflow-style: none;
+	}
+
+	.hide-scrollbar::-webkit-scrollbar {
+		display: none;
 	}
 }

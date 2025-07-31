@@ -6,16 +6,22 @@ export const useCalendarStore = defineStore("calendar", () => {
 	const allEvents = ref<Schedule[]>([])
 	const selectedDate = ref(new Date())
 	const selectedEventTypes = ref<TEventType[]>([])
+	const isInitialized = ref(false)
 
 	const view = ref<TCalendarView>("month")
 
-	onMounted(() => {
-		if (import.meta.client) {
+	const initializeStore = () => {
+		if (import.meta.client && !isInitialized.value) {
 			const savedView = localStorage.getItem("calendar-view")
 			if (savedView && ["month", "week", "day"].includes(savedView)) {
 				view.value = savedView as TCalendarView
 			}
+			isInitialized.value = true
 		}
+	}
+
+	onMounted(() => {
+		initializeStore()
 	})
 
 	const filteredEvents = computed(() => {
@@ -47,18 +53,15 @@ export const useCalendarStore = defineStore("calendar", () => {
 	}
 
 	function getEventsForCurrentMonth(events: Schedule[]): Schedule[] {
-		const monthStart = new Date(selectedDate.value.getFullYear(), selectedDate.value.getMonth(), 1)
-		const monthEnd = new Date(
-			selectedDate.value.getFullYear(),
-			selectedDate.value.getMonth() + 1,
-			0
-		)
+		const monthStart = startOfMonth(selectedDate.value);
+	  const monthEnd = endOfMonth(selectedDate.value);
 
-		return events.filter((event) => {
-			const eventStartedAt = new Date(event.startedAt * 1000)
-			const eventEndedAt = new Date(event.endedAt * 1000)
-			return eventStartedAt <= monthEnd && eventEndedAt >= monthStart
-		})
+  return events.filter((event) => {
+    const eventStartedAt = new Date(event.startedAt * 1000);
+    const eventEndedAt = new Date(event.endedAt * 1000);
+
+    return eventStartedAt <= monthEnd && eventEndedAt >= monthStart;
+  });
 	}
 
 	function setEvents(initialEvents: Schedule[]) {
@@ -68,7 +71,7 @@ export const useCalendarStore = defineStore("calendar", () => {
 	function setView(newView: TCalendarView) {
 		view.value = newView
 
-		if (import.meta.client) {
+		if (import.meta.client && isInitialized.value) {
 			localStorage.setItem("calendar-view", newView)
 		}
 	}
@@ -108,10 +111,15 @@ export const useCalendarStore = defineStore("calendar", () => {
 		allEvents.value = allEvents.value.filter((e) => e.id !== eventId)
 	}
 
+	if (import.meta.client) {
+		initializeStore()
+	}
+
 	return {
 		allEvents,
 		selectedDate,
 		selectedEventTypes,
+		isInitialized: readonly(isInitialized),
 
 		view,
 		filteredEvents,
@@ -124,5 +132,6 @@ export const useCalendarStore = defineStore("calendar", () => {
 		addEvent,
 		updateEvent,
 		removeEvent,
+		initializeStore,
 	}
 })
