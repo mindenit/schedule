@@ -1,5 +1,5 @@
 import { computed, type Ref } from "vue"
-import type { Link, LinksStore } from "~/core/stores/links"
+import type { Link } from "~/core/stores/links"
 import type { Subject } from "nurekit"
 
 interface TreeNode {
@@ -22,17 +22,13 @@ export const useExportTree = (
 	linksStore: ReturnType<typeof useLinksStore>
 ) => {
 	const generateTreeData = (): TreeNode[] => {
-		console.log("Links store data:", linksStore.links)
 		const tree: TreeNode[] = []
 
 		if (!linksStore.links || Object.keys(linksStore.links).length === 0) {
-			console.log("No links data available")
 			return tree
 		}
 
 		Object.entries(linksStore.links).forEach(([subjectId, subjectData]) => {
-			console.log(`Processing subject ${subjectId}:`, subjectData)
-
 			const subjectInfo = subjectData.subject
 			const subjectTitle = subjectInfo.title || `Предмет ${subjectId}`
 			const subjectLabel = subjectInfo.brief
@@ -51,8 +47,6 @@ export const useExportTree = (
 
 			if (subjectData.events && typeof subjectData.events === "object") {
 				Object.entries(subjectData.events).forEach(([eventType, links]) => {
-					console.log(`Processing event type ${eventType}:`, links)
-
 					const eventTypeNode: TreeNode = {
 						id: `${subjectId}-${eventType}`,
 						label: eventType,
@@ -65,8 +59,6 @@ export const useExportTree = (
 
 					if (Array.isArray(links)) {
 						links.forEach((link) => {
-							console.log(`Processing link:`, link)
-
 							const linkNode: TreeNode = {
 								id: `${subjectId}-${eventType}-${link.id}`,
 								label: link.name || link.url || "Безіменне посилання",
@@ -91,7 +83,6 @@ export const useExportTree = (
 			}
 		})
 
-		console.log("Generated tree:", tree)
 		return tree
 	}
 

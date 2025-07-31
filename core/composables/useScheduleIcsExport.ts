@@ -81,8 +81,7 @@ export const useScheduleIcsExport = () => {
 			toast.success("Експорт завершено", {
 				description: `Завантажено ${events.length} подій у форматі ICS`,
 			})
-		} catch (error) {
-			console.error("Error exporting schedule:", error)
+		} catch {
 			toast.error("Помилка експорту", {
 				description: "Не вдалося експортувати розкладання",
 			})
@@ -120,8 +119,7 @@ export const useScheduleIcsExport = () => {
 			toast.success("Експорт завершено", {
 				description: `Завантажено ${currentEvents.length} подій у форматі ICS`,
 			})
-		} catch (error) {
-			console.error("Error exporting current schedule:", error)
+		} catch {
 			toast.error("Помилка експорту", {
 				description: "Не вдалося експортувати поточне розкладання",
 			})

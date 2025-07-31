@@ -31,12 +31,10 @@ export const useScheduleStore = defineStore("schedule", () => {
 					if (existsInAll) {
 						selectedSchedule.value = parsed
 					} else {
-						console.warn("Selected schedule not found in all schedules, clearing")
 						localStorage.removeItem("selected-schedule")
 						selectedSchedule.value = null
 					}
-				} catch (error) {
-					console.error("Error parsing saved schedule:", error)
+				} catch {
 					localStorage.removeItem("selected-schedule")
 					selectedSchedule.value = null
 				}
@@ -64,7 +62,6 @@ export const useScheduleStore = defineStore("schedule", () => {
 		)
 
 		if (existingSchedule) {
-			console.warn("Schedule has already been added:", schedule)
 			selectSchedule(existingSchedule)
 			return
 		}

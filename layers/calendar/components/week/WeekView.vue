@@ -82,12 +82,6 @@ const scrollToFirstEvent = () => {
 	const hour = eventStart.getHours()
 	const minutes = eventStart.getMinutes()
 
-	console.log("Scrolling to earliest event:", {
-		subject: firstEvent.subject,
-		time: `${hour}:${minutes.toString().padStart(2, "0")}`,
-		date: eventStart.toDateString(),
-	})
-
 	const rowHeight = typeof WEEK_VIEW_ROW_HEIGHT !== "undefined" ? WEEK_VIEW_ROW_HEIGHT : 60
 	const scrollPosition = hour * rowHeight + (minutes / 60) * rowHeight - 100
 
