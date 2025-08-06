@@ -6,8 +6,8 @@ useHead({
 		{
 			src: "https://analytics.mindenit.org/api/script.js",
 			defer: true,
-			"data-site-id": "4",
-			"data-tracking-errors": "true",
+			"data-site-id": "3",
+			"data-track-errors": "true",
 			"data-session-replay": "true",
 		},
 	],
