@@ -24,7 +24,7 @@ const isDateToday = computed(() => isToday(props.cell.date))
 const dayClasses = computed(() => ({
 	"text-muted-foreground/50": !isCurrentMonth.value,
 	"text-muted-foreground": isCurrentMonth.value && !isDateToday.value,
-	"bg-primary": isDateToday.value,
+	"bg-primary ": isDateToday.value && isCurrentMonth.value,
 }))
 
 const containerClasses = computed(() => ({
