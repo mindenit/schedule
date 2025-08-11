@@ -19,5 +19,5 @@ useHead({
 	<NuxtLayout>
 		<NuxtPage />
 	</NuxtLayout>
-	<Toaster position="top-right" richColors />
+	<Toaster position="top-right" rich-colors />
 </template>

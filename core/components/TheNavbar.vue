@@ -22,6 +22,7 @@
 		<div class="flex items-center justify-end gap-3">
 			<div class="max-w-fit shrink-0">
 				<ThemeSwitcher />
+				<LanguageSwitcher />
 			</div>
 		</div>
 	</div>
@@ -34,6 +35,7 @@
 		<div class="flex items-center justify-end gap-3">
 			<BigCalendarViewSwitcher />
 			<ThemeSwitcher />
+			<LanguageSwitcher />
 		</div>
 	</div>
 </template>

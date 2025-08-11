@@ -2,6 +2,8 @@ import { computed, type Ref } from "vue"
 import type { Link } from "~/core/stores/links"
 import type { Subject } from "nurekit"
 
+import { useI18n } from "vue-i18n"
+
 interface TreeNode {
 	id: string
 	label: string
@@ -21,6 +23,7 @@ export const useExportTree = (
 	treeData: Ref<TreeNode[]>,
 	linksStore: ReturnType<typeof useLinksStore>
 ) => {
+	const { t } = useI18n()
 	const generateTreeData = (): TreeNode[] => {
 		const tree: TreeNode[] = []
 
@@ -174,7 +177,7 @@ export const useExportTree = (
 							result[subjectId] = {
 								subject: subjectInfo || {
 									id: parseInt(subjectId),
-									title: `Предмет ${subjectId}`,
+									title: t("export_tree.subject_fallback", { subjectId }),
 									brief: "",
 								},
 								events: {},

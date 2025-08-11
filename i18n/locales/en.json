@@ -1,0 +1,122 @@
+{
+  "hello": "Hello!",
+  "authors": {
+    "title": "About authors",
+    "description": "Information about the developers of this application",
+    "subtitle": "The application was developed with the support of",
+    "university": "Kharkiv National University of Radio Electronics",
+    "made_with_love": "Made with love"
+  },
+  "hiring": {
+    "title": "We are looking for people to join our team",
+    "join_us": "Join us"
+  },
+  "links": {
+    "edit_link": "Edit link",
+    "add_link": "Add link",
+    "dialog_description": "Paste the link and, optionally, specify its name.",
+    "url": "URL",
+    "name": "Name",
+    "optional": "(optional)",
+    "save": "Save",
+    "no_links_selected": "No links selected",
+    "delete_confirmation": "Are you sure you want to delete {count} links?",
+    "links_deleted": "Links deleted",
+    "deleted_count": "Deleted {count} links",
+    "subject": "Subject",
+    "event_type": "Event type",
+    "open_menu": "Open menu",
+    "edit": "Edit",
+    "delete": "Delete",
+    "search_by_name": "Search by name...",
+    "no_links_to_display": "No links to display",
+    "selected_rows": "{selected} of {total} row(s) selected.",
+    "export_selected": "Export selected ({count})",
+    "export_all": "Export all",
+    "delete_selected": "Delete selected ({count})",
+    "export_completed": "Export completed",
+    "exported_count": "Exported {count} links"
+  },
+  "common": {
+    "search": "Search..."
+  },
+  "settings": {
+    "title": "Settings",
+    "manage_links": "Manage links",
+    "import": "Import",
+    "no_saved_links": "No saved links",
+    "add_links_from_calendar": "Add links to events via the calendar",
+    "link_updated": "Link updated",
+    "link_updated_description": "Changes saved successfully",
+    "link_added": "Link added",
+    "link_added_description": "New link created successfully",
+    "link_deleted": "Link deleted",
+    "link_deleted_description": "Link deleted successfully",
+    "import_error": "Import error",
+    "import_error_description": "Failed to import links",
+    "import_completed": "Import completed",
+    "import_completed_description": "Links imported successfully",
+    "incorrect_format": "The file has an incorrect format",
+    "schedule": "Schedule",
+    "links": "Links",
+    "debug": "Debug",
+    "export_schedule": "Export schedule (ICS)",
+    "export_academic_year": "Export for academic year",
+    "active_schedules": "Active schedule items",
+    "no_saved_schedules": "No saved schedules",
+    "copy_all": "Copy all",
+    "no_data_to_copy": "No data to copy",
+    "info_copied": "Information copied",
+    "info_copied_description": "Data about all schedules has been copied to the clipboard",
+    "copy_error": "Copy error",
+    "copy_error_description": "Failed to copy data to the clipboard",
+    "select_schedule": "Select a schedule",
+    "select_schedule_description": "First, select a group, teacher, or auditorium"
+  },
+  "event_types": {
+    "Лб": "Laboratory work",
+    "Лк": "Lecture",
+    "Пз": "Practical session",
+    "Зал": "Credit",
+    "Екз": "Exam",
+    "Конс": "Consultation"
+  },
+  "sidebar": {
+    "no_events_today_1": "No classes for today",
+    "no_events_today_2": "is scheduled",
+    "select_schedule_to_view": "Select a schedule to view classes"
+  },
+  "telegram_button": {
+    "open_in_telegram": "Open in Telegram",
+    "do_you_like_the_app": "Do you like the app?",
+    "join_our_telegram_chat": "Join our Telegram chat and share your impressions",
+    "join_us_on_telegram": "Join us on Telegram"
+  },
+  "export_tree": {
+    "subject_fallback": "Subject {subjectId}",
+    "unnamed_link": "Unnamed link"
+  },
+  "ics_export": {
+    "event_type": "Event type: {eventType}",
+    "subject": "Subject: {subject}",
+    "teacher": "Teacher: {teachers}",
+    "group": "Group: {groups}",
+    "lesson": "Lesson: {lesson}",
+    "prod_id": "-//Schedule App//Academic Schedule//EN",
+    "calendar_name": "Academic Schedule {year}",
+    "calendar_description": "Academic year schedule"
+  },
+  "schedule_ics_export": {
+    "loading_schedule": "Loading schedule",
+    "getting_data_for_academic_year": "Getting data for the academic year...",
+    "export_error": "Export error",
+    "unknown_schedule_type": "Unknown schedule type",
+    "no_data": "No data",
+    "no_schedule_for_academic_year": "No schedule found for this academic year",
+    "export_completed": "Export completed",
+    "events_loaded": "{count} events loaded in ICS format",
+    "no_events_to_export": "No events to export",
+    "failed_to_export_current_schedule": "Failed to export current schedule",
+    "failed_to_export_schedule": "Failed to export schedule"
+  }
+}

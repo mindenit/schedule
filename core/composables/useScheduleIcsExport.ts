@@ -7,7 +7,10 @@ import { groupScheduleOptions } from "~/core/queries/groups"
 import { teacherScheduleOptions } from "~/core/queries/teachers"
 import { auditoriumScheduleOptions } from "~/core/queries/auditoriums"
 
+import { useI18n } from "vue-i18n"
+
 export const useScheduleIcsExport = () => {
+	const { t } = useI18n()
 	const { exportScheduleToIcs, getAcademicYearTimestamps } = useIcsExport()
 	const queryClient = useQueryClient()
 
@@ -120,8 +123,8 @@ export const useScheduleIcsExport = () => {
 				description: `Завантажено ${currentEvents.length} подій у форматі ICS`,
 			})
 		} catch {
-			toast.error("Помилка експорту", {
-				description: "Не вдалося експортувати поточне розкладання",
+			toast.error(t("schedule_ics_export.export_error"), {
+				description: t("schedule_ics_export.failed_to_export_current_schedule"),
 			})
 		}
 	}

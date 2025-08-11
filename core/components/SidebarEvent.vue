@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { TEventType } from "~/layers/calendar/types"
-import { EVENT_TYPE_LABELS, EVENT_TYPE_BORDERS } from "~/layers/calendar/constants"
+import { EVENT_TYPE_BORDERS } from "~/layers/calendar/constants"
 
 interface Props {
 	startTime: string
@@ -11,6 +11,7 @@ interface Props {
 }
 
 defineProps<Props>()
+const { t } = useI18n()
 </script>
 
 <template>
@@ -24,7 +25,7 @@ defineProps<Props>()
 
 		<div class="flex flex-col justify-between gap-[6px]">
 			<span class="text-muted-foreground text-sm">
-				{{ auditorium }} <AppIcon name="lucide:dot" /> {{ EVENT_TYPE_LABELS[type as TEventType] }}
+				{{ auditorium }} <AppIcon name="lucide:dot" /> {{ t(`event_types.${type}`) }}
 			</span>
 			<span class="text-base">{{ name }}</span>
 		</div>

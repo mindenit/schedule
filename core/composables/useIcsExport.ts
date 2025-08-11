@@ -20,17 +20,7 @@ export const useIcsExport = () => {
 			.replace(/\n/g, "\\n")
 	}
 
-	const getEventTypeUkrainian = (type: string): string => {
-		const typeMap: Record<string, string> = {
-			Лб: "Лабораторна робота",
-			Лк: "Лекція",
-			Пз: "Практичне заняття",
-			Зал: "Залік",
-			Екз: "Екзамен",
-			Конс: "Консультація",
-		}
-		return typeMap[type] || type
-	}
+	
 
 	const generateEventUid = (event: Schedule): string => {
 		return `event-${event.id}-${event.startedAt}@schedule.app`
@@ -113,15 +103,11 @@ export const useIcsExport = () => {
 		const icsHeader = [
 			"BEGIN:VCALENDAR",
 			"VERSION:2.0",
-			"PRODID:-//Schedule App//Academic Schedule//UK",
+			`PRODID:${t("ics_export.prod_id")}`,
 			"CALSCALE:GREGORIAN",
 			"METHOD:PUBLISH",
-			`X-WR-CALNAME:Академічне розкладання ${
-				academicYearStart
-					? `${academicYearStart.getFullYear()}-${academicYearStart.getFullYear() + 1}`
-					: ""
-			}`,
-			"X-WR-CALDESC:Розкладання занять на навчальний рік",
+			`X-WR-CALNAME:${t("ics_export.calendar_name", { year: academicYearStart ? `${academicYearStart.getFullYear()}-${academicYearStart.getFullYear() + 1}` : "" })}`,
+			`X-WR-CALDESC:${t("ics_export.calendar_description")}`,
 			"X-WR-TIMEZONE:Europe/Kiev",
 		].join("\r\n")
 

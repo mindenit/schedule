@@ -22,7 +22,24 @@ export default defineNuxtConfig({
 		"@pinia/nuxt",
 		"@nuxt/image",
 		"@nuxtjs/seo",
+		"@nuxtjs/i18n",
 	],
+	i18n: {
+		locales: [
+			{
+				code: "uk",
+				name: "Українська",
+				file: "uk.json",
+			},
+			{
+				code: "en",
+				name: "English",
+				file: "en.json",
+			},
+		],
+		defaultLocale: "uk",
+		strategy: "no_prefix",
+	},
 	future: {
 		compatibilityVersion: 4,
 	},
@@ -40,7 +57,7 @@ export default defineNuxtConfig({
 	icon: {
 		provider: "iconify",
 		serverBundle: {
-			collections: ["lucide"],
+			collections: ["lucide", "circle-flags"],
 		},
 	},
 	colorMode: {

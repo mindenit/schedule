@@ -2,6 +2,7 @@
 import { storeToRefs } from "pinia"
 import { toast } from "vue-sonner"
 
+const { t } = useI18n()
 const scheduleStore = useScheduleStore()
 
 const { selectedSchedule, allSchedules } = storeToRefs(scheduleStore)
@@ -13,7 +14,7 @@ const getIconByType = (type: string) => {
 
 const copyAllSchedulesToClipboard = async () => {
 	if (allSchedules.value.length === 0) {
-		toast.warning("Немає даних для копіювання")
+		toast.warning(t("settings.no_data_to_copy"))
 		return
 	}
 
@@ -25,28 +26,28 @@ const copyAllSchedulesToClipboard = async () => {
 				selectedSchedule.value.type === schedule.type
 
 			const prefix = isActive ? "🔥 " : "- "
-			return `${prefix}**${schedule.type}** • ID: \`${schedule.id}\` • ${schedule.name}`
+			return `${prefix}**${schedule.type}** • ID: ${schedule.id} • ${schedule.name}`
 		})
 		.join("\n")
 
-	const fullMarkdown = `# Збережені розклади\n\n${markdownContent}`
+	const fullMarkdown = `# ${t("settings.active_schedules")}\n\n${markdownContent}`
 
 	try {
 		await navigator.clipboard.writeText(fullMarkdown)
-		toast.success("Інформацію скопійовано", {
-			description: "Дані про всі розклади скопійовано у буфер обміну",
+		toast.success(t("settings.info_copied"), {
+			description: t("settings.info_copied_description"),
 		})
 	} catch {
-		toast.error("Помилка копіювання", {
-			description: "Не вдалося скопіювати дані у буфер обміну",
+		toast.error(t("settings.copy_error"), {
+			description: t("settings.copy_error_description"),
 		})
 	}
 }
 
 const handleIcsExportAcademicYear = async () => {
 	if (!selectedSchedule.value) {
-		toast.warning("Оберіть розкладання", {
-			description: "Спочатку оберіть групу, викладача або аудиторію",
+		toast.warning(t("settings.select_schedule"), {
+			description: t("settings.select_schedule_description"),
 		})
 		return
 	}
@@ -64,24 +65,26 @@ const handleIcsExportAcademicYear = async () => {
 			<TabsList class="grid w-full grid-cols-3">
 				<TabsTrigger value="schedule">
 					<AppIcon name="lucide:calendar" size="xs" />
-					Розклад
+					{{ t("settings.schedule") }}
 				</TabsTrigger>
 				<TabsTrigger value="links">
 					<AppIcon name="lucide:link" size="xs" />
-					Посилання
+					{{ t("settings.links") }}
 				</TabsTrigger>
 				<TabsTrigger value="bug">
 					<AppIcon name="lucide:bug" size="xs" />
-					Debug
+					{{ t("settings.debug") }}
 				</TabsTrigger>
 			</TabsList>
 
 			<TabsContent value="schedule">
-				<h3 class="text-muted-foreground mb-2 text-sm font-medium">Експорт розкладання (ICS)</h3>
+				<h3 class="text-muted-foreground mb-2 text-sm font-medium">
+					{{ t("settings.export_schedule") }}
+				</h3>
 				<div class="flex flex-wrap items-center justify-center gap-2">
 					<Button variant="default" :disabled="isLoading" @click="handleIcsExportAcademicYear">
 						<AppIcon name="lucide:calendar-export" />
-						Експорт на навчальний рік
+						{{ t("settings.export_academic_year") }}
 					</Button>
 				</div>
 			</TabsContent>
@@ -91,10 +94,12 @@ const handleIcsExportAcademicYear = async () => {
 			</TabsContent>
 
 			<TabsContent value="bug">
-				<h3 class="text-muted-foreground mb-2 text-sm font-medium">Активні елементи розкладу</h3>
+				<h3 class="text-muted-foreground mb-2 text-sm font-medium">
+					{{ t("settings.active_schedules") }}
+				</h3>
 				<div class="space-y-3">
 					<div v-if="allSchedules.length === 0" class="text-muted-foreground py-4 text-center">
-						Немає збережених розкладів
+						{{ t("settings.no_saved_schedules") }}
 					</div>
 					<div v-else class="space-y-2">
 						<div
@@ -119,7 +124,7 @@ const handleIcsExportAcademicYear = async () => {
 						</div>
 						<Button variant="outline" class="mt-4 w-full" @click="copyAllSchedulesToClipboard">
 							<AppIcon name="lucide:copy" />
-							Скопіювати все
+							{{ t("settings.copy_all") }}
 						</Button>
 					</div>
 				</div>

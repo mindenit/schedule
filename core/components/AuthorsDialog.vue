@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { AUTHORS } from "../constants"
 import { buttonVariants } from "./ui/button"
+
+const { t } = useI18n()
 </script>
 
 <template>
@@ -8,16 +10,16 @@ import { buttonVariants } from "./ui/button"
 		<DialogTrigger as-child>
 			<Button variant="ghost" size="sm" class="w-full justify-start gap-2">
 				<AppIcon name="lucide:info" />
-				Про авторів
+				{{ t("authors.title") }}
 			</Button>
 		</DialogTrigger>
 		<DialogContent class="max-w-md">
 			<DialogHeader>
 				<DialogTitle class="flex items-center gap-2">
 					<AppIcon name="lucide:users" />
-					Про авторів
+					{{ t("authors.title") }}
 				</DialogTitle>
-				<DialogDescription> Інформація про розробників цього застосунку </DialogDescription>
+				<DialogDescription> {{ t("authors.description") }} </DialogDescription>
 			</DialogHeader>
 
 			<div class="space-y-4">
@@ -48,15 +50,15 @@ import { buttonVariants } from "./ui/button"
 				</div>
 
 				<div class="text-muted-foreground text-center text-sm">
-					<p>Застосунок розроблено за підтримки</p>
-					<p>Харківського національного університету радіоелектроніки</p>
+					<p>{{ t("authors.subtitle") }}</p>
+					<p>{{ t("authors.university") }}</p>
 				</div>
 			</div>
 
 			<DialogFooter class="flex items-center justify-center">
 				<div class="text-muted-foreground flex items-center gap-2 text-sm">
 					<AppIcon name="lucide:heart" class="text-red-500" />
-					Зроблено з любов'ю
+					{{ t("authors.made_with_love") }}
 				</div>
 			</DialogFooter>
 		</DialogContent>

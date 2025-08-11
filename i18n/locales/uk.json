@@ -1,0 +1,122 @@
+{
+  "hello": "Привіт!",
+  "authors": {
+    "title": "Про авторів",
+    "description": "Інформація про розробників цього застосунку",
+    "subtitle": "Застосунок розроблено за підтримки",
+    "university": "Харківського національного університету радіоелектроніки",
+    "made_with_love": "Зроблено з любов'ю"
+  },
+  "hiring": {
+    "title": "Шукаємо людей в команду",
+    "join_us": "Долучитися"
+  },
+  "links": {
+    "edit_link": "Редагувати посилання",
+    "add_link": "Додати посилання",
+    "dialog_description": "Вставте посилання та, за бажанням, вкажіть його назву.",
+    "url": "URL",
+    "name": "Назва",
+    "optional": "(необов'язково)",
+    "save": "Зберегти",
+    "no_links_selected": "Не вибрано жодного посилання",
+    "delete_confirmation": "Ви впевнені, що хочете видалити {count} посилань?",
+    "links_deleted": "Посилання видалено",
+    "deleted_count": "Видалено {count} посилань",
+    "subject": "Предмет",
+    "event_type": "Тип заняття",
+    "open_menu": "Відкрити меню",
+    "edit": "Редагувати",
+    "delete": "Видалити",
+    "search_by_name": "Пошук по назві...",
+    "no_links_to_display": "Немає посилань для відображення",
+    "selected_rows": "{selected} з {total} рядків вибрано.",
+    "export_selected": "Експортувати вибрані ({count})",
+    "export_all": "Експортувати все",
+    "delete_selected": "Видалити вибрані ({count})",
+    "export_completed": "Експорт завершено",
+    "exported_count": "Експортовано {count} посилань"
+  },
+  "common": {
+    "search": "Пошук..."
+  },
+  "settings": {
+    "title": "Налаштування",
+    "manage_links": "Управління посиланнями",
+    "import": "Імпортувати",
+    "no_saved_links": "Немає збережених посилань",
+    "add_links_from_calendar": "Додайте посилання до занять через календар",
+    "link_updated": "Посилання оновлено",
+    "link_updated_description": "Зміни успішно збережено",
+    "link_added": "Посилання додано",
+    "link_added_description": "Нове посилання успішно створено",
+    "link_deleted": "Посилання видалено",
+    "link_deleted_description": "Посилання успішно видалено",
+    "import_error": "Помилка імпорту",
+    "import_error_description": "Не вдалося імпортувати посилання",
+    "import_completed": "Імпорт завершено",
+    "import_completed_description": "Посилання успішно імпортовані",
+    "incorrect_format": "Файл має неправильний формат",
+    "schedule": "Розклад",
+    "links": "Посилання",
+    "debug": "Debug",
+    "export_schedule": "Експорт розкладання (ICS)",
+    "export_academic_year": "Експорт на навчальний рік",
+    "active_schedules": "Активні елементи розкладу",
+    "no_saved_schedules": "Немає збережених розкладів",
+    "copy_all": "Скопіювати все",
+    "no_data_to_copy": "Немає даних для копіювання",
+    "info_copied": "Інформацію скопійовано",
+    "info_copied_description": "Дані про всі розклади скопійовано у буфер обміну",
+    "copy_error": "Помилка копіювання",
+    "copy_error_description": "Не вдалося скопіювати дані у буфер обміну",
+    "select_schedule": "Оберіть розкладання",
+    "select_schedule_description": "Спочатку оберіть групу, викладача або аудиторію"
+  },
+  "event_types": {
+    "Лб": "Лабораторна робота",
+    "Лк": "Лекція",
+    "Пз": "Практичне заняття",
+    "Зал": "Залік",
+    "Екз": "Екзамен",
+    "Конс": "Консультація"
+  },
+  "sidebar": {
+    "no_events_today_1": "Пар на сьогодні",
+    "no_events_today_2": "немає",
+    "select_schedule_to_view": "Оберіть розклад для перегляду пар"
+  },
+  "telegram_button": {
+    "open_in_telegram": "Відкрити в Telegram",
+    "do_you_like_the_app": "Подобається застосунок?",
+    "join_our_telegram_chat": "Долучайтесь до нашого телеграм-чату та діліться враженнями",
+    "join_us_on_telegram": "Долучайтесь в Telegram"
+  },
+  "export_tree": {
+    "subject_fallback": "Предмет {subjectId}",
+    "unnamed_link": "Безіменне посилання"
+  },
+  "ics_export": {
+    "event_type": "Тип заняття: {eventType}",
+    "subject": "Предмет: {subject}",
+    "teacher": "Викладач: {teachers}",
+    "group": "Група: {groups}",
+    "lesson": "Пара: {lesson}",
+    "prod_id": "-//Schedule App//Academic Schedule//UK",
+    "calendar_name": "Академічне розкладання {year}",
+    "calendar_description": "Розкладання занять на навчальний рік"
+  },
+  "schedule_ics_export": {
+    "loading_schedule": "Завантаження розкладу",
+    "getting_data_for_academic_year": "Отримання даних за навчальний рік...",
+    "export_error": "Помилка експорту",
+    "unknown_schedule_type": "Невідомий тип розкладу",
+    "no_data": "Немає даних",
+    "no_schedule_for_academic_year": "Розкладання за цей навчальний рік не знайдено",
+    "export_completed": "Експорт завершено",
+    "events_loaded": "Завантажено {count} подій у форматі ICS",
+    "no_events_to_export": "Немає подій для експорту",
+    "failed_to_export_current_schedule": "Не вдалося експортувати поточне розкладання",
+    "failed_to_export_schedule": "Не вдалося експортувати розкладання"
+  }
+}

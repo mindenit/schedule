@@ -1,8 +1,17 @@
-import { format } from "date-fns"
-import { uk } from "date-fns/locale"
+import { format, type Locale } from "date-fns"
+import { uk, enUS } from "date-fns/locale"
 import type { Schedule } from "nurekit"
+import { useI18n } from "vue-i18n"
+import { EVENT_TYPE_COLORS } from "~/layers/calendar/constants"
+import type { TEventType } from "~/layers/calendar/types"
+
+const locales: Record<string, Locale> = {
+	uk,
+	en: enUS,
+}
 
 export const useEventFormatting = () => {
+	const { t, locale } = useI18n()
 	const formatTime = (date: Date | string | number): string => {
 		const parsedDate = parseDate(date)
 		return format(parsedDate, "HH:mm")
@@ -26,7 +35,7 @@ export const useEventFormatting = () => {
 		formatString: string = "d MMMM yyyy"
 	): string => {
 		const parsedDate = parseDate(date)
-		return format(parsedDate, formatString, { locale: uk })
+		return format(parsedDate, formatString, { locale: locales[locale.value] })
 	}
 
 	const getEventTypeColor = (type: string): string => {
@@ -34,7 +43,7 @@ export const useEventFormatting = () => {
 	}
 
 	const getEventTypeLabel = (type: string): string => {
-		return EVENT_TYPE_LABELS[type as TEventType] || type
+		return t(`event_types.${type}`)
 	}
 
 	const capitalize = (str: string): string => {
@@ -54,7 +63,7 @@ export const useEventFormatting = () => {
 		formatString: string = "d MMMM yyyy, HH:mm"
 	): string => {
 		const parsedDate = parseDate(date)
-		return format(parsedDate, formatString, { locale: uk })
+		return format(parsedDate, formatString, { locale: locales[locale.value] })
 	}
 
 	const formatRelativeTime = (date: Date | string | number): string => {

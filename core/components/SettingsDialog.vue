@@ -1,3 +1,7 @@
+<script setup lang="ts">
+const { t } = useI18n()
+</script>
+
 <template>
 	<Dialog>
 		<DialogTrigger as-child>
@@ -7,7 +11,7 @@
 		</DialogTrigger>
 		<DialogContent class="flex max-h-[80vh] flex-col overflow-hidden md:max-w-4xl">
 			<DialogHeader>
-				<DialogTitle>Налаштування</DialogTitle>
+				<DialogTitle>{{ t('settings.title') }}</DialogTitle>
 			</DialogHeader>
 			<SettingsMainView />
 		</DialogContent>

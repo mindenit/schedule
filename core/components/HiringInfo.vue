@@ -1,3 +1,7 @@
+<script setup lang="ts">
+const { t } = useI18n()
+</script>
+
 <template>
 	<div
 		class="from-royal-blue-700/80 via-royal-blue-600/70 to-royal-blue-500/80 dark:from-royal-blue-600/60
@@ -11,7 +15,7 @@
 					<AppIcon name="lucide:briefcase" size="xs" class="text-white" />
 				</div>
 
-				<span class="text-sm font-medium"> Шукаємо людей в команду </span>
+				<span class="text-sm font-medium"> {{ t("hiring.title") }} </span>
 			</div>
 
 			<Button
@@ -24,7 +28,7 @@
 				class="h-7 border-white/25 bg-white/20 text-white backdrop-blur-sm transition-all duration-200
 					hover:scale-105 hover:bg-white/30 active:scale-95"
 			>
-				<span class="text-xs">Долучитися</span>
+				<span class="text-xs">{{ t("hiring.join_us") }}</span>
 				<AppIcon
 					name="lucide:arrow-right"
 					size="xs"

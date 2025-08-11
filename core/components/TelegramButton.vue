@@ -1,3 +1,7 @@
+<script setup lang="ts">
+const { t } = useI18n()
+</script>
+
 <template>
 	<Button
 		as="a"
@@ -8,6 +12,6 @@
 			hover:bg-blue-500 focus:bg-blue-500 active:bg-blue-500"
 	>
 		<AppIcon name="mingcute:telegram-fill" size="md" />
-		Join us on Telegram
+		{{ t('telegram_button.join_us_on_telegram') }}
 	</Button>
 </template>

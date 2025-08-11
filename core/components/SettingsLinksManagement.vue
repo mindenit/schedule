@@ -3,6 +3,7 @@ import { toast } from "vue-sonner"
 import { useLinksStore, type Link } from "~/core/stores/links"
 import type { Subject } from "nurekit"
 
+const { t } = useI18n()
 const linksStore = useLinksStore()
 
 const showLinkDialog = ref(false)
@@ -50,8 +51,8 @@ const saveLink = (linkData: Partial<Link>) => {
 			...editingLink.value,
 			...linkData,
 		})
-		toast.success("Посилання оновлено", {
-			description: "Зміни успішно збережено",
+		toast.success(t("settings.link_updated"), {
+			description: t("settings.link_updated_description"),
 		})
 	} else {
 		linksStore.addLink(
@@ -63,16 +64,16 @@ const saveLink = (linkData: Partial<Link>) => {
 			},
 			subject
 		)
-		toast.success("Посилання додано", {
-			description: "Нове посилання успішно створено",
+		toast.success(t("settings.link_added"), {
+			description: t("settings.link_added_description"),
 		})
 	}
 }
 
 const deleteLink = (linkId: string, subjectId: string, eventType: string) => {
 	linksStore.deleteLink(parseInt(subjectId), eventType, linkId)
-	toast.success("Посилання видалено", {
-		description: "Посилання успішно видалено",
+	toast.success(t("settings.link_deleted"), {
+		description: t("settings.link_deleted_description"),
 	})
 }
 
@@ -82,17 +83,17 @@ const handleImportLinks = (file: File) => {
 		try {
 			const result = linksStore.importLinks(e.target?.result as string)
 			if (!result.success) {
-				toast.error("Помилка імпорту", {
-					description: result.error || "Не вдалося імпортувати посилання",
+				toast.error(t("settings.import_error"), {
+					description: result.error || t("settings.import_error_description"),
 				})
 			} else {
-				toast.success("Імпорт завершено", {
-					description: "Посилання успішно імпортовані",
+				toast.success(t("settings.import_completed"), {
+					description: t("settings.import_completed_description"),
 				})
 			}
 		} catch {
-			toast.error("Помилка імпорту", {
-				description: "Файл має неправильний формат",
+			toast.error(t("settings.import_error"), {
+				description: t("settings.incorrect_format"),
 			})
 		}
 	}
@@ -121,17 +122,17 @@ const handleMainImport = (event: Event) => {
 <template>
 	<div class="flex flex-col overflow-hidden">
 		<div class="flex items-center justify-between max-md:flex-col max-md:gap-2 max-md:pb-2">
-			<h3 class="text-lg font-medium">Управління посиланнями</h3>
+			<h3 class="text-lg font-medium">{{ t('settings.manage_links') }}</h3>
 			<Button size="sm" @click="triggerImport">
 				<AppIcon name="lucide:download" />
-				Імпортувати
+				{{ t('settings.import') }}
 			</Button>
 		</div>
 
 		<div class="flex-1 overflow-hidden">
 			<div v-if="organizedLinks.length === 0" class="py-8 text-center text-gray-500">
-				<p>Немає збережених посилань</p>
-				<p class="mt-1 text-xs">Додайте посилання до занять через календар</p>
+				<p>{{ t('settings.no_saved_links') }}</p>
+				<p class="mt-1 text-xs">{{ t('settings.add_links_from_calendar') }}</p>
 			</div>
 
 			<div v-else class="h-full">

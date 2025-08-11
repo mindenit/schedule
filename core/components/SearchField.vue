@@ -9,6 +9,7 @@ interface Emits {
 
 defineProps<Props>()
 defineEmits<Emits>()
+const { t } = useI18n()
 </script>
 
 <template>
@@ -16,10 +17,10 @@ defineEmits<Emits>()
 		<Input
 			id="search"
 			type="text"
-			placeholder="Пошук..."
+			:placeholder="t('common.search')"
 			class="pl-10"
 			:model-value="modelValue"
-			@input="$emit('update:modelValue', $event.target.value)"
+			@input="$emit('update:modelValue', ($event.target as HTMLInputElement).value)"
 		/>
 		<span class="absolute inset-y-0 start-0 flex items-center justify-center px-2">
 			<AppIcon name="lucide:search" class="text-muted-foreground" />

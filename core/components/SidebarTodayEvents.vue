@@ -6,6 +6,7 @@ import { useScheduleQuery } from "../composables/useScheduleQuery"
 const scheduleStore = useScheduleStore()
 const { selectedSchedule } = storeToRefs(scheduleStore)
 const { formatTime, formatDate, capitalize } = useEventFormatting()
+const { t } = useI18n()
 
 const today = new Date()
 
@@ -57,7 +58,8 @@ const hasEvents = computed(() => todayEvents.value && todayEvents.value.length >
 				>
 					<AppIcon name="lucide:smile" size="xl" class="opacity-50" />
 					<p class="text-sm">
-						Пар на сьогодні <br /><span class="text-lg font-semibold">немає</span>
+						{{ t('sidebar.no_events_today_1') }} <br />
+						<span class="text-lg font-semibold">{{ t('sidebar.no_events_today_2') }}</span>
 					</p>
 				</div>
 				<div
@@ -65,7 +67,7 @@ const hasEvents = computed(() => todayEvents.value && todayEvents.value.length >
 					class="text-muted-foreground flex flex-col items-center justify-center gap-2 p-6 text-center"
 				>
 					<AppIcon name="lucide:calendar-plus" size="xl" class="opacity-50" />
-					<p class="text-sm">Оберіть розклад для перегляду пар</p>
+					<p class="text-sm">{{ t('sidebar.select_schedule_to_view') }}</p>
 				</div>
 			</div>
 		</ClientOnly>

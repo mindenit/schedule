@@ -8,6 +8,7 @@ import {
 	useForwardPropsEmits,
 } from "reka-ui"
 import { cn } from "@/core/utils"
+import { useI18n } from "vue-i18n"
 import {
 	CalendarCell,
 	CalendarCellTrigger,
@@ -28,6 +29,7 @@ const emits = defineEmits<CalendarRootEmits>()
 const delegatedProps = reactiveOmit(props, "class")
 
 const forwarded = useForwardPropsEmits(delegatedProps, emits)
+const { locale } = useI18n()
 </script>
 
 <template>
@@ -36,7 +38,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
 		data-slot="calendar"
 		:class="cn('w-full p-3', props.class)"
 		v-bind="forwarded"
-		locale="uk"
+		:locale="locale"
 	>
 		<CalendarHeader>
 			<CalendarHeading />

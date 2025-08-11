@@ -20,14 +20,7 @@ export const EVENT_TYPE_BORDERS: Record<TEventType, string> = {
 	Конс: "border-event-consultation",
 }
 
-export const EVENT_TYPE_LABELS: Record<TEventType, string> = {
-	Лб: "Лабораторна робота",
-	Лк: "Лекція",
-	Пз: "Практичне заняття",
-	Зал: "Залік",
-	Екз: "Екзамен",
-	Конс: "Консультація",
-}
+
 
 export const VIEW_OPTIONS = [
 	{ value: "day", label: "День" },

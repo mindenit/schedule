@@ -40,6 +40,8 @@ import type { Subject } from "nurekit"
 import { valueUpdater } from "./ui/table/utils"
 import AppIcon from "./AppIcon.vue"
 
+const { t } = useI18n()
+
 interface LinkTableRow {
 	id: string
 	name: string
@@ -98,18 +100,18 @@ const createAppIcon = (
 const deleteSelectedLinks = () => {
 	const selectedRows = table.getFilteredSelectedRowModel().rows
 	if (selectedRows.length === 0) {
-		toast.warning("Не вибрано жодного посилання")
+		toast.warning(t("links.no_links_selected"))
 		return
 	}
 
-	if (confirm(`Ви впевнені, що хочете видалити ${selectedRows.length} посилань?`)) {
+	if (confirm(t("links.delete_confirmation", { count: selectedRows.length }))) {
 		selectedRows.forEach((row) => {
 			const link = row.original
 			emit("deleteLink", link.id, link.subjectId, link.eventType)
 		})
 
-		toast.success("Посилання видалено", {
-			description: `Видалено ${selectedRows.length} посилань`,
+		toast.success(t("links.links_deleted"), {
+			description: t("links.deleted_count", { count: selectedRows.length }),
 		})
 	}
 }
@@ -157,7 +159,7 @@ const columns: ColumnDef<LinkTableRow>[] = [
 					variant: "ghost",
 					onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
 				},
-				() => ["Назва", createAppIcon("lucide:arrow-up-down", "sm")]
+				() => [t("links.name"), createAppIcon("lucide:arrow-up-down", "sm")]
 			)
 		},
 		cell: ({ row }) => {
@@ -186,7 +188,7 @@ const columns: ColumnDef<LinkTableRow>[] = [
 					variant: "ghost",
 					onClick: () => column.toggleSorting(column.getIsSorted() === "asc"),
 				},
-				() => ["Предмет", createAppIcon("lucide:arrow-up-down", "sm")]
+				() => [t("links.subject"), createAppIcon("lucide:arrow-up-down", "sm")]
 			)
 		},
 		cell: ({ row }) => {
@@ -199,7 +201,7 @@ const columns: ColumnDef<LinkTableRow>[] = [
 	},
 	{
 		accessorKey: "eventType",
-		header: "Тип заняття",
+		header: () => t("links.event_type"),
 		cell: ({ row }) => {
 			const eventType = row.getValue("eventType") as string
 
@@ -220,7 +222,7 @@ const columns: ColumnDef<LinkTableRow>[] = [
 	},
 	{
 		accessorKey: "url",
-		header: "URL",
+		header: () => t("links.url"),
 		cell: ({ row }) => {
 			const url = row.getValue("url") as string
 			const displayUrl = url.length > 50 ? url.substring(0, 50) + "..." : url
@@ -261,7 +263,7 @@ const columns: ColumnDef<LinkTableRow>[] = [
 											},
 											{
 												default: () => [
-													h("span", { class: "sr-only" }, "Open menu"),
+													h("span", { class: "sr-only" }, t("links.open_menu")),
 													createAppIcon("lucide:menu", "sm"),
 												],
 											}
@@ -286,7 +288,10 @@ const columns: ColumnDef<LinkTableRow>[] = [
 													),
 											},
 											{
-												default: () => [createAppIcon("lucide:edit", "sm"), "Редагувати"],
+												default: () => [
+													createAppIcon("lucide:edit", "sm"),
+													t("links.edit"),
+												],
 											}
 										),
 										h(
@@ -298,7 +303,10 @@ const columns: ColumnDef<LinkTableRow>[] = [
 												class: "text-destructive",
 											},
 											{
-												default: () => [createAppIcon("lucide:trash-2", "sm"), "Видалити"],
+												default: () => [
+													createAppIcon("lucide:trash-2", "sm"),
+													t("links.delete"),
+												],
 											}
 										),
 									],
@@ -326,7 +334,8 @@ const table = useVueTable({
 	},
 	onSortingChange: (updaterOrValue) => valueUpdater(updaterOrValue, sorting),
 	onColumnFiltersChange: (updaterOrValue) => valueUpdater(updaterOrValue, columnFilters),
-	onColumnVisibilityChange: (updaterOrValue) => valueUpdater(updaterOrValue, columnVisibility),
+	onColumnVisibilityChange: (updaterOrValue) =>
+		valueUpdater(updaterOrValue, columnVisibility),
 	onRowSelectionChange: (updaterOrValue) => valueUpdater(updaterOrValue, rowSelection),
 	getCoreRowModel: getCoreRowModel(),
 	getPaginationRowModel: getPaginationRowModel(),
@@ -353,7 +362,7 @@ const fileInput = ref<HTMLInputElement | null>(null)
 const exportSelected = () => {
 	const selectedRows = table.getFilteredSelectedRowModel().rows
 	if (selectedRows.length === 0) {
-		toast.warning("Не вибрано жодного посилання")
+		toast.warning(t("links.no_links_selected"))
 		return
 	}
 
@@ -378,8 +387,8 @@ const exportSelected = () => {
 	document.body.removeChild(a)
 	URL.revokeObjectURL(url)
 
-	toast.success("Експорт завершено", {
-		description: `Експортовано ${selectedRows.length} посилань`,
+	toast.success(t("links.export_completed"), {
+		description: t("links.exported_count", { count: selectedRows.length }),
 	})
 }
 
@@ -402,8 +411,8 @@ const exportAll = () => {
 	document.body.removeChild(a)
 	URL.revokeObjectURL(url)
 
-	toast.success("Експорт завершено", {
-		description: `Експортовано ${allData.length} посилань`,
+	toast.success(t("links.export_completed"), {
+		description: t("links.exported_count", { count: allData.length }),
 	})
 }
 
@@ -424,7 +433,7 @@ const handleImport = (event: Event) => {
 	<div class="w-full">
 		<div class="py-4">
 			<Input
-				placeholder="Пошук по назві..."
+				:placeholder="t('links.search_by_name')"
 				:model-value="(table.getColumn('name')?.getFilterValue() as string) ?? ''"
 				class="w-full"
 				@update:model-value="table.getColumn('name')?.setFilterValue($event)"
@@ -451,14 +460,17 @@ const handleImport = (event: Event) => {
 							:data-state="row.getIsSelected() && 'selected'"
 						>
 							<TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
-								<FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
+								<FlexRender
+									:render="cell.column.columnDef.cell"
+									:props="cell.getContext()"
+								/>
 							</TableCell>
 						</TableRow>
 					</template>
 					<template v-else>
 						<TableRow>
 							<TableCell :colspan="columns.length" class="h-24 text-center">
-								Немає посилань для відображення
+								{{ t("links.no_links_to_display") }}
 							</TableCell>
 						</TableRow>
 					</template>
@@ -467,8 +479,12 @@ const handleImport = (event: Event) => {
 		</div>
 		<div class="flex items-center justify-between space-x-2 py-4">
 			<div class="text-muted-foreground flex-1 text-sm">
-				{{ table.getFilteredSelectedRowModel().rows.length }} з
-				{{ table.getFilteredRowModel().rows.length }} рядків вибрано.
+				{{
+					t("links.selected_rows", {
+						selected: table.getFilteredSelectedRowModel().rows.length,
+						total: table.getFilteredRowModel().rows.length,
+					})
+				}}
 			</div>
 			<div class="space-x-2">
 				<Button
@@ -497,12 +513,16 @@ const handleImport = (event: Event) => {
 				@click="exportSelected"
 			>
 				<AppIcon name="lucide:upload" size="sm" />
-				Експортувати вибрані ({{ table.getFilteredSelectedRowModel().rows.length }})
+				{{
+					t("links.export_selected", {
+						count: table.getFilteredSelectedRowModel().rows.length,
+					})
+				}}
 			</Button>
 
 			<Button v-if="tableData.length > 0" variant="outline" size="sm" @click="exportAll">
 				<AppIcon name="lucide:upload" size="sm" />
-				Експортувати все
+				{{ t("links.export_all") }}
 			</Button>
 
 			<Button
@@ -512,7 +532,11 @@ const handleImport = (event: Event) => {
 				@click="deleteSelectedLinks"
 			>
 				<AppIcon name="lucide:trash-2" size="sm" />
-				Видалити вибрані ({{ table.getFilteredSelectedRowModel().rows.length }})
+				{{
+					t("links.delete_selected", {
+						count: table.getFilteredSelectedRowModel().rows.length,
+					})
+				}}
 			</Button>
 		</div>
 		<input ref="fileInput" type="file" accept=".json" class="hidden" @change="handleImport" />
