@@ -45,7 +45,7 @@ const copyAllSchedulesToClipboard = async () => {
 
 const handleIcsExportAcademicYear = async () => {
 	if (!selectedSchedule.value) {
-		toast.warning("Оберіть розкладання", {
+		toast.warning("Оберіть розклад", {
 			description: "Спочатку оберіть групу, викладача або аудиторію",
 		})
 		return
@@ -77,7 +77,7 @@ const handleIcsExportAcademicYear = async () => {
 			</TabsList>
 
 			<TabsContent value="schedule">
-				<h3 class="text-muted-foreground mb-2 text-sm font-medium">Експорт розкладання (ICS)</h3>
+				<h3 class="text-muted-foreground mb-2 text-sm font-medium">Експорт розкладу (ICS)</h3>
 				<div class="flex flex-wrap items-center justify-center gap-2">
 					<Button variant="default" :disabled="isLoading" @click="handleIcsExportAcademicYear">
 						<AppIcon name="lucide:calendar-export" />
