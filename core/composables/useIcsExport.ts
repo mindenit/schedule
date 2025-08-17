@@ -96,18 +96,13 @@ export const useIcsExport = () => {
 		return { startDate, endDate }
 	}
 
-	const createIcsCalendar = (
-		events: Schedule[],
-		options: IcsExportOptions = {}
-	): string => {
+	const createIcsCalendar = (events: Schedule[], options: IcsExportOptions = {}): string => {
 		const { academicYearStart, includedEventTypes } = options
 
 		let filteredEvents = events
 
 		if (includedEventTypes && includedEventTypes.length > 0) {
-			filteredEvents = events.filter((event) =>
-				includedEventTypes.includes(event.type)
-			)
+			filteredEvents = events.filter((event) => includedEventTypes.includes(event.type))
 		}
 
 		const icsHeader = [
@@ -116,12 +111,12 @@ export const useIcsExport = () => {
 			"PRODID:-//Schedule App//Academic Schedule//UK",
 			"CALSCALE:GREGORIAN",
 			"METHOD:PUBLISH",
-			`X-WR-CALNAME:Академічне розкладання ${
+			`X-WR-CALNAME:Академічний розклад ${
 				academicYearStart
 					? `${academicYearStart.getFullYear()}-${academicYearStart.getFullYear() + 1}`
 					: ""
 			}`,
-			"X-WR-CALDESC:Розкладання занять на навчальний рік",
+			"X-WR-CALDESC:Розклад занять на навчальний рік",
 			"X-WR-TIMEZONE:Europe/Kiev",
 		].join("\r\n")
 
@@ -143,9 +138,7 @@ export const useIcsExport = () => {
 			...options,
 		})
 
-		const defaultFilename = `schedule-${startDate.getFullYear()}-${
-			startDate.getFullYear() + 1
-		}.ics`
+		const defaultFilename = `schedule-${startDate.getFullYear()}-${startDate.getFullYear() + 1}.ics`
 
 		const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" })
 		const url = URL.createObjectURL(blob)

@@ -62,7 +62,7 @@ export const useScheduleIcsExport = () => {
 
 			if (!events || events.length === 0) {
 				toast.warning("Немає даних", {
-					description: "Розкладання за цей навчальний рік не знайдено",
+					description: "Розклад на цей навчальний рік не знайдено",
 				})
 				return
 			}
@@ -83,7 +83,7 @@ export const useScheduleIcsExport = () => {
 			})
 		} catch {
 			toast.error("Помилка експорту", {
-				description: "Не вдалося експортувати розкладання",
+				description: "Не вдалося експортувати розклад",
 			})
 		} finally {
 			isLoading.value = false
@@ -121,7 +121,7 @@ export const useScheduleIcsExport = () => {
 			})
 		} catch {
 			toast.error("Помилка експорту", {
-				description: "Не вдалося експортувати поточне розкладання",
+				description: "Не вдалося експортувати поточний розклад",
 			})
 		}
 	}

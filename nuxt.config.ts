@@ -62,6 +62,10 @@ export default defineNuxtConfig({
 	},
 	robots: {
 		sitemap: "/sitemap.xml",
+		disallow: ["/faggots"],
+	},
+	sitemap: {
+		exclude: ["/faggots"],
 	},
 	seo: {
 		redirectToCanonicalSiteUrl: true,
