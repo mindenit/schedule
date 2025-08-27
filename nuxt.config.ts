@@ -13,6 +13,11 @@ export default defineNuxtConfig({
 			"./layers/**/constants",
 		],
 	},
+	runtimeConfig: {
+		public: {
+			maintenance: process.env.MAINTENANCE === "true" ? true : false,
+		},
+	},
 	modules: [
 		"@nuxt/eslint",
 		"@nuxt/icon",
