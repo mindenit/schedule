@@ -39,7 +39,10 @@
 		</div>
 	</div>
 
-	<div class="fixed top-36 right-4 left-4 z-50 md:right-4 md:left-auto md:w-80">
+	<div
+		v-if="$pwa?.offlineReady"
+		class="fixed top-36 right-4 left-4 z-50 md:right-4 md:left-auto md:w-80"
+	>
 		<div class="rounded-lg border bg-green-50 p-4 shadow-lg dark:bg-green-950">
 			<div class="flex items-center gap-3">
 				<AppIcon name="lucide:wifi-off" class="text-success" />
