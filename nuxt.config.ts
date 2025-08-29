@@ -27,10 +27,8 @@ export default defineNuxtConfig({
 		"@pinia/nuxt",
 		"@nuxt/image",
 		"@nuxtjs/seo",
+		"@vite-pwa/nuxt",
 	],
-	future: {
-		compatibilityVersion: 4,
-	},
 	css: ["~/core/assets/css/main.css"],
 	shadcn: {
 		prefix: "",
@@ -38,6 +36,9 @@ export default defineNuxtConfig({
 	},
 	vite: {
 		plugins: [tailwindcss()],
+		server: {
+			allowedHosts: ["87f83efd5e10.ngrok-free.app"],
+		},
 	},
 	pinia: {
 		storesDirs: ["./**/stores/**"],
@@ -56,7 +57,6 @@ export default defineNuxtConfig({
 	},
 
 	site: {
-		url: "https://sh.mindenit.org",
 		name: "Mindenit Schedule",
 		description:
 			"Зручний перегляд розкладу занять для студентів та викладачів. Додавайте розклади груп, викладачів та аудиторій, переглядайте їх у зручному форматі по днях, тижнях або на місяць. Швидкий доступ до розкладу у будь-який час.",
@@ -81,6 +81,86 @@ export default defineNuxtConfig({
 			ogType: "website",
 			twitterCard: "summary_large_image",
 			ogLocale: "uk_UA",
+		},
+	},
+	pwa: {
+		registerType: "autoUpdate",
+		registerWebManifestInRouteRules: true,
+		workbox: {
+			navigateFallback: "/",
+			globPatterns: ["**/*.{js,css,html,png,svg,ico}"],
+			globIgnores: ["**/authors/**"],
+			maximumFileSizeToCacheInBytes: 5000000, // 5MB
+		},
+		client: {
+			installPrompt: true,
+			registerPlugin: true,
+		},
+		manifest: {
+			name: "Mindenit Schedule",
+			short_name: "Schedule",
+			description:
+				"Зручний перегляд розкладу занять для студентів та викладачів. Додавайте розклади груп, викладачів та аудиторій.",
+			theme_color: "#6368F2",
+			background_color: "#ffffff",
+			display: "standalone",
+			orientation: "portrait",
+			scope: "/",
+			start_url: "/",
+			id: "/",
+			lang: "uk",
+			categories: ["education", "productivity"],
+			icons: [
+				{
+					src: "pwa/android/android-launchericon-192-192.png",
+					sizes: "192x192",
+					type: "image/png",
+					purpose: "any",
+				},
+				{
+					src: "pwa/android/android-launchericon-512-512.png",
+					sizes: "512x512",
+					type: "image/png",
+					purpose: "any",
+				},
+				{
+					src: "pwa/android/android-launchericon-192-192.png",
+					sizes: "192x192",
+					type: "image/png",
+					purpose: "maskable",
+				},
+				{
+					src: "pwa/android/android-launchericon-512-512.png",
+					sizes: "512x512",
+					type: "image/png",
+					purpose: "maskable",
+				},
+				{
+					src: "pwa/ios/180.png",
+					sizes: "180x180",
+					type: "image/png",
+				},
+				{
+					src: "pwa/ios/152.png",
+					sizes: "152x152",
+					type: "image/png",
+				},
+				{
+					src: "pwa/ios/120.png",
+					sizes: "120x120",
+					type: "image/png",
+				},
+				// Favicon
+				{
+					src: "favicon.ico",
+					sizes: "32x32",
+					type: "image/x-icon",
+				},
+			],
+		},
+		devOptions: {
+			enabled: true,
+			type: "module",
 		},
 	},
 })
