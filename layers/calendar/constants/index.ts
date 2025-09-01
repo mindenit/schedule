@@ -1,5 +1,12 @@
 export const WEEK_VIEW_ROW_HEIGHT = 63
 
+export const CALENDAR_START_HOUR = 7
+export const CALENDAR_END_HOUR = 19
+export const CALENDAR_HOURS = Array.from(
+	{ length: CALENDAR_END_HOUR - CALENDAR_START_HOUR + 1 },
+	(_, i) => i + CALENDAR_START_HOUR
+)
+
 export const WEEK_OPTIONS = { weekStartsOn: 1 as const }
 
 export const EVENT_TYPE_COLORS: Record<TEventType, string> = {

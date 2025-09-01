@@ -18,102 +18,20 @@ const { getEventsForDate, groupEvents } = useEventGrouping()
 const { formatHour, capitalize } = useEventFormatting()
 
 const weekDays = computed(() => getWeekDaysDetailed(selectedDate.value))
-const hours = Array.from({ length: 24 }, (_, i) => i)
+const hours = CALENDAR_HOURS
 
 const getDayEvents = (day: Date) => getEventsForDate(props.events, day)
 const getGroupedEventsForDay = (day: Date) => groupEvents(getDayEvents(day))
 
-const weekViewEl = useTemplateRef("weekView")
-
-const getEarliestEventOfWeek = () => {
-	let earliestEvent: Schedule | null = null
-
-	const allWeekEvents: Schedule[] = []
-
-	for (const day of weekDays.value) {
-		const dayEvents = getDayEvents(day)
-		allWeekEvents.push(...dayEvents)
-	}
-
-	if (allWeekEvents.length === 0) {
-		return null
-	}
-
-	earliestEvent = allWeekEvents.reduce((earliest, current) => {
-		const currentStart = parseDate(current.startedAt)
-		const earliestStart = parseDate(earliest.startedAt)
-
-		const currentTime = currentStart.getHours() * 60 + currentStart.getMinutes()
-		const earliestTime = earliestStart.getHours() * 60 + earliestStart.getMinutes()
-
-		return currentTime < earliestTime ? current : earliest
-	})
-
-	return earliestEvent
-}
-
-const findScrollableParent = (element: HTMLElement | null): HTMLElement | null => {
-	if (!element) return null
-
-	const style = window.getComputedStyle(element)
-	const hasOverflow = style.overflowY === "auto" || style.overflowY === "scroll"
-	const isScrollable = element.scrollHeight > element.clientHeight
-
-	if (hasOverflow && isScrollable) {
-		return element
-	}
-
-	return findScrollableParent(element.parentElement)
-}
-
-const scrollToFirstEvent = () => {
-	const firstEvent = getEarliestEventOfWeek()
-	if (!firstEvent) {
-		return false
-	}
-
-	const scrollContainer = findScrollableParent(weekViewEl.value)
-
-	if (!scrollContainer) {
-		return false
-	}
-
-	const eventStart = parseDate(firstEvent.startedAt)
-	const hour = eventStart.getHours()
-	const minutes = eventStart.getMinutes()
-
-	const rowHeight = typeof WEEK_VIEW_ROW_HEIGHT !== "undefined" ? WEEK_VIEW_ROW_HEIGHT : 60
-	const scrollPosition = hour * rowHeight + (minutes / 60) * rowHeight - 100
-
-	scrollContainer.scrollTo({
-		top: Math.max(0, scrollPosition),
-		behavior: "smooth",
-	})
-
-	return true
-}
-
-const scheduleScroll = () => {
-	nextTick(() => {
-		setTimeout(() => {
-			scrollToFirstEvent()
-		}, 100)
-	})
-}
-
-watch([selectedDate, () => props.events], scheduleScroll, { immediate: true })
-
-onMounted(() => {
-	setTimeout(() => {
-		scrollToFirstEvent()
-	}, 500)
+const hasEvents = computed(() => {
+	return weekDays.value.some((day) => getDayEvents(day).length > 0)
 })
 </script>
 
 <template>
-	<div ref="weekView" class="flex flex-col">
-		<div class="overflow-x-auto">
-			<div class="min-w-[800px]">
+	<div class="relative flex h-full flex-col">
+		<div class="flex flex-1 flex-col overflow-x-auto" :class="{ 'blur-sm': !hasEvents }">
+			<div class="flex min-w-[800px] flex-1 flex-col">
 				<div class="bg-muted/50 relative z-20 mb-1 grid grid-cols-[72px_1fr] gap-1 md:rounded-t-lg">
 					<div class="col-start-2 grid grid-cols-7 gap-1">
 						<span
@@ -140,13 +58,12 @@ onMounted(() => {
 					</div>
 				</div>
 
-				<div class="grid grid-cols-[72px_1fr] gap-1">
-					<div class="relative">
+				<div class="grid min-h-0 flex-1 grid-cols-[72px_1fr] gap-1">
+					<div class="relative flex flex-col">
 						<div
 							v-for="(hour, index) in hours"
 							:key="hour"
-							class="bg-muted/50 relative"
-							:style="{ height: WEEK_VIEW_ROW_HEIGHT + 'px' }"
+							class="bg-muted/50 relative flex-1"
 							:class="{
 								'rounded-bl-lg': index === hours.length - 1,
 							}"
@@ -159,18 +76,18 @@ onMounted(() => {
 						</div>
 					</div>
 
-					<div class="relative">
+					<div class="relative min-h-0 flex-1">
 						<div class="grid h-full grid-cols-7 gap-1">
 							<div
 								v-for="(day, dayIndex) in weekDays"
 								:key="day.getTime()"
 								class="relative min-w-[100px]"
 							>
-								<div class="grid h-full grid-rows-24 gap-1">
+								<div class="flex h-full flex-col gap-1">
 									<div
 										v-for="(hour, hourIndex) in hours"
 										:key="hour"
-										class="bg-card relative"
+										class="bg-card relative flex-1"
 										:class="{
 											'rounded-br-lg':
 												dayIndex === weekDays.length - 1 && hourIndex === hours.length - 1,
@@ -188,5 +105,10 @@ onMounted(() => {
 				</div>
 			</div>
 		</div>
+
+		<BigCalendarEmptyStateOverlay
+			:show="!hasEvents"
+			description="У цьому тижні немає заплнованих пар"
+		/>
 	</div>
 </template>

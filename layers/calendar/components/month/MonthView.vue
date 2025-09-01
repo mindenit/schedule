@@ -19,6 +19,8 @@ const cells = computed(() => getCalendarCells(selectedDate.value))
 const weekDays = computed(() => getWeekDays(selectedDate.value))
 const eventPositions = computed(() => calculateEventPositions(props.events, selectedDate.value))
 
+const hasEvents = computed(() => props.events.length > 0)
+
 const weeksCount = computed(() => Math.ceil(cells.value.length / 7))
 
 const monthViewEl = useTemplateRef("monthViewContainer")
@@ -83,7 +85,7 @@ watch(isSwiping, (swiping) => {
 </script>
 
 <template>
-	<div class="flex h-full flex-col">
+	<div class="relative flex h-full flex-col">
 		<div class="mb-1 grid flex-shrink-0 grid-cols-7 gap-1">
 			<div
 				v-for="day in weekDays"
@@ -95,7 +97,11 @@ watch(isSwiping, (swiping) => {
 			</div>
 		</div>
 
-		<div ref="monthViewContainer" class="relative min-h-0 flex-1 overflow-hidden rounded-b-2xl">
+		<div
+			ref="monthViewContainer"
+			class="relative min-h-0 flex-1 overflow-hidden rounded-b-2xl"
+			:class="{ 'blur-sm': !hasEvents }"
+		>
 			<AnimatePresence :initial="false" :custom="swipeDirection">
 				<motion.div
 					:key="dateKey"
@@ -132,5 +138,10 @@ watch(isSwiping, (swiping) => {
 				</motion.div>
 			</AnimatePresence>
 		</div>
+
+		<BigCalendarEmptyStateOverlay
+			:show="!hasEvents"
+			description="У цьому місяці немає заплнованих пар"
+		/>
 	</div>
 </template>

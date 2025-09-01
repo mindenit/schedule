@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { isToday, startOfDay } from "date-fns"
 import type { Schedule } from "nurekit"
+import { MAX_VISIBLE_EVENTS_PER_DAY } from "../../constants"
 
 interface Props {
 	cell: ICalendarCell
@@ -32,8 +33,24 @@ const containerClasses = computed(() => ({
 }))
 
 const allGroups = computed(() => groupedCellEvents.value)
-const displayGroups = computed(() => allGroups.value.slice(0, MAX_VISIBLE_EVENTS_PER_DAY))
-const hasMoreEvents = computed(() => allGroups.value.length > MAX_VISIBLE_EVENTS_PER_DAY)
+const displayGroups = computed(() => {
+	const maxVisible = hasOnlyOneHiddenEvent.value
+		? MAX_VISIBLE_EVENTS_PER_DAY + 1
+		: MAX_VISIBLE_EVENTS_PER_DAY
+	return allGroups.value.slice(0, maxVisible)
+})
+
+const hasOnlyOneHiddenEvent = computed(() => {
+	if (allGroups.value.length <= MAX_VISIBLE_EVENTS_PER_DAY) return false
+	const hiddenEventsCount = allGroups.value
+		.slice(MAX_VISIBLE_EVENTS_PER_DAY)
+		.reduce((total, group) => total + group.length, 0)
+	return hiddenEventsCount === 1
+})
+
+const hasMoreEvents = computed(() => {
+	return allGroups.value.length > MAX_VISIBLE_EVENTS_PER_DAY && !hasOnlyOneHiddenEvent.value
+})
 
 const remainingEventsCount = computed(() => {
 	if (!hasMoreEvents.value) return 0
