@@ -16,16 +16,17 @@ defineProps<Props>()
 <template>
 	<div class="flex items-stretch gap-2">
 		<div class="flex flex-col justify-center gap-[6px]">
-			<span class="text-base font-bold tabular-nums">{{ startTime }}</span>
-			<span class="text-base font-bold tabular-nums">{{ endTime }}</span>
+			<span class="text-sm font-bold tabular-nums">{{ startTime }}</span>
+			<span class="text-sm font-bold tabular-nums">{{ endTime }}</span>
 		</div>
 
 		<div :class="cn('w-[2px] rounded-xl border', EVENT_TYPE_BORDERS[type as TEventType])"></div>
 
 		<div class="flex flex-col justify-between gap-[6px]">
-			<span class="text-muted-foreground text-sm">
-				{{ auditorium }} <AppIcon name="lucide:dot" /> {{ EVENT_TYPE_LABELS[type as TEventType] }}
-			</span>
+			<div class="text-muted-foreground flex items-center text-sm">
+				<span>{{ auditorium }}</span> <AppIcon name="lucide:dot" />
+				<span>{{ EVENT_TYPE_LABELS[type as TEventType] }}</span>
+			</div>
 			<span class="text-base">{{ name }}</span>
 		</div>
 	</div>
