@@ -22,11 +22,15 @@ const hours = CALENDAR_HOURS
 
 const getDayEvents = (day: Date) => getEventsForDate(props.events, day)
 const getGroupedEventsForDay = (day: Date) => groupEvents(getDayEvents(day))
+
+const hasEvents = computed(() => {
+	return weekDays.value.some((day) => getDayEvents(day).length > 0)
+})
 </script>
 
 <template>
-	<div class="flex h-full flex-col">
-		<div class="flex flex-1 flex-col overflow-x-auto">
+	<div class="relative flex h-full flex-col">
+		<div class="flex flex-1 flex-col overflow-x-auto" :class="{ 'blur-sm': !hasEvents }">
 			<div class="flex min-w-[800px] flex-1 flex-col">
 				<div class="bg-muted/50 relative z-20 mb-1 grid grid-cols-[72px_1fr] gap-1 md:rounded-t-lg">
 					<div class="col-start-2 grid grid-cols-7 gap-1">
@@ -101,5 +105,10 @@ const getGroupedEventsForDay = (day: Date) => groupEvents(getDayEvents(day))
 				</div>
 			</div>
 		</div>
+
+		<BigCalendarEmptyStateOverlay
+			:show="!hasEvents"
+			description="У цьому тижні немає заплнованих пар"
+		/>
 	</div>
 </template>

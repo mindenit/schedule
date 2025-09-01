@@ -24,6 +24,8 @@ const hours = CALENDAR_HOURS
 const dayEvents = computed(() => getEventsForDate(props.events, selectedDate.value))
 const groupedEvents = computed(() => groupEvents(dayEvents.value))
 
+const hasEvents = computed(() => dayEvents.value.length > 0)
+
 const dayViewEl = useTemplateRef("dayView")
 const { direction, isSwiping } = useSwipe(dayViewEl)
 
@@ -66,12 +68,15 @@ watch(isSwiping, (swiping) => {
 </script>
 
 <template>
-	<div ref="dayView" class="flex h-full rounded-lg">
+	<div ref="dayView" class="relative flex h-full rounded-lg">
 		<div class="relative flex flex-1 flex-col">
 			<AnimatePresence :initial="false" :custom="swipeDirection">
 				<motion.div
 					:key="dateKey"
-					:class="isAnimating ? 'absolute inset-0 flex flex-1 flex-col' : 'flex flex-1 flex-col'"
+					:class="[
+						isAnimating ? 'absolute inset-0 flex flex-1 flex-col' : 'flex flex-1 flex-col',
+						{ 'blur-sm': !hasEvents },
+					]"
 					:style="isAnimating ? { zIndex: 10 + animationCounter } : {}"
 					:custom="swipeDirection"
 					:variants="slideVariants"
@@ -105,5 +110,10 @@ watch(isSwiping, (swiping) => {
 				</motion.div>
 			</AnimatePresence>
 		</div>
+
+		<BigCalendarEmptyStateOverlay
+			:show="!hasEvents"
+			description="У цей день немає заплнованих пар"
+		/>
 	</div>
 </template>
