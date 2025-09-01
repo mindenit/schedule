@@ -145,15 +145,32 @@ export const useEventGrouping = () => {
 		groupSize: number
 	) => {
 		const startDate = parseDate(event.startedAt)
+		const endDate = parseDate(event.endedAt)
 		const dayStart = startOfDay(parseDate(day))
-		const eventStart = startDate < dayStart ? dayStart : startDate
-		const startMinutes = differenceInMinutes(eventStart, dayStart)
 
-		const top = (startMinutes / 1440) * 100
+		const calendarStart = new Date(dayStart)
+		calendarStart.setHours(CALENDAR_START_HOUR, 0, 0, 0)
+
+		const calendarEnd = new Date(dayStart)
+		calendarEnd.setHours(CALENDAR_END_HOUR, 59, 59, 999)
+
+		const eventStart = startDate < calendarStart ? calendarStart : startDate
+		const eventEnd = endDate > calendarEnd ? calendarEnd : endDate
+
+		if (startDate >= calendarEnd || endDate <= calendarStart) {
+			return { top: "0%", height: "0%", width: "0%", left: "0%", display: "none" }
+		}
+
+		const totalCalendarMinutes = (CALENDAR_END_HOUR - CALENDAR_START_HOUR + 1) * 60
+		const startMinutes = differenceInMinutes(eventStart, calendarStart)
+		const durationMinutes = differenceInMinutes(eventEnd, eventStart)
+
+		const top = (startMinutes / totalCalendarMinutes) * 100
+		const height = (durationMinutes / totalCalendarMinutes) * 100
 		const width = 100 / groupSize
 		const left = groupIndex * width
 
-		return { top: `${top}%`, width: `${width}%`, left: `${left}%` }
+		return { top: `${top}%`, height: `${height}%`, width: `${width}%`, left: `${left}%` }
 	}
 
 	const getEventsForWeek = (events: Schedule[], weekDate: Date | string | number): Schedule[] => {

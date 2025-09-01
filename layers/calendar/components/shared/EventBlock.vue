@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { differenceInMinutes } from "date-fns"
 import type { Schedule } from "nurekit"
 
 interface Props {
@@ -11,17 +10,8 @@ const props = defineProps<Props>()
 
 const { formatTimeRange, getEventTypeColor } = useEventFormatting()
 
-const start = computed(() => parseDate(props.event.startedAt))
-const end = computed(() => parseDate(props.event.endedAt))
-const durationInMinutes = computed(() => {
-	const startDate = start.value
-	const endDate = end.value
-	return startDate && endDate ? differenceInMinutes(endDate, startDate) : 0
-})
-const heightInPixels = computed(() => (durationInMinutes.value / 60) * WEEK_VIEW_ROW_HEIGHT - 8)
-
 const blockClasses = computed(() => [
-	"flex flex-col gap-0.5 items-center justify-center select-none rounded-md px-2 text-xs focus-visible:outline-offset-2 transition-all duration-200 cursor-pointer overflow-hidden min-w-0",
+	"flex flex-col gap-0.5 items-center justify-center select-none rounded-md px-2 text-xs focus-visible:outline-offset-2 transition-all duration-200 cursor-pointer overflow-hidden min-w-0 h-full",
 	getEventTypeColor(props.event.type),
 	props.class,
 ])
@@ -32,12 +22,7 @@ const formattedTimeRange = computed(() => formatTimeRange(props.event))
 <template>
 	<Popover>
 		<PopoverTrigger as-child>
-			<div
-				role="button"
-				tabindex="0"
-				:class="blockClasses"
-				:style="{ height: `${heightInPixels}px` }"
-			>
+			<div role="button" tabindex="0" :class="blockClasses">
 				<p class="w-full truncate text-center font-semibold">{{ event.subject.brief }}</p>
 				<p class="w-full truncate text-center">
 					{{ formattedTimeRange }}

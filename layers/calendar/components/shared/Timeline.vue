@@ -11,11 +11,26 @@ const currentTime = ref(new Date())
 let timer: number | null = null
 
 const getCurrentTimePosition = computed(() => {
-	const minutes = currentTime.value.getHours() * 60 + currentTime.value.getMinutes()
-	return (minutes / 1440) * 100
+	const hour = currentTime.value.getHours()
+	const minutes = currentTime.value.getMinutes()
+
+	if (hour < CALENDAR_START_HOUR || hour > CALENDAR_END_HOUR) {
+		return -1
+	}
+
+	const totalMinutes = hour * 60 + minutes
+	const startMinutes = CALENDAR_START_HOUR * 60
+	const endMinutes = (CALENDAR_END_HOUR + 1) * 60
+	const workingMinutes = totalMinutes - startMinutes
+	const totalWorkingMinutes = endMinutes - startMinutes
+
+	return (workingMinutes / totalWorkingMinutes) * 100
 })
 
 const shouldShowTimeline = computed(() => {
+	const position = getCurrentTimePosition.value
+	if (position === -1) return false
+
 	if (!props.weekDays || props.weekDays.length === 0) {
 		return true
 	}
@@ -32,7 +47,10 @@ const getTodayColumnIndex = computed(() => {
 })
 
 const getTimelineStyle = computed(() => {
-	const baseStyle = { top: `${getCurrentTimePosition.value}%` }
+	const position = getCurrentTimePosition.value
+	if (position === -1) return { display: "none" }
+
+	const baseStyle = { top: `${position}%` }
 
 	if (!props.weekDays || props.weekDays.length === 0) {
 		return baseStyle
@@ -41,7 +59,7 @@ const getTimelineStyle = computed(() => {
 	const todayIndex = getTodayColumnIndex.value
 	if (todayIndex === -1) return baseStyle
 
-	const columnWidth = 100 / 7 //
+	const columnWidth = 100 / 7
 	const leftOffset = todayIndex * columnWidth
 
 	return {
