@@ -47,9 +47,14 @@ import { buttonVariants } from "./ui/button"
 					</NuxtLink>
 				</div>
 
-				<div class="text-muted-foreground text-center text-sm">
+				<div class="text-muted-foreground text-center text-base">
 					<p>Застосунок розроблено за підтримки</p>
 					<p>Харківського національного університету радіоелектроніки</p>
+					<p class="mt-2 text-[0.65rem] leading-relaxed">
+						Mindenit Schedule не є офіційним джерелом розкладу занять ХНУРЕ. Адміністрація сайту не
+						несе відповідальності за актуальність та достовірність інформації щодо розкладу. Для
+						отримання офіційної інформації рекомендуємо звертатися до офіційних джерел університету.
+					</p>
 				</div>
 			</div>
 
