@@ -28,6 +28,7 @@ defineProps<Props>()
 		<SidebarCalendar />
 		<SidebarTodayEvents />
 
+		<PlayMarketButton class="max-md:hidden" />
 		<TelegramButton />
 		<div class="mt-auto flex items-center justify-between gap-2">
 			<div class="min-w-0 flex-1">

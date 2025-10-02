@@ -1,5 +1,6 @@
 <template>
 	<div>
+		<DialogManager />
 		<div class="relative flex h-dvh flex-col overflow-hidden md:hidden">
 			<div class="flex-shrink-0">
 				<HiringInfo />
@@ -11,6 +12,9 @@
 			</main>
 			<div class="fixed right-8 bottom-10 z-50">
 				<ScheduleAddDialog />
+			</div>
+			<div class="fixed bottom-10 left-8 z-50">
+				<PlayMarketButton />
 			</div>
 		</div>
 
