@@ -34,11 +34,10 @@ import {
 	TableRow,
 } from "@/core/components/ui/table"
 import { Badge } from "@/core/components/ui/badge"
-
-import type { Link } from "~/core/stores/links"
+import type { Link } from "~/layers/links/stores/links"
 import type { Subject } from "nurekit"
-import { valueUpdater } from "./ui/table/utils"
-import AppIcon from "./AppIcon.vue"
+import AppIcon from "~/core/components/AppIcon.vue"
+import { valueUpdater } from "~/core/components/ui/table/utils"
 
 interface LinkTableRow {
 	id: string

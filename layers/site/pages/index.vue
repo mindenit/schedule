@@ -14,13 +14,30 @@ defineOgImageComponent("Mindenit")
 const calendarStore = useCalendarStore()
 const scheduleStore = useScheduleStore()
 
-const { filteredEvents, selectedDate, view } = storeToRefs(calendarStore)
+const { filteredEvents, selectedDate } = storeToRefs(calendarStore)
 const { selectedSchedule } = storeToRefs(scheduleStore)
 
 const hasActiveSchedule = computed(() => !!selectedSchedule.value)
 const scheduleId = computed(() => selectedSchedule.value?.id)
 
-const dateRange = computed(() => getCalendarGridRange(selectedDate.value, view.value))
+const getAcademicYearRange = (date: Date) => {
+	const year = date.getFullYear()
+	const currentDate = new Date(date)
+
+	if (currentDate.getMonth() < 8) {
+		return {
+			start: new Date(year - 1, 8, 1, 0, 0, 0, 0),
+			end: new Date(year, 8, 1, 23, 59, 59, 999),
+		}
+	}
+
+	return {
+		start: new Date(year, 8, 1, 0, 0, 0, 0),
+		end: new Date(year + 1, 8, 1, 23, 59, 59, 999),
+	}
+}
+
+const dateRange = computed(() => getAcademicYearRange(selectedDate.value))
 
 const startTimestamp = computed(() => {
 	if (!hasActiveSchedule.value) return undefined

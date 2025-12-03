@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { toast } from "vue-sonner"
-import { useLinksStore, type Link } from "~/core/stores/links"
+import { useLinksStore, type Link } from "~/layers/links/stores/links"
 import type { Subject } from "nurekit"
 
 const linksStore = useLinksStore()
@@ -144,7 +144,7 @@ const handleMainImport = (event: Event) => {
 			</div>
 		</div>
 
-		<LinkDialog v-model="showLinkDialog" :link="editingLink" @save="saveLink" />
+		<LinksAddDialog v-model="showLinkDialog" :link="editingLink" @save="saveLink" />
 
 		<input ref="fileInput" type="file" accept=".json" class="hidden" @change="handleMainImport" />
 	</div>

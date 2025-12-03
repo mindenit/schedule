@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Schedule, Subject } from "nurekit"
-import { useLinksStore, type Link } from "~/core/stores/links"
+import { useLinksStore, type Link } from "~/layers/links/stores/links"
 
 interface Props {
 	event: Schedule
@@ -167,6 +167,6 @@ const deleteLink = (linkId: string) => {
 			</p>
 		</div>
 
-		<LinkDialog v-model="showLinkDialog" :link="editingLink" @save="saveLink" />
+		<LinksAddDialog v-model="showLinkDialog" :link="editingLink" @save="saveLink" />
 	</div>
 </template>

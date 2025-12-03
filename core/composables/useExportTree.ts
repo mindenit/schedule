@@ -1,5 +1,5 @@
 import { computed, type Ref } from "vue"
-import type { Link } from "~/core/stores/links"
+import type { Link } from "~/layers/links/stores/links"
 import type { Subject } from "nurekit"
 
 interface TreeNode {
