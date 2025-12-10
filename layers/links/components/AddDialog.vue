@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { ref, watch, computed } from "vue"
-import type { Link } from "~/layers/links/stores/links"
-
 interface Props {
 	modelValue: boolean
 	link?: Link | null

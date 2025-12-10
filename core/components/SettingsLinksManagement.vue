@@ -1,13 +1,16 @@
 <script setup lang="ts">
 import { toast } from "vue-sonner"
 import { useLinksStore, type Link } from "~/layers/links/stores/links"
+import ShareLinksDialog from "~/layers/links/components/ShareLinksDialog.vue"
 import type { Subject } from "nurekit"
 
 const linksStore = useLinksStore()
 
 const showLinkDialog = ref(false)
+const showShareDialog = ref(false)
 const editingLink = ref<Link | null>(null)
 const editingContext = ref<{ subjectId: string; eventType: string; subject: Subject } | null>(null)
+const selectedLinkIds = ref<string[]>([])
 
 const organizedLinks = computed(() => {
 	const result: Array<{
@@ -120,12 +123,23 @@ const handleMainImport = (event: Event) => {
 
 <template>
 	<div class="flex flex-col overflow-hidden">
-		<div class="flex items-center justify-between max-md:flex-col max-md:gap-2 max-md:pb-2">
-			<h3 class="text-lg font-medium">Управління посиланнями</h3>
-			<Button size="sm" @click="triggerImport">
-				<AppIcon name="lucide:download" />
-				Імпортувати
-			</Button>
+		<div class="flex items-center justify-between gap-2 max-md:flex-col max-md:pb-2">
+			<h3 class="text-lg font-medium">Керування посиланнями</h3>
+			<div class="flex gap-2">
+				<Button
+					v-if="selectedLinkIds.length > 0"
+					size="sm"
+					variant="outline"
+					@click="showShareDialog = true"
+				>
+					<AppIcon name="lucide:share-2" />
+					Поділіться ({{ selectedLinkIds.length }})
+				</Button>
+				<Button size="sm" @click="triggerImport">
+					<AppIcon name="lucide:download" />
+					Імпортувати
+				</Button>
+			</div>
 		</div>
 
 		<div class="flex-1 overflow-hidden">
@@ -140,11 +154,14 @@ const handleMainImport = (event: Event) => {
 					@edit-link="editLink"
 					@delete-link="deleteLink"
 					@import-links="handleImportLinks"
+					@selection-change="(ids) => (selectedLinkIds = ids)"
 				/>
 			</div>
 		</div>
 
 		<LinksAddDialog v-model="showLinkDialog" :link="editingLink" @save="saveLink" />
+
+		<ShareLinksDialog v-model="showShareDialog" :selected-link-ids="selectedLinkIds" />
 
 		<input ref="fileInput" type="file" accept=".json" class="hidden" @change="handleMainImport" />
 	</div>

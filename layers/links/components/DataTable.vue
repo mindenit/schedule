@@ -13,9 +13,7 @@ import {
 	getSortedRowModel,
 	useVueTable,
 } from "@tanstack/vue-table"
-import { h, ref, computed } from "vue"
 import { toast } from "vue-sonner"
-
 import { Button } from "@/core/components/ui/button"
 import { Checkbox } from "@/core/components/ui/checkbox"
 import { Input } from "@/core/components/ui/input"
@@ -64,6 +62,7 @@ const emit = defineEmits<{
 	editLink: [link: Link, subjectId: string, eventType: string, subject: Subject]
 	deleteLink: [linkId: string, subjectId: string, eventType: string]
 	importLinks: [file: File]
+	selectionChange: [selectedIds: string[]]
 }>()
 
 const tableData = computed<LinkTableRow[]>(() => {
@@ -346,6 +345,15 @@ const table = useVueTable({
 		},
 	},
 })
+
+watch(
+	() => rowSelection.value,
+	() => {
+		const selectedRows = table.getFilteredSelectedRowModel().rows
+		const selectedIds = selectedRows.map((row) => row.original.originalLink.id)
+		emit("selectionChange", selectedIds)
+	}
+)
 
 const fileInput = ref<HTMLInputElement | null>(null)
 
