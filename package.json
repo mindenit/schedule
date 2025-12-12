@@ -33,7 +33,7 @@
 		"eslint": "^9.28.0",
 		"lucide-vue-next": "^0.507.0",
 		"motion-v": "^1.6.1",
-		"nurekit": "^0.6.4",
+		"nurekit": "^0.6.7",
 		"nuxt": "^3.17.5",
 		"pinia": "^3.0.3",
 		"reka-ui": "^2.3.1",

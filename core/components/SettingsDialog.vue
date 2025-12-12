@@ -5,11 +5,11 @@
 				<AppIcon name="lucide:settings" />
 			</Button>
 		</DialogTrigger>
-		<DialogContent class="flex max-h-[80vh] flex-col overflow-hidden md:max-w-4xl">
+		<DialogContent class="flex h-[40vh] flex-col overflow-hidden sm:max-w-2xl">
 			<DialogHeader>
 				<DialogTitle>Налаштування</DialogTitle>
 			</DialogHeader>
-			<SettingsMainView />
+			<SettingsMainView class="flex-1" />
 		</DialogContent>
 	</Dialog>
 </template>

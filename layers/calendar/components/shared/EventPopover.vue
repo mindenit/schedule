@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Schedule, Subject } from "nurekit"
-import { useLinksStore, type Link } from "~/core/stores/links"
+import { useLinksStore, type Link } from "~/layers/links/stores/links"
 
 interface Props {
 	event: Schedule
@@ -17,6 +17,10 @@ const eventTypeLabel = computed(() => getEventTypeLabel(props.event.type))
 const eventTypeColor = computed(() => getEventTypeColor(props.event.type))
 const formattedTimeRange = computed(() => formatTimeRange(props.event))
 const formattedDate = computed(() => formatDate(props.event.startedAt))
+
+const pairIndexText = computed(() => {
+	return `Пара ${props.event.pairIndex} з ${props.event.pairsCount}`
+})
 
 const teachersText = computed(() => {
 	if (!props.event.teachers || props.event.teachers.length === 0) return "Не вказані"
@@ -80,93 +84,118 @@ const deleteLink = (linkId: string) => {
 </script>
 
 <template>
-	<div class="space-y-4">
-		<div class="flex items-start gap-3">
-			<div class="mt-1.5 h-3 w-3 flex-shrink-0 rounded-full" :class="eventTypeColor" />
+	<div class="space-y-3">
+		<div class="flex items-start gap-2.5">
+			<div class="mt-1 h-3 w-3 flex-shrink-0 rounded-full shadow-sm" :class="eventTypeColor" />
 			<div class="min-w-0 flex-1">
-				<h3 class="text-base leading-tight font-semibold">
-					{{ `(${event.subject.brief}) ${event.subject.title}` }}
+				<h3 class="text-sm leading-tight font-semibold tracking-tight">
+					{{ event.subject.title }}
 				</h3>
-				<div class="mt-1 flex items-center gap-2">
-					<p class="text-muted-foreground text-sm">
-						{{ eventTypeLabel }}
-					</p>
+				<div class="mt-1 flex items-center gap-1.5">
+					<span class="text-muted-foreground text-xs font-medium">{{ event.subject.brief }}</span>
+					<span class="text-muted-foreground">·</span>
+					<span class="text-muted-foreground text-xs">{{ eventTypeLabel }}</span>
 				</div>
 			</div>
 		</div>
 
-		<div class="flex items-center gap-3 text-sm">
-			<AppIcon name="lucide:clock" class="text-muted-foreground flex-shrink-0" />
-			<div class="flex flex-col gap-1">
-				<span>{{ formattedTimeRange }}</span>
-				<span class="text-muted-foreground text-xs">{{ pairNumber }}</span>
+		<div class="bg-muted/50 space-y-1.5 rounded-lg p-2.5 text-xs">
+			<div class="flex items-center gap-2">
+				<AppIcon name="lucide:clock" class="text-muted-foreground h-3.5 w-3.5 flex-shrink-0" />
+				<span class="font-medium">{{ formattedTimeRange }}</span>
+				<span class="text-muted-foreground">·</span>
+				<span class="text-muted-foreground">{{ pairNumber }}</span>
+			</div>
+
+			<div class="flex items-center gap-2">
+				<AppIcon name="lucide:calendar" class="text-muted-foreground h-3.5 w-3.5 flex-shrink-0" />
+				<span>{{ formattedDate }}</span>
+				<span class="text-muted-foreground">·</span>
+				<span class="text-muted-foreground">{{ pairIndexText }}</span>
 			</div>
 		</div>
 
-		<div class="flex items-center gap-3 text-sm">
-			<AppIcon name="lucide:calendar" class="text-muted-foreground flex-shrink-0" />
-			<span>{{ formattedDate }}</span>
-		</div>
+		<div class="space-y-2 text-xs">
+			<div class="grid grid-cols-2 gap-3">
+				<div class="flex items-start gap-2">
+					<AppIcon
+						name="lucide:map-pin"
+						class="text-muted-foreground mt-0.5 h-3.5 w-3.5 flex-shrink-0"
+					/>
+					<div class="min-w-0 flex-1">
+						<div class="truncate font-medium">{{ auditoriumText }}</div>
+						<div class="text-muted-foreground text-[11px]">Аудиторія</div>
+					</div>
+				</div>
 
-		<div class="flex items-center gap-3 text-sm">
-			<AppIcon name="lucide:map-pin" class="text-muted-foreground flex-shrink-0" />
-			<div class="flex flex-col gap-1">
-				<span class="font-medium">{{ auditoriumText }}</span>
-				<span class="text-muted-foreground text-xs">Аудиторія</span>
+				<div class="flex items-start gap-2">
+					<AppIcon
+						name="lucide:user"
+						class="text-muted-foreground mt-0.5 h-3.5 w-3.5 flex-shrink-0"
+					/>
+					<div class="min-w-0 flex-1">
+						<div class="truncate">{{ teachersText }}</div>
+						<div class="text-muted-foreground text-[11px]">
+							{{ event.teachers.length === 1 ? "Викладач" : "Викладачі" }}
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="flex items-start gap-2">
+				<AppIcon
+					name="lucide:users"
+					class="text-muted-foreground mt-0.5 h-3.5 w-3.5 flex-shrink-0"
+				/>
+				<div class="flex-1">
+					<div>{{ groupsText }}</div>
+					<div class="text-muted-foreground text-[11px]">
+						{{ event.groups.length === 1 ? "Група" : "Групи" }}
+					</div>
+				</div>
 			</div>
 		</div>
 
-		<div class="flex items-center gap-3 text-sm">
-			<AppIcon name="lucide:user" class="text-muted-foreground mt-0.5 flex-shrink-0" />
-			<div class="flex flex-col gap-1">
-				<span>{{ teachersText }}</span>
-				<span class="text-muted-foreground text-xs">
-					{{ event.teachers.length === 1 ? "Викладач" : "Викладачі" }}
-				</span>
-			</div>
-		</div>
-
-		<div class="flex items-center gap-3 text-sm">
-			<AppIcon name="lucide:users" class="text-muted-foreground mt-0.5 flex-shrink-0" />
-			<div class="flex flex-col gap-1">
-				<span>{{ groupsText }}</span>
-				<span class="text-muted-foreground text-xs">
-					{{ event.groups.length === 1 ? "Група" : "Групи" }}
-				</span>
-			</div>
-		</div>
-
-		<div class="space-y-2">
-			<div class="flex items-center justify-between">
-				<h4 class="text-sm font-medium">Посилання</h4>
-				<Button size="icon" variant="outline" @click="addLink">
-					<AppIcon name="lucide:plus" />
+		<!-- Links Section -->
+		<div class="border-t pt-3">
+			<div class="mb-2 flex items-center justify-between">
+				<h4 class="flex items-center gap-1.5 text-xs font-semibold">
+					<AppIcon name="lucide:link" class="h-3.5 w-3.5" />
+					Посилання
+				</h4>
+				<Button size="icon" variant="outline" class="h-7 w-7" @click="addLink">
+					<AppIcon name="lucide:plus" class="h-3.5 w-3.5" />
 				</Button>
 			</div>
-			<div v-if="eventLinks.length" class="max-h-[200px] space-y-2 overflow-auto">
+			<div v-if="eventLinks.length" class="max-h-[140px] space-y-1 overflow-auto">
 				<div
 					v-for="link in eventLinks"
 					:key="link.id"
-					class="flex items-center justify-between gap-2"
+					class="bg-muted/30 hover:bg-muted/50 group flex items-center justify-between gap-2 rounded-md px-2 py-1.5
+						transition-colors"
 				>
-					<a :href="link.url" target="_blank" class="text-primary truncate hover:underline">
+					<a
+						:href="link.url"
+						target="_blank"
+						class="text-primary truncate text-xs font-medium hover:underline"
+					>
 						{{ link.name }}
 					</a>
-					<div class="flex gap-1">
-						<Button size="icon" variant="ghost" @click="editLink(link)">
-							<AppIcon name="lucide:pencil" />
+					<div class="flex gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
+						<Button size="icon" variant="ghost" class="h-6 w-6" @click="editLink(link)">
+							<AppIcon name="lucide:pencil" class="h-3 w-3" />
 						</Button>
-						<Button size="icon" variant="ghost" @click="deleteLink(link.id)">
-							<AppIcon name="lucide:trash" />
+						<Button size="icon" variant="ghost" class="h-6 w-6" @click="deleteLink(link.id)">
+							<AppIcon name="lucide:trash" class="h-3 w-3" />
 						</Button>
 					</div>
 				</div>
 			</div>
-			<p v-else class="text-muted-foreground py-2 text-center text-xs">
-				Немає збережених посилань для цього заняття.
+			<p v-else class="text-muted-foreground py-3 text-center text-xs italic">
+				Немає збережених посилань
 			</p>
 		</div>
 
-		<LinkDialog v-model="showLinkDialog" :link="editingLink" @save="saveLink" />
+		<LinksAddDialog v-model="showLinkDialog" :link="editingLink" @save="saveLink" />
 	</div>
 </template>
