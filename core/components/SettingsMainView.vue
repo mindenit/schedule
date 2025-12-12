@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia"
 import { toast } from "vue-sonner"
+import { useSettingsStore } from "@/core/stores/settings"
 
 const scheduleStore = useScheduleStore()
+const settingsStore = useSettingsStore()
+const { isSnowEnabled } = storeToRefs(settingsStore)
 
 const { selectedSchedule, allSchedules } = storeToRefs(scheduleStore)
 const { exportAcademicYearSchedule, isLoading } = useScheduleIcsExport()
@@ -59,7 +62,7 @@ const handleIcsExportAcademicYear = async () => {
 </script>
 
 <template>
-	<div class="flex flex-col gap-4 overflow-y-auto py-4">
+	<div class="flex min-h-0 flex-col gap-4 overflow-y-auto py-4">
 		<Tabs default-value="schedule" class="w-full">
 			<TabsList class="grid w-full grid-cols-3">
 				<TabsTrigger value="schedule">
@@ -82,6 +85,21 @@ const handleIcsExportAcademicYear = async () => {
 					<Button variant="default" :disabled="isLoading" @click="handleIcsExportAcademicYear">
 						<AppIcon name="lucide:calendar-export" />
 						Експорт на навчальний рік
+					</Button>
+				</div>
+
+				<h3 class="text-muted-foreground mt-4 mb-2 text-sm font-medium">Ефекти</h3>
+				<div class="flex items-center justify-between rounded-lg border p-4">
+					<div class="flex flex-col gap-1">
+						<div class="text-sm font-medium">Снігопад</div>
+						<div class="text-muted-foreground text-xs">Зимовий ефект падаючого снігу</div>
+					</div>
+					<Button
+						:variant="isSnowEnabled ? 'default' : 'outline'"
+						size="sm"
+						@click="isSnowEnabled = !isSnowEnabled"
+					>
+						{{ isSnowEnabled ? "Увімкнено" : "Вимкнено" }}
 					</Button>
 				</div>
 			</TabsContent>

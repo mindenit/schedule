@@ -13,9 +13,7 @@ import {
 	getSortedRowModel,
 	useVueTable,
 } from "@tanstack/vue-table"
-import { h, ref, computed } from "vue"
 import { toast } from "vue-sonner"
-
 import { Button } from "@/core/components/ui/button"
 import { Checkbox } from "@/core/components/ui/checkbox"
 import { Input } from "@/core/components/ui/input"
@@ -34,11 +32,10 @@ import {
 	TableRow,
 } from "@/core/components/ui/table"
 import { Badge } from "@/core/components/ui/badge"
-
-import type { Link } from "~/core/stores/links"
+import type { Link } from "~/layers/links/stores/links"
 import type { Subject } from "nurekit"
-import { valueUpdater } from "./ui/table/utils"
-import AppIcon from "./AppIcon.vue"
+import AppIcon from "~/core/components/AppIcon.vue"
+import { valueUpdater } from "~/core/components/ui/table/utils"
 
 interface LinkTableRow {
 	id: string
@@ -65,6 +62,7 @@ const emit = defineEmits<{
 	editLink: [link: Link, subjectId: string, eventType: string, subject: Subject]
 	deleteLink: [linkId: string, subjectId: string, eventType: string]
 	importLinks: [file: File]
+	selectionChange: [selectedIds: string[]]
 }>()
 
 const tableData = computed<LinkTableRow[]>(() => {
@@ -347,6 +345,15 @@ const table = useVueTable({
 		},
 	},
 })
+
+watch(
+	() => rowSelection.value,
+	() => {
+		const selectedRows = table.getFilteredSelectedRowModel().rows
+		const selectedIds = selectedRows.map((row) => row.original.originalLink.id)
+		emit("selectionChange", selectedIds)
+	}
+)
 
 const fileInput = ref<HTMLInputElement | null>(null)
 
