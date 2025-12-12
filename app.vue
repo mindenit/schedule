@@ -1,5 +1,10 @@
 <script lang="ts" setup>
 import "vue-sonner/style.css"
+import { storeToRefs } from "pinia"
+import { useSettingsStore } from "@/core/stores/settings"
+
+const settingsStore = useSettingsStore()
+const { isSnowEnabled } = storeToRefs(settingsStore)
 
 const snowCount = 400
 const snowSpeed = 1
@@ -10,6 +15,8 @@ const snowSpeed = 1
 	<NuxtLayout>
 		<NuxtPage />
 	</NuxtLayout>
-	<SnowEffect :count="snowCount" :speed="snowSpeed" />
-	<Toaster position="top-right" richColors />
+	<ClientOnly>
+		<SnowEffect v-if="isSnowEnabled" :count="snowCount" :speed="snowSpeed" />
+	</ClientOnly>
+	<Toaster position="top-right" rich-colors />
 </template>

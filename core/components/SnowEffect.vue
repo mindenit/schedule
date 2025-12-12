@@ -442,21 +442,6 @@ const removeSnowAt = (mx: number, my: number, vx: number = 0, vy: number = 0) =>
 			}
 		}
 	}
-
-	// Repel falling flakes
-	const len = flakes.length
-	for (let i = 0; i < len; i++) {
-		const f = flakes[i]
-		if (!f) continue
-		const dx = f.x - mx
-		const dy = f.y - my
-		const dist = Math.sqrt(dx * dx + dy * dy)
-		if (dist < brushRadius * 1.5) {
-			const force = (brushRadius * 1.5 - dist) / (brushRadius * 1.5)
-			f.vx += (dx / dist) * force * 5
-			f.vy += (dy / dist) * force * 5
-		}
-	}
 }
 
 let lastMx = 0
@@ -480,6 +465,7 @@ const onTouchMove = (e: TouchEvent) => {
 }
 
 onMounted(() => {
+	console.log("SnowEffect mounted")
 	init()
 	// draw() - handled by useRafFn
 	window.addEventListener("mousemove", onMouseMove)
@@ -487,6 +473,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+	console.log("SnowEffect unmounted")
 	pause()
 	window.removeEventListener("mousemove", onMouseMove)
 	window.removeEventListener("touchmove", onTouchMove)
