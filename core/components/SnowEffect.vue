@@ -110,8 +110,8 @@ const draw = () => {
 	// gridBuffer is w * h.
 
 	// Color: white with some alpha? 0xAARRGGBB (little endian -> BBGGRRAA)
-	// White 0.8 alpha -> 255, 255, 255, 204 -> 0xCCFFFFFF
-	const color = 0xccffffff
+	// White 1.0 alpha -> 255, 255, 255, 255 -> 0xFFFFFFFF
+	const color = 0xffffffff
 
 	for (let y = 0; y < rows; y++) {
 		for (let x = 0; x < cols; x++) {
