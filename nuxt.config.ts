@@ -83,4 +83,15 @@ export default defineNuxtConfig({
 			ogLocale: "uk_UA",
 		},
 	},
+	app: {
+		head: {
+			script: [
+				{
+					src: "https://analytics.mindenit.org/api/script.js",
+					"data-site-id": "c06ec8fba05b",
+					defer: true,
+				},
+			],
+		},
+	},
 })
