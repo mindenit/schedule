@@ -4,20 +4,13 @@ export default defineNuxtConfig({
 	compatibilityDate: "2024-11-01",
 	devtools: { enabled: true },
 	extends: ["./core", "./layers/site", "./layers/calendar/", "./layers/schedule/"],
-	imports: {
-		dirs: [
-			"./core/types",
-			"./core/constants",
-			"./layers/**/types",
-			"./layers/**/queries",
-			"./layers/**/constants",
-		],
-	},
+
 	runtimeConfig: {
 		public: {
 			maintenance: process.env.MAINTENANCE === "true" ? true : false,
 		},
 	},
+
 	modules: [
 		"@nuxt/eslint",
 		"@nuxt/icon",
@@ -27,27 +20,36 @@ export default defineNuxtConfig({
 		"@pinia/nuxt",
 		"@nuxt/image",
 		"@nuxtjs/seo",
+		"motion-v/nuxt",
+		"@nuxt/fonts",
 	],
+
 	future: {
 		compatibilityVersion: 4,
 	},
+
 	css: ["~/core/assets/css/main.css"],
+
 	shadcn: {
 		prefix: "",
 		componentDir: "./core/components/ui",
 	},
+
 	vite: {
 		plugins: [tailwindcss()],
 	},
+
 	pinia: {
 		storesDirs: ["./**/stores/**"],
 	},
+
 	icon: {
 		provider: "iconify",
 		serverBundle: {
 			collections: ["lucide"],
 		},
 	},
+
 	colorMode: {
 		preference: "system",
 		fallback: "light",
@@ -65,13 +67,16 @@ export default defineNuxtConfig({
 		indexable: true,
 		debug: process.env.NODE_ENV === "development",
 	},
+
 	robots: {
 		sitemap: "/sitemap.xml",
 		disallow: ["/faggots"],
 	},
+
 	sitemap: {
 		exclude: ["/faggots"],
 	},
+
 	seo: {
 		redirectToCanonicalSiteUrl: true,
 		fallbackTitle: true,
@@ -83,6 +88,7 @@ export default defineNuxtConfig({
 			ogLocale: "uk_UA",
 		},
 	},
+
 	app: {
 		head: {
 			script: [
@@ -93,5 +99,19 @@ export default defineNuxtConfig({
 				},
 			],
 		},
+	},
+
+	imports: {
+		imports: [
+			{
+				from: "tailwind-variants",
+				name: "tv",
+			},
+			{
+				from: "tailwind-variants",
+				name: "VariantProps",
+				type: true,
+			},
+		],
 	},
 })
