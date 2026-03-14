@@ -88,7 +88,7 @@ const handleIcsExportAcademicYear = async () => {
 					</Button>
 				</div>
 
-				<h3 class="text-muted-foreground mt-4 mb-2 text-sm font-medium">Ефекти</h3>
+				<!-- <h3 class="text-muted-foreground mt-4 mb-2 text-sm font-medium">Ефекти</h3>
 				<div class="flex items-center justify-between rounded-lg border p-4">
 					<div class="flex flex-col gap-1">
 						<div class="text-sm font-medium">Снігопад</div>
@@ -101,7 +101,7 @@ const handleIcsExportAcademicYear = async () => {
 					>
 						{{ isSnowEnabled ? "Увімкнено" : "Вимкнено" }}
 					</Button>
-				</div>
+				</div> -->
 			</TabsContent>
 
 			<TabsContent value="links">

@@ -15,8 +15,8 @@ const snowSpeed = 1
 	<NuxtLayout>
 		<NuxtPage />
 	</NuxtLayout>
-	<ClientOnly>
+	<!-- <ClientOnly>
 		<SnowEffect v-if="isSnowEnabled" :count="snowCount" :speed="snowSpeed" />
-	</ClientOnly>
+	</ClientOnly> -->
 	<Toaster position="top-right" rich-colors />
 </template>
