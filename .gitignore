@@ -22,3 +22,5 @@ logs
 .env
 .env.*
 !.env.example
+temp_auto_push.bat
+temp_interactive_push.bat
