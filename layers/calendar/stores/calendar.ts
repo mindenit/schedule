@@ -34,9 +34,13 @@ export const useCalendarStore = defineStore("calendar", () => {
 
 		if (view.value === "month") {
 			return getEventsForMonthView(eventsFilteredByType)
+		} else if (view.value === "week") {
+			return getEventsForWeekView(eventsFilteredByType)
+		} else if (view.value === "day") {
+			return getEventsForDayView(eventsFilteredByType)
 		}
 
-		return getEventsForCurrentMonth(eventsFilteredByType)
+		return eventsFilteredByType
 	})
 
 	function getEventsForMonthView(events: Schedule[]): Schedule[] {
@@ -52,16 +56,30 @@ export const useCalendarStore = defineStore("calendar", () => {
 		})
 	}
 
-	function getEventsForCurrentMonth(events: Schedule[]): Schedule[] {
-		const monthStart = startOfMonth(selectedDate.value);
-	  const monthEnd = endOfMonth(selectedDate.value);
+	function getEventsForWeekView(events: Schedule[]): Schedule[] {
+		const calendarStart = startOfWeek(selectedDate.value, WEEK_OPTIONS)
+		const calendarEnd = endOfWeek(selectedDate.value, WEEK_OPTIONS)
 
-  return events.filter((event) => {
-    const eventStartedAt = new Date(event.startedAt * 1000);
-    const eventEndedAt = new Date(event.endedAt * 1000);
+		return events.filter((event) => {
+			const eventStartedAt = new Date(event.startedAt * 1000)
+			const eventEndedAt = new Date(event.endedAt * 1000)
 
-    return eventStartedAt <= monthEnd && eventEndedAt >= monthStart;
-  });
+			return eventStartedAt <= calendarEnd && eventEndedAt >= calendarStart
+		})
+	}
+
+	function getEventsForDayView(events: Schedule[]): Schedule[] {
+		const dayStart = new Date(selectedDate.value)
+		dayStart.setHours(0, 0, 0, 0)
+		const dayEnd = new Date(selectedDate.value)
+		dayEnd.setHours(23, 59, 59, 999)
+
+		return events.filter((event) => {
+			const eventStartedAt = new Date(event.startedAt * 1000)
+			const eventEndedAt = new Date(event.endedAt * 1000)
+
+			return eventStartedAt <= dayEnd && eventEndedAt >= dayStart
+		})
 	}
 
 	function setEvents(initialEvents: Schedule[]) {
