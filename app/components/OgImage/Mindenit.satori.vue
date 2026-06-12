@@ -18,7 +18,8 @@ const title = computed(() => props.title.slice(0, 60))
 
 <template>
 	<div
-		class="flex h-full w-full flex-row items-center justify-between bg-[#090f1f] px-[100px] py-[20px]"
+		class="flex h-full w-full flex-row items-center justify-between bg-[#090f1f] px-[100px]
+			py-[20px]"
 	>
 		<svg
 			class="absolute top-0 right-0"

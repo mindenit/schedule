@@ -60,7 +60,8 @@ const handleAccept = async () => {
 
 <template>
 	<div
-		class="from-background to-muted flex min-h-screen items-center justify-center bg-gradient-to-br p-4"
+		class="from-background to-muted flex min-h-screen items-center justify-center bg-gradient-to-br
+			p-4"
 	>
 		<div class="w-full max-w-2xl">
 			<div v-if="loadingData" class="text-center">

@@ -2,7 +2,11 @@
 import type { Schedule } from "nurekit"
 import { storeToRefs } from "pinia"
 import { motion, AnimatePresence } from "motion-v"
-import { CalendarAnimationUtils, SWIPE_ANIMATION_CONFIG, SWIPE_ANIMATION_TRANSITION } from "~/constants"
+import {
+	CalendarAnimationUtils,
+	SWIPE_ANIMATION_CONFIG,
+	SWIPE_ANIMATION_TRANSITION,
+} from "~/constants"
 import { CALENDAR_HOURS } from "~/constants/calendar"
 
 interface Props {

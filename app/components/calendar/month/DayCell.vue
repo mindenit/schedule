@@ -95,7 +95,8 @@ function handleMobileClick() {
 			>
 				<span
 					v-if="totalEventsCount > 0"
-					class="bg-primary flex size-5 items-center justify-center rounded-full text-xs font-semibold"
+					class="bg-primary flex size-5 items-center justify-center rounded-full text-xs
+						font-semibold"
 				>
 					{{ totalEventsCount }}
 				</span>

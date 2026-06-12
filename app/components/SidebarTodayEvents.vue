@@ -57,7 +57,8 @@ const hasEvents = computed(() => todayEvents.value && todayEvents.value.length >
 						</template>
 						<div
 							v-else-if="hasActiveSchedule && !hasEvents && !isLoading"
-							class="text-muted-foreground flex flex-col items-center justify-center gap-2 p-6 text-center"
+							class="text-muted-foreground flex flex-col items-center justify-center gap-2 p-6
+								text-center"
 						>
 							<AppIcon name="lucide:smile" size="xl" class="opacity-50" />
 							<p class="text-sm">
@@ -66,7 +67,8 @@ const hasEvents = computed(() => todayEvents.value && todayEvents.value.length >
 						</div>
 						<div
 							v-else
-							class="text-muted-foreground flex flex-col items-center justify-center gap-2 p-6 text-center"
+							class="text-muted-foreground flex flex-col items-center justify-center gap-2 p-6
+								text-center"
 						>
 							<AppIcon name="lucide:calendar-plus" size="xl" class="opacity-50" />
 							<p class="text-sm">Оберіть розклад для перегляду пар</p>

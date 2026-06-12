@@ -90,8 +90,8 @@ watch(isSwiping, (swiping) => {
 			<div
 				v-for="day in weekDays"
 				:key="day"
-				class="bg-muted/50 text-muted-foreground flex items-center justify-center py-2 text-xs font-medium
-					md:first:rounded-tl-2xl md:last:rounded-tr-2xl"
+				class="bg-muted/50 text-muted-foreground flex items-center justify-center py-2 text-xs
+					font-medium md:first:rounded-tl-2xl md:last:rounded-tr-2xl"
 			>
 				{{ day }}
 			</div>

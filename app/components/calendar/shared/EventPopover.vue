@@ -171,8 +171,8 @@ const deleteLink = (linkId: string) => {
 				<div
 					v-for="link in eventLinks"
 					:key="link.id"
-					class="bg-muted/30 hover:bg-muted/50 group flex items-center justify-between gap-2 rounded-md px-2 py-1.5
-						transition-colors"
+					class="bg-muted/30 hover:bg-muted/50 group flex items-center justify-between gap-2
+						rounded-md px-2 py-1.5 transition-colors"
 				>
 					<a
 						:href="link.url"

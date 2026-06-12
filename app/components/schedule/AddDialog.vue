@@ -108,7 +108,9 @@ const getFilteredItems = (tabType: ScheduleTabType): GenericScheduleItem[] => {
 
 	if (!rawData) return []
 
-	const mappedData = (rawData as unknown[]).map(config.mapper as (item: unknown) => GenericScheduleItem)
+	const mappedData = (rawData as unknown[]).map(
+		config.mapper as (item: unknown) => GenericScheduleItem
+	)
 
 	if (!searchQuery.value.trim()) return mappedData
 

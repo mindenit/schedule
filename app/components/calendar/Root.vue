@@ -41,7 +41,8 @@ const overlayContent = computed(() => {
 
 <template>
 	<div
-		class="hide-scrollbar relative flex h-full flex-col overflow-x-hidden rounded-lg max-md:rounded-t-none"
+		class="hide-scrollbar relative flex h-full flex-col overflow-x-hidden rounded-lg
+			max-md:rounded-t-none"
 	>
 		<div class="flex-1 transition-all duration-300 ease-in-out" :class="{ 'blur-sm': showOverlay }">
 			<BigCalendarMonthView
@@ -64,7 +65,8 @@ const overlayContent = computed(() => {
 			>
 				<div
 					v-if="showOverlay"
-					class="bg-background/70 absolute inset-0 flex items-center justify-center backdrop-blur-sm"
+					class="bg-background/70 absolute inset-0 flex items-center justify-center
+						backdrop-blur-sm"
 				>
 					<TheLoader v-if="overlayContent === 'initializing'" size="lg" />
 

@@ -13,7 +13,8 @@ definePageMeta({
 <template>
 	<div class="container mx-auto rounded-lg p-2 shadow-md">
 		<h1
-			class="mb-6 text-center text-3xl font-semibold tracking-[0.75%] text-red-700 dark:text-red-500"
+			class="mb-6 text-center text-3xl font-semibold tracking-[0.75%] text-red-700
+				dark:text-red-500"
 		>
 			УВАГА! ВИЯВЛЕНО ПІДОРСЬКЕ/ШПИГУНСЬКЕ ПРОГРАМНЕ ЗАБЕЗПЕЧЕННЯ
 		</h1>
@@ -86,8 +87,8 @@ definePageMeta({
 				<div class="mt-4 grid grid-cols-2 gap-4 md:grid-cols-4">
 					<a
 						href="https://www.mozilla.org/uk/firefox/new/"
-						class="dark:bg-fiord-900 dark:border-fiord-800 flex flex-col items-center rounded-lg border border-gray-100
-							p-4 shadow transition-all hover:-translate-y-1 hover:shadow-lg"
+						class="dark:bg-fiord-900 dark:border-fiord-800 flex flex-col items-center rounded-lg
+							border border-gray-100 p-4 shadow transition-all hover:-translate-y-1 hover:shadow-lg"
 					>
 						<div class="mb-3 text-4xl">🦊</div>
 						<p class="text-center text-sm leading-[14px] font-semibold dark:text-white">
@@ -96,8 +97,8 @@ definePageMeta({
 					</a>
 					<a
 						href="https://www.google.com/intl/uk/chrome/"
-						class="dark:bg-fiord-900 dark:border-fiord-800 flex flex-col items-center rounded-lg border border-gray-100
-							p-4 shadow transition-all hover:-translate-y-1 hover:shadow-lg"
+						class="dark:bg-fiord-900 dark:border-fiord-800 flex flex-col items-center rounded-lg
+							border border-gray-100 p-4 shadow transition-all hover:-translate-y-1 hover:shadow-lg"
 					>
 						<div class="mb-3 text-4xl">🌐</div>
 						<p class="text-center text-sm leading-[14px] font-semibold dark:text-white">
@@ -106,8 +107,8 @@ definePageMeta({
 					</a>
 					<a
 						href="https://brave.com/download/"
-						class="dark:bg-fiord-900 dark:border-fiord-800 flex flex-col items-center rounded-lg border border-gray-100
-							p-4 shadow transition-all hover:-translate-y-1 hover:shadow-lg"
+						class="dark:bg-fiord-900 dark:border-fiord-800 flex flex-col items-center rounded-lg
+							border border-gray-100 p-4 shadow transition-all hover:-translate-y-1 hover:shadow-lg"
 					>
 						<div class="mb-3 text-4xl">🛡️</div>
 						<p class="text-center text-sm leading-[14px] font-semibold dark:text-white">
@@ -116,8 +117,8 @@ definePageMeta({
 					</a>
 					<a
 						href="https://www.opera.com/uk"
-						class="dark:bg-fiord-900 dark:border-fiord-800 flex flex-col items-center rounded-lg border border-gray-100
-							p-4 shadow transition-all hover:-translate-y-1 hover:shadow-lg"
+						class="dark:bg-fiord-900 dark:border-fiord-800 flex flex-col items-center rounded-lg
+							border border-gray-100 p-4 shadow transition-all hover:-translate-y-1 hover:shadow-lg"
 					>
 						<div class="mb-3 text-4xl">🔴</div>
 						<p class="text-center text-sm leading-[14px] font-semibold dark:text-white">Opera</p>

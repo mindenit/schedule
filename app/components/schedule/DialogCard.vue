@@ -17,8 +17,8 @@ const icon = computed(() => {
 
 <template>
 	<div
-		class="bg-card border-border group relative mb-2 cursor-pointer rounded-xl border p-4 transition-colors
-			last:mb-0"
+		class="bg-card border-border group relative mb-2 cursor-pointer rounded-xl border p-4
+			transition-colors last:mb-0"
 	>
 		<div class="flex items-center gap-2">
 			<div class="bg-primary/10 text-primary flex size-10 items-center justify-center rounded-lg">

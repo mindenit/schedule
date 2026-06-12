@@ -29,7 +29,8 @@ function getEventTimeRange(event: Schedule): string {
 			<Popover v-for="event in events" :key="event.id">
 				<PopoverTrigger as-child>
 					<div
-						class="hover:bg-muted/50 flex cursor-pointer items-center gap-3 rounded-md p-2 transition-colors"
+						class="hover:bg-muted/50 flex cursor-pointer items-center gap-3 rounded-md p-2
+							transition-colors"
 					>
 						<div
 							class="h-3 w-3 flex-shrink-0 rounded-full"

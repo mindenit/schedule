@@ -38,8 +38,8 @@ const hasEvents = computed(() => {
 						<span
 							v-for="(day, index) in weekDays"
 							:key="index"
-							class="text-muted-foreground flex min-w-[100px] flex-col items-center gap-1 py-2 text-center text-xs
-								font-medium transition-all duration-200"
+							class="text-muted-foreground flex min-w-[100px] flex-col items-center gap-1 py-2
+								text-center text-xs font-medium transition-all duration-200"
 						>
 							<span class="hidden sm:block">
 								{{ capitalize(format(day, "EEEE", { locale: uk })) }}
