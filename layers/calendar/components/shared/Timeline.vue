@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { isSameDay } from "date-fns"
+import { CALENDAR_START_HOUR, CALENDAR_END_HOUR } from "../../constants"
 
 interface Props {
 	weekDays?: Date[]

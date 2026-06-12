@@ -2,6 +2,7 @@
 import { isToday, startOfDay } from "date-fns"
 import type { Schedule } from "nurekit"
 import { MAX_VISIBLE_EVENTS_PER_DAY } from "../../constants"
+import type { ICalendarCell, TCalendarView } from "../../types"
 
 interface Props {
 	cell: ICalendarCell

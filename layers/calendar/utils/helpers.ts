@@ -17,20 +17,24 @@ import {
 } from "date-fns"
 import { uk } from "date-fns/locale"
 import type { Schedule } from "nurekit"
+import type { TCalendarView } from "../types"
+import { WEEK_OPTIONS } from "../constants"
 
 const FORMAT_STRING = "MMM d, yyyy"
 
-const NEXT_OPERATIONS = {
+type DateOperation = (date: Date, amount: number) => Date
+
+const NEXT_OPERATIONS: Record<TCalendarView, DateOperation> = {
 	month: addMonths,
 	week: addWeeks,
 	day: addDays,
-} as const
+}
 
-const PREV_OPERATIONS = {
+const PREV_OPERATIONS: Record<TCalendarView, DateOperation> = {
 	month: subMonths,
 	week: subWeeks,
 	day: subDays,
-} as const
+}
 
 const COMPARE_FUNCTIONS: Record<TCalendarView, (d1: Date, d2: Date) => boolean> = {
 	day: isSameDay,

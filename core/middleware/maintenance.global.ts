@@ -23,8 +23,8 @@ export default defineNuxtRouteMiddleware((to) => {
 	let devAccess = 0
 
 	if (import.meta.server) {
-		const event = useRequestEvent()
-		const cookies = parseCookies(event?.node.req.headers.cookie || "")
+		const event = useEvent()
+		const cookies = parseCookies(getRequestHeader(event, "cookie") || "")
 		devAccess = parseInt(cookies.devAccess || "0")
 	} else {
 		const devAccessStorage = useLocalStorage("devAccess", 0)

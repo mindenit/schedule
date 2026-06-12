@@ -1,3 +1,5 @@
+import type { TEventType, TCalendarView } from "../types"
+
 export const WEEK_VIEW_ROW_HEIGHT = 63
 
 export const CALENDAR_START_HOUR = 7

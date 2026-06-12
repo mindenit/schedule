@@ -144,7 +144,7 @@ export const useLinksStore = defineStore("links", () => {
 		}
 	}
 
-	function isOldFormat(data: any): boolean {
+	function isOldFormat(data: unknown): boolean {
 		if (!data || typeof data !== "object") return false
 
 		const firstKey = Object.keys(data)[0]

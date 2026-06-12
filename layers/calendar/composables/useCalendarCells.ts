@@ -1,5 +1,7 @@
 import { endOfMonth, startOfMonth, addDays, startOfWeek, format } from "date-fns"
 import { uk } from "date-fns/locale"
+import type { ICalendarCell } from "../types"
+import { WEEK_OPTIONS } from "../constants"
 
 export const useCalendarCells = () => {
 	const getCalendarCells = (selectedDate: Date): ICalendarCell[] => {

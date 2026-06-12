@@ -6,6 +6,7 @@ import { teachersOptions } from "~/core/queries/teachers"
 import { auditoriumsOptions } from "~/core/queries/auditoriums"
 import type { Group, Teacher, Auditorium } from "nurekit"
 import { ITEMS_PER_PAGE } from "../constants"
+import type { ScheduleTabType, GenericScheduleItem } from "../types"
 
 const {
 	data: groups,
@@ -107,7 +108,7 @@ const getFilteredItems = (tabType: ScheduleTabType): GenericScheduleItem[] => {
 
 	if (!rawData) return []
 
-	const mappedData = (rawData as any[]).map(config.mapper)
+	const mappedData = (rawData as unknown[]).map(config.mapper as (item: unknown) => GenericScheduleItem)
 
 	if (!searchQuery.value.trim()) return mappedData
 
@@ -118,7 +119,8 @@ const getFilteredItems = (tabType: ScheduleTabType): GenericScheduleItem[] => {
 
 const getDisplayedItems = (tabType: ScheduleTabType): GenericScheduleItem[] => {
 	const filtered = getFilteredItems(tabType)
-	return filtered.slice(0, displayCounts[tabType])
+	const count = displayCounts[tabType] ?? ITEMS_PER_PAGE
+	return filtered.slice(0, count)
 }
 
 const resetFunctions: Record<ScheduleTabType, () => void> = {} as Record<
@@ -133,15 +135,17 @@ Object.keys(tabConfig).forEach((tabType) => {
 		scrollRefs[tab],
 		() => {
 			const filtered = getFilteredItems(tab)
-			if (displayCounts[tab] < filtered.length) {
-				displayCounts[tab] += ITEMS_PER_PAGE
+			const current = displayCounts[tab] ?? 0
+			if (current < filtered.length) {
+				displayCounts[tab] = current + ITEMS_PER_PAGE
 			}
 		},
 		{
 			distance: 50,
 			canLoadMore: () => {
 				const filtered = getFilteredItems(tab)
-				return displayCounts[tab] < filtered.length
+				const current = displayCounts[tab] ?? 0
+				return current < filtered.length
 			},
 		}
 	)
@@ -151,8 +155,9 @@ Object.keys(tabConfig).forEach((tabType) => {
 
 watch(searchQuery, () => {
 	Object.keys(displayCounts).forEach((tab) => {
-		displayCounts[tab as ScheduleTabType] = ITEMS_PER_PAGE
-		resetFunctions[tab as ScheduleTabType]()
+		const key = tab as ScheduleTabType
+		displayCounts[key] = ITEMS_PER_PAGE
+		resetFunctions[key]?.()
 	})
 })
 
@@ -160,8 +165,9 @@ const handleTabChange = (newTab: string | number) => {
 	activeTab.value = String(newTab) as ScheduleTabType
 	searchQuery.value = ""
 	Object.keys(displayCounts).forEach((tab) => {
-		displayCounts[tab as ScheduleTabType] = ITEMS_PER_PAGE
-		resetFunctions[tab as ScheduleTabType]()
+		const key = tab as ScheduleTabType
+		displayCounts[key] = ITEMS_PER_PAGE
+		resetFunctions[key]?.()
 	})
 }
 

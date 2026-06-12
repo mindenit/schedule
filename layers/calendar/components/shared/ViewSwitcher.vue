@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia"
+import type { TCalendarView } from "../../types"
+import { VIEW_OPTIONS } from "../../constants"
 
 const calendarStore = useCalendarStore()
 const { view } = storeToRefs(calendarStore)

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia"
+import { SCHEDULE_ICONS, SCHEDULE_TYPES } from "../constants"
 
 const scheduleStore = useScheduleStore()
 const { selectedSchedule, isInitialized } = storeToRefs(scheduleStore)

@@ -1,6 +1,8 @@
 import { defineStore } from "pinia"
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek } from "date-fns"
 import type { Schedule } from "nurekit"
+import type { TEventType, TCalendarView } from "../types"
+import { WEEK_OPTIONS } from "../constants"
 
 export const useCalendarStore = defineStore("calendar", () => {
 	const allEvents = ref<Schedule[]>([])

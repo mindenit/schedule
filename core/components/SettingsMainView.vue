@@ -2,6 +2,7 @@
 import { storeToRefs } from "pinia"
 import { toast } from "vue-sonner"
 import { useSettingsStore } from "@/core/stores/settings"
+import { SCHEDULE_ICONS } from "~/layers/schedule/constants"
 
 const scheduleStore = useScheduleStore()
 const settingsStore = useSettingsStore()

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from "vue"
-import { useRoute } from "vue-router"
 import { useSharableLinks } from "~/layers/links/composables/useSharableLinks"
 
 interface SharableLink {

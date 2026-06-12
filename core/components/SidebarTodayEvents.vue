@@ -3,6 +3,7 @@ import { storeToRefs } from "pinia"
 import { startOfDay, endOfDay } from "date-fns"
 import { useScheduleQuery } from "../composables/useScheduleQuery"
 import ScrollArea from "./ui/scroll-area/ScrollArea.vue"
+import type { TEventType } from "~/layers/calendar/types"
 
 const scheduleStore = useScheduleStore()
 const { selectedSchedule } = storeToRefs(scheduleStore)

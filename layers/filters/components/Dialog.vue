@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useQuery } from "@tanstack/vue-query"
+import { FILTERS_LESSON_TYPES } from "../constants"
 import {
 	groupTeachersOptions,
 	groupAuditoruiumsOptions,

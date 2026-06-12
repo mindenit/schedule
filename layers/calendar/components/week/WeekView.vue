@@ -3,6 +3,7 @@ import { storeToRefs } from "pinia"
 import { format, isSameDay } from "date-fns"
 import { uk } from "date-fns/locale"
 import type { Schedule } from "nurekit"
+import { CALENDAR_HOURS } from "../../constants"
 
 interface Props {
 	events: Schedule[]

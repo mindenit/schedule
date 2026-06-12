@@ -9,6 +9,7 @@ import {
 	eachDayOfInterval,
 } from "date-fns"
 import type { Schedule } from "nurekit"
+import { WEEK_OPTIONS, CALENDAR_START_HOUR, CALENDAR_END_HOUR, MAX_EVENT_POSITIONS } from "../constants"
 
 export const useEventGrouping = () => {
 	const groupEvents = (dayEvents: Schedule[]): Schedule[][] => {

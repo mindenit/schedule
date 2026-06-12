@@ -1,6 +1,8 @@
 import { format } from "date-fns"
 import { uk } from "date-fns/locale"
 import type { Schedule } from "nurekit"
+import type { TEventType } from "../types"
+import { EVENT_TYPE_COLORS, EVENT_TYPE_LABELS } from "../constants"
 
 export const useEventFormatting = () => {
 	const formatTime = (date: Date | string | number): string => {

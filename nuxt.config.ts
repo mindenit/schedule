@@ -1,4 +1,5 @@
 import tailwindcss from "@tailwindcss/vite"
+import { fileURLToPath } from "node:url"
 
 export default defineNuxtConfig({
 	compatibilityDate: "2024-11-01",
@@ -12,6 +13,12 @@ export default defineNuxtConfig({
 			"./layers/**/queries",
 			"./layers/**/constants",
 		],
+	},
+	// Keep ~ and @ pointing to project root so ~/core/**, ~/layers/**, @/core/** imports
+	// stay valid. In Nuxt 4 srcDir defaults to app/, which would break all cross-layer imports.
+	alias: {
+		"~": fileURLToPath(new URL(".", import.meta.url)),
+		"@": fileURLToPath(new URL(".", import.meta.url)),
 	},
 	runtimeConfig: {
 		public: {
@@ -28,10 +35,7 @@ export default defineNuxtConfig({
 		"@nuxt/image",
 		"@nuxtjs/seo",
 	],
-	future: {
-		compatibilityVersion: 4,
-	},
-	css: ["~/core/assets/css/main.css"],
+	css: ["./core/assets/css/main.css"],
 	shadcn: {
 		prefix: "",
 		componentDir: "./core/components/ui",

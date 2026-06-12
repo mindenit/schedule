@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { SCHEDULE_ICONS } from "../constants"
+import type { ScheduleTabType } from "../types"
 
 interface Props {
 	id: number

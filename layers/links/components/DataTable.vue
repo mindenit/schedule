@@ -36,6 +36,8 @@ import type { Link } from "~/layers/links/stores/links"
 import type { Subject } from "nurekit"
 import AppIcon from "~/core/components/AppIcon.vue"
 import { valueUpdater } from "~/core/components/ui/table/utils"
+import type { TEventType } from "~/layers/calendar/types"
+import { EVENT_TYPE_COLORS } from "~/layers/calendar/constants"
 
 interface LinkTableRow {
 	id: string
