@@ -1,24 +1,20 @@
 import tailwindcss from "@tailwindcss/vite"
-import { fileURLToPath } from "node:url"
 
 export default defineNuxtConfig({
 	compatibilityDate: "2024-11-01",
 	devtools: { enabled: true },
-	extends: ["./core", "./layers/site", "./layers/calendar/", "./layers/schedule/"],
+	// Component registration: ui and prefixed feature subdirs must come before
+	// the catch-all ~/components entry so Nuxt applies the right prefix per folder.
+	components: [
+		{ path: "~/components/ui", pathPrefix: false },
+		{ path: "~/components/calendar", prefix: "BigCalendar", pathPrefix: false },
+		{ path: "~/components/schedule", prefix: "Schedule", pathPrefix: false },
+		{ path: "~/components/filters", prefix: "Filters", pathPrefix: false },
+		{ path: "~/components/links", prefix: "Links", pathPrefix: false },
+		{ path: "~/components", pathPrefix: false, extensions: [".vue"] },
+	],
 	imports: {
-		dirs: [
-			"./core/types",
-			"./core/constants",
-			"./layers/**/types",
-			"./layers/**/queries",
-			"./layers/**/constants",
-		],
-	},
-	// Keep ~ and @ pointing to project root so ~/core/**, ~/layers/**, @/core/** imports
-	// stay valid. In Nuxt 4 srcDir defaults to app/, which would break all cross-layer imports.
-	alias: {
-		"~": fileURLToPath(new URL(".", import.meta.url)),
-		"@": fileURLToPath(new URL(".", import.meta.url)),
+		dirs: ["~/types", "~/constants", "~/queries"],
 	},
 	runtimeConfig: {
 		public: {
@@ -35,17 +31,15 @@ export default defineNuxtConfig({
 		"@nuxt/image",
 		"@nuxtjs/seo",
 	],
-	css: ["./core/assets/css/main.css"],
+	css: ["~/assets/css/main.css"],
 	shadcn: {
 		prefix: "",
-		componentDir: "./core/components/ui",
+		componentDir: "./app/components/ui",
 	},
 	vite: {
 		plugins: [tailwindcss()],
 	},
-	pinia: {
-		storesDirs: ["./**/stores/**"],
-	},
+	pinia: {},
 	icon: {
 		provider: "iconify",
 		serverBundle: {
@@ -67,7 +61,7 @@ export default defineNuxtConfig({
 		defaultLocale: "uk",
 		trailingSlash: false,
 		indexable: true,
-		debug: process.env.NODE_ENV === "development",
+		debug: import.meta.dev,
 	},
 	robots: {
 		sitemap: "/sitemap.xml",

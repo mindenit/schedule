@@ -5,8 +5,6 @@
 		".nuxt/nuxt.d.ts",
 		".nuxt/imports.d.ts",
 		"app/**/*",
-		"core/**/*",
-		"layers/**/*",
 		"server/**/*",
 		"shared/**/*"
 	],
