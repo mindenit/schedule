@@ -1,11 +1,11 @@
 <template>
-	<DialogContent>
-		<DialogHeader>
-			<DialogTitle class="flex items-center gap-2">
+	<UiDialogContent>
+		<UiDialogHeader>
+			<UiDialogTitle class="flex items-center gap-2">
 				<AppIcon name="logos:android-icon" size="lg" />
 				Наш Android додаток
-			</DialogTitle>
-		</DialogHeader>
+			</UiDialogTitle>
+		</UiDialogHeader>
 		<div class="flex w-full flex-col gap-4">
 			<div class="flex items-center gap-3">
 				<div class="bg-muted flex size-10 items-center justify-center rounded-full max-sm:hidden">
@@ -20,5 +20,5 @@
 				<PlayMarketButton :switchOnMobile="false" />
 			</div>
 		</div>
-	</DialogContent>
+	</UiDialogContent>
 </template>

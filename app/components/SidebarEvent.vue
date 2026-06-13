@@ -21,7 +21,7 @@ defineProps<Props>()
 		<div class="flex items-start gap-2.5">
 			<div class="flex flex-col items-center gap-0.5 pt-0.5">
 				<span class="text-xs leading-none font-bold tabular-nums">{{ startTime }}</span>
-				<div :class="cn('h-5 w-0.5 rounded-full', EVENT_TYPE_COLORS[type as TEventType])"></div>
+				<div :class="['h-5 w-0.5 rounded-full', EVENT_TYPE_COLORS[type as TEventType]]"></div>
 				<span class="text-xs leading-none font-bold tabular-nums">{{ endTime }}</span>
 			</div>
 
@@ -38,6 +38,6 @@ defineProps<Props>()
 			</div>
 		</div>
 
-		<div :class="cn('absolute inset-y-0 left-0 w-1', EVENT_TYPE_COLORS[type as TEventType])"></div>
+		<div :class="['absolute inset-y-0 left-0 w-1', EVENT_TYPE_COLORS[type as TEventType]]"></div>
 	</div>
 </template>

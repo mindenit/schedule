@@ -9,7 +9,7 @@ const themeIcon = computed(() => (colorMode.value !== "light" ? "lucide:moon" : 
 </script>
 
 <template>
-	<Button variant="ghost" size="icon" @click="handleClick()">
+	<UiButton variant="ghost" size="icon" @click="handleClick()">
 		<AppIcon :name="themeIcon" />
-	</Button>
+	</UiButton>
 </template>

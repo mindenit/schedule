@@ -7,7 +7,7 @@ onMounted(() => {
 </script>
 
 <template>
-	<Dialog
+	<UiDialog
 		:open="isDialogOpen"
 		@update:open="
 			(val) => {
@@ -16,5 +16,5 @@ onMounted(() => {
 		"
 	>
 		<AppDialog v-if="currentDialog?.component === 'AppDialog'" />
-	</Dialog>
+	</UiDialog>
 </template>

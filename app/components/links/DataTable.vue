@@ -14,30 +14,24 @@ import {
 	useVueTable,
 } from "@tanstack/vue-table"
 import { toast } from "vue-sonner"
-import { Button } from "~/components/ui/button"
-import { Checkbox } from "~/components/ui/checkbox"
-import { Input } from "~/components/ui/input"
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "~/components/ui/dropdown-menu"
-import {
-	Table,
-	TableBody,
-	TableCell,
-	TableHead,
-	TableHeader,
-	TableRow,
-} from "~/components/ui/table"
-import { Badge } from "~/components/ui/badge"
 import type { Link } from "~/stores/links"
 import type { Subject } from "nurekit"
 import AppIcon from "~/components/AppIcon.vue"
-import { valueUpdater } from "~/components/ui/table/utils"
+import { valueUpdater } from "~/utils/tanstack-table"
 import type { TEventType } from "~/types/calendar"
 import { EVENT_TYPE_COLORS } from "~/constants/calendar"
+
+// resolveComponent is required for components used inside h() render functions.
+// ESLint cannot trace usage through h(), so we suppress the unused-vars warning.
+/* eslint-disable @typescript-eslint/no-unused-vars */
+const UiButton = resolveComponent("UiButton")
+const UiCheckbox = resolveComponent("UiCheckbox")
+const UiBadge = resolveComponent("UiBadge")
+const UiDropdownMenu = resolveComponent("UiDropdownMenu")
+const UiDropdownMenuContent = resolveComponent("UiDropdownMenuContent")
+const UiDropdownMenuItem = resolveComponent("UiDropdownMenuItem")
+const UiDropdownMenuTrigger = resolveComponent("UiDropdownMenuTrigger")
+/* eslint-enable @typescript-eslint/no-unused-vars */
 
 interface LinkTableRow {
 	id: string
@@ -121,7 +115,7 @@ const columns: ColumnDef<LinkTableRow>[] = [
 			h(
 				"div",
 				{ class: "flex items-center justify-center" },
-				h(Checkbox, {
+				h(UiCheckbox, {
 					modelValue: table.getIsAllPageRowsSelected(),
 					"onUpdate:modelValue": (value: boolean | "indeterminate") => {
 						if (typeof value === "boolean") table.toggleAllPageRowsSelected(value)
@@ -134,7 +128,7 @@ const columns: ColumnDef<LinkTableRow>[] = [
 			h(
 				"div",
 				{ class: "flex items-center justify-center" },
-				h(Checkbox, {
+				h(UiCheckbox, {
 					modelValue: row.getIsSelected(),
 					"onUpdate:modelValue": (value: boolean | "indeterminate") => {
 						if (typeof value === "boolean") {
@@ -432,7 +426,7 @@ const handleImport = (event: Event) => {
 <template>
 	<div class="w-full">
 		<div class="py-4">
-			<Input
+			<UiInput
 				placeholder="Пошук по назві..."
 				:model-value="(table.getColumn('name')?.getFilterValue() as string) ?? ''"
 				class="w-full"
@@ -440,39 +434,39 @@ const handleImport = (event: Event) => {
 			/>
 		</div>
 		<div class="rounded-md border">
-			<Table>
-				<TableHeader>
-					<TableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
-						<TableHead v-for="header in headerGroup.headers" :key="header.id">
+			<UiTable>
+				<UiTableHeader>
+					<UiTableRow v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
+						<UiTableHead v-for="header in headerGroup.headers" :key="header.id">
 							<FlexRender
 								v-if="!header.isPlaceholder"
 								:render="header.column.columnDef.header"
 								:props="header.getContext()"
 							/>
-						</TableHead>
-					</TableRow>
-				</TableHeader>
-				<TableBody>
+						</UiTableHead>
+					</UiTableRow>
+				</UiTableHeader>
+				<UiTableBody>
 					<template v-if="table.getRowModel().rows?.length">
-						<TableRow
+						<UiTableRow
 							v-for="row in table.getRowModel().rows"
 							:key="row.id"
 							:data-state="row.getIsSelected() && 'selected'"
 						>
-							<TableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
+							<UiTableCell v-for="cell in row.getVisibleCells()" :key="cell.id">
 								<FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
-							</TableCell>
-						</TableRow>
+							</UiTableCell>
+						</UiTableRow>
 					</template>
 					<template v-else>
-						<TableRow>
-							<TableCell :colspan="columns.length" class="h-24 text-center">
+						<UiTableRow>
+							<UiTableCell :colspan="columns.length" class="h-24 text-center">
 								Немає посилань для відображення
-							</TableCell>
-						</TableRow>
+							</UiTableCell>
+						</UiTableRow>
 					</template>
-				</TableBody>
-			</Table>
+				</UiTableBody>
+			</UiTable>
 		</div>
 		<div class="flex items-center justify-between space-x-2 py-4">
 			<div class="text-muted-foreground flex-1 text-sm">
@@ -480,26 +474,26 @@ const handleImport = (event: Event) => {
 				{{ table.getFilteredRowModel().rows.length }} рядків вибрано.
 			</div>
 			<div class="space-x-2">
-				<Button
+				<UiButton
 					variant="outline"
 					size="icon"
 					:disabled="!table.getCanPreviousPage()"
 					@click="table.previousPage()"
 				>
 					<AppIcon name="lucide:chevron-left" size="sm" />
-				</Button>
-				<Button
+				</UiButton>
+				<UiButton
 					variant="outline"
 					size="icon"
 					:disabled="!table.getCanNextPage()"
 					@click="table.nextPage()"
 				>
 					<AppIcon name="lucide:chevron-right" size="sm" />
-				</Button>
+				</UiButton>
 			</div>
 		</div>
 		<div class="flex w-full flex-wrap items-center justify-center gap-2">
-			<Button
+			<UiButton
 				v-if="table.getFilteredSelectedRowModel().rows.length > 0"
 				variant="outline"
 				size="sm"
@@ -507,14 +501,14 @@ const handleImport = (event: Event) => {
 			>
 				<AppIcon name="lucide:upload" size="sm" />
 				Експортувати вибрані ({{ table.getFilteredSelectedRowModel().rows.length }})
-			</Button>
+			</UiButton>
 
-			<Button v-if="tableData.length > 0" variant="outline" size="sm" @click="exportAll">
+			<UiButton v-if="tableData.length > 0" variant="outline" size="sm" @click="exportAll">
 				<AppIcon name="lucide:upload" size="sm" />
 				Експортувати все
-			</Button>
+			</UiButton>
 
-			<Button
+			<UiButton
 				v-if="table.getFilteredSelectedRowModel().rows.length > 0"
 				variant="destructive"
 				size="sm"
@@ -522,7 +516,7 @@ const handleImport = (event: Event) => {
 			>
 				<AppIcon name="lucide:trash-2" size="sm" />
 				Видалити вибрані ({{ table.getFilteredSelectedRowModel().rows.length }})
-			</Button>
+			</UiButton>
 		</div>
 		<input ref="fileInput" type="file" accept=".json" class="hidden" @change="handleImport" />
 	</div>

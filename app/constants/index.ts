@@ -1,3 +1,5 @@
+export const SHOW_HIRING_BANNER = false
+
 export const AUTHORS = [
 	{
 		name: "Роман Трашутін",

@@ -20,17 +20,17 @@ const formattedTimeRange = computed(() => formatTimeRange(props.event))
 </script>
 
 <template>
-	<Popover>
-		<PopoverTrigger as-child>
+	<UiPopover>
+		<UiPopoverTrigger as-child>
 			<div role="button" tabindex="0" :class="blockClasses">
 				<p class="w-full truncate text-center font-semibold">{{ event.subject.brief }}</p>
 				<p class="w-full truncate text-center">
 					{{ formattedTimeRange }}
 				</p>
 			</div>
-		</PopoverTrigger>
-		<PopoverContent class="w-80">
+		</UiPopoverTrigger>
+		<UiPopoverContent class="w-80">
 			<BigCalendarEventPopover :event />
-		</PopoverContent>
-	</Popover>
+		</UiPopoverContent>
+	</UiPopover>
 </template>

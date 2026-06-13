@@ -7,9 +7,9 @@ function handleClick() {
 </script>
 
 <template>
-	<Button variant="secondary" size="icon" class="md:hidden" @click="handleClick">
+	<UiButton variant="secondary" size="icon" class="md:hidden" @click="handleClick">
 		<AppIcon name="lucide:calendar-days" />
-	</Button>
+	</UiButton>
 
-	<Button variant="secondary" class="max-md:hidden" @click="handleClick"> Сьогодні </Button>
+	<UiButton variant="secondary" class="max-md:hidden" @click="handleClick"> Сьогодні </UiButton>
 </template>

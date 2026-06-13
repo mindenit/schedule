@@ -3,10 +3,10 @@ import tailwindcss from "@tailwindcss/vite"
 export default defineNuxtConfig({
 	compatibilityDate: "2024-11-01",
 	devtools: { enabled: true },
-	// Component registration: ui and prefixed feature subdirs must come before
-	// the catch-all ~/components entry so Nuxt applies the right prefix per folder.
+	// Component registration: Ui (UI Thing) comes first so Nuxt assigns the Ui prefix.
+	// Prefixed feature subdirs must come before the catch-all ~/components entry.
 	components: [
-		{ path: "~/components/ui", pathPrefix: false },
+		{ path: "~/components/Ui", prefix: "Ui" },
 		{ path: "~/components/calendar", prefix: "BigCalendar", pathPrefix: false },
 		{ path: "~/components/schedule", prefix: "Schedule", pathPrefix: false },
 		{ path: "~/components/filters", prefix: "Filters", pathPrefix: false },
@@ -15,6 +15,11 @@ export default defineNuxtConfig({
 	],
 	imports: {
 		dirs: ["~/types", "~/constants", "~/queries"],
+		imports: [
+			{ from: "tailwind-variants", name: "tv" },
+			{ from: "tailwind-variants", name: "VariantProps", type: true },
+			{ from: "vue-sonner", name: "toast", as: "useSonner" },
+		],
 	},
 	runtimeConfig: {
 		public: {
@@ -26,16 +31,13 @@ export default defineNuxtConfig({
 		"@nuxt/icon",
 		"@nuxtjs/color-mode",
 		"@vueuse/nuxt",
-		"shadcn-nuxt",
 		"@pinia/nuxt",
 		"@nuxt/image",
 		"@nuxtjs/seo",
+		"@yuta-inoue-ph/nuxt-vcalendar",
+		"vue-sonner/nuxt",
 	],
-	css: ["~/assets/css/main.css"],
-	shadcn: {
-		prefix: "",
-		componentDir: "./app/components/ui",
-	},
+	css: ["~/assets/css/main.css", "~/assets/css/tailwind.css"],
 	vite: {
 		plugins: [tailwindcss()],
 	},
@@ -52,7 +54,6 @@ export default defineNuxtConfig({
 		classSuffix: "",
 		storageKey: "nuxt-color-mode",
 	},
-
 	site: {
 		url: "https://sh.mindenit.org",
 		name: "Mindenit Schedule",

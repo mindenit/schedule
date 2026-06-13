@@ -36,15 +36,15 @@ function handleNext() {
 		<span class="text-base font-semibold whitespace-nowrap md:text-lg"> {{ title }} </span>
 
 		<div class="flex items-center gap-1">
-			<Button variant="secondary" size="icon" @click="handlePrevious">
+			<UiButton variant="secondary" size="icon" @click="handlePrevious">
 				<AppIcon name="lucide:chevron-left" />
-			</Button>
+			</UiButton>
 
 			<BigCalendarTodayButton />
 
-			<Button variant="secondary" size="icon" @click="handleNext">
+			<UiButton variant="secondary" size="icon" @click="handleNext">
 				<AppIcon name="lucide:chevron-right" />
-			</Button>
+			</UiButton>
 		</div>
 	</div>
 </template>

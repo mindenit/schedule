@@ -27,10 +27,10 @@ definePageMeta({
 			видалено.
 		</p>
 		<NuxtLink to="/">
-			<Button size="lg">
+			<UiButton size="lg">
 				<AppIcon name="lucide:home" />
 				Повернутися на головну
-			</Button>
+			</UiButton>
 		</NuxtLink>
 	</div>
 </template>

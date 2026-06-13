@@ -26,8 +26,8 @@ function getEventTimeRange(event: Schedule): string {
 		</div>
 
 		<div class="max-h-60 space-y-2 overflow-y-auto">
-			<Popover v-for="event in events" :key="event.id">
-				<PopoverTrigger as-child>
+			<UiPopover v-for="event in events" :key="event.id">
+				<UiPopoverTrigger as-child>
 					<div
 						class="hover:bg-muted/50 flex cursor-pointer items-center gap-3 rounded-md p-2
 							transition-colors"
@@ -43,11 +43,11 @@ function getEventTimeRange(event: Schedule): string {
 							</p>
 						</div>
 					</div>
-				</PopoverTrigger>
-				<PopoverContent class="w-80" side="left">
+				</UiPopoverTrigger>
+				<UiPopoverContent class="w-80" side="left">
 					<BigCalendarEventPopover :event="event" />
-				</PopoverContent>
-			</Popover>
+				</UiPopoverContent>
+			</UiPopover>
 		</div>
 	</div>
 </template>

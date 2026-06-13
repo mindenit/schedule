@@ -24,13 +24,13 @@ withDefaults(
 				[@media(max-height:850px)]:h-10"
 			:class="{ 'hidden md:block': switchOnMobile }"
 		/>
-		<Button
+		<UiButton
 			v-if="switchOnMobile"
 			class="size-12 rounded-full shadow-lg transition-all duration-200 hover:shadow-xl md:hidden"
 			variant="secondary"
 			size="icon"
 		>
 			<AppIcon name="logos:google-play-icon" size="lg" />
-		</Button>
+		</UiButton>
 	</NuxtLink>
 </template>

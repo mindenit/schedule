@@ -48,22 +48,22 @@ const getScheduleTypeName = (type: string) => {
 </script>
 
 <template>
-	<AlertDialog v-model:open="showDialog">
-		<AlertDialogTrigger as-child>
-			<Button size="icon" variant="destructive" :disabled="!hasActiveSchedule">
+	<UiAlertDialog v-model:open="showDialog">
+		<UiAlertDialogTrigger as-child>
+			<UiButton size="icon" variant="destructive" :disabled="!hasActiveSchedule">
 				<AppIcon name="lucide:trash" />
-			</Button>
-		</AlertDialogTrigger>
-		<AlertDialogContent>
-			<AlertDialogHeader>
-				<AlertDialogTitle class="flex items-center gap-2">
+			</UiButton>
+		</UiAlertDialogTrigger>
+		<UiAlertDialogContent>
+			<UiAlertDialogHeader>
+				<UiAlertDialogTitle class="flex items-center gap-2">
 					<AppIcon name="lucide:alert-triangle" class="text-destructive" />
 					Видалити розклад
-				</AlertDialogTitle>
-				<AlertDialogDescription>
+				</UiAlertDialogTitle>
+				<UiAlertDialogDescription>
 					Ви впевнені, що хочете видалити цей розклад зі збережених?
-				</AlertDialogDescription>
-			</AlertDialogHeader>
+				</UiAlertDialogDescription>
+			</UiAlertDialogHeader>
 			<div v-if="selectedSchedule" class="bg-muted rounded-lg p-4">
 				<div class="flex items-center gap-3">
 					<AppIcon
@@ -78,13 +78,13 @@ const getScheduleTypeName = (type: string) => {
 					</div>
 				</div>
 			</div>
-			<AlertDialogFooter>
-				<AlertDialogCancel>Скасувати</AlertDialogCancel>
-				<AlertDialogAction class="bg-destructive" @click="removeActiveSchedule">
+			<UiAlertDialogFooter>
+				<UiAlertDialogCancel>Скасувати</UiAlertDialogCancel>
+				<UiAlertDialogAction class="bg-destructive" @click="removeActiveSchedule">
 					<AppIcon name="lucide:trash" />
 					Видалити
-				</AlertDialogAction>
-			</AlertDialogFooter>
-		</AlertDialogContent>
-	</AlertDialog>
+				</UiAlertDialogAction>
+			</UiAlertDialogFooter>
+		</UiAlertDialogContent>
+	</UiAlertDialog>
 </template>

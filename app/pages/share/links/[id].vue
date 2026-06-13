@@ -93,10 +93,10 @@ const handleAccept = async () => {
 					Посилання успішно імпортовані до вашого розпорядження
 				</p>
 				<NuxtLink to="/">
-					<Button class="mt-6">
+					<UiButton class="mt-6">
 						<AppIcon name="lucide:arrow-left" class="mr-2" />
 						Повернутися на головну
-					</Button>
+					</UiButton>
 				</NuxtLink>
 			</div>
 
@@ -120,30 +120,30 @@ const handleAccept = async () => {
 								<p class="line-clamp-1 font-medium">{{ link.label }}</p>
 								<p class="text-muted-foreground line-clamp-2 text-sm">{{ link.url }}</p>
 								<div class="mt-2 flex items-center gap-2">
-									<Badge variant="outline">{{ link.type }}</Badge>
-									<Badge variant="secondary">ID: {{ link.subjectId }}</Badge>
+									<UiBadge variant="outline">{{ link.type }}</UiBadge>
+									<UiBadge variant="secondary">ID: {{ link.subjectId }}</UiBadge>
 								</div>
 							</div>
 							<a :href="link.url" target="_blank" rel="noopener noreferrer" class="flex-shrink-0">
-								<Button size="sm" variant="ghost">
+								<UiButton size="sm" variant="ghost">
 									<AppIcon name="lucide:external-link" class="h-4 w-4" />
-								</Button>
+								</UiButton>
 							</a>
 						</div>
 					</div>
 				</div>
 
 				<div class="flex gap-4">
-					<Button class="flex-1" size="lg" :disabled="isLoading" @click="handleAccept">
+					<UiButton class="flex-1" size="lg" :disabled="isLoading" @click="handleAccept">
 						<AppIcon name="lucide:download" class="mr-2" />
 						Імпортувати {{ sharableData.links.length }}
 						{{ sharableData.links.length === 1 ? "посилання" : "посилань" }}
-					</Button>
+					</UiButton>
 					<NuxtLink to="/">
-						<Button variant="outline" size="lg">
+						<UiButton variant="outline" size="lg">
 							<AppIcon name="lucide:x" class="mr-2" />
 							Скасувати
-						</Button>
+						</UiButton>
 					</NuxtLink>
 				</div>
 

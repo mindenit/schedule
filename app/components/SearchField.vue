@@ -13,7 +13,7 @@ defineEmits<Emits>()
 
 <template>
 	<div class="relative w-full items-center">
-		<Input
+		<UiInput
 			id="search"
 			type="text"
 			placeholder="Пошук..."

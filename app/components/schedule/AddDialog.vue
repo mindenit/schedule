@@ -180,41 +180,41 @@ const handleCardClick = (item: GenericScheduleItem) => {
 </script>
 
 <template>
-	<Dialog v-model:open="isDialogOpen">
-		<DialogTrigger as-child>
-			<Button class="min-w-0 flex-1 gap-1 max-md:hidden">
+	<UiDialog v-model:open="isDialogOpen">
+		<UiDialogTrigger as-child>
+			<UiButton class="min-w-0 flex-1 gap-1 max-md:hidden">
 				<AppIcon name="lucide:plus" /> Додати розклад
-			</Button>
-		</DialogTrigger>
+			</UiButton>
+		</UiDialogTrigger>
 
-		<DialogTrigger as-child>
-			<Button
+		<UiDialogTrigger as-child>
+			<UiButton
 				class="size-12 rounded-full shadow-lg transition-all duration-200 hover:shadow-xl md:hidden"
 				size="icon"
 			>
 				<AppIcon name="lucide:plus" size="lg" />
-			</Button>
-		</DialogTrigger>
+			</UiButton>
+		</UiDialogTrigger>
 
-		<DialogContent>
-			<DialogHeader>
-				<DialogTitle>Оберіть розклад</DialogTitle>
-			</DialogHeader>
-			<Tabs class="w-fill" :model-value="activeTab" @update:model-value="handleTabChange">
-				<TabsList class="grid w-full grid-cols-3">
-					<TabsTrigger value="group"> Групи </TabsTrigger>
-					<TabsTrigger value="teacher"> Викладачі </TabsTrigger>
-					<TabsTrigger value="auditorium"> Аудиторії </TabsTrigger>
-				</TabsList>
+		<UiDialogContent>
+			<UiDialogHeader>
+				<UiDialogTitle>Оберіть розклад</UiDialogTitle>
+			</UiDialogHeader>
+			<UiTabs class="w-fill" :model-value="activeTab" @update:model-value="handleTabChange">
+				<UiTabsList class="grid w-full grid-cols-3">
+					<UiTabsTrigger value="group"> Групи </UiTabsTrigger>
+					<UiTabsTrigger value="teacher"> Викладачі </UiTabsTrigger>
+					<UiTabsTrigger value="auditorium"> Аудиторії </UiTabsTrigger>
+				</UiTabsList>
 
-				<TabsContent v-for="(config, tabType) in tabConfig" :key="tabType" :value="tabType">
+				<UiTabsContent v-for="(config, tabType) in tabConfig" :key="tabType" :value="tabType">
 					<div v-if="config.isLoading.value" class="flex justify-center p-4">
 						<TheLoader />
 					</div>
-					<Alert v-else-if="config.isError.value" variant="destructive">
-						<AlertTitle>Сталася помилка</AlertTitle>
-						<AlertDescription> Деталі: {{ config.error.value?.message }}</AlertDescription>
-					</Alert>
+					<UiAlert v-else-if="config.isError.value" variant="destructive">
+						<UiAlertTitle>Сталася помилка</UiAlertTitle>
+						<UiAlertDescription> Деталі: {{ config.error.value?.message }}</UiAlertDescription>
+					</UiAlert>
 					<template v-else-if="config.data.value && config.data.value.length > 0">
 						<SearchField v-model="searchQuery" class="mb-2 w-full" />
 						<div
@@ -224,7 +224,7 @@ const handleCardClick = (item: GenericScheduleItem) => {
 								}
 							"
 							class="custom-scrollbar h-[400px] overflow-y-auto"
-							style="scrollbar-width: thin; scrollbar-color: hsl(var(--border)) transparent"
+							style="scrollbar-width: thin; scrollbar-color: var(--border) transparent"
 						>
 							<template v-if="getDisplayedItems(tabType).length > 0">
 								<ScheduleDialogCard
@@ -254,10 +254,10 @@ const handleCardClick = (item: GenericScheduleItem) => {
 					<div v-else class="text-muted-foreground p-4 text-center">
 						{{ config.emptyMessage }}
 					</div>
-				</TabsContent>
-			</Tabs>
-		</DialogContent>
-	</Dialog>
+				</UiTabsContent>
+			</UiTabs>
+		</UiDialogContent>
+	</UiDialog>
 </template>
 
 <style scoped>
@@ -270,13 +270,13 @@ const handleCardClick = (item: GenericScheduleItem) => {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-	background: hsl(var(--border));
+	background: var(--border);
 	border-radius: 9999px;
 	border-left: 1px solid transparent;
 	transition: background-color 0.2s;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-	background: hsl(var(--border) / 0.8);
+	background: color-mix(in oklch, var(--border) 80%, transparent);
 }
 </style>

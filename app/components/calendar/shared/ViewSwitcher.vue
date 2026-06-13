@@ -14,14 +14,14 @@ function updateView(newView: unknown) {
 </script>
 
 <template>
-	<Select :model-value="view" @update:model-value="updateView">
-		<SelectTrigger class="max-md:w-full">
-			<SelectValue placeholder="Обрати вигляд" />
-		</SelectTrigger>
-		<SelectContent>
-			<SelectItem v-for="option in VIEW_OPTIONS" :key="option.value" :value="option.value">
+	<UiSelect :model-value="view" @update:model-value="updateView">
+		<UiSelectTrigger class="w-auto max-md:w-full">
+			<UiSelectValue placeholder="Обрати вигляд" />
+		</UiSelectTrigger>
+		<UiSelectContent>
+			<UiSelectItem v-for="option in VIEW_OPTIONS" :key="option.value" :value="option.value">
 				{{ option.label }}
-			</SelectItem>
-		</SelectContent>
-	</Select>
+			</UiSelectItem>
+		</UiSelectContent>
+	</UiSelect>
 </template>
