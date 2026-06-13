@@ -126,7 +126,7 @@ const handleMainImport = (event: Event) => {
 		<div class="flex items-center justify-between gap-2 max-md:flex-col max-md:pb-2">
 			<h3 class="text-lg font-medium">Керування посиланнями</h3>
 			<div class="flex gap-2">
-				<Button
+				<UiButton
 					v-if="selectedLinkIds.length > 0"
 					size="sm"
 					variant="outline"
@@ -134,11 +134,11 @@ const handleMainImport = (event: Event) => {
 				>
 					<AppIcon name="lucide:share-2" />
 					Поділіться ({{ selectedLinkIds.length }})
-				</Button>
-				<Button size="sm" @click="triggerImport">
+				</UiButton>
+				<UiButton size="sm" @click="triggerImport">
 					<AppIcon name="lucide:download" />
 					Імпортувати
-				</Button>
+				</UiButton>
 			</div>
 		</div>
 

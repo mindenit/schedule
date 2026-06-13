@@ -27,9 +27,9 @@ const getTypeLabel = (type: string) => {
 </script>
 
 <template>
-	<Select v-model="selectedValue" :disabled="!scheduleStore.isInitialized">
-		<SelectTrigger class="w-full">
-			<SelectValue>
+	<UiSelect v-model="selectedValue" :disabled="!scheduleStore.isInitialized">
+		<UiSelectTrigger class="w-full">
+			<UiSelectValue>
 				<template v-if="!scheduleStore.isInitialized">
 					<div class="flex items-center gap-2">
 						<AppIcon name="lucide:loader-2" class="animate-spin" />
@@ -45,9 +45,9 @@ const getTypeLabel = (type: string) => {
 				<template v-else>
 					<span class="text-muted-foreground">Оберіть розклад</span>
 				</template>
-			</SelectValue>
-		</SelectTrigger>
-		<SelectContent>
+			</UiSelectValue>
+		</UiSelectTrigger>
+		<UiSelectContent>
 			<template v-if="!scheduleStore.isInitialized">
 				<div class="flex items-center justify-center gap-2 p-4">
 					<AppIcon name="lucide:loader-2" class="animate-spin" />
@@ -55,7 +55,7 @@ const getTypeLabel = (type: string) => {
 				</div>
 			</template>
 			<template v-else-if="scheduleStore.allSchedules.length > 0">
-				<SelectItem
+				<UiSelectItem
 					v-for="schedule in scheduleStore.allSchedules"
 					:key="`${schedule.type}-${schedule.id}`"
 					:value="schedule.id.toString()"
@@ -69,11 +69,11 @@ const getTypeLabel = (type: string) => {
 							</span>
 						</div>
 					</div>
-				</SelectItem>
+				</UiSelectItem>
 			</template>
 			<template v-else>
 				<div class="text-muted-foreground p-2 text-center text-sm">Немає доданих розкладів</div>
 			</template>
-		</SelectContent>
-	</Select>
+		</UiSelectContent>
+	</UiSelect>
 </template>

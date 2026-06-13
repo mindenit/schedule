@@ -64,29 +64,29 @@ const handleIcsExportAcademicYear = async () => {
 
 <template>
 	<div class="flex min-h-0 flex-col gap-4 overflow-y-auto py-4">
-		<Tabs default-value="schedule" class="w-full">
-			<TabsList class="grid w-full grid-cols-3">
-				<TabsTrigger value="schedule">
+		<UiTabs default-value="schedule" class="w-full">
+			<UiTabsList class="grid w-full grid-cols-3">
+				<UiTabsTrigger value="schedule">
 					<AppIcon name="lucide:calendar" size="xs" />
 					Розклад
-				</TabsTrigger>
-				<TabsTrigger value="links">
+				</UiTabsTrigger>
+				<UiTabsTrigger value="links">
 					<AppIcon name="lucide:link" size="xs" />
 					Посилання
-				</TabsTrigger>
-				<TabsTrigger value="bug">
+				</UiTabsTrigger>
+				<UiTabsTrigger value="bug">
 					<AppIcon name="lucide:bug" size="xs" />
 					Debug
-				</TabsTrigger>
-			</TabsList>
+				</UiTabsTrigger>
+			</UiTabsList>
 
-			<TabsContent value="schedule">
+			<UiTabsContent value="schedule">
 				<h3 class="text-muted-foreground mb-2 text-sm font-medium">Експорт розкладу (ICS)</h3>
 				<div class="flex flex-wrap items-center justify-center gap-2">
-					<Button variant="default" :disabled="isLoading" @click="handleIcsExportAcademicYear">
+					<UiButton variant="default" :disabled="isLoading" @click="handleIcsExportAcademicYear">
 						<AppIcon name="lucide:calendar-export" />
 						Експорт на навчальний рік
-					</Button>
+					</UiButton>
 				</div>
 
 				<h3 class="text-muted-foreground mt-4 mb-2 text-sm font-medium">Ефекти</h3>
@@ -95,21 +95,21 @@ const handleIcsExportAcademicYear = async () => {
 						<div class="text-sm font-medium">Снігопад</div>
 						<div class="text-muted-foreground text-xs">Зимовий ефект падаючого снігу</div>
 					</div>
-					<Button
+					<UiButton
 						:variant="isSnowEnabled ? 'default' : 'outline'"
 						size="sm"
 						@click="isSnowEnabled = !isSnowEnabled"
 					>
 						{{ isSnowEnabled ? "Увімкнено" : "Вимкнено" }}
-					</Button>
+					</UiButton>
 				</div>
-			</TabsContent>
+			</UiTabsContent>
 
-			<TabsContent value="links">
+			<UiTabsContent value="links">
 				<SettingsLinksManagement />
-			</TabsContent>
+			</UiTabsContent>
 
-			<TabsContent value="bug">
+			<UiTabsContent value="bug">
 				<h3 class="text-muted-foreground mb-2 text-sm font-medium">Активні елементи розкладу</h3>
 				<div class="space-y-3">
 					<div v-if="allSchedules.length === 0" class="text-muted-foreground py-4 text-center">
@@ -136,13 +136,13 @@ const handleIcsExportAcademicYear = async () => {
 								</div>
 							</div>
 						</div>
-						<Button variant="outline" class="mt-4 w-full" @click="copyAllSchedulesToClipboard">
+						<UiButton variant="outline" class="mt-4 w-full" @click="copyAllSchedulesToClipboard">
 							<AppIcon name="lucide:copy" />
 							Скопіювати все
-						</Button>
+						</UiButton>
 					</div>
 				</div>
-			</TabsContent>
-		</Tabs>
+			</UiTabsContent>
+		</UiTabs>
 	</div>
 </template>

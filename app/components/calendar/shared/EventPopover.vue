@@ -163,9 +163,9 @@ const deleteLink = (linkId: string) => {
 					<AppIcon name="lucide:link" class="h-3.5 w-3.5" />
 					Посилання
 				</h4>
-				<Button size="icon" variant="outline" class="h-7 w-7" @click="addLink">
+				<UiButton size="icon" variant="outline" class="h-7 w-7" @click="addLink">
 					<AppIcon name="lucide:plus" class="h-3.5 w-3.5" />
-				</Button>
+				</UiButton>
 			</div>
 			<div v-if="eventLinks.length" class="max-h-[140px] space-y-1 overflow-auto">
 				<div
@@ -182,12 +182,12 @@ const deleteLink = (linkId: string) => {
 						{{ link.name }}
 					</a>
 					<div class="flex gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
-						<Button size="icon" variant="ghost" class="h-6 w-6" @click="editLink(link)">
+						<UiButton size="icon" variant="ghost" class="h-6 w-6" @click="editLink(link)">
 							<AppIcon name="lucide:pencil" class="h-3 w-3" />
-						</Button>
-						<Button size="icon" variant="ghost" class="h-6 w-6" @click="deleteLink(link.id)">
+						</UiButton>
+						<UiButton size="icon" variant="ghost" class="h-6 w-6" @click="deleteLink(link.id)">
 							<AppIcon name="lucide:trash" class="h-3 w-3" />
-						</Button>
+						</UiButton>
 					</div>
 				</div>
 			</div>

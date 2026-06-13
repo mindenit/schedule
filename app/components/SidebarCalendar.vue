@@ -1,23 +1,40 @@
 <script setup lang="ts">
-import { type DateValue, getLocalTimeZone, today } from "@internationalized/date"
-import { type Ref, ref, watch } from "vue"
+import type { CalendarDay } from "v-calendar/dist/types/src/utils/page"
 
 const calendarStore = useCalendarStore()
-const value = ref(today(getLocalTimeZone())) as Ref<DateValue>
 
-const dateValueToDate = (dateValue: DateValue): Date => {
-	return new Date(dateValue.year, dateValue.month - 1, dateValue.day)
+const onDayClick = (day: CalendarDay) => {
+	calendarStore.setView("day")
+	calendarStore.setSelectedDate(day.date)
 }
 
-watch(value, (newDateValue) => {
-	if (newDateValue) {
-		const jsDate = dateValueToDate(newDateValue)
-		calendarStore.setView("day")
-		calendarStore.setSelectedDate(jsDate)
-	}
-})
+const selectedAttributes = computed(() => [
+	{
+		key: "selected",
+		highlight: { color: "purple", fillMode: "solid" },
+		dates: calendarStore.selectedDate,
+	},
+])
+
+const initialPage = computed(() => ({
+	month: calendarStore.selectedDate.getMonth() + 1,
+	year: calendarStore.selectedDate.getFullYear(),
+}))
 </script>
 
 <template>
-	<Calendar v-model="value" :weekday-format="'short'" class="bg-card rounded-md" />
+	<UiCalendar
+		expanded
+		locale="uk"
+		class="sidebar-calendar bg-card rounded-md"
+		:attributes="selectedAttributes"
+		:initial-page="initialPage"
+		@dayclick="onDayClick"
+	/>
 </template>
+
+<style>
+.sidebar-calendar.vc-container {
+	width: 100% !important;
+}
+</style>

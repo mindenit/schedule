@@ -2,7 +2,6 @@
 import { storeToRefs } from "pinia"
 import { startOfDay, endOfDay } from "date-fns"
 import { useScheduleQuery } from "~/composables/useScheduleQuery"
-import ScrollArea from "./ui/scroll-area/ScrollArea.vue"
 import type { TEventType } from "~/types/calendar"
 
 const scheduleStore = useScheduleStore()
@@ -39,7 +38,7 @@ const hasEvents = computed(() => todayEvents.value && todayEvents.value.length >
 
 		<ClientOnly>
 			<div class="flex min-h-0 flex-1 flex-col overflow-hidden">
-				<ScrollArea class="min-h-0 flex-1">
+				<UiScrollArea class="min-h-0 flex-1">
 					<div class="flex flex-col gap-3">
 						<div v-if="isLoading && hasActiveSchedule" class="flex justify-center p-4">
 							<TheLoader />
@@ -74,7 +73,7 @@ const hasEvents = computed(() => todayEvents.value && todayEvents.value.length >
 							<p class="text-sm">Оберіть розклад для перегляду пар</p>
 						</div>
 					</div>
-				</ScrollArea>
+				</UiScrollArea>
 			</div>
 		</ClientOnly>
 	</div>

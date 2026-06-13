@@ -12,7 +12,7 @@ const emit = defineEmits<{
 </script>
 
 <template>
-	<Button
+	<UiButton
 		:variant="isActive ? 'default' : 'outline'"
 		size="sm"
 		class="text-xs"
@@ -20,5 +20,5 @@ const emit = defineEmits<{
 	>
 		<AppIcon v-if="isActive" name="lucide:check" size="xs" />
 		{{ label }}
-	</Button>
+	</UiButton>
 </template>

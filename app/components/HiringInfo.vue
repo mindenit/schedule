@@ -14,7 +14,7 @@
 				<span class="text-sm font-medium"> Шукаємо людей в команду </span>
 			</div>
 
-			<Button
+			<UiButton
 				as="a"
 				href="https://mindenit.org/hiring"
 				target="_blank"
@@ -30,7 +30,7 @@
 					size="xs"
 					class="ml-1 transition-transform duration-200 group-hover:translate-x-0.5"
 				/>
-			</Button>
+			</UiButton>
 		</div>
 	</div>
 </template>

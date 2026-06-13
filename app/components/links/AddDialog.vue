@@ -31,27 +31,27 @@ const save = () => {
 </script>
 
 <template>
-	<Dialog v-model:open="isOpen">
-		<DialogContent>
-			<DialogHeader>
-				<DialogTitle>{{ link ? "Редагувати" : "Додати" }} посилання</DialogTitle>
-				<DialogDescription>
+	<UiDialog v-model:open="isOpen">
+		<UiDialogContent>
+			<UiDialogHeader>
+				<UiDialogTitle>{{ link ? "Редагувати" : "Додати" }} посилання</UiDialogTitle>
+				<UiDialogDescription>
 					Вставте посилання та, за бажанням, вкажіть його назву.
-				</DialogDescription>
-			</DialogHeader>
+				</UiDialogDescription>
+			</UiDialogHeader>
 			<div class="grid gap-4">
 				<div class="grid w-full items-center gap-1.5">
-					<Label for="url">URL</Label>
-					<Input id="url" v-model="internalLink.url" placeholder="https://..." />
+					<UiLabel for="url">URL</UiLabel>
+					<UiInput id="url" v-model="internalLink.url" placeholder="https://..." />
 				</div>
 				<div class="grid w-full items-center gap-1.5">
-					<Label for="name">Назва</Label>
-					<Input id="name" v-model="internalLink.name" placeholder="(необов'язково)" />
+					<UiLabel for="name">Назва</UiLabel>
+					<UiInput id="name" v-model="internalLink.name" placeholder="(необов'язково)" />
 				</div>
 			</div>
-			<DialogFooter>
-				<Button type="submit" @click="save">Зберегти</Button>
-			</DialogFooter>
-		</DialogContent>
-	</Dialog>
+			<UiDialogFooter>
+				<UiButton type="submit" @click="save">Зберегти</UiButton>
+			</UiDialogFooter>
+		</UiDialogContent>
+	</UiDialog>
 </template>

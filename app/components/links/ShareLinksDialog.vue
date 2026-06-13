@@ -50,25 +50,25 @@ const handleClose = () => {
 </script>
 
 <template>
-	<Dialog v-model:open="isOpen">
-		<DialogContent class="max-w-md">
-			<DialogHeader>
-				<DialogTitle>Поділіться посиланнями</DialogTitle>
-			</DialogHeader>
+	<UiDialog v-model:open="isOpen">
+		<UiDialogContent class="max-w-md">
+			<UiDialogHeader>
+				<UiDialogTitle>Поділіться посиланнями</UiDialogTitle>
+			</UiDialogHeader>
 
 			<div v-if="!sharableUrl" class="space-y-4">
 				<p class="text-muted-foreground text-sm">
 					Буде створено посилання для {{ selectedLinkIds.length }}
 					{{ selectedLinkIds.length === 1 ? "посилання" : "посилань" }}
 				</p>
-				<Button
+				<UiButton
 					class="w-full"
 					:disabled="isLoading || selectedLinkIds.length === 0"
 					@click="handleCreateLink"
 				>
 					<AppIcon name="lucide:share-2" class="mr-2" />
 					Створити посилання для поділу
-				</Button>
+				</UiButton>
 			</div>
 
 			<div v-else class="space-y-4">
@@ -78,14 +78,14 @@ const handleClose = () => {
 						<code class="bg-background flex-1 rounded p-2 text-xs break-all">
 							{{ sharableUrl }}
 						</code>
-						<Button
+						<UiButton
 							size="icon"
 							variant="outline"
 							:class="{ 'bg-green-100': copied }"
 							@click="copyToClipboard"
 						>
 							<AppIcon :name="copied ? 'lucide:check' : 'lucide:copy'" class="h-4 w-4" />
-						</Button>
+						</UiButton>
 					</div>
 				</div>
 
@@ -93,8 +93,8 @@ const handleClose = () => {
 					Відправте це посилання тій особі, яка хоче імпортувати ваші посилання
 				</p>
 
-				<Button variant="outline" class="w-full" @click="handleClose"> Готово </Button>
+				<UiButton variant="outline" class="w-full" @click="handleClose"> Готово </UiButton>
 			</div>
-		</DialogContent>
-	</Dialog>
+		</UiDialogContent>
+	</UiDialog>
 </template>

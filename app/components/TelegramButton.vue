@@ -1,5 +1,5 @@
 <template>
-	<Button
+	<UiButton
 		as="a"
 		href="https://t.me/mindenit"
 		target="_blank"
@@ -9,5 +9,5 @@
 	>
 		<AppIcon name="mingcute:telegram-fill" size="md" />
 		Join us on Telegram
-	</Button>
+	</UiButton>
 </template>

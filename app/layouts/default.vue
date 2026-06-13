@@ -25,7 +25,7 @@
 
 			<div class="flex min-h-0 flex-1 flex-col p-6">
 				<TheNavbar />
-				<div class="mt-6 grid min-h-0 flex-1 grid-cols-[250px_1fr] gap-6">
+				<div class="mt-6 grid min-h-0 flex-1 grid-cols-[280px_1fr] gap-6">
 					<aside class="flex min-h-0 flex-col gap-4">
 						<TheSidebar show-add-dialog />
 					</aside>

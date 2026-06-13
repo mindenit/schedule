@@ -109,50 +109,50 @@ function handleMobileClick() {
 					class="flex h-6 flex-shrink-0 gap-1"
 				>
 					<template v-if="group.length > 1">
-						<Popover v-for="event in group" :key="event.id">
-							<PopoverTrigger as-child>
+						<UiPopover v-for="event in group" :key="event.id">
+							<UiPopoverTrigger as-child>
 								<BigCalendarMonthEventBadge
 									:event="event"
 									:cell-date="startOfDay(cell.date)"
 									class="hide-time min-w-0 flex-1"
 								/>
-							</PopoverTrigger>
-							<PopoverContent class="w-80">
+							</UiPopoverTrigger>
+							<UiPopoverContent class="w-80">
 								<BigCalendarEventPopover :event />
-							</PopoverContent>
-						</Popover>
+							</UiPopoverContent>
+						</UiPopover>
 					</template>
 
 					<template v-else-if="group[0]">
-						<Popover>
-							<PopoverTrigger as-child>
+						<UiPopover>
+							<UiPopoverTrigger as-child>
 								<BigCalendarMonthEventBadge
 									:event="group[0]"
 									:cell-date="startOfDay(cell.date)"
 									class="w-full"
 								/>
-							</PopoverTrigger>
-							<PopoverContent class="w-80">
+							</UiPopoverTrigger>
+							<UiPopoverContent class="w-80">
 								<BigCalendarEventPopover :event="group[0]" />
-							</PopoverContent>
-						</Popover>
+							</UiPopoverContent>
+						</UiPopover>
 					</template>
 				</div>
 
 				<div v-if="hasMoreEvents" class="flex h-6 flex-shrink-0 gap-1">
-					<Popover>
-						<PopoverTrigger as-child>
+					<UiPopover>
+						<UiPopoverTrigger as-child>
 							<BigCalendarMonthEventBadge>
 								<span class="flex-1 shrink-0 truncate">
 									ще {{ remainingEventsCount }}
 									{{ remainingEventsCount === 1 ? "заняття" : "занять" }}
 								</span>
 							</BigCalendarMonthEventBadge>
-						</PopoverTrigger>
-						<PopoverContent class="w-80">
+						</UiPopoverTrigger>
+						<UiPopoverContent class="w-80">
 							<BigCalendarMoreEventsPopover :events="hiddenEvents" :date="cell.date" />
-						</PopoverContent>
-					</Popover>
+						</UiPopoverContent>
+					</UiPopover>
 				</div>
 			</div>
 		</div>

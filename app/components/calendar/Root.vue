@@ -87,13 +87,13 @@ const overlayContent = computed(() => {
 
 					<TheLoader v-else-if="overlayContent === 'loading'" size="lg" />
 
-					<Alert v-else-if="overlayContent === 'error'" variant="destructive" class="mx-2 w-sm">
-						<AlertTitle>Помилка</AlertTitle>
-						<AlertDescription>
+					<UiAlert v-else-if="overlayContent === 'error'" variant="destructive" class="mx-2 w-sm">
+						<UiAlertTitle>Помилка</UiAlertTitle>
+						<UiAlertDescription>
 							<p v-if="error">Не вдалося завантажити розклад: {{ error.message }}</p>
 							<p v-else>Виникла невідома помилка при завантаженні розкладу.</p>
-						</AlertDescription>
-					</Alert>
+						</UiAlertDescription>
+					</UiAlert>
 				</div>
 			</Transition>
 		</ClientOnly>
