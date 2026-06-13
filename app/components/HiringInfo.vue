@@ -1,5 +1,6 @@
 <template>
 	<div
+		v-if="SHOW_HIRING_BANNER"
 		class="from-royal-blue-700/80 via-royal-blue-600/70 to-royal-blue-500/80
 			dark:from-royal-blue-600/60 dark:via-royal-blue-500/50 dark:to-royal-blue-400/60 relative flex
 			h-12 w-full animate-[gradient-x_6s_ease-in-out_infinite] items-center justify-center
