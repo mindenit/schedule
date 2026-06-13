@@ -1,5 +1,5 @@
 export default defineEventHandler(async (event) => {
-	if (process.env.NODE_ENV === "production") {
+	if (!import.meta.dev) {
 		throw createError({
 			statusCode: 404,
 			statusMessage: "Not Found",
@@ -9,22 +9,18 @@ export default defineEventHandler(async (event) => {
 	const path = getRouterParam(event, "any") || ""
 	const query = getQuery(event)
 	const backendUrl = `https://sh.mindenit.org/api/${path}`
-	const method = event.node.req.method || "GET"
+	const method = getMethod(event)
 	const headers: Record<string, string> = {}
 	const headersToProxy = ["content-type", "accept", "authorization"]
 
 	for (const headerName of headersToProxy) {
-		const value = event.node.req.headers[headerName]
-		if (Array.isArray(value)) {
-			if (value.length > 0 && typeof value[0] === "string") {
-				headers[headerName] = value[0]
-			}
-		} else if (typeof value === "string") {
+		const value = getRequestHeader(event, headerName)
+		if (value !== undefined) {
 			headers[headerName] = value
 		}
 	}
 
-	headers["cookie"] = event.node.req.headers.cookie || ""
+	headers["cookie"] = getRequestHeader(event, "cookie") || ""
 	headers["accept-encoding"] = "identity"
 
 	const fetchOptions: RequestInit = {
@@ -65,10 +61,10 @@ export default defineEventHandler(async (event) => {
 		})
 
 		for (const [key, value] of Object.entries(responseHeaders)) {
-			event.node.res.setHeader(key, value)
+			setResponseHeader(event, key, value)
 		}
 
-		event.node.res.statusCode = response.status
+		setResponseStatus(event, response.status)
 
 		const contentType = response.headers.get("content-type")
 		if (contentType?.includes("application/json")) {
