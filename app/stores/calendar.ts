@@ -41,37 +41,30 @@ export const useCalendarStore = defineStore("calendar", () => {
 	function getEventsForMonthView(events: Schedule[]): Schedule[] {
 		const monthStart = startOfMonth(selectedDate.value)
 		const monthEnd = endOfMonth(selectedDate.value)
-		const calendarStart = startOfWeek(monthStart, WEEK_OPTIONS)
-		const calendarEnd = endOfWeek(monthEnd, WEEK_OPTIONS)
+		const rangeStart = startOfWeek(monthStart, WEEK_OPTIONS).getTime()
+		const rangeEnd = endOfWeek(monthEnd, WEEK_OPTIONS).getTime()
 
 		return events.filter((event) => {
-			const eventStartedAt = new Date(event.startedAt * 1000)
-			const eventEndedAt = new Date(event.endedAt * 1000)
-			return eventStartedAt <= calendarEnd && eventEndedAt >= calendarStart
+			return event.startedAt * 1000 <= rangeEnd && event.endedAt * 1000 >= rangeStart
 		})
 	}
 
 	function getEventsForWeekView(events: Schedule[]): Schedule[] {
-		const calendarStart = startOfWeek(selectedDate.value, WEEK_OPTIONS)
-		const calendarEnd = endOfWeek(selectedDate.value, WEEK_OPTIONS)
+		const rangeStart = startOfWeek(selectedDate.value, WEEK_OPTIONS).getTime()
+		const rangeEnd = endOfWeek(selectedDate.value, WEEK_OPTIONS).getTime()
 
 		return events.filter((event) => {
-			const eventStartedAt = new Date(event.startedAt * 1000)
-			const eventEndedAt = new Date(event.endedAt * 1000)
-			return eventStartedAt <= calendarEnd && eventEndedAt >= calendarStart
+			return event.startedAt * 1000 <= rangeEnd && event.endedAt * 1000 >= rangeStart
 		})
 	}
 
 	function getEventsForDayView(events: Schedule[]): Schedule[] {
-		const dayStart = new Date(selectedDate.value)
-		dayStart.setHours(0, 0, 0, 0)
-		const dayEnd = new Date(selectedDate.value)
-		dayEnd.setHours(23, 59, 59, 999)
+		const day = selectedDate.value
+		const rangeStart = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 0, 0, 0, 0).getTime()
+		const rangeEnd = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 23, 59, 59, 999).getTime()
 
 		return events.filter((event) => {
-			const eventStartedAt = new Date(event.startedAt * 1000)
-			const eventEndedAt = new Date(event.endedAt * 1000)
-			return eventStartedAt <= dayEnd && eventEndedAt >= dayStart
+			return event.startedAt * 1000 <= rangeEnd && event.endedAt * 1000 >= rangeStart
 		})
 	}
 

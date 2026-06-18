@@ -3,6 +3,18 @@ import { uk } from "date-fns/locale"
 import type { ICalendarCell } from "~/types/calendar"
 import { WEEK_OPTIONS } from "~/constants/calendar"
 
+// Week day abbreviations never change at runtime — compute once at module load.
+// Uses a fixed Monday as anchor (any Monday works; locale determines the names).
+const WEEK_DAY_NAMES: string[] = (() => {
+	const anchor = new Date(2024, 0, 1) // 2024-01-01 is a Monday
+	const weekStart = startOfWeek(anchor, WEEK_OPTIONS)
+	return Array.from({ length: 7 }, (_, i) => {
+		const day = addDays(weekStart, i)
+		const name = format(day, "E", { locale: uk })
+		return name.charAt(0).toUpperCase() + name.slice(1)
+	})
+})()
+
 export const useCalendarCells = () => {
 	const getCalendarCells = (selectedDate: Date): ICalendarCell[] => {
 		const year = selectedDate.getFullYear()
@@ -39,16 +51,11 @@ export const useCalendarCells = () => {
 		return [...prevMonthDays, ...currentMonthDays, ...nextMonthDays]
 	}
 
-	const getWeekDays = (selectedDate: Date) => {
-		const weekStart = startOfWeek(selectedDate, WEEK_OPTIONS)
-		return Array.from({ length: 7 }, (_, i) => {
-			const day = addDays(weekStart, i)
-			const dayName = format(day, "E", { locale: uk })
-			return dayName.charAt(0).toUpperCase() + dayName.slice(1)
-		})
-	}
+	// Returns the constant Mon–Sun abbreviated names for the current locale.
+	// Accepts selectedDate for API compatibility but ignores it — names are locale-invariant.
+	const getWeekDays = (_selectedDate?: Date): string[] => WEEK_DAY_NAMES
 
-	const getWeekDaysDetailed = (selectedDate: Date) => {
+	const getWeekDaysDetailed = (selectedDate: Date): Date[] => {
 		const weekStart = startOfWeek(selectedDate, WEEK_OPTIONS)
 		return Array.from({ length: 7 }, (_, i) => addDays(weekStart, i))
 	}

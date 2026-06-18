@@ -21,12 +21,15 @@ const { formatHour, capitalize } = useEventFormatting()
 const weekDays = computed(() => getWeekDaysDetailed(selectedDate.value))
 const hours = CALENDAR_HOURS
 
-const getDayEvents = (day: Date) => getEventsForDate(props.events, day)
-const getGroupedEventsForDay = (day: Date) => groupEvents(getDayEvents(day))
+// Pre-compute all 7 days' grouped events in one computed instead of calling
+// plain functions from the template (which re-runs on every render cycle).
+const groupedEventsByDay = computed(() =>
+	weekDays.value.map((day) => groupEvents(getEventsForDate(props.events, day)))
+)
 
-const hasEvents = computed(() => {
-	return weekDays.value.some((day) => getDayEvents(day).length > 0)
-})
+const hasEvents = computed(() =>
+	groupedEventsByDay.value.some((dayGroups) => dayGroups.some((g) => g.length > 0))
+)
 </script>
 
 <template>
@@ -62,9 +65,9 @@ const hasEvents = computed(() => {
 				<div class="grid min-h-0 flex-1 grid-cols-[72px_1fr] gap-1">
 					<div class="relative flex flex-col">
 						<div
-							v-for="(hour, index) in hours"
-							:key="hour"
-							class="bg-muted/50 relative flex-1"
+						v-for="(hour, index) in hours"
+						:key="hour"
+						class="bg-muted/50 relative flex-1"
 							:class="{
 								'rounded-bl-lg': index === hours.length - 1,
 							}"
@@ -86,9 +89,9 @@ const hasEvents = computed(() => {
 							>
 								<div class="flex h-full flex-col gap-1">
 									<div
-										v-for="(hour, hourIndex) in hours"
-										:key="hour"
-										class="bg-card relative flex-1"
+								v-for="(hour, hourIndex) in hours"
+								:key="hour"
+								class="bg-card relative flex-1"
 										:class="{
 											'rounded-br-lg':
 												dayIndex === weekDays.length - 1 && hourIndex === hours.length - 1,
@@ -96,7 +99,7 @@ const hasEvents = computed(() => {
 									></div>
 								</div>
 								<BigCalendarEventRenderer
-									:grouped-events="getGroupedEventsForDay(day)"
+									:grouped-events="groupedEventsByDay[dayIndex]"
 									:day="day"
 								/>
 							</div>

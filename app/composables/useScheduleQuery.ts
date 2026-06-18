@@ -12,29 +12,21 @@ export const useScheduleQuery = (
 	const scheduleStore = useScheduleStore()
 	const filtersStore = useFiltersStore()
 	const { selectedSchedule } = storeToRefs(scheduleStore)
-	const { version, activeFilters } = storeToRefs(filtersStore)
 
-	const lessonTypesFilter = computed(() =>
-		activeFilters.value.lessonTypes.length > 0 ? [...activeFilters.value.lessonTypes] : []
-	)
+	// Reference raw filter arrays directly — no spread, no intermediate computed.
+	// TanStack Query hashes keys with deep equality so reference identity doesn't matter
+	// for cache lookup; only content does. Each toggle still produces a new unique key
+	// because the array contents change, triggering a refetch as intended.
+	const {
+		lessonTypesFilters,
+		teachersFilters,
+		auditoriumsFilters,
+		subjectsFilters,
+		groupsFilters,
+	} = storeToRefs(filtersStore)
 
-	const teachersFilter = computed(() =>
-		activeFilters.value.teachers.length > 0 ? [...activeFilters.value.teachers] : []
-	)
-
-	const auditoriumsFilter = computed(() =>
-		activeFilters.value.auditoriums.length > 0 ? [...activeFilters.value.auditoriums] : []
-	)
-
-	const subjectsFilter = computed(() =>
-		activeFilters.value.subjects.length > 0 ? [...activeFilters.value.subjects] : []
-	)
-
-	const groupsFilter = computed(() =>
-		activeFilters.value.groups.length > 0 ? [...activeFilters.value.groups] : []
-	)
-
-	// Load per-schedule filters when the active schedule changes (side-effect must not live in computed)
+	// Load per-schedule filters when the active schedule changes.
+	// Side-effect must not live inside a computed — watchers are the correct place.
 	watch(
 		[selectedSchedule, id],
 		([schedule, scheduleId]) => {
@@ -52,27 +44,26 @@ export const useScheduleQuery = (
 
 		const { type } = selectedSchedule.value
 		const scheduleId = id.value
-
 		const baseParams = [scheduleId, startTimestamp.value, endTimestamp.value] as const
 
 		const filterOptions = {
 			group: {
-				lessonTypes: lessonTypesFilter,
-				teachers: teachersFilter,
-				auditoriums: auditoriumsFilter,
-				subjects: subjectsFilter,
+				lessonTypes: lessonTypesFilters,
+				teachers: teachersFilters,
+				auditoriums: auditoriumsFilters,
+				subjects: subjectsFilters,
 			},
 			teacher: {
-				lessonTypes: lessonTypesFilter,
-				groups: groupsFilter,
-				auditoriums: auditoriumsFilter,
-				subjects: subjectsFilter,
+				lessonTypes: lessonTypesFilters,
+				groups: groupsFilters,
+				auditoriums: auditoriumsFilters,
+				subjects: subjectsFilters,
 			},
 			auditorium: {
-				lessonTypes: lessonTypesFilter,
-				teachers: teachersFilter,
-				groups: groupsFilter,
-				subjects: subjectsFilter,
+				lessonTypes: lessonTypesFilters,
+				teachers: teachersFilters,
+				groups: groupsFilters,
+				subjects: subjectsFilters,
 			},
 		}
 
@@ -105,17 +96,9 @@ export const useScheduleQuery = (
 					enabled: false,
 				}
 			}
-
-			return {
-				...queryOptions.value,
-				queryKey: [...queryOptions.value.queryKey, version.value],
-				enabled: true,
-			}
+			return { ...queryOptions.value, enabled: true }
 		})
 	)
 
-	return {
-		...query,
-		isEnabled,
-	}
+	return { ...query, isEnabled }
 }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { startOfDay } from "date-fns"
 import type { Schedule } from "nurekit"
 import { storeToRefs } from "pinia"
 import { motion, AnimatePresence } from "motion-v"
@@ -19,12 +20,22 @@ const cells = computed(() => getCalendarCells(selectedDate.value))
 const weekDays = computed(() => getWeekDays(selectedDate.value))
 const eventPositions = computed(() => calculateEventPositions(props.events, selectedDate.value))
 
-const hasEvents = computed(() => props.events.length > 0)
+// Pre-group all events by date string once — each DayCell receives only its own slice.
+// Collapses 42 individual O(n) scans per render into a single O(n) pass.
+const eventsByDate = computed(() => {
+	const map: Record<string, Schedule[]> = {}
+	for (const event of props.events) {
+		const key = startOfDay(new Date(event.startedAt * 1000)).toISOString()
+		if (!map[key]) map[key] = []
+		map[key].push(event)
+	}
+	return map
+})
 
+const hasEvents = computed(() => props.events.length > 0)
 const weeksCount = computed(() => Math.ceil(cells.value.length / 7))
 
 const monthViewEl = useTemplateRef("monthViewContainer")
-
 const { direction, isSwiping } = useSwipe(monthViewEl)
 
 const isAnimating = ref(false)
@@ -55,8 +66,7 @@ watch(isSwiping, (swiping) => {
 	if (swiping && !isAnimating.value) {
 		if (direction.value === "right") {
 			handleSwipe("right")
-		}
-		if (direction.value === "left") {
+		} else if (direction.value === "left") {
 			handleSwipe("left")
 		}
 	}
@@ -92,13 +102,8 @@ watch(isSwiping, (swiping) => {
 					"
 					:style="
 						isAnimating
-							? {
-									zIndex: 10 + animationCounter,
-									gridTemplateRows: `repeat(${weeksCount}, 1fr)`,
-								}
-							: {
-									gridTemplateRows: `repeat(${weeksCount}, 1fr)`,
-								}
+							? { zIndex: 11, gridTemplateRows: `repeat(${weeksCount}, 1fr)` }
+							: { gridTemplateRows: `repeat(${weeksCount}, 1fr)` }
 					"
 					:custom="swipeDirection"
 					:variants="SWIPE_ANIMATION_CONFIG.variants"
@@ -107,10 +112,10 @@ watch(isSwiping, (swiping) => {
 					:exit="'exit'"
 				>
 					<BigCalendarDayCell
-						v-for="(cell, index) in cells"
-						:key="index"
+						v-for="cell in cells"
+						:key="cell.date.getTime()"
 						:cell="cell"
-						:events="events"
+						:day-events="eventsByDate[cell.date.toISOString()] ?? []"
 						:event-positions="eventPositions"
 						class="min-h-0"
 					/>

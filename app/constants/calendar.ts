@@ -51,3 +51,9 @@ export const VIEW_CONFIGS: Record<string, { format: string; capitalize: boolean 
 
 export const MAX_VISIBLE_EVENTS_PER_DAY = 2
 export const MAX_EVENT_POSITIONS = 3
+
+// TanStack Query stale times.
+// Schedule data changes rarely — once fetched, treat as fresh for the given duration.
+export const STALE_TIME_SCHEDULE = 1000 * 60 * 60 // 1 hour — full academic year schedule
+export const STALE_TIME_METADATA = 1000 * 60 * 60 * 6 // 6 hours — teachers/auditoriums/subjects lists
+export const STALE_TIME_ENTITY_LIST = 1000 * 60 * 60 * 24 // 24 hours — all groups / all teachers

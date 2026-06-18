@@ -1,12 +1,17 @@
 import { queryOptions } from "@tanstack/vue-query"
 import type { MaybeRefOrGetter } from "vue"
+import {
+	STALE_TIME_ENTITY_LIST,
+	STALE_TIME_METADATA,
+	STALE_TIME_SCHEDULE,
+} from "~/constants/calendar"
 
 const teachersOptions = () => {
 	const { $nurekit } = useNuxtApp()
-
 	return queryOptions({
 		queryKey: ["teachers"],
 		queryFn: () => $nurekit.teachers.findMany(),
+		staleTime: STALE_TIME_ENTITY_LIST,
 	})
 }
 
@@ -22,7 +27,6 @@ const teacherScheduleOptions = (
 	} = {}
 ) => {
 	const { $nurekit } = useNuxtApp()
-
 	return queryOptions({
 		queryKey: ["teacherSchedule", teacherId, startedAt, endedAt, filters],
 		queryFn: async () => {
@@ -63,13 +67,8 @@ const teacherScheduleOptions = (
 				...(Object.keys(resolvedFilters).length > 0 && { filters: resolvedFilters }),
 			})
 		},
-		enabled: computed(() => {
-			const resolvedTeacherId = toValue(teacherId)
-			const resolvedStartedAt = toValue(startedAt)
-			const resolvedEndedAt = toValue(endedAt)
-
-			return !!(resolvedTeacherId && resolvedStartedAt && resolvedEndedAt)
-		}),
+		staleTime: STALE_TIME_SCHEDULE,
+		enabled: () => !!(toValue(teacherId) && toValue(startedAt) && toValue(endedAt)),
 	})
 }
 
@@ -79,12 +78,11 @@ const teacherAuditoriumsOptions = (teacherId: MaybeRefOrGetter<number | string>)
 		queryKey: ["teacherAuditoriums", teacherId],
 		queryFn: async () => {
 			const resolvedTeacherId = toValue(teacherId)
-			if (!resolvedTeacherId) {
-				return []
-			}
+			if (!resolvedTeacherId) return []
 			return $nurekit.teachers.getAuditoriums(Number(resolvedTeacherId))
 		},
-		enabled: computed(() => !!toValue(teacherId)),
+		staleTime: STALE_TIME_METADATA,
+		enabled: () => !!toValue(teacherId),
 	})
 }
 
@@ -94,12 +92,11 @@ const teacherGroupsOptions = (teacherId: MaybeRefOrGetter<number | string>) => {
 		queryKey: ["teacherGroups", teacherId],
 		queryFn: async () => {
 			const resolvedTeacherId = toValue(teacherId)
-			if (!resolvedTeacherId) {
-				return []
-			}
+			if (!resolvedTeacherId) return []
 			return $nurekit.teachers.getGroups(Number(resolvedTeacherId))
 		},
-		enabled: computed(() => !!toValue(teacherId)),
+		staleTime: STALE_TIME_METADATA,
+		enabled: () => !!toValue(teacherId),
 	})
 }
 
@@ -109,12 +106,11 @@ const teacherSubjectsOptions = (teacherId: MaybeRefOrGetter<number | string>) =>
 		queryKey: ["teacherSubjects", teacherId],
 		queryFn: async () => {
 			const resolvedTeacherId = toValue(teacherId)
-			if (!resolvedTeacherId) {
-				return []
-			}
+			if (!resolvedTeacherId) return []
 			return $nurekit.teachers.getSubjects(Number(resolvedTeacherId))
 		},
-		enabled: computed(() => !!toValue(teacherId)),
+		staleTime: STALE_TIME_METADATA,
+		enabled: () => !!toValue(teacherId),
 	})
 }
 

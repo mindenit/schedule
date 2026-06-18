@@ -6,19 +6,18 @@ import type { ICalendarCell, TCalendarView } from "~/types/calendar"
 
 interface Props {
 	cell: ICalendarCell
-	events: Schedule[]
+	// Pre-filtered to this cell's date by MonthView — no need to scan the full event array.
+	dayEvents: Schedule[]
 	eventPositions: Record<string, number>
 }
 
 const props = defineProps<Props>()
 
 const calendarStore = useCalendarStore()
-const { groupEventsBySameTime, getEventsForDate } = useEventGrouping()
+const { groupEventsBySameTime } = useEventGrouping()
 
-const groupedCellEvents = computed(() => {
-	const eventsForDate = getEventsForDate(props.events, props.cell.date)
-	return groupEventsBySameTime(eventsForDate)
-})
+// Group same-time events — input is already filtered to this day.
+const groupedCellEvents = computed(() => groupEventsBySameTime(props.dayEvents))
 
 const isCurrentMonth = computed(() => props.cell.currentMonth)
 const isDateToday = computed(() => isToday(props.cell.date))
@@ -33,39 +32,28 @@ const containerClasses = computed(() => ({
 	"opacity-80": !isCurrentMonth.value,
 }))
 
-const allGroups = computed(() => groupedCellEvents.value)
-const displayGroups = computed(() => {
-	const maxVisible = hasOnlyOneHiddenEvent.value
-		? MAX_VISIBLE_EVENTS_PER_DAY + 1
-		: MAX_VISIBLE_EVENTS_PER_DAY
-	return allGroups.value.slice(0, maxVisible)
-})
+// Single computed for all display-related derived values — evaluates groupedCellEvents once.
+const cellDisplay = computed(() => {
+	const groups = groupedCellEvents.value
+	const total = groups.length
 
-const hasOnlyOneHiddenEvent = computed(() => {
-	if (allGroups.value.length <= MAX_VISIBLE_EVENTS_PER_DAY) return false
-	const hiddenEventsCount = allGroups.value
-		.slice(MAX_VISIBLE_EVENTS_PER_DAY)
-		.reduce((total, group) => total + group.length, 0)
-	return hiddenEventsCount === 1
-})
+	const hiddenCount =
+		total > MAX_VISIBLE_EVENTS_PER_DAY
+			? groups
+					.slice(MAX_VISIBLE_EVENTS_PER_DAY)
+					.reduce((n, g) => n + g.length, 0)
+			: 0
+	const onlyOneHidden = hiddenCount === 1
+	const hasMoreEvents = total > MAX_VISIBLE_EVENTS_PER_DAY && !onlyOneHidden
+	const maxVisible = onlyOneHidden ? MAX_VISIBLE_EVENTS_PER_DAY + 1 : MAX_VISIBLE_EVENTS_PER_DAY
 
-const hasMoreEvents = computed(() => {
-	return allGroups.value.length > MAX_VISIBLE_EVENTS_PER_DAY && !hasOnlyOneHiddenEvent.value
-})
-
-const remainingEventsCount = computed(() => {
-	if (!hasMoreEvents.value) return 0
-	return allGroups.value
-		.slice(MAX_VISIBLE_EVENTS_PER_DAY)
-		.reduce((total, group) => total + group.length, 0)
-})
-
-const hiddenEvents = computed(() => {
-	return allGroups.value.slice(MAX_VISIBLE_EVENTS_PER_DAY).flat()
-})
-
-const totalEventsCount = computed(() => {
-	return allGroups.value.reduce((total, group) => total + group.length, 0)
+	return {
+		displayGroups: groups.slice(0, maxVisible),
+		hasMoreEvents,
+		remainingEventsCount: hasMoreEvents ? hiddenCount : 0,
+		hiddenEvents: groups.slice(MAX_VISIBLE_EVENTS_PER_DAY).flat(),
+		totalEventsCount: groups.reduce((n, g) => n + g.length, 0),
+	}
 })
 
 function handleMobileClick() {
@@ -94,17 +82,17 @@ function handleMobileClick() {
 				@click="handleMobileClick"
 			>
 				<span
-					v-if="totalEventsCount > 0"
+					v-if="cellDisplay.totalEventsCount > 0"
 					class="bg-primary flex size-5 items-center justify-center rounded-full text-xs
 						font-semibold"
 				>
-					{{ totalEventsCount }}
+					{{ cellDisplay.totalEventsCount }}
 				</span>
 			</div>
 
 			<div class="hidden lg:flex lg:h-full lg:flex-col lg:gap-1 lg:overflow-hidden">
 				<div
-					v-for="(group, groupIndex) in displayGroups"
+					v-for="(group, groupIndex) in cellDisplay.displayGroups"
 					:key="groupIndex"
 					class="flex h-6 flex-shrink-0 gap-1"
 				>
@@ -139,18 +127,21 @@ function handleMobileClick() {
 					</template>
 				</div>
 
-				<div v-if="hasMoreEvents" class="flex h-6 flex-shrink-0 gap-1">
+				<div v-if="cellDisplay.hasMoreEvents" class="flex h-6 flex-shrink-0 gap-1">
 					<UiPopover>
 						<UiPopoverTrigger as-child>
 							<BigCalendarMonthEventBadge>
 								<span class="flex-1 shrink-0 truncate">
-									ще {{ remainingEventsCount }}
-									{{ remainingEventsCount === 1 ? "заняття" : "занять" }}
+									ще {{ cellDisplay.remainingEventsCount }}
+									{{ cellDisplay.remainingEventsCount === 1 ? "заняття" : "занять" }}
 								</span>
 							</BigCalendarMonthEventBadge>
 						</UiPopoverTrigger>
 						<UiPopoverContent class="w-80">
-							<BigCalendarMoreEventsPopover :events="hiddenEvents" :date="cell.date" />
+							<BigCalendarMoreEventsPopover
+								:events="cellDisplay.hiddenEvents"
+								:date="cell.date"
+							/>
 						</UiPopoverContent>
 					</UiPopover>
 				</div>

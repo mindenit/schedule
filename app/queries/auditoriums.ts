@@ -1,12 +1,17 @@
 import { queryOptions } from "@tanstack/vue-query"
 import type { MaybeRefOrGetter } from "vue"
+import {
+	STALE_TIME_ENTITY_LIST,
+	STALE_TIME_METADATA,
+	STALE_TIME_SCHEDULE,
+} from "~/constants/calendar"
 
 const auditoriumsOptions = () => {
 	const { $nurekit } = useNuxtApp()
-
 	return queryOptions({
 		queryKey: ["auditories"],
 		queryFn: () => $nurekit.auditoriums.findMany(),
+		staleTime: STALE_TIME_ENTITY_LIST,
 	})
 }
 
@@ -22,7 +27,6 @@ const auditoriumScheduleOptions = (
 	} = {}
 ) => {
 	const { $nurekit } = useNuxtApp()
-
 	return queryOptions({
 		queryKey: ["auditorySchedule", auditoriumId, startedAt, endedAt, filters],
 		queryFn: async () => {
@@ -63,13 +67,8 @@ const auditoriumScheduleOptions = (
 				...(Object.keys(resolvedFilters).length > 0 && { filters: resolvedFilters }),
 			})
 		},
-		enabled: computed(() => {
-			const resolvedAuditoriumId = toValue(auditoriumId)
-			const resolvedStartedAt = toValue(startedAt)
-			const resolvedEndedAt = toValue(endedAt)
-
-			return !!(resolvedAuditoriumId && resolvedStartedAt && resolvedEndedAt)
-		}),
+		staleTime: STALE_TIME_SCHEDULE,
+		enabled: () => !!(toValue(auditoriumId) && toValue(startedAt) && toValue(endedAt)),
 	})
 }
 
@@ -79,12 +78,11 @@ const auditoriumGroupsOptions = (auditoriumId: MaybeRefOrGetter<number | string>
 		queryKey: ["auditoriumGroups", auditoriumId],
 		queryFn: async () => {
 			const resolvedAuditoriumId = toValue(auditoriumId)
-			if (!resolvedAuditoriumId) {
-				return []
-			}
+			if (!resolvedAuditoriumId) return []
 			return $nurekit.auditoriums.getGroups(Number(resolvedAuditoriumId))
 		},
-		enabled: computed(() => !!toValue(auditoriumId)),
+		staleTime: STALE_TIME_METADATA,
+		enabled: () => !!toValue(auditoriumId),
 	})
 }
 
@@ -94,12 +92,11 @@ const auditoriumTeachersOptions = (auditoriumId: MaybeRefOrGetter<number | strin
 		queryKey: ["auditoriumTeachers", auditoriumId],
 		queryFn: async () => {
 			const resolvedAuditoriumId = toValue(auditoriumId)
-			if (!resolvedAuditoriumId) {
-				return []
-			}
+			if (!resolvedAuditoriumId) return []
 			return $nurekit.auditoriums.getTeachers(Number(resolvedAuditoriumId))
 		},
-		enabled: computed(() => !!toValue(auditoriumId)),
+		staleTime: STALE_TIME_METADATA,
+		enabled: () => !!toValue(auditoriumId),
 	})
 }
 
@@ -109,12 +106,11 @@ const auditoriumSubjectsOptions = (auditoriumId: MaybeRefOrGetter<number | strin
 		queryKey: ["auditoriumSubjects", auditoriumId],
 		queryFn: async () => {
 			const resolvedAuditoriumId = toValue(auditoriumId)
-			if (!resolvedAuditoriumId) {
-				return []
-			}
+			if (!resolvedAuditoriumId) return []
 			return $nurekit.auditoriums.getSubjects(Number(resolvedAuditoriumId))
 		},
-		enabled: computed(() => !!toValue(auditoriumId)),
+		staleTime: STALE_TIME_METADATA,
+		enabled: () => !!toValue(auditoriumId),
 	})
 }
 

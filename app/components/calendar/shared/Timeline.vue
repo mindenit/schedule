@@ -36,15 +36,13 @@ const shouldShowTimeline = computed(() => {
 		return true
 	}
 
-	const today = new Date()
-	return props.weekDays.some((day) => isSameDay(day, today))
+	return props.weekDays.some((day) => isSameDay(day, currentTime.value))
 })
 
 const getTodayColumnIndex = computed(() => {
 	if (!props.weekDays || props.weekDays.length === 0) return -1
 
-	const today = new Date()
-	return props.weekDays.findIndex((day) => isSameDay(day, today))
+	return props.weekDays.findIndex((day) => isSameDay(day, currentTime.value))
 })
 
 const getTimelineStyle = computed(() => {

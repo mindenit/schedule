@@ -56,24 +56,22 @@ const {
 	refetch,
 } = useScheduleQuery(scheduleId, startTimestamp, endTimestamp)
 
-watchEffect(() => {
-	if (scheduleData.value) {
-		calendarStore.setEvents(scheduleData.value)
-	}
+// Identify the active schedule by a stable string key — avoids a deep object watch.
+const scheduleKey = computed(() =>
+	selectedSchedule.value
+		? `${selectedSchedule.value.type}-${selectedSchedule.value.id}`
+		: null
+)
+
+// Clear events immediately when the selected schedule changes,
+// then fill with fresh data once the query resolves.
+watch(scheduleKey, () => {
+	calendarStore.setEvents([])
 })
 
-watch(
-	selectedSchedule,
-	(newSchedule, oldSchedule) => {
-		const newKey = newSchedule ? `${newSchedule.type}-${newSchedule.id}` : null
-		const oldKey = oldSchedule ? `${oldSchedule.type}-${oldSchedule.id}` : null
-
-		if (newKey !== oldKey) {
-			calendarStore.setEvents([])
-		}
-	},
-	{ deep: true }
-)
+watch(scheduleData, (data) => {
+	if (data) calendarStore.setEvents(data)
+})
 </script>
 
 <template>

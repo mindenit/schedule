@@ -18,25 +18,20 @@ import {
 
 export const useEventGrouping = () => {
 	const groupEvents = (dayEvents: Schedule[]): Schedule[][] => {
-		const sortedEvents = [...dayEvents].sort((a, b) => {
-			const startA = parseDate(a.startedAt).getTime()
-			const startB = parseDate(b.startedAt).getTime()
-			return startA - startB
-		})
+		// Pre-extract start timestamps once — avoids O(n log n) parseDate allocations in comparator
+		const withMs = dayEvents.map((e) => ({ e, startMs: e.startedAt * 1000 }))
+		withMs.sort((a, b) => a.startMs - b.startMs)
 
 		const groups: Schedule[][] = []
 
-		for (const event of sortedEvents) {
-			const eventStart = parseDate(event.startedAt)
+		for (const { e: event } of withMs) {
+			const eventStartMs = event.startedAt * 1000
 			let placed = false
 
 			for (const group of groups) {
-				const lastEventInGroup = group[group.length - 1]
-				if (!lastEventInGroup) continue
-
-				const lastEventEnd = parseDate(lastEventInGroup.endedAt)
-
-				if (eventStart >= lastEventEnd) {
+				const last = group[group.length - 1]
+				if (!last) continue
+				if (eventStartMs >= last.endedAt * 1000) {
 					group.push(event)
 					placed = true
 					break
@@ -53,30 +48,20 @@ export const useEventGrouping = () => {
 		const timeGroups = new Map<string, Schedule[]>()
 
 		for (const event of events) {
-			const startTime = parseDate(event.startedAt).getTime()
-			const endTime = parseDate(event.endedAt).getTime()
-			const timeKey = `${startTime}-${endTime}`
-
-			if (!timeGroups.has(timeKey)) {
-				timeGroups.set(timeKey, [])
-			}
+			// Use Unix ms directly — no Date allocation needed for the Map key
+			const timeKey = `${event.startedAt * 1000}-${event.endedAt * 1000}`
+			if (!timeGroups.has(timeKey)) timeGroups.set(timeKey, [])
 			timeGroups.get(timeKey)!.push(event)
 		}
 
-		return Array.from(timeGroups.values()).sort((a, b) => {
-			const startA = parseDate(a[0]!.startedAt).getTime()
-			const startB = parseDate(b[0]!.startedAt).getTime()
-			return startA - startB
-		})
+		return Array.from(timeGroups.values()).sort(
+			(a, b) => a[0]!.startedAt - b[0]!.startedAt
+		)
 	}
 
 	const getEventsForDate = (events: Schedule[], date: Date | string | number): Schedule[] => {
 		const targetDate = parseDate(date)
-
-		return events.filter((event) => {
-			const eventDate = parseDate(event.startedAt)
-			return isSameDay(eventDate, targetDate)
-		})
+		return events.filter((event) => isSameDay(new Date(event.startedAt * 1000), targetDate))
 	}
 
 	const getEventsForDateRange = (
@@ -84,13 +69,11 @@ export const useEventGrouping = () => {
 		startDate: Date | string | number,
 		endDate: Date | string | number
 	): Schedule[] => {
-		const start = parseDate(startDate)
-		const end = parseDate(endDate)
+		const startMs = parseDate(startDate).getTime()
+		const endMs = parseDate(endDate).getTime()
 
 		return events.filter((event) => {
-			const eventStartDate = parseDate(event.startedAt)
-			const eventEndDate = parseDate(event.endedAt)
-			return eventStartDate <= end && eventEndDate >= start
+			return event.startedAt * 1000 <= endMs && event.endedAt * 1000 >= startMs
 		})
 	}
 
@@ -111,32 +94,32 @@ export const useEventGrouping = () => {
 			occupiedPositions[day.toISOString()] = Array(MAX_EVENT_POSITIONS).fill(false)
 		}
 
-		const sortedEvents = [...events].sort((a, b) => {
-			const startA = parseDate(a.startedAt).getTime()
-			const startB = parseDate(b.startedAt).getTime()
-			return startA - startB
-		})
+		// Pre-extract start timestamps once for the sort
+		const withMs = events.map((e) => ({ e, startMs: e.startedAt * 1000 }))
+		withMs.sort((a, b) => a.startMs - b.startMs)
 
-		for (const event of sortedEvents) {
-			const eventDate = startOfDay(parseDate(event.startedAt))
+		const calendarStartTime = calendarStart.getTime()
+		const calendarEndTime = calendarEnd.getTime()
 
-			if (eventDate >= calendarStart && eventDate <= calendarEnd) {
-				const dayKey = eventDate.toISOString()
-				const dayPositions = occupiedPositions[dayKey]
+		for (const { e: event } of withMs) {
+			const eventStartMs = event.startedAt * 1000
+			if (eventStartMs < calendarStartTime || eventStartMs > calendarEndTime) continue
 
-				if (dayPositions) {
-					let position = -1
-					for (let i = 0; i < MAX_EVENT_POSITIONS; i++) {
-						if (!dayPositions[i]) {
-							position = i
-							break
-						}
+			const eventDate = startOfDay(new Date(eventStartMs))
+			const dayKey = eventDate.toISOString()
+			const dayPositions = occupiedPositions[dayKey]
+
+			if (dayPositions) {
+				let position = -1
+				for (let i = 0; i < MAX_EVENT_POSITIONS; i++) {
+					if (!dayPositions[i]) {
+						position = i
+						break
 					}
-
-					if (position !== -1) {
-						dayPositions[position] = true
-						positions[String(event.id)] = position
-					}
+				}
+				if (position !== -1) {
+					dayPositions[position] = true
+					positions[String(event.id)] = position
 				}
 			}
 		}
@@ -150,8 +133,9 @@ export const useEventGrouping = () => {
 		groupIndex: number,
 		groupSize: number
 	) => {
-		const startDate = parseDate(event.startedAt)
-		const endDate = parseDate(event.endedAt)
+		// Parse each input once at the top of the function
+		const startDate = new Date(event.startedAt * 1000)
+		const endDate = new Date(event.endedAt * 1000)
 		const dayStart = startOfDay(parseDate(day))
 
 		const calendarStart = new Date(dayStart)
@@ -183,7 +167,6 @@ export const useEventGrouping = () => {
 		const date = parseDate(weekDate)
 		const weekStart = startOfWeek(date, WEEK_OPTIONS)
 		const weekEnd = endOfWeek(date, WEEK_OPTIONS)
-
 		return getEventsForDateRange(events, weekStart, weekEnd)
 	}
 
@@ -191,7 +174,6 @@ export const useEventGrouping = () => {
 		const date = parseDate(monthDate)
 		const monthStart = startOfMonth(date)
 		const monthEnd = endOfMonth(date)
-
 		return getEventsForDateRange(events, monthStart, monthEnd)
 	}
 
@@ -199,22 +181,18 @@ export const useEventGrouping = () => {
 		const grouped: Record<string, Schedule[]> = {}
 
 		for (const event of events) {
-			const eventDate = parseDate(event.startedAt)
-			const dateKey = startOfDay(eventDate).toISOString()
-
-			if (!grouped[dateKey]) {
-				grouped[dateKey] = []
-			}
+			const dateKey = startOfDay(new Date(event.startedAt * 1000)).toISOString()
+			if (!grouped[dateKey]) grouped[dateKey] = []
 			grouped[dateKey].push(event)
 		}
 
-		Object.values(grouped).forEach((dayEvents) => {
-			dayEvents.sort((a, b) => {
-				const startA = parseDate(a.startedAt).getTime()
-				const startB = parseDate(b.startedAt).getTime()
-				return startA - startB
-			})
-		})
+		// Pre-extract timestamps per group to avoid per-comparison allocations
+		for (const dayEvents of Object.values(grouped)) {
+			const withMs = dayEvents.map((e) => ({ e, startMs: e.startedAt * 1000 }))
+			withMs.sort((a, b) => a.startMs - b.startMs)
+			dayEvents.length = 0
+			for (const { e } of withMs) dayEvents.push(e)
+		}
 
 		return grouped
 	}
