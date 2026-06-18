@@ -4,7 +4,7 @@ import { toast } from "vue-sonner"
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek } from "date-fns"
 import { uk } from "date-fns/locale"
 import { useSettingsStore } from "~/stores/settings"
-import { SCHEDULE_ICONS } from "~/constants/schedule"
+import { getScheduleIcon } from "~/constants/schedule"
 
 const scheduleStore = useScheduleStore()
 const calendarStore = useCalendarStore()
@@ -25,10 +25,6 @@ const VIEW_LABELS: Record<string, string> = {
 	day: "День",
 	week: "Тиждень",
 	month: "Місяць",
-}
-
-const getIconByType = (type: string) => {
-	return SCHEDULE_ICONS[type] || "lucide:calendar"
 }
 
 const typeLabel = (type: string) => TYPE_LABELS[type] ?? type
@@ -59,6 +55,7 @@ const viewRange = computed(() => {
 const fmt = (date: Date) => format(date, "dd.MM.yyyy HH:mm:ss", { locale: uk })
 const fmtDate = (date: Date) => format(date, "dd.MM.yyyy", { locale: uk })
 const toUnix = (date: Date) => Math.floor(date.getTime() / 1000)
+
 
 const copyAllSchedulesToClipboard = async () => {
 	if (allSchedules.value.length === 0) {
@@ -203,7 +200,7 @@ const handleIcsExportAcademicYear = async () => {
 									: 'border-border',
 							]"
 						>
-							<AppIcon :name="getIconByType(schedule.type)" class="text-muted-foreground shrink-0" />
+							<AppIcon :name="getScheduleIcon(schedule.type)" class="text-muted-foreground shrink-0" />
 							<div class="min-w-0 flex-1">
 								<div class="text-sm font-medium">{{ schedule.name }}</div>
 								<div class="text-muted-foreground font-mono text-xs">

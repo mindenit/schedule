@@ -17,7 +17,7 @@
 				</div>
 			</div>
 			<div class="grid w-full grid-cols-1 gap-2">
-				<PlayMarketButton :switchOnMobile="false" />
+				<PlayMarketButton :switch-on-mobile="false" />
 			</div>
 		</div>
 	</UiDialogContent>

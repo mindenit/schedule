@@ -1,8 +1,7 @@
-export const FILTERS_LESSON_TYPES = [
-	{ id: "Лк", name: "Лекція" },
-	{ id: "Пз", name: "Практичне заняття" },
-	{ id: "Лб", name: "Лабораторна робота" },
-	{ id: "Конс", name: "Консультація" },
-	{ id: "Зал", name: "Залік" },
-	{ id: "Екз", name: "Екзамен" },
-]
+import { EVENT_TYPE_LABELS } from "~/constants/calendar"
+
+// Derived from EVENT_TYPE_LABELS so the two never diverge.
+export const FILTERS_LESSON_TYPES = Object.entries(EVENT_TYPE_LABELS).map(([id, name]) => ({
+	id,
+	name,
+}))

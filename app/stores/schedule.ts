@@ -16,8 +16,6 @@ export const useScheduleStore = defineStore("schedule", () => {
 					localStorage.removeItem("all-schedules")
 					allSchedules.value = []
 				}
-			} else {
-				allSchedules.value = []
 			}
 
 			const savedSchedule = localStorage.getItem("selected-schedule")
@@ -27,19 +25,14 @@ export const useScheduleStore = defineStore("schedule", () => {
 					const existsInAll = allSchedules.value.find(
 						(s) => String(s.id) === String(parsed.id) && s.type === parsed.type
 					)
-
 					if (existsInAll) {
 						selectedSchedule.value = parsed
 					} else {
 						localStorage.removeItem("selected-schedule")
-						selectedSchedule.value = null
 					}
 				} catch {
 					localStorage.removeItem("selected-schedule")
-					selectedSchedule.value = null
 				}
-			} else {
-				selectedSchedule.value = null
 			}
 
 			isInitialized.value = true
@@ -53,16 +46,13 @@ export const useScheduleStore = defineStore("schedule", () => {
 	}
 
 	const addSchedule = (schedule: GenericScheduleItem) => {
-		if (!isInitialized.value) {
-			initializeStore()
-		}
+		if (!isInitialized.value) initializeStore()
 
-		const existingSchedule = allSchedules.value.find(
+		const existing = allSchedules.value.find(
 			(s) => String(s.id) === String(schedule.id) && s.type === schedule.type
 		)
-
-		if (existingSchedule) {
-			selectSchedule(existingSchedule)
+		if (existing) {
+			selectSchedule(existing)
 			return
 		}
 
@@ -72,16 +62,13 @@ export const useScheduleStore = defineStore("schedule", () => {
 	}
 
 	const removeSchedule = (scheduleId: string | number) => {
-		if (!isInitialized.value) {
-			initializeStore()
-		}
+		if (!isInitialized.value) initializeStore()
 
 		const scheduleIdStr = String(scheduleId)
 		allSchedules.value = allSchedules.value.filter((s) => String(s.id) !== scheduleIdStr)
 
 		if (selectedSchedule.value && String(selectedSchedule.value.id) === scheduleIdStr) {
 			selectedSchedule.value = allSchedules.value[0] ?? null
-
 			if (import.meta.client) {
 				if (selectedSchedule.value) {
 					localStorage.setItem("selected-schedule", JSON.stringify(selectedSchedule.value))
@@ -101,10 +88,9 @@ export const useScheduleStore = defineStore("schedule", () => {
 		}
 	}
 
+	// Defer until after Pinia SSR hydration so localStorage wins.
 	if (import.meta.client) {
-		nextTick(() => {
-			initializeStore()
-		})
+		nextTick(() => initializeStore())
 	}
 
 	return {

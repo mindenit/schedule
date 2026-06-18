@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/vue-query"
 import { FILTERS_LESSON_TYPES } from "~/constants/filters"
 import {
 	groupTeachersOptions,
-	groupAuditoruiumsOptions,
+	groupAuditoriumsOptions,
 	groupSubjectsOptions,
 } from "~/queries/groups"
 import {
@@ -45,7 +45,7 @@ const { data: teachers } = useQuery(
 const { data: auditoriums } = useQuery(
 	computed(() =>
 		selectedSchedule.value?.type === "group" && selectedSchedule.value?.id
-			? groupAuditoruiumsOptions(selectedSchedule.value.id)
+			? groupAuditoriumsOptions(selectedSchedule.value.id)
 			: selectedSchedule.value?.type === "teacher" && selectedSchedule.value?.id
 				? teacherAuditoriumsOptions(selectedSchedule.value.id)
 				: {

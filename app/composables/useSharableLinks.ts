@@ -11,32 +11,13 @@ export const useSharableLinks = () => {
 	const { $nurekit } = useNuxtApp()
 	const isLoading = ref(false)
 
-	/**
-	 * Инициализировать UUID для schedule-client-id куки
-	 */
-	const initializeClientId = () => {
-		if (import.meta.client) {
-			const cookieName = "schedule-client-id"
-			let clientId = useCookie(cookieName).value
-
-			if (!clientId) {
-				clientId = crypto.randomUUID()
-				const cookie = useCookie(cookieName, {
-					maxAge: 60 * 60 * 24 * 365, // 1 год
-				})
-				cookie.value = clientId
-				console.log("Created new schedule-client-id:", clientId)
-			} else {
-				console.log("Using existing schedule-client-id:", clientId)
-			}
-
-			return clientId
-		}
-	}
-
-	// Инициализировать при первой загрузке
+	// Ensure a persistent client ID cookie exists for sharable link ownership
 	if (import.meta.client) {
-		initializeClientId()
+		const cookieName = "schedule-client-id"
+		const cookie = useCookie(cookieName, { maxAge: 60 * 60 * 24 * 365 })
+		if (!cookie.value) {
+			cookie.value = crypto.randomUUID()
+		}
 	}
 
 	const createSharableLink = async (linkIds: string[]): Promise<string | null> => {
@@ -67,9 +48,6 @@ export const useSharableLinks = () => {
 		}
 	}
 
-	/**
-	 * Отримати посилання за ID sharable ссылки
-	 */
 	const getSharableLink = async (linkId: string): Promise<SharableLink | null> => {
 		try {
 			isLoading.value = true
@@ -88,9 +66,6 @@ export const useSharableLinks = () => {
 		}
 	}
 
-	/**
-	 * Прийняти sharable посилання (імпортувати себе)
-	 */
 	const acceptSharableLink = async (linkId: string): Promise<boolean> => {
 		try {
 			isLoading.value = true

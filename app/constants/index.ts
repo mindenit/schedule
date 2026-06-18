@@ -22,9 +22,7 @@ export const AUTHORS = [
 ] as const
 
 export const SWIPE_ANIMATION_CONFIG = {
-	/**
-	 * Варианты анимации для Motion
-	 */
+	/** Animation variants for Motion */
 	variants: {
 		enter: (custom: unknown) => {
 			const direction = custom as "left" | "right"
@@ -46,22 +44,16 @@ export const SWIPE_ANIMATION_CONFIG = {
 		},
 	},
 
-	/**
-	 * Общий transition объект
-	 */
+	/** Shared transition object */
 	transition: {
 		duration: 0.25,
 		type: "tween",
 	},
 
-	/**
-	 * Длительность анимации в миллисекундах (для setTimeout)
-	 */
+	/** Animation duration in milliseconds (for setTimeout) */
 	duration: 300,
 
-	/**
-	 * Длительность анимации в секундах (для CSS/Motion)
-	 */
+	/** Animation duration in seconds (for CSS/Motion) */
 	durationSeconds: 0.25,
 } as const
 

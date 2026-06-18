@@ -1,5 +1,7 @@
 import type { Schedule } from "nurekit"
 import { format } from "date-fns"
+import { downloadFile } from "~/utils/download"
+import { EVENT_TYPE_LABELS } from "~/constants/calendar"
 
 export interface IcsExportOptions {
 	academicYearStart?: Date
@@ -20,17 +22,8 @@ export const useIcsExport = () => {
 			.replace(/\n/g, "\\n")
 	}
 
-	const getEventTypeUkrainian = (type: string): string => {
-		const typeMap: Record<string, string> = {
-			Лб: "Лабораторна робота",
-			Лк: "Лекція",
-			Пз: "Практичне заняття",
-			Зал: "Залік",
-			Екз: "Екзамен",
-			Конс: "Консультація",
-		}
-		return typeMap[type] || type
-	}
+	const getEventTypeUkrainian = (type: string): string =>
+		EVENT_TYPE_LABELS[type as keyof typeof EVENT_TYPE_LABELS] || type
 
 	const generateEventUid = (event: Schedule): string => {
 		return `event-${event.id}-${event.startedAt}@schedule.app`
@@ -141,14 +134,7 @@ export const useIcsExport = () => {
 		const defaultFilename = `schedule-${startDate.getFullYear()}-${startDate.getFullYear() + 1}.ics`
 
 		const blob = new Blob([icsContent], { type: "text/calendar;charset=utf-8" })
-		const url = URL.createObjectURL(blob)
-		const link = document.createElement("a")
-		link.href = url
-		link.download = filename || defaultFilename
-		document.body.appendChild(link)
-		link.click()
-		document.body.removeChild(link)
-		URL.revokeObjectURL(url)
+		downloadFile(blob, filename || defaultFilename)
 	}
 
 	const getAcademicYearTimestamps = (referenceDate: Date = new Date()) => {
@@ -161,11 +147,6 @@ export const useIcsExport = () => {
 
 	return {
 		exportScheduleToIcs,
-		createIcsCalendar,
-		getAcademicYearDates,
 		getAcademicYearTimestamps,
-		formatDateTime,
-		escapeIcsText,
-		getEventTypeUkrainian,
 	}
 }

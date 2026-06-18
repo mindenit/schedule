@@ -18,12 +18,11 @@ export default defineNuxtConfig({
 		imports: [
 			{ from: "tailwind-variants", name: "tv" },
 			{ from: "tailwind-variants", name: "VariantProps", type: true },
-			{ from: "vue-sonner", name: "toast", as: "useSonner" },
 		],
 	},
 	runtimeConfig: {
 		public: {
-			maintenance: process.env.MAINTENANCE === "true" ? true : false,
+			maintenance: process.env.MAINTENANCE === "true",
 		},
 	},
 	modules: [
@@ -41,7 +40,6 @@ export default defineNuxtConfig({
 	vite: {
 		plugins: [tailwindcss()],
 	},
-	pinia: {},
 	icon: {
 		provider: "iconify",
 		serverBundle: {

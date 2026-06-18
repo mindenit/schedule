@@ -1,6 +1,4 @@
-import type { TEventType, TCalendarView } from "~/types/calendar"
-
-export const WEEK_VIEW_ROW_HEIGHT = 63
+import type { TEventType } from "~/types/calendar"
 
 export const CALENDAR_START_HOUR = 7
 export const CALENDAR_END_HOUR = 19
@@ -49,10 +47,6 @@ export const VIEW_CONFIGS: Record<string, { format: string; capitalize: boolean 
 	month: { format: "LLLL yyyy", capitalize: true },
 	day: { format: "d MMMM yyyy", capitalize: true },
 	default: { format: "LLLL yyyy", capitalize: true },
-}
-
-export const DEFAULT_CALENDAR_SETTINGS = {
-	view: "month" as TCalendarView,
 }
 
 export const MAX_VISIBLE_EVENTS_PER_DAY = 2

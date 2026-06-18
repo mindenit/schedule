@@ -7,7 +7,7 @@ interface Props {
 
 withDefaults(defineProps<Props>(), {
 	title: "Немає пар",
-	description: "Немає заплнованих занять",
+	description: "Немає запланованих занять",
 })
 </script>
 

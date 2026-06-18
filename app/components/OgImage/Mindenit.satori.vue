@@ -14,6 +14,7 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const title = computed(() => props.title.slice(0, 60))
+const description = computed(() => props.description.slice(0, 200))
 </script>
 
 <template>
@@ -59,7 +60,7 @@ const title = computed(() => props.title.slice(0, 60))
 				<span>{{ title }}</span>
 			</h1>
 			<p class="text-[32px] leading-tight text-[#E4E4E7]">
-				{{ description.slice(0, 200) }}
+				{{ description }}
 			</p>
 		</div>
 

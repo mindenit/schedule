@@ -14,6 +14,7 @@ export default withNuxt(
 			"public/**",
 			// UI Thing scaffolded components — generated, not authored
 			"app/components/Ui/**",
+			".agents/**",
 		],
 	},
 	{
@@ -23,11 +24,5 @@ export default withNuxt(
 			"vue/require-default-prop": "off",
 		},
 		...prettier,
-	},
-	{
-		files: ["**/*.vue"],
-		rules: {
-			"vue/require-default-prop": "off",
-		},
-	},
+	}
 )

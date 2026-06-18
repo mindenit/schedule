@@ -34,6 +34,17 @@ export const useScheduleQuery = (
 		activeFilters.value.groups.length > 0 ? [...activeFilters.value.groups] : []
 	)
 
+	// Load per-schedule filters when the active schedule changes (side-effect must not live in computed)
+	watch(
+		[selectedSchedule, id],
+		([schedule, scheduleId]) => {
+			if (schedule && scheduleId) {
+				filtersStore.loadFilters(scheduleId, schedule.type)
+			}
+		},
+		{ immediate: true }
+	)
+
 	const queryOptions = computed(() => {
 		if (!selectedSchedule.value || !id.value || !startTimestamp.value || !endTimestamp.value) {
 			return null
@@ -41,8 +52,6 @@ export const useScheduleQuery = (
 
 		const { type } = selectedSchedule.value
 		const scheduleId = id.value
-
-		filtersStore.loadFilters(scheduleId, type)
 
 		const baseParams = [scheduleId, startTimestamp.value, endTimestamp.value] as const
 

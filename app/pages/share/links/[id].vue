@@ -1,19 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed } from "vue"
-import { useSharableLinks } from "~/composables/useSharableLinks"
-
-interface SharableLink {
-	id: string
-	label: string
-	url: string
-	type: string
-	subjectId: number
-}
-
-interface SharableData {
-	id: string
-	links: SharableLink[]
-}
+import type { SharableLink } from "~/composables/useSharableLinks"
 
 definePageMeta({
 	layout: "without-navbar",
@@ -22,21 +8,15 @@ definePageMeta({
 const route = useRoute()
 const { getSharableLink, acceptSharableLink, isLoading } = useSharableLinks()
 
-const linkId = computed(() => route.params.id as string)
-const sharableData = ref<SharableData | null>(null)
+const linkId = route.params.id as string
+const sharableData = ref<SharableLink | null>(null)
 const loadingData = ref(true)
 const accepted = ref(false)
 const error = ref<string | null>(null)
 
 onMounted(async () => {
-	if (!linkId.value) {
-		error.value = "ID посилання не знайдено"
-		loadingData.value = false
-		return
-	}
-
 	try {
-		const data = await getSharableLink(linkId.value)
+		const data = await getSharableLink(linkId)
 		if (data) {
 			sharableData.value = data
 		} else {
@@ -51,7 +31,7 @@ onMounted(async () => {
 })
 
 const handleAccept = async () => {
-	const success = await acceptSharableLink(linkId.value)
+	const success = await acceptSharableLink(linkId)
 	if (success) {
 		accepted.value = true
 	}

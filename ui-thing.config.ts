@@ -1,4 +1,4 @@
-import type { UIConfig } from "ui-thing";
+import type { UIConfig } from "ui-thing"
 
 export default {
 	theme: "zinc",
@@ -10,4 +10,4 @@ export default {
 	force: true,
 	useDefaultFilename: true,
 	packageManager: "pnpm",
-} satisfies UIConfig;
+} satisfies UIConfig

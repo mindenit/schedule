@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SCHEDULE_ICONS, SCHEDULE_TYPES } from "~/constants/schedule"
+import { getScheduleIcon, getScheduleTypeLabel } from "~/constants/schedule"
 
 const scheduleStore = useScheduleStore()
 
@@ -16,14 +16,6 @@ const selectedValue = computed({
 		}
 	},
 })
-
-const getIconByType = (type: string) => {
-	return SCHEDULE_ICONS[type] || "lucide:calendar"
-}
-
-const getTypeLabel = (type: string) => {
-	return SCHEDULE_TYPES[type] || "Розклад"
-}
 </script>
 
 <template>
@@ -38,7 +30,7 @@ const getTypeLabel = (type: string) => {
 				</template>
 				<template v-else-if="scheduleStore.selectedSchedule">
 					<div class="flex items-center gap-2">
-						<AppIcon :name="getIconByType(scheduleStore.selectedSchedule.type)" />
+						<AppIcon :name="getScheduleIcon(scheduleStore.selectedSchedule.type)" />
 						<span>{{ scheduleStore.selectedSchedule.name }}</span>
 					</div>
 				</template>
@@ -61,11 +53,11 @@ const getTypeLabel = (type: string) => {
 					:value="schedule.id.toString()"
 				>
 					<div class="flex items-center gap-2">
-						<AppIcon :name="getIconByType(schedule.type)" class="flex shrink-0" />
+						<AppIcon :name="getScheduleIcon(schedule.type)" class="flex shrink-0" />
 						<div class="flex flex-col">
 							<span>{{ schedule.name }}</span>
 							<span class="text-muted-foreground text-xs">
-								{{ getTypeLabel(schedule.type) }}
+								{{ getScheduleTypeLabel(schedule.type) }}
 							</span>
 						</div>
 					</div>

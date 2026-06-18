@@ -1,6 +1,7 @@
-import { defineStore } from "pinia"
+import { defineStore, skipHydrate } from "pinia"
 import { useStorage } from "@vueuse/core"
 import type { Subject } from "nurekit"
+import { downloadFile } from "~/utils/download"
 
 export interface Link {
 	id: string
@@ -17,7 +18,7 @@ type LinksStore = Record<
 >
 
 export const useLinksStore = defineStore("links", () => {
-	const links = useStorage<LinksStore>("schedule-links", {})
+	const links = skipHydrate(useStorage<LinksStore>("schedule-links", {}))
 
 	function getLinks(subjectId: number, eventType: string): Link[] {
 		return links.value[subjectId]?.events[eventType] || []
@@ -85,16 +86,8 @@ export const useLinksStore = defineStore("links", () => {
 	}
 
 	function exportLinks() {
-		const dataStr = JSON.stringify(links.value, null, 2)
-		const blob = new Blob([dataStr], { type: "application/json" })
-		const url = URL.createObjectURL(blob)
-		const a = document.createElement("a")
-		a.href = url
-		a.download = `schedule-links-backup-${new Date().toISOString().split("T")[0]}.json`
-		document.body.appendChild(a)
-		a.click()
-		document.body.removeChild(a)
-		URL.revokeObjectURL(url)
+		const blob = new Blob([JSON.stringify(links.value, null, 2)], { type: "application/json" })
+		downloadFile(blob, `schedule-links-backup-${new Date().toISOString().split("T")[0]}.json`)
 	}
 
 	function importLinks(jsonString: string): { success: boolean; error?: string } {

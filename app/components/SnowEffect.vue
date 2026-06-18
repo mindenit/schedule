@@ -465,7 +465,6 @@ const onTouchMove = (e: TouchEvent) => {
 }
 
 onMounted(() => {
-	console.log("SnowEffect mounted")
 	init()
 	// draw() - handled by useRafFn
 	window.addEventListener("mousemove", onMouseMove)
@@ -473,7 +472,6 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-	console.log("SnowEffect unmounted")
 	pause()
 	window.removeEventListener("mousemove", onMouseMove)
 	window.removeEventListener("touchmove", onTouchMove)

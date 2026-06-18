@@ -109,7 +109,7 @@ const hasEvents = computed(() => {
 
 		<BigCalendarEmptyStateOverlay
 			:show="!hasEvents"
-			description="У цьому тижні немає заплнованих пар"
+			description="У цьому тижні немає запланованих пар"
 		/>
 	</div>
 </template>

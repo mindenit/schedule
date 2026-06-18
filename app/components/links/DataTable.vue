@@ -18,6 +18,7 @@ import type { Link } from "~/stores/links"
 import type { Subject } from "nurekit"
 import AppIcon from "~/components/AppIcon.vue"
 import { valueUpdater } from "~/utils/tanstack-table"
+import { downloadFile } from "~/utils/download"
 import type { TEventType } from "~/types/calendar"
 import { EVENT_TYPE_COLORS } from "~/constants/calendar"
 
@@ -370,16 +371,10 @@ const exportSelected = () => {
 		}
 	})
 
-	const dataStr = JSON.stringify(selectedData, null, 2)
-	const blob = new Blob([dataStr], { type: "application/json" })
-	const url = URL.createObjectURL(blob)
-	const a = document.createElement("a")
-	a.href = url
-	a.download = `schedule-links-selected-${new Date().toISOString().split("T")[0]}.json`
-	document.body.appendChild(a)
-	a.click()
-	document.body.removeChild(a)
-	URL.revokeObjectURL(url)
+	downloadFile(
+		new Blob([JSON.stringify(selectedData, null, 2)], { type: "application/json" }),
+		`schedule-links-selected-${new Date().toISOString().split("T")[0]}.json`
+	)
 
 	toast.success("Експорт завершено", {
 		description: `Експортовано ${selectedRows.length} посилань`,
@@ -394,16 +389,10 @@ const exportAll = () => {
 		link: link.originalLink,
 	}))
 
-	const dataStr = JSON.stringify(allData, null, 2)
-	const blob = new Blob([dataStr], { type: "application/json" })
-	const url = URL.createObjectURL(blob)
-	const a = document.createElement("a")
-	a.href = url
-	a.download = `schedule-links-all-${new Date().toISOString().split("T")[0]}.json`
-	document.body.appendChild(a)
-	a.click()
-	document.body.removeChild(a)
-	URL.revokeObjectURL(url)
+	downloadFile(
+		new Blob([JSON.stringify(allData, null, 2)], { type: "application/json" }),
+		`schedule-links-all-${new Date().toISOString().split("T")[0]}.json`
+	)
 
 	toast.success("Експорт завершено", {
 		description: `Експортовано ${allData.length} посилань`,

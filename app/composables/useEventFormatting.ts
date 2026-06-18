@@ -59,29 +59,6 @@ export const useEventFormatting = () => {
 		return format(parsedDate, formatString, { locale: uk })
 	}
 
-	const formatRelativeTime = (date: Date | string | number): string => {
-		const parsedDate = parseDate(date)
-
-		const now = new Date()
-		const diffInMinutes = Math.floor((now.getTime() - parsedDate.getTime()) / (1000 * 60))
-
-		if (diffInMinutes < 1) return "щойно"
-		if (diffInMinutes < 60) return `${diffInMinutes} хв тому`
-
-		const diffInHours = Math.floor(diffInMinutes / 60)
-		if (diffInHours < 24) return `${diffInHours} год тому`
-
-		const diffInDays = Math.floor(diffInHours / 24)
-		if (diffInDays < 7) return `${diffInDays} дн тому`
-
-		return formatDate(parsedDate)
-	}
-
-	const toTimestamp = (date: Date | string | number): number => {
-		const parsedDate = parseDate(date)
-		return parsedDate.getTime()
-	}
-
 	const toISOString = (date: Date | string | number): string => {
 		const parsedDate = parseDate(date)
 		return parsedDate.toISOString()
@@ -94,12 +71,10 @@ export const useEventFormatting = () => {
 		formatTimeRange,
 		formatDate,
 		formatDateTime,
-		formatRelativeTime,
 		getEventTypeColor,
 		getEventTypeLabel,
 		capitalize,
 		getFirstLetters,
-		toTimestamp,
 		toISOString,
 	}
 }

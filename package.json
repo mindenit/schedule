@@ -11,12 +11,10 @@
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
 		"prettier": "prettier --check .",
-		"prettier:fix": "prettier --check . --write",
-		"format": "npm run prettier:fix && npm run lint:fix"
+		"prettier:fix": "prettier --write .",
+		"format": "pnpm prettier:fix && pnpm lint:fix"
 	},
 	"dependencies": {
-		"@internationalized/date": "^3.12.2",
-		"@lucide/vue": "^1.18.0",
 		"@nuxt/eslint": "^1.16.0",
 		"@nuxt/icon": "^2.2.3",
 		"@nuxt/image": "^2.0.0",
@@ -29,7 +27,6 @@
 		"@tanstack/vue-table": "^8.21.3",
 		"@vueuse/core": "^14.3.0",
 		"@vueuse/nuxt": "^14.3.0",
-		"class-variance-authority": "^0.7.1",
 		"clsx": "^2.1.1",
 		"date-fns": "^4.4.0",
 		"eslint": "^9.28.0",

@@ -1,49 +1,19 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia"
-import { SCHEDULE_ICONS, SCHEDULE_TYPES } from "~/constants/schedule"
+import { getScheduleIcon, getScheduleTypeLabel } from "~/constants/schedule"
 
 const scheduleStore = useScheduleStore()
 const { selectedSchedule, isInitialized } = storeToRefs(scheduleStore)
 const showDialog = ref(false)
 
-const isReady = ref(false)
-
-const hasActiveSchedule = computed(() => {
-	return isReady.value && !!selectedSchedule.value
-})
-
-onMounted(() => {
-	nextTick(() => {
-		const checkInitialization = () => {
-			if (isInitialized.value) {
-				isReady.value = true
-			} else {
-				setTimeout(checkInitialization, 100)
-			}
-		}
-		checkInitialization()
-	})
-})
-
-watch(isInitialized, (newVal) => {
-	if (newVal) {
-		isReady.value = true
-	}
-})
+// Wait for the store to hydrate from localStorage before enabling the button.
+const hasActiveSchedule = computed(() => isInitialized.value && !!selectedSchedule.value)
 
 const removeActiveSchedule = () => {
 	if (selectedSchedule.value) {
 		scheduleStore.removeSchedule(selectedSchedule.value.id)
 	}
 	showDialog.value = false
-}
-
-const getScheduleIcon = (type: string) => {
-	return SCHEDULE_ICONS[type] || "lucide:calendar"
-}
-
-const getScheduleTypeName = (type: string) => {
-	return SCHEDULE_TYPES[type] || "Розклад"
 }
 </script>
 
@@ -70,10 +40,11 @@ const getScheduleTypeName = (type: string) => {
 						:name="getScheduleIcon(selectedSchedule.type)"
 						class="text-muted-foreground flex-shrink-0"
 					/>
+
 					<div>
 						<p class="font-medium">{{ selectedSchedule.name }}</p>
 						<p class="text-muted-foreground text-sm">
-							{{ getScheduleTypeName(selectedSchedule.type) }}
+							{{ getScheduleTypeLabel(selectedSchedule.type) }}
 						</p>
 					</div>
 				</div>

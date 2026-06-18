@@ -119,7 +119,7 @@ watch(isSwiping, (swiping) => {
 
 		<BigCalendarEmptyStateOverlay
 			:show="!hasEvents"
-			description="У цей день немає заплнованих пар"
+			description="У цей день немає запланованих пар"
 		/>
 	</div>
 </template>

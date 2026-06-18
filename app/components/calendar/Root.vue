@@ -12,29 +12,16 @@ interface Props {
 
 const props = defineProps<Props>()
 const calendarStore = useCalendarStore()
-const { view, isInitialized } = storeToRefs(calendarStore)
-
-if (import.meta.client) {
-	calendarStore.initializeStore()
-}
+const { view } = storeToRefs(calendarStore)
 
 const showOverlay = computed(() => {
-	return !isInitialized.value || !props.hasActiveSchedule || props.isLoading || props.error
+	return !props.hasActiveSchedule || props.isLoading || !!props.error
 })
 
 const overlayContent = computed(() => {
-	if (!isInitialized.value) {
-		return "initializing"
-	}
-	if (!props.hasActiveSchedule) {
-		return "no-schedule"
-	}
-	if (props.isLoading) {
-		return "loading"
-	}
-	if (props.error) {
-		return "error"
-	}
+	if (!props.hasActiveSchedule) return "no-schedule"
+	if (props.isLoading) return "loading"
+	if (props.error) return "error"
 	return null
 })
 </script>
@@ -44,7 +31,7 @@ const overlayContent = computed(() => {
 		class="hide-scrollbar relative flex h-full flex-col overflow-x-hidden rounded-lg
 			max-md:rounded-t-none"
 	>
-		<div class="flex-1 transition-all duration-300 ease-in-out" :class="{ 'blur-sm': showOverlay }">
+		<div class="flex-1 min-h-0 transition-all duration-300 ease-in-out" :class="{ 'blur-sm': showOverlay }">
 			<BigCalendarMonthView
 				v-if="view === 'month'"
 				:events="props.events"
@@ -68,8 +55,6 @@ const overlayContent = computed(() => {
 					class="bg-background/70 absolute inset-0 flex items-center justify-center
 						backdrop-blur-sm"
 				>
-					<TheLoader v-if="overlayContent === 'initializing'" size="lg" />
-
 					<div
 						v-if="overlayContent === 'no-schedule'"
 						class="border-border bg-card rounded-lg border p-6 shadow-lg"

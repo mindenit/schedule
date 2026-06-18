@@ -48,28 +48,7 @@ const handleSwipe = (direction: "left" | "right") => {
 	setTimeout(() => {
 		isAnimating.value = false
 		swipeDirection.value = null
-	}, 250)
-}
-
-const slideVariants = {
-	enter: (custom: unknown) => {
-		const direction = custom as "left" | "right"
-		return {
-			x: direction === "left" ? "100%" : "-100%",
-			transition: { duration: 0.25 },
-		}
-	},
-	center: {
-		x: "0%",
-		transition: { duration: 0.25 },
-	},
-	exit: (custom: unknown) => {
-		const direction = custom as "left" | "right"
-		return {
-			x: direction === "left" ? "-100%" : "100%",
-			transition: { duration: 0.25 },
-		}
-	},
+	}, SWIPE_ANIMATION_CONFIG.duration)
 }
 
 watch(isSwiping, (swiping) => {
@@ -122,7 +101,7 @@ watch(isSwiping, (swiping) => {
 								}
 					"
 					:custom="swipeDirection"
-					:variants="slideVariants"
+					:variants="SWIPE_ANIMATION_CONFIG.variants"
 					:initial="isAnimating ? 'enter' : false"
 					:animate="'center'"
 					:exit="'exit'"

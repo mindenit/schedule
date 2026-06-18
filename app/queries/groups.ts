@@ -70,7 +70,7 @@ const groupScheduleOptions = (
 	})
 }
 
-const groupAuditoruiumsOptions = (groupId: MaybeRefOrGetter<number | string>) => {
+const groupAuditoriumsOptions = (groupId: MaybeRefOrGetter<number | string>) => {
 	const { $nurekit } = useNuxtApp()
 	return queryOptions({
 		queryKey: ["groupAuditoriums", groupId],
@@ -118,7 +118,7 @@ const groupSubjectsOptions = (groupId: MaybeRefOrGetter<number | string>) => {
 export {
 	groupsOptions,
 	groupScheduleOptions,
-	groupAuditoruiumsOptions,
+	groupAuditoriumsOptions,
 	groupTeachersOptions,
 	groupSubjectsOptions,
 }
