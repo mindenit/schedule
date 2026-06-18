@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { startOfDay } from "date-fns"
 import type { Schedule } from "nurekit"
 import { storeToRefs } from "pinia"
 import { motion, AnimatePresence } from "motion-v"
+import { getEventDayKey } from "~/utils/event-cache"
 
 interface Props {
 	events: Schedule[]
@@ -14,18 +14,16 @@ const calendarStore = useCalendarStore()
 const { selectedDate } = storeToRefs(calendarStore)
 
 const { getCalendarCells, getWeekDays } = useCalendarCells()
-const { calculateEventPositions } = useEventGrouping()
 
 const cells = computed(() => getCalendarCells(selectedDate.value))
 const weekDays = computed(() => getWeekDays(selectedDate.value))
-const eventPositions = computed(() => calculateEventPositions(props.events, selectedDate.value))
 
-// Pre-group all events by date string once — each DayCell receives only its own slice.
-// Collapses 42 individual O(n) scans per render into a single O(n) pass.
+// Pre-group events by day-start Unix ms (numeric key = no string allocation).
+// Each DayCell receives only its own slice, collapsing 42 O(n) scans into one O(n) pass.
 const eventsByDate = computed(() => {
-	const map: Record<string, Schedule[]> = {}
+	const map: Record<number, Schedule[]> = {}
 	for (const event of props.events) {
-		const key = startOfDay(new Date(event.startedAt * 1000)).toISOString()
+		const key = getEventDayKey(event)
 		if (!map[key]) map[key] = []
 		map[key].push(event)
 	}
@@ -111,14 +109,13 @@ watch(isSwiping, (swiping) => {
 					:animate="'center'"
 					:exit="'exit'"
 				>
-					<BigCalendarDayCell
-						v-for="cell in cells"
-						:key="cell.date.getTime()"
-						:cell="cell"
-						:day-events="eventsByDate[cell.date.toISOString()] ?? []"
-						:event-positions="eventPositions"
-						class="min-h-0"
-					/>
+				<BigCalendarDayCell
+					v-for="(cell, index) in cells"
+					:key="index"
+					:cell="cell"
+					:day-events="eventsByDate[cell.date.getTime()] ?? []"
+					class="min-h-0"
+				/>
 				</motion.div>
 			</AnimatePresence>
 		</div>

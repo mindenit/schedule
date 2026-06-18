@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Schedule } from "nurekit"
+import { getEventTimeRange } from "~/utils/event-cache"
 
 interface Props {
 	event?: Schedule
@@ -8,18 +9,20 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const { formatTimeRange, getEventTypeColor } = useEventFormatting()
+const { getEventTypeColor } = useEventFormatting()
+
+// Static portion hoisted to module level — avoids allocating a new string on every render.
+const BASE_CLASSES =
+	"group flex w-full h-6.5 select-none items-center gap-1 rounded-md px-2 text-xs font-medium cursor-pointer transition-all duration-200 hover:shadow-sm"
 
 const badgeClasses = computed(() => [
-	"group flex w-full h-6.5 select-none items-center gap-1 rounded-md px-2 text-xs font-medium cursor-pointer transition-all duration-200 hover:shadow-sm",
+	BASE_CLASSES,
 	props.event ? getEventTypeColor(props.event.type) : "bg-muted text-muted-foreground w-full",
 	props.class,
 ])
 
-const formattedTime = computed(() => {
-	if (!props.event) return ""
-	return formatTimeRange(props.event)
-})
+// Time range is cached per Schedule object — no re-formatting on re-render.
+const formattedTime = computed(() => (props.event ? getEventTimeRange(props.event) : ""))
 </script>
 
 <template>

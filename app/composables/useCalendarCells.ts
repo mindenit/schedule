@@ -15,10 +15,22 @@ const WEEK_DAY_NAMES: string[] = (() => {
 	})
 })()
 
+// Calendar cell arrays are memoized by "YYYY-M" key. The same month always
+// produces identical cell grids, so reusing the cached array means Vue's v-for
+// skips patching entirely when the user navigates within the same month.
+// Memory cost: ~42 objects × cached months. Capped at 24 entries (two years
+// of navigation) before the oldest entry is evicted.
+const MAX_CELLS_CACHE = 24
+const cellsCache = new Map<string, ICalendarCell[]>()
+
 export const useCalendarCells = () => {
 	const getCalendarCells = (selectedDate: Date): ICalendarCell[] => {
 		const year = selectedDate.getFullYear()
 		const month = selectedDate.getMonth()
+		const cacheKey = `${year}-${month}`
+
+		const cached = cellsCache.get(cacheKey)
+		if (cached) return cached
 
 		const daysInMonth = endOfMonth(selectedDate).getDate()
 		const firstDayOfMonth = startOfMonth(selectedDate)
@@ -48,7 +60,15 @@ export const useCalendarCells = () => {
 			date: new Date(year, month + 1, i + 1),
 		}))
 
-		return [...prevMonthDays, ...currentMonthDays, ...nextMonthDays]
+		const cells = [...prevMonthDays, ...currentMonthDays, ...nextMonthDays]
+
+		if (cellsCache.size >= MAX_CELLS_CACHE) {
+			// Evict oldest entry
+			cellsCache.delete(cellsCache.keys().next().value!)
+		}
+		cellsCache.set(cacheKey, cells)
+
+		return cells
 	}
 
 	// Returns the constant Mon–Sun abbreviated names for the current locale.
