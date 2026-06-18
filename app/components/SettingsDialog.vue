@@ -5,7 +5,7 @@
 				<AppIcon name="lucide:settings" />
 			</UiButton>
 		</UiDialogTrigger>
-		<UiDialogContent class="flex h-[40vh] flex-col overflow-hidden sm:max-w-2xl">
+		<UiDialogContent class="flex h-[70vh] flex-col overflow-hidden sm:max-w-2xl">
 			<UiDialogHeader>
 				<UiDialogTitle>Налаштування</UiDialogTitle>
 			</UiDialogHeader>
