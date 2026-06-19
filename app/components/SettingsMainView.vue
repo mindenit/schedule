@@ -129,45 +129,36 @@ const handleIcsExportAcademicYear = async () => {
 <template>
 	<div class="flex min-h-0 flex-col gap-4 overflow-y-auto py-4">
 		<UiTabs default-value="schedule" class="w-full">
-			<UiTabsList class="grid w-full grid-cols-3">
-				<UiTabsTrigger value="schedule">
-					<AppIcon name="lucide:calendar" size="xs" />
-					Розклад
-				</UiTabsTrigger>
-				<UiTabsTrigger value="links">
-					<AppIcon name="lucide:link" size="xs" />
-					Посилання
-				</UiTabsTrigger>
-				<UiTabsTrigger value="bug">
-					<AppIcon name="lucide:bug" size="xs" />
-					Debug
-				</UiTabsTrigger>
-			</UiTabsList>
+		<UiTabsList class="grid w-full grid-cols-3">
+			<UiTabsTrigger value="schedule">Загальні</UiTabsTrigger>
+			<UiTabsTrigger value="links">Посилання</UiTabsTrigger>
+			<UiTabsTrigger value="bug">Debug</UiTabsTrigger>
+		</UiTabsList>
 
-			<UiTabsContent value="schedule">
-				<h3 class="text-muted-foreground mb-2 text-sm font-medium">Експорт розкладу (ICS)</h3>
-				<div class="flex flex-wrap items-center justify-center gap-2">
-					<UiButton variant="default" :disabled="isLoading" @click="handleIcsExportAcademicYear">
-						<AppIcon name="lucide:calendar-export" />
-						Експорт на навчальний рік
-					</UiButton>
-				</div>
-
-				<h3 class="text-muted-foreground mt-4 mb-2 text-sm font-medium">Ефекти</h3>
-				<div class="flex items-center justify-between rounded-lg border p-4">
-					<div class="flex flex-col gap-1">
-						<div class="text-sm font-medium">Снігопад</div>
-						<div class="text-muted-foreground text-xs">Зимовий ефект падаючого снігу</div>
+		<UiTabsContent value="schedule">
+			<h3 class="text-muted-foreground mb-2 text-sm font-medium">Експорт розкладу</h3>
+			<div class="flex items-center justify-between rounded-lg border p-4">
+				<div class="flex flex-col gap-1">
+					<div class="text-sm font-medium">Навчальний рік</div>
+					<div class="text-muted-foreground text-xs">
+						Завантажте розклад у форматі .ics для Google Календар, Apple Calendar тощо
 					</div>
-					<UiButton
-						:variant="isSnowEnabled ? 'default' : 'outline'"
-						size="sm"
-						@click="isSnowEnabled = !isSnowEnabled"
-					>
-						{{ isSnowEnabled ? "Увімкнено" : "Вимкнено" }}
-					</UiButton>
 				</div>
-			</UiTabsContent>
+				<UiButton size="sm" :disabled="isLoading" @click="handleIcsExportAcademicYear">
+					<AppIcon name="lucide:calendar-arrow-down" />
+					Експорт
+				</UiButton>
+			</div>
+
+			<h3 class="text-muted-foreground mt-6 mb-2 text-sm font-medium">Зовнішній вигляд</h3>
+			<div class="flex items-center justify-between rounded-lg border p-4">
+				<div class="flex flex-col gap-1">
+					<div class="text-sm font-medium">Снігопад</div>
+					<div class="text-muted-foreground text-xs">Зимовий ефект падаючого снігу</div>
+				</div>
+				<UiSwitch v-model="isSnowEnabled" />
+			</div>
+		</UiTabsContent>
 
 			<UiTabsContent value="links">
 				<SettingsLinksManagement />
