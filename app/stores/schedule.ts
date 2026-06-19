@@ -88,6 +88,13 @@ export const useScheduleStore = defineStore("schedule", () => {
 		}
 	}
 
+	// Select a schedule that came from a shared URL — sets it as active without
+	// adding it to allSchedules or touching localStorage. The selection is
+	// intentionally ephemeral: if the user wants to keep it they add it normally.
+	const selectScheduleFromUrl = (schedule: GenericScheduleItem) => {
+		selectedSchedule.value = schedule
+	}
+
 	// Defer until after Pinia SSR hydration so localStorage wins.
 	if (import.meta.client) {
 		nextTick(() => initializeStore())
@@ -100,6 +107,7 @@ export const useScheduleStore = defineStore("schedule", () => {
 		addSchedule,
 		removeSchedule,
 		selectSchedule,
+		selectScheduleFromUrl,
 		initializeStore,
 	}
 })

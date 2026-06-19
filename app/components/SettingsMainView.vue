@@ -9,7 +9,7 @@ const scheduleStore = useScheduleStore()
 const calendarStore = useCalendarStore()
 const settingsStore = useSettingsStore()
 const { trackEvent } = useAnalytics()
-const { isSnowEnabled } = storeToRefs(settingsStore)
+const { isSnowEnabled, isUrlSyncEnabled } = storeToRefs(settingsStore)
 
 const { selectedSchedule, allSchedules } = storeToRefs(scheduleStore)
 const { selectedDate, view } = storeToRefs(calendarStore)
@@ -147,6 +147,17 @@ const handleIcsExportAcademicYear = async () => {
 							<AppIcon name="lucide:calendar-arrow-down" />
 							Експорт
 						</UiButton>
+					</div>
+
+					<h3 class="text-muted-foreground mt-6 mb-2 text-sm font-medium">Поведінка</h3>
+					<div class="flex items-center justify-between rounded-lg border p-4">
+						<div class="flex flex-col gap-1">
+							<div class="text-sm font-medium">Синхронізація з URL</div>
+							<div class="text-muted-foreground text-xs">
+								Зберігати вигляд, дату та розклад у адресному рядку для обміну посиланнями
+							</div>
+						</div>
+						<UiSwitch v-model="isUrlSyncEnabled" />
 					</div>
 
 					<h3 class="text-muted-foreground mt-6 mb-2 text-sm font-medium">Зовнішній вигляд</h3>

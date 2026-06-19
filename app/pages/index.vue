@@ -14,6 +14,8 @@ defineOgImageComponent("Mindenit")
 const calendarStore = useCalendarStore()
 const scheduleStore = useScheduleStore()
 
+useUrlState()
+
 const { filteredEvents, selectedDate } = storeToRefs(calendarStore)
 const { selectedSchedule } = storeToRefs(scheduleStore)
 

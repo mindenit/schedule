@@ -8,7 +8,14 @@ export const useSettingsStore = defineStore("settings", () => {
 		})
 	)
 
+	const isUrlSyncEnabled = skipHydrate(
+		useStorage("url-sync-enabled", true, undefined, {
+			serializer: StorageSerializers.boolean,
+		})
+	)
+
 	return {
 		isSnowEnabled,
+		isUrlSyncEnabled,
 	}
 })

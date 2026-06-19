@@ -49,6 +49,10 @@ export const VIEW_CONFIGS: Record<string, { format: string; capitalize: boolean 
 	default: { format: "LLLL yyyy", capitalize: true },
 }
 
+// ISO date string used for URL query params (?date=) and other machine-readable contexts.
+// Use VIEW_CONFIGS format strings for display purposes.
+export const DATE_FORMAT_ISO = "yyyy-MM-dd"
+
 export const MAX_VISIBLE_EVENTS_PER_DAY = 2
 export const MAX_EVENT_POSITIONS = 3
 
