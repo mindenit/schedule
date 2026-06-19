@@ -6,6 +6,7 @@
 		<AlertDialogContent
 			data-slot="alert-dialog-content"
 			:data-size="props.size"
+			:disable-outside-pointer-events="true"
 			:class="
 				styles({
 					translucent: props.translucent,

@@ -51,7 +51,7 @@ const removeActiveSchedule = () => {
 			</div>
 			<UiAlertDialogFooter>
 				<UiAlertDialogCancel>Скасувати</UiAlertDialogCancel>
-				<UiAlertDialogAction class="bg-destructive" @click="removeActiveSchedule">
+				<UiAlertDialogAction variant="destructive" @click="removeActiveSchedule">
 					<AppIcon name="lucide:trash" />
 					Видалити
 				</UiAlertDialogAction>
