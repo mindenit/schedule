@@ -241,10 +241,7 @@ watch(isOpen, (open) => {
 			>
 				<UiButton
 					variant="outline"
-					@click="
-						filtersStore.clearAll()
-						trackEvent('filters_reset')
-					"
+					@click="() => { filtersStore.clearAll(); trackEvent('filters_reset') }"
 				>
 					<AppIcon name="lucide:rotate-ccw" />
 					Скинути
