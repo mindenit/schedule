@@ -147,10 +147,7 @@ const handleMainImport = (event: Event) => {
 				v-if="selectedLinkIds.length > 0"
 				size="sm"
 				variant="outline"
-				@click="
-					linksStore.exportSelectedLinks(selectedLinkIds)
-					trackEvent('links_exported', { scope: 'selected', count: selectedLinkIds.length })
-				"
+				@click="() => { linksStore.exportSelectedLinks(selectedLinkIds); trackEvent('links_exported', { scope: 'selected', count: selectedLinkIds.length }) }"
 			>
 				<AppIcon name="lucide:download" />
 				Експорт вибраного
@@ -159,10 +156,7 @@ const handleMainImport = (event: Event) => {
 				v-if="hasLinks"
 				size="sm"
 				variant="outline"
-				@click="
-					linksStore.exportLinks()
-					trackEvent('links_exported', { scope: 'all', count: totalLinkCount })
-				"
+				@click="() => { linksStore.exportLinks(); trackEvent('links_exported', { scope: 'all', count: totalLinkCount }) }"
 			>
 				<AppIcon name="lucide:download" />
 				Експортувати
