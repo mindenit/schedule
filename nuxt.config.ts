@@ -70,10 +70,10 @@ export default defineNuxtConfig({
 	},
 	robots: {
 		sitemap: "/sitemap.xml",
-		disallow: ["/faggots"],
+		disallow: ["/blocked"],
 	},
 	sitemap: {
-		exclude: ["/faggots"],
+		exclude: ["/blocked"],
 	},
 	seo: {
 		redirectToCanonicalSiteUrl: true,

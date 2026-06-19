@@ -105,4 +105,4 @@ Beyond Nuxt's defaults, `nuxt.config` adds:
 - `MAINTENANCE=true` env → enables maintenance mode (checked in `runtimeConfig.public.maintenance`).
 - `SHOW_HIRING_BANNER` — boolean const in `app/constants/index.ts`. Set to `false` to hide the hiring banner without deleting code.
 - Analytics script (`analytics.mindenit.org`) is injected in `nuxt.config` `app.head` — leave it.
-- `/faggots` route is intentionally in robots `disallow` and sitemap `exclude` — leave it.
+- `/blocked` route is intentionally in robots `disallow` and sitemap `exclude` — leave it.

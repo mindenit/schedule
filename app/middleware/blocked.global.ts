@@ -1,5 +1,5 @@
 export default defineNuxtRouteMiddleware((to) => {
-	if (to.path === "/faggots") {
+	if (to.path === "/blocked") {
 		return
 	}
 
@@ -17,6 +17,6 @@ export default defineNuxtRouteMiddleware((to) => {
 		userAgent.toLowerCase().includes("yabrowser") || userAgent.toLowerCase().includes("yandex")
 
 	if (isYandex) {
-		return navigateTo("/faggots")
+		return navigateTo("/blocked")
 	}
 })
