@@ -2,34 +2,25 @@
 import type { Schedule } from "nurekit"
 import { storeToRefs } from "pinia"
 import { motion, AnimatePresence } from "motion-v"
-import { getEventDayKey } from "~/utils/event-cache"
 
 interface Props {
 	events: Schedule[]
 }
 
+// Props still accepted so Root.vue's contract is unchanged.
+// MonthView ignores props.events and reads the store index directly —
+// this avoids rebuilding a day-keyed map on every selectedDate change.
 const props = defineProps<Props>()
 
 const calendarStore = useCalendarStore()
-const { selectedDate } = storeToRefs(calendarStore)
+const { selectedDate, eventsByDayKey } = storeToRefs(calendarStore)
 
 const { getCalendarCells, getWeekDays } = useCalendarCells()
 
 const cells = computed(() => getCalendarCells(selectedDate.value))
 const weekDays = computed(() => getWeekDays(selectedDate.value))
 
-// Pre-group events by day-start Unix ms (numeric key = no string allocation).
-// Each DayCell receives only its own slice, collapsing 42 O(n) scans into one O(n) pass.
-const eventsByDate = computed(() => {
-	const map: Record<number, Schedule[]> = {}
-	for (const event of props.events) {
-		const key = getEventDayKey(event)
-		if (!map[key]) map[key] = []
-		map[key].push(event)
-	}
-	return map
-})
-
+// hasEvents still uses the prop (filter-aware, window-filtered by Root.vue).
 const hasEvents = computed(() => props.events.length > 0)
 const weeksCount = computed(() => Math.ceil(cells.value.length / 7))
 
@@ -113,7 +104,7 @@ watch(isSwiping, (swiping) => {
 					v-for="(cell, index) in cells"
 					:key="index"
 					:cell="cell"
-					:day-events="eventsByDate[cell.date.getTime()] ?? []"
+					:day-events="eventsByDayKey.get(cell.date.getTime()) ?? []"
 					class="min-h-0"
 				/>
 				</motion.div>
