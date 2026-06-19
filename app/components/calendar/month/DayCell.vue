@@ -45,9 +45,7 @@ const cellDisplay = computed(() => {
 
 	const hiddenCount =
 		total > MAX_VISIBLE_EVENTS_PER_DAY
-			? groups
-					.slice(MAX_VISIBLE_EVENTS_PER_DAY)
-					.reduce((n, g) => n + g.length, 0)
+			? groups.slice(MAX_VISIBLE_EVENTS_PER_DAY).reduce((n, g) => n + g.length, 0)
 			: 0
 	const onlyOneHidden = hiddenCount === 1
 	const hasMoreEvents = total > MAX_VISIBLE_EVENTS_PER_DAY && !onlyOneHidden
@@ -154,7 +152,9 @@ function handleMobileClick() {
 
 					<div v-if="cellDisplay.hasMoreEvents" class="flex h-6 flex-shrink-0 gap-1">
 						<BigCalendarMonthEventBadge
-							@click="openOverflowPopover(cellDisplay.hiddenEvents, $event.currentTarget as HTMLElement)"
+							@click="
+								openOverflowPopover(cellDisplay.hiddenEvents, $event.currentTarget as HTMLElement)
+							"
 						>
 							<span class="flex-1 shrink-0 truncate">
 								ще {{ cellDisplay.remainingEventsCount }}

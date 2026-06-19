@@ -101,7 +101,7 @@ const getChildren = (node: TreeNode): TreeNode[] | undefined => {
 
 // All subject + eventType node IDs expanded by default
 const defaultExpanded = computed(() =>
-	treeItems.value.flatMap((s) => [s.id, ...s.children.map((e) => e.id)]),
+	treeItems.value.flatMap((s) => [s.id, ...s.children.map((e) => e.id)])
 )
 
 // ─── Selection ────────────────────────────────────────────────────────────────
@@ -111,16 +111,14 @@ const selected = ref<TreeNode[]>([])
 const allLinkCount = computed(() =>
 	treeItems.value.reduce(
 		(sum, s) => sum + s.children.reduce((s2, e) => s2 + e.children.length, 0),
-		0,
-	),
+		0
+	)
 )
 
-const selectedLinkCount = computed(
-	() => selected.value.filter((n) => n.kind === "link").length,
-)
+const selectedLinkCount = computed(() => selected.value.filter((n) => n.kind === "link").length)
 
 const allSelected = computed(
-	() => allLinkCount.value > 0 && selectedLinkCount.value === allLinkCount.value,
+	() => allLinkCount.value > 0 && selectedLinkCount.value === allLinkCount.value
 )
 
 function selectAll() {
@@ -138,7 +136,7 @@ watch(
 		const linkIds = nodes.filter((n): n is LinkNode => n.kind === "link").map((n) => n.id)
 		emit("selectionChange", linkIds)
 	},
-	{ deep: true },
+	{ deep: true }
 )
 
 defineExpose({ selectAll, clearSelection, allSelected, isEmpty })
@@ -194,7 +192,9 @@ const EVENT_TYPE_BG: Record<string, string> = {
 				<template #default="{ isSelected, isIndeterminate, handleSelect, handleToggle }">
 					<!-- Subject row ─────────────────────────────────────────────── -->
 					<template v-if="item.value.kind === 'subject'">
-						<div class="hover:bg-muted/50 flex w-full items-center gap-2 rounded-md py-2 pl-2 pr-2 transition-colors">
+						<div
+							class="hover:bg-muted/50 flex w-full items-center gap-2 rounded-md py-2 pr-2 pl-2 transition-colors"
+						>
 							<!-- checkbox zone: select only -->
 							<div class="shrink-0 cursor-pointer" @click.stop="handleSelect()">
 								<UiCheckbox
@@ -214,7 +214,9 @@ const EVENT_TYPE_BG: Record<string, string> = {
 
 					<!-- Event type row ───────────────────────────────────────────── -->
 					<template v-else-if="item.value.kind === 'eventType'">
-						<div class="hover:bg-muted/50 flex w-full items-center gap-2 rounded-md py-1.5 pl-6 pr-2 transition-colors">
+						<div
+							class="hover:bg-muted/50 flex w-full items-center gap-2 rounded-md py-1.5 pr-2 pl-6 transition-colors"
+						>
 							<!-- checkbox zone: select only -->
 							<div class="shrink-0 cursor-pointer" @click.stop="handleSelect()">
 								<UiCheckbox
@@ -239,23 +241,23 @@ const EVENT_TYPE_BG: Record<string, string> = {
 
 					<!-- Link leaf row ────────────────────────────────────────────── -->
 					<template v-else-if="item.value.kind === 'link'">
-						<div class="hover:bg-muted/50 flex w-full items-center gap-2 rounded-md py-1.5 pl-10 pr-2 transition-colors">
+						<div
+							class="hover:bg-muted/50 flex w-full items-center gap-2 rounded-md py-1.5 pr-2 pl-10 transition-colors"
+						>
 							<!-- checkbox + label zone: select only (leaves don't expand) -->
 							<div class="shrink-0 cursor-pointer" @click.stop="handleSelect()">
-								<UiCheckbox
-									:model-value="isSelected"
-									class="pointer-events-none"
-								/>
+								<UiCheckbox :model-value="isSelected" class="pointer-events-none" />
 							</div>
 							<div class="min-w-0 flex-1 cursor-pointer" @click.stop="handleSelect()">
 								<p class="truncate text-sm">{{ item.value.name }}</p>
-							<a
-								:href="item.value.url"
-								target="_blank"
-								rel="noopener noreferrer"
-								class="text-muted-foreground hover:text-foreground truncate text-xs transition-colors"
-								@click.stop="trackEvent('link_opened')"
-							>
+								<a
+									:href="item.value.url"
+									target="_blank"
+									rel="noopener noreferrer"
+									class="text-muted-foreground hover:text-foreground truncate text-xs
+										transition-colors"
+									@click.stop="trackEvent('link_opened')"
+								>
 									{{ item.value.url }}
 								</a>
 							</div>
@@ -270,7 +272,7 @@ const EVENT_TYPE_BG: Record<string, string> = {
 											{ id: item.value.id, name: item.value.name, url: item.value.url },
 											item.value.subjectId,
 											item.value.eventType,
-											item.value.subject,
+											item.value.subject
 										)
 									"
 								>
@@ -282,11 +284,7 @@ const EVENT_TYPE_BG: Record<string, string> = {
 									variant="ghost"
 									class="text-destructive hover:text-destructive size-7"
 									@click.stop="
-										props.onDeleteLink?.(
-											item.value.id,
-											item.value.subjectId,
-											item.value.eventType,
-										)
+										props.onDeleteLink?.(item.value.id, item.value.subjectId, item.value.eventType)
 									"
 								>
 									<AppIcon name="lucide:trash" />

@@ -239,7 +239,13 @@ watch(isOpen, (open) => {
 				"
 				class="flex gap-2"
 			>
-				<UiButton variant="outline" @click="filtersStore.clearAll(); trackEvent('filters_reset')">
+				<UiButton
+					variant="outline"
+					@click="
+						filtersStore.clearAll()
+						trackEvent('filters_reset')
+					"
+				>
 					<AppIcon name="lucide:rotate-ccw" />
 					Скинути
 				</UiButton>

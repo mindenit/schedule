@@ -178,14 +178,14 @@ const deleteLink = (linkId: string) => {
 					class="bg-muted/30 hover:bg-muted/50 group flex items-center justify-between gap-2
 						rounded-md px-2 py-1.5 transition-colors"
 				>
-				<a
-					:href="link.url"
-					target="_blank"
-					class="text-primary truncate text-xs font-medium hover:underline"
-					@click="trackEvent('link_opened')"
-				>
-					{{ link.name }}
-				</a>
+					<a
+						:href="link.url"
+						target="_blank"
+						class="text-primary truncate text-xs font-medium hover:underline"
+						@click="trackEvent('link_opened')"
+					>
+						{{ link.name }}
+					</a>
 					<div class="flex gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
 						<UiButton size="icon" variant="ghost" class="h-6 w-6" @click="editLink(link)">
 							<AppIcon name="lucide:pencil" class="h-3 w-3" />

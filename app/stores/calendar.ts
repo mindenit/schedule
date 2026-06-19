@@ -79,8 +79,24 @@ export const useCalendarStore = defineStore("calendar", () => {
 
 	function getEventsForDayView(events: Schedule[]): Schedule[] {
 		const day = selectedDate.value
-		const rangeStart = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 0, 0, 0, 0).getTime()
-		const rangeEnd = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 23, 59, 59, 999).getTime()
+		const rangeStart = new Date(
+			day.getFullYear(),
+			day.getMonth(),
+			day.getDate(),
+			0,
+			0,
+			0,
+			0
+		).getTime()
+		const rangeEnd = new Date(
+			day.getFullYear(),
+			day.getMonth(),
+			day.getDate(),
+			23,
+			59,
+			59,
+			999
+		).getTime()
 
 		return events.filter((event) => {
 			return event.startedAt * 1000 <= rangeEnd && event.endedAt * 1000 >= rangeStart

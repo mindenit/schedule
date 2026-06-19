@@ -5,7 +5,7 @@
  * Value = payload shape (use `never` for events with no properties)
  */
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+ 
 export interface AnalyticsEvents {
 	// ── Schedule management ──────────────────────────────────────────────────
 	/** User adds a new schedule (group / teacher / auditorium). */

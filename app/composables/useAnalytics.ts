@@ -18,16 +18,16 @@ export function useAnalytics() {
 			defer: true,
 			"data-site-id": "c06ec8fba05b",
 		},
-		{ trigger: "onNuxtReady" },
+		{ trigger: "onNuxtReady" }
 	)
 
 	function trackEvent<K extends keyof AnalyticsEvents>(
-		name: AnalyticsEvents[K] extends never ? K : never,
+		name: AnalyticsEvents[K] extends never ? K : never
 	): void
 
 	function trackEvent<K extends keyof AnalyticsEvents>(
 		name: AnalyticsEvents[K] extends never ? never : K,
-		properties: AnalyticsEvents[K],
+		properties: AnalyticsEvents[K]
 	): void
 
 	function trackEvent(name: string, properties?: Record<string, unknown>) {

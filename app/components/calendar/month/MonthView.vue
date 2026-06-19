@@ -104,13 +104,13 @@ watch(isSwiping, (swiping) => {
 					:animate="'center'"
 					:exit="'exit'"
 				>
-				<BigCalendarDayCell
-					v-for="(cell, index) in cells"
-					:key="index"
-					:cell="cell"
-					:day-events="eventsByDayKey.get(cell.date.getTime()) ?? []"
-					class="min-h-0"
-				/>
+					<BigCalendarDayCell
+						v-for="(cell, index) in cells"
+						:key="index"
+						:cell="cell"
+						:day-events="eventsByDayKey.get(cell.date.getTime()) ?? []"
+						class="min-h-0"
+					/>
 				</motion.div>
 			</AnimatePresence>
 		</div>

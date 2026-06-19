@@ -25,9 +25,9 @@ export const useScheduleIcsExport = () => {
 
 			const { startTimestamp, endTimestamp } = getAcademicYearTimestamps()
 
-		useSonner.info("Завантаження розкладу", {
-			description: "Отримання даних за навчальний рік...",
-		})
+			useSonner.info("Завантаження розкладу", {
+				description: "Отримання даних за навчальний рік...",
+			})
 
 			let queryOptions
 			switch (scheduleType) {
@@ -59,10 +59,10 @@ export const useScheduleIcsExport = () => {
 
 			const events: Schedule[] = await queryClient.fetchQuery(queryOptions)
 
-		if (!events || events.length === 0) {
-			useSonner.warning("Немає даних", {
-				description: "Розклад на цей навчальний рік не знайдено",
-			})
+			if (!events || events.length === 0) {
+				useSonner.warning("Немає даних", {
+					description: "Розклад на цей навчальний рік не знайдено",
+				})
 				return
 			}
 
@@ -77,13 +77,13 @@ export const useScheduleIcsExport = () => {
 				includeDescription: true,
 			})
 
-		useSonner.success("Експорт завершено", {
-			description: `Завантажено ${events.length} подій у форматі ICS`,
-		})
-	} catch {
-		useSonner.error("Помилка експорту", {
-			description: "Не вдалося експортувати розклад",
-		})
+			useSonner.success("Експорт завершено", {
+				description: `Завантажено ${events.length} подій у форматі ICS`,
+			})
+		} catch {
+			useSonner.error("Помилка експорту", {
+				description: "Не вдалося експортувати розклад",
+			})
 		} finally {
 			isLoading.value = false
 		}
@@ -97,10 +97,10 @@ export const useScheduleIcsExport = () => {
 		}
 	) => {
 		try {
-		if (!currentEvents || currentEvents.length === 0) {
-			useSonner.warning("Немає даних", {
-				description: "Немає подій для експорту",
-			})
+			if (!currentEvents || currentEvents.length === 0) {
+				useSonner.warning("Немає даних", {
+					description: "Немає подій для експорту",
+				})
 				return
 			}
 
@@ -115,13 +115,13 @@ export const useScheduleIcsExport = () => {
 				includeDescription: true,
 			})
 
-		useSonner.success("Експорт завершено", {
-			description: `Завантажено ${currentEvents.length} подій у форматі ICS`,
-		})
-	} catch {
-		useSonner.error("Помилка експорту", {
-			description: "Не вдалося експортувати поточний розклад",
-		})
+			useSonner.success("Експорт завершено", {
+				description: `Завантажено ${currentEvents.length} подій у форматі ICS`,
+			})
+		} catch {
+			useSonner.error("Помилка експорту", {
+				description: "Не вдалося експортувати поточний розклад",
+			})
 		}
 	}
 

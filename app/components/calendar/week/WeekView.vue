@@ -65,9 +65,9 @@ const hasEvents = computed(() =>
 				<div class="grid min-h-0 flex-1 grid-cols-[72px_1fr] gap-1">
 					<div class="relative flex flex-col">
 						<div
-						v-for="(hour, index) in hours"
-						:key="hour"
-						class="bg-muted/50 relative flex-1"
+							v-for="(hour, index) in hours"
+							:key="hour"
+							class="bg-muted/50 relative flex-1"
 							:class="{
 								'rounded-bl-lg': index === hours.length - 1,
 							}"
@@ -89,9 +89,9 @@ const hasEvents = computed(() =>
 							>
 								<div class="flex h-full flex-col gap-1">
 									<div
-								v-for="(hour, hourIndex) in hours"
-								:key="hour"
-								class="bg-card relative flex-1"
+										v-for="(hour, hourIndex) in hours"
+										:key="hour"
+										class="bg-card relative flex-1"
 										:class="{
 											'rounded-br-lg':
 												dayIndex === weekDays.length - 1 && hourIndex === hours.length - 1,

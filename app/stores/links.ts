@@ -95,7 +95,7 @@ export const useLinksStore = defineStore("links", () => {
 		const filtered: LinksStore = {}
 
 		Object.entries(links.value).forEach(([subjectId, subjectData]) => {
-			const filteredEvents: Record<string, typeof subjectData.events[string]> = {}
+			const filteredEvents: Record<string, (typeof subjectData.events)[string]> = {}
 
 			Object.entries(subjectData.events).forEach(([eventType, eventLinks]) => {
 				const matching = eventLinks.filter((l) => idSet.has(l.id))

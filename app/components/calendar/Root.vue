@@ -31,7 +31,10 @@ const overlayContent = computed(() => {
 		class="hide-scrollbar relative flex h-full flex-col overflow-x-hidden rounded-lg
 			max-md:rounded-t-none"
 	>
-		<div class="flex-1 min-h-0 transition-all duration-300 ease-in-out" :class="{ 'blur-sm': showOverlay }">
+		<div
+			class="min-h-0 flex-1 transition-all duration-300 ease-in-out"
+			:class="{ 'blur-sm': showOverlay }"
+		>
 			<BigCalendarMonthView
 				v-if="view === 'month'"
 				:events="props.events"

@@ -56,7 +56,6 @@ const fmt = (date: Date) => format(date, "dd.MM.yyyy HH:mm:ss", { locale: uk })
 const fmtDate = (date: Date) => format(date, "dd.MM.yyyy", { locale: uk })
 const toUnix = (date: Date) => Math.floor(date.getTime() / 1000)
 
-
 const copyAllSchedulesToClipboard = async () => {
 	if (allSchedules.value.length === 0) {
 		useSonner.warning("Немає даних для копіювання")
@@ -70,9 +69,7 @@ const copyAllSchedulesToClipboard = async () => {
 	const schedulesText = allSchedules.value
 		.map((schedule) => {
 			const isActive =
-				active &&
-				String(active.id) === String(schedule.id) &&
-				active.type === schedule.type
+				active && String(active.id) === String(schedule.id) && active.type === schedule.type
 			const marker = isActive ? " [active]" : ""
 			const bullet = isActive ? "[*]" : "[ ]"
 			return `${bullet} ${typeLabel(schedule.type)} • ID: ${schedule.id} • ${schedule.name}${marker}`
@@ -130,134 +127,141 @@ const handleIcsExportAcademicYear = async () => {
 <template>
 	<div class="flex min-h-0 flex-1 flex-col gap-4 py-4">
 		<UiTabs default-value="schedule" class="flex min-h-0 flex-1 flex-col">
-		<UiTabsList class="grid w-full shrink-0 grid-cols-3">
-			<UiTabsTrigger value="schedule">Загальні</UiTabsTrigger>
-			<UiTabsTrigger value="links">Посилання</UiTabsTrigger>
-			<UiTabsTrigger value="bug">Debug</UiTabsTrigger>
-		</UiTabsList>
+			<UiTabsList class="grid w-full shrink-0 grid-cols-3">
+				<UiTabsTrigger value="schedule">Загальні</UiTabsTrigger>
+				<UiTabsTrigger value="links">Посилання</UiTabsTrigger>
+				<UiTabsTrigger value="bug">Debug</UiTabsTrigger>
+			</UiTabsList>
 
-		<UiTabsContent value="schedule" class="min-h-0 flex-1">
-			<div class="overflow-y-auto">
-				<h3 class="text-muted-foreground mb-2 text-sm font-medium">Експорт розкладу</h3>
-				<div class="flex items-center justify-between rounded-lg border p-4">
-					<div class="flex flex-col gap-1">
-						<div class="text-sm font-medium">Навчальний рік</div>
-						<div class="text-muted-foreground text-xs">
-							Завантажте розклад у форматі .ics для Google Календар, Apple Calendar тощо
+			<UiTabsContent value="schedule" class="min-h-0 flex-1">
+				<div class="overflow-y-auto">
+					<h3 class="text-muted-foreground mb-2 text-sm font-medium">Експорт розкладу</h3>
+					<div class="flex items-center justify-between rounded-lg border p-4">
+						<div class="flex flex-col gap-1">
+							<div class="text-sm font-medium">Навчальний рік</div>
+							<div class="text-muted-foreground text-xs">
+								Завантажте розклад у форматі .ics для Google Календар, Apple Calendar тощо
+							</div>
 						</div>
-					</div>
-					<UiButton size="sm" :disabled="isLoading" @click="handleIcsExportAcademicYear">
-						<AppIcon name="lucide:calendar-arrow-down" />
-						Експорт
-					</UiButton>
-				</div>
-
-				<h3 class="text-muted-foreground mt-6 mb-2 text-sm font-medium">Зовнішній вигляд</h3>
-				<div class="flex items-center justify-between rounded-lg border p-4">
-					<div class="flex flex-col gap-1">
-						<div class="text-sm font-medium">Снігопад</div>
-						<div class="text-muted-foreground text-xs">Зимовий ефект падаючого снігу</div>
-					</div>
-					<UiSwitch v-model="isSnowEnabled" />
-				</div>
-			</div>
-		</UiTabsContent>
-
-		<UiTabsContent value="links" class="min-h-0 flex-1">
-			<div class="overflow-x-hidden overflow-y-auto">
-				<SettingsLinksManagement />
-			</div>
-		</UiTabsContent>
-
-		<UiTabsContent value="bug" class="min-h-0 flex-1">
-			<div class="overflow-y-auto">
-				<div class="space-y-4">
-					<!-- View info -->
-					<div class="bg-muted flex items-center justify-between rounded-lg px-3 py-2 text-xs">
-						<span class="text-muted-foreground">Вигляд</span>
-						<span class="font-medium">{{ viewLabel }}</span>
+						<UiButton size="sm" :disabled="isLoading" @click="handleIcsExportAcademicYear">
+							<AppIcon name="lucide:calendar-arrow-down" />
+							Експорт
+						</UiButton>
 					</div>
 
-					<!-- Schedules list -->
-					<div>
-						<h3 class="text-muted-foreground mb-2 text-sm font-medium">Збережені розклади</h3>
-						<div v-if="allSchedules.length === 0" class="text-muted-foreground py-4 text-center text-sm">
-							Немає збережених розкладів
+					<h3 class="text-muted-foreground mt-6 mb-2 text-sm font-medium">Зовнішній вигляд</h3>
+					<div class="flex items-center justify-between rounded-lg border p-4">
+						<div class="flex flex-col gap-1">
+							<div class="text-sm font-medium">Снігопад</div>
+							<div class="text-muted-foreground text-xs">Зимовий ефект падаючого снігу</div>
 						</div>
-						<div v-else class="space-y-2">
+						<UiSwitch v-model="isSnowEnabled" />
+					</div>
+				</div>
+			</UiTabsContent>
+
+			<UiTabsContent value="links" class="min-h-0 flex-1">
+				<div class="overflow-x-hidden overflow-y-auto">
+					<SettingsLinksManagement />
+				</div>
+			</UiTabsContent>
+
+			<UiTabsContent value="bug" class="min-h-0 flex-1">
+				<div class="overflow-y-auto">
+					<div class="space-y-4">
+						<!-- View info -->
+						<div class="bg-muted flex items-center justify-between rounded-lg px-3 py-2 text-xs">
+							<span class="text-muted-foreground">Вигляд</span>
+							<span class="font-medium">{{ viewLabel }}</span>
+						</div>
+
+						<!-- Schedules list -->
+						<div>
+							<h3 class="text-muted-foreground mb-2 text-sm font-medium">Збережені розклади</h3>
 							<div
-								v-for="schedule in allSchedules"
-								:key="`${schedule.type}-${schedule.id}`"
-								:class="[
-									'bg-card flex items-center gap-3 rounded-lg border p-3',
-									selectedSchedule &&
-									String(selectedSchedule.id) === String(schedule.id) &&
-									selectedSchedule.type === schedule.type
-										? 'border-l-primary border-l-4'
-										: 'border-border',
-								]"
+								v-if="allSchedules.length === 0"
+								class="text-muted-foreground py-4 text-center text-sm"
 							>
-								<AppIcon :name="getScheduleIcon(schedule.type)" class="text-muted-foreground shrink-0" />
-								<div class="min-w-0 flex-1">
-									<div class="text-sm font-medium">{{ schedule.name }}</div>
-									<div class="text-muted-foreground font-mono text-xs">
-										{{ schedule.type }} • {{ schedule.id }}
-									</div>
-								</div>
-								<span
-									v-if="
+								Немає збережених розкладів
+							</div>
+							<div v-else class="space-y-2">
+								<div
+									v-for="schedule in allSchedules"
+									:key="`${schedule.type}-${schedule.id}`"
+									:class="[
+										'bg-card flex items-center gap-3 rounded-lg border p-3',
 										selectedSchedule &&
 										String(selectedSchedule.id) === String(schedule.id) &&
 										selectedSchedule.type === schedule.type
-									"
-									class="bg-primary/10 text-primary rounded px-1.5 py-0.5 font-mono text-[10px] font-medium tracking-wide"
+											? 'border-l-primary border-l-4'
+											: 'border-border',
+									]"
 								>
-									active
-								</span>
+									<AppIcon
+										:name="getScheduleIcon(schedule.type)"
+										class="text-muted-foreground shrink-0"
+									/>
+									<div class="min-w-0 flex-1">
+										<div class="text-sm font-medium">{{ schedule.name }}</div>
+										<div class="text-muted-foreground font-mono text-xs">
+											{{ schedule.type }} • {{ schedule.id }}
+										</div>
+									</div>
+									<span
+										v-if="
+											selectedSchedule &&
+											String(selectedSchedule.id) === String(schedule.id) &&
+											selectedSchedule.type === schedule.type
+										"
+										class="bg-primary/10 text-primary rounded px-1.5 py-0.5 font-mono text-[10px]
+											font-medium tracking-wide"
+									>
+										active
+									</span>
+								</div>
 							</div>
 						</div>
-					</div>
 
-					<!-- Timestamp range -->
-					<div>
-						<h3 class="text-muted-foreground mb-2 text-sm font-medium">
-							Часові мітки — {{ viewLabel }}
-						</h3>
-						<div class="bg-muted space-y-1 rounded-lg px-3 py-2 text-xs">
-							<div class="flex items-center justify-between gap-2">
-								<span class="text-muted-foreground shrink-0">Початок</span>
-								<span class="font-mono font-medium tabular-nums">
-									{{ fmt(viewRange.start) }}
-								</span>
-								<span class="text-muted-foreground font-mono tabular-nums">
-									{{ toUnix(viewRange.start) }}
-								</span>
-							</div>
-							<div class="flex items-center justify-between gap-2">
-								<span class="text-muted-foreground shrink-0">Кінець</span>
-								<span class="font-mono font-medium tabular-nums">
-									{{ fmt(viewRange.end) }}
-								</span>
-								<span class="text-muted-foreground font-mono tabular-nums">
-									{{ toUnix(viewRange.end) }}
-								</span>
+						<!-- Timestamp range -->
+						<div>
+							<h3 class="text-muted-foreground mb-2 text-sm font-medium">
+								Часові мітки — {{ viewLabel }}
+							</h3>
+							<div class="bg-muted space-y-1 rounded-lg px-3 py-2 text-xs">
+								<div class="flex items-center justify-between gap-2">
+									<span class="text-muted-foreground shrink-0">Початок</span>
+									<span class="font-mono font-medium tabular-nums">
+										{{ fmt(viewRange.start) }}
+									</span>
+									<span class="text-muted-foreground font-mono tabular-nums">
+										{{ toUnix(viewRange.start) }}
+									</span>
+								</div>
+								<div class="flex items-center justify-between gap-2">
+									<span class="text-muted-foreground shrink-0">Кінець</span>
+									<span class="font-mono font-medium tabular-nums">
+										{{ fmt(viewRange.end) }}
+									</span>
+									<span class="text-muted-foreground font-mono tabular-nums">
+										{{ toUnix(viewRange.end) }}
+									</span>
+								</div>
 							</div>
 						</div>
-					</div>
 
-					<!-- Copy button -->
-					<UiButton
-						variant="outline"
-						class="w-full"
-						:disabled="allSchedules.length === 0"
-						@click="copyAllSchedulesToClipboard"
-					>
-						<AppIcon name="lucide:copy" />
-						Скопіювати для звіту
-					</UiButton>
+						<!-- Copy button -->
+						<UiButton
+							variant="outline"
+							class="w-full"
+							:disabled="allSchedules.length === 0"
+							@click="copyAllSchedulesToClipboard"
+						>
+							<AppIcon name="lucide:copy" />
+							Скопіювати для звіту
+						</UiButton>
+					</div>
 				</div>
-			</div>
-		</UiTabsContent>
+			</UiTabsContent>
 		</UiTabs>
 	</div>
 </template>

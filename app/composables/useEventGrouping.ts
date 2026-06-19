@@ -8,11 +8,7 @@ import {
 	endOfWeek,
 } from "date-fns"
 import type { Schedule } from "nurekit"
-import {
-	WEEK_OPTIONS,
-	CALENDAR_START_HOUR,
-	CALENDAR_END_HOUR,
-} from "~/constants/calendar"
+import { WEEK_OPTIONS, CALENDAR_START_HOUR, CALENDAR_END_HOUR } from "~/constants/calendar"
 
 // ---------------------------------------------------------------------------
 // Pure helpers — module-level so no new closures are created per component
@@ -56,9 +52,7 @@ export function groupEventsBySameTime(events: Schedule[]): Schedule[][] {
 		timeGroups.get(timeKey)!.push(event)
 	}
 
-	return Array.from(timeGroups.values()).sort(
-		(a, b) => a[0]!.startedAt - b[0]!.startedAt
-	)
+	return Array.from(timeGroups.values()).sort((a, b) => a[0]!.startedAt - b[0]!.startedAt)
 }
 
 export function getEventsForDate(events: Schedule[], date: Date | string | number): Schedule[] {

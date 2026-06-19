@@ -58,9 +58,7 @@ const {
 
 // Identify the active schedule by a stable string key — avoids a deep object watch.
 const scheduleKey = computed(() =>
-	selectedSchedule.value
-		? `${selectedSchedule.value.type}-${selectedSchedule.value.id}`
-		: null
+	selectedSchedule.value ? `${selectedSchedule.value.type}-${selectedSchedule.value.id}` : null
 )
 
 // Clear events immediately when the selected schedule changes,

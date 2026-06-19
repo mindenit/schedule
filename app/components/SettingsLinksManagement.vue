@@ -12,13 +12,18 @@ const editingLink = ref<Link | null>(null)
 const editingContext = ref<{ subjectId: string; eventType: string; subject: Subject } | null>(null)
 const selectedLinkIds = ref<string[]>([])
 
-const treeView = ref<{ selectAll: () => void; clearSelection: () => void; allSelected: boolean; isEmpty: boolean } | null>(null)
+const treeView = ref<{
+	selectAll: () => void
+	clearSelection: () => void
+	allSelected: boolean
+	isEmpty: boolean
+} | null>(null)
 
 const totalLinkCount = computed(() =>
 	Object.values(linksStore.links).reduce(
 		(sum, s) => sum + Object.values(s.events).reduce((s2, arr) => s2 + arr.length, 0),
-		0,
-	),
+		0
+	)
 )
 
 const hasLinks = computed(() => !treeView.value?.isEmpty)
@@ -73,8 +78,8 @@ const deleteLink = (linkId: string, subjectId: string, eventType: string) => {
 	linksStore.deleteLink(parseInt(subjectId), eventType, linkId)
 	trackEvent("link_deleted")
 	useSonner.success("Посилання видалено", {
-			description: "Посилання успішно видалено",
-		})
+		description: "Посилання успішно видалено",
+	})
 }
 
 const handleImportLinks = (file: File) => {
@@ -126,13 +131,8 @@ const handleMainImport = (event: Event) => {
 <template>
 	<div class="flex flex-col gap-3">
 		<div class="flex flex-wrap items-center justify-end gap-2">
-			<UiButton
-				v-if="hasLinks"
-				size="sm"
-				variant="ghost"
-				@click="toggleSelectAll"
-			>
-				{{ allSelected ? 'Скасувати вибір' : 'Вибрати все' }}
+			<UiButton v-if="hasLinks" size="sm" variant="ghost" @click="toggleSelectAll">
+				{{ allSelected ? "Скасувати вибір" : "Вибрати все" }}
 			</UiButton>
 			<UiButton
 				v-if="selectedLinkIds.length > 0"
@@ -143,21 +143,27 @@ const handleMainImport = (event: Event) => {
 				<AppIcon name="lucide:share-2" />
 				Поділитися ({{ selectedLinkIds.length }})
 			</UiButton>
-		<UiButton
-			v-if="selectedLinkIds.length > 0"
-			size="sm"
-			variant="outline"
-			@click="linksStore.exportSelectedLinks(selectedLinkIds); trackEvent('links_exported', { scope: 'selected', count: selectedLinkIds.length })"
-		>
-			<AppIcon name="lucide:download" />
-			Експорт вибраного
-		</UiButton>
-		<UiButton
-			v-if="hasLinks"
-			size="sm"
-			variant="outline"
-			@click="linksStore.exportLinks(); trackEvent('links_exported', { scope: 'all', count: totalLinkCount })"
-		>
+			<UiButton
+				v-if="selectedLinkIds.length > 0"
+				size="sm"
+				variant="outline"
+				@click="
+					linksStore.exportSelectedLinks(selectedLinkIds)
+					trackEvent('links_exported', { scope: 'selected', count: selectedLinkIds.length })
+				"
+			>
+				<AppIcon name="lucide:download" />
+				Експорт вибраного
+			</UiButton>
+			<UiButton
+				v-if="hasLinks"
+				size="sm"
+				variant="outline"
+				@click="
+					linksStore.exportLinks()
+					trackEvent('links_exported', { scope: 'all', count: totalLinkCount })
+				"
+			>
 				<AppIcon name="lucide:download" />
 				Експортувати
 			</UiButton>
