@@ -6,6 +6,7 @@ services:
     restart: unless-stopped
     environment:
       - NODE_ENV=production
+      - NUXT_PUBLIC_MAINTENANCE=${MAINTENANCE:-false}
     ports:
       - "${EXTERNAL_PORT:-3000}:3000"
     env_file:

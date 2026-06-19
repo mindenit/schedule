@@ -11,7 +11,7 @@ function parseCookies(cookieHeader: string) {
 
 export default defineNuxtRouteMiddleware((to) => {
 	const config = useRuntimeConfig()
-	const maintenance = config.public.maintenance
+	const maintenance = !!config.public.maintenance
 
 	if (!maintenance) {
 		if (to.path === "/maintenance") {
@@ -23,8 +23,8 @@ export default defineNuxtRouteMiddleware((to) => {
 	let devAccess = 0
 
 	if (import.meta.server) {
-		const event = useEvent()
-		const cookies = parseCookies(getRequestHeader(event, "cookie") || "")
+		const event = useRequestEvent()
+		const cookies = parseCookies(event?.node.req.headers.cookie || "")
 		devAccess = parseInt(cookies.devAccess || "0")
 	} else {
 		const devAccessStorage = useLocalStorage("devAccess", 0)

@@ -32,7 +32,7 @@
 			<BigCalendarDateNavigator />
 		</div>
 		<div class="flex items-center justify-end gap-3">
-			<PlayMarketButton :switch-on-mobile="false" />
+			<PlayMarketButton variant="button" />
 			<BigCalendarViewSwitcher />
 			<ThemeSwitcher />
 		</div>

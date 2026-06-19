@@ -27,7 +27,7 @@ export default defineNuxtConfig({
 	},
 	runtimeConfig: {
 		public: {
-			maintenance: process.env.MAINTENANCE === "true",
+			maintenance: false,
 		},
 	},
 	modules: [
