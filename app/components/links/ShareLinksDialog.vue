@@ -55,7 +55,10 @@ const handleClose = () => {
 	<UiDialog v-model:open="isOpen">
 		<UiDialogContent class="max-w-md">
 			<UiDialogHeader>
-				<UiDialogTitle>Поділіться посиланнями</UiDialogTitle>
+				<UiDialogTitle class="flex items-center gap-2">
+						<AppIcon name="lucide:share-2" />
+						Поділіться посиланнями
+					</UiDialogTitle>
 			</UiDialogHeader>
 
 			<div v-if="!sharableUrl" class="space-y-4">

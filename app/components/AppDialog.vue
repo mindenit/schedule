@@ -9,7 +9,7 @@
 		<div class="flex w-full flex-col gap-4">
 			<div class="flex items-center gap-3">
 				<div class="bg-muted flex size-10 items-center justify-center rounded-full max-sm:hidden">
-					<Icon name="lucide:zap" class="text-primary size-8" />
+					<AppIcon name="lucide:zap" size="lg" class="text-primary" />
 				</div>
 				<div>
 					<p class="font-medium">Встановіть наш додаток на Android</p>

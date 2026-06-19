@@ -200,7 +200,10 @@ const handleCardClick = (item: GenericScheduleItem) => {
 
 		<UiDialogContent>
 			<UiDialogHeader>
-				<UiDialogTitle>Оберіть розклад</UiDialogTitle>
+				<UiDialogTitle class="flex items-center gap-2">
+						<AppIcon name="lucide:calendar-plus" />
+						Оберіть розклад
+					</UiDialogTitle>
 			</UiDialogHeader>
 			<UiTabs class="w-fill" :model-value="activeTab" @update:model-value="handleTabChange">
 				<UiTabsList class="grid w-full grid-cols-3">
