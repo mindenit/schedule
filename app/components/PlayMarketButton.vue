@@ -7,6 +7,8 @@ withDefaults(
 		switchOnMobile: true,
 	}
 )
+
+const { trackEvent } = useAnalytics()
 </script>
 
 <template>
@@ -16,6 +18,7 @@ withDefaults(
 		rel="noopener noreferrer"
 		class="flex shrink-0 items-center justify-center transition-all
 			[@media(max-height:650px)]:hidden"
+		@click="trackEvent('play_market_clicked')"
 	>
 		<img
 			src="/google-play.png"

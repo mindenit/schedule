@@ -14,6 +14,7 @@ const props = defineProps<Props>()
 
 const calendarStore = useCalendarStore()
 const { selectedDate, eventsByDayKey } = storeToRefs(calendarStore)
+const { trackEvent } = useAnalytics()
 
 const { getCalendarCells, getWeekDays } = useCalendarCells()
 
@@ -37,13 +38,16 @@ const handleSwipe = (direction: "left" | "right") => {
 	swipeDirection.value = direction
 	animationCounter.value++
 
-	const newDate =
-		direction === "left"
-			? navigateDate(selectedDate.value, "month", "next")
-			: navigateDate(selectedDate.value, "month", "previous")
+	const navDirection = direction === "left" ? "next" : "previous"
+	const newDate = navigateDate(selectedDate.value, "month", navDirection)
 
 	dateKey.value = newDate.toISOString()
 	calendarStore.setSelectedDate(newDate)
+	trackEvent("date_navigated", {
+		direction: direction === "left" ? "next" : "prev",
+		view: "month",
+		source: "swipe",
+	})
 
 	setTimeout(() => {
 		isAnimating.value = false

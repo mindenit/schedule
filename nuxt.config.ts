@@ -33,6 +33,7 @@ export default defineNuxtConfig({
 	modules: [
 		"@nuxt/eslint",
 		"@nuxt/icon",
+		"@nuxt/scripts",
 		"@nuxtjs/color-mode",
 		"@vueuse/nuxt",
 		"@pinia/nuxt",
@@ -83,17 +84,6 @@ export default defineNuxtConfig({
 			ogType: "website",
 			twitterCard: "summary_large_image",
 			ogLocale: "uk_UA",
-		},
-	},
-	app: {
-		head: {
-			script: [
-				{
-					src: "https://analytics.mindenit.org/api/script.js",
-					"data-site-id": "c06ec8fba05b",
-					defer: true,
-				},
-			],
 		},
 	},
 })

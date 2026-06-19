@@ -7,6 +7,7 @@ definePageMeta({
 
 const route = useRoute()
 const { getSharableLink, acceptSharableLink, isLoading } = useSharableLinks()
+const { trackEvent } = useAnalytics()
 
 const linkId = route.params.id as string
 const sharableData = ref<SharableLink | null>(null)
@@ -34,6 +35,7 @@ const handleAccept = async () => {
 	const success = await acceptSharableLink(linkId)
 	if (success) {
 		accepted.value = true
+		trackEvent("links_share_accepted", { count: sharableData.value?.links.length ?? 0 })
 	}
 }
 </script>

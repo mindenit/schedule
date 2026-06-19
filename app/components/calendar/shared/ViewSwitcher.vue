@@ -5,6 +5,7 @@ import { VIEW_OPTIONS } from "~/constants/calendar"
 
 const calendarStore = useCalendarStore()
 const { view } = storeToRefs(calendarStore)
+const { trackEvent } = useAnalytics()
 
 const viewLabel = computed(
 	() => VIEW_OPTIONS.find((o) => o.value === view.value)?.label ?? "Місяць"
@@ -13,6 +14,7 @@ const viewLabel = computed(
 function updateView(newView: unknown) {
 	if (typeof newView === "string" && newView) {
 		calendarStore.setView(newView as TCalendarView)
+		trackEvent("view_changed", { view: newView as TCalendarView, source: "switcher" })
 	}
 }
 </script>

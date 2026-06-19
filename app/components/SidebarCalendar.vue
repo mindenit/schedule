@@ -2,10 +2,12 @@
 import type { CalendarDay } from "v-calendar/dist/types/src/utils/page"
 
 const calendarStore = useCalendarStore()
+const { trackEvent } = useAnalytics()
 
 const onDayClick = (day: CalendarDay) => {
 	calendarStore.setView("day")
 	calendarStore.setSelectedDate(day.date)
+	trackEvent("view_changed", { view: "day", source: "sidebar_calendar" })
 }
 
 const selectedAttributes = computed(() => [

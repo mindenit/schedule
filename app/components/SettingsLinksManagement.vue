@@ -4,6 +4,7 @@ import ShareLinksDialog from "~/components/links/ShareLinksDialog.vue"
 import type { Subject } from "nurekit"
 
 const linksStore = useLinksStore()
+const { trackEvent } = useAnalytics()
 
 const showLinkDialog = ref(false)
 const showShareDialog = ref(false)
@@ -12,6 +13,13 @@ const editingContext = ref<{ subjectId: string; eventType: string; subject: Subj
 const selectedLinkIds = ref<string[]>([])
 
 const treeView = ref<{ selectAll: () => void; clearSelection: () => void; allSelected: boolean; isEmpty: boolean } | null>(null)
+
+const totalLinkCount = computed(() =>
+	Object.values(linksStore.links).reduce(
+		(sum, s) => sum + Object.values(s.events).reduce((s2, arr) => s2 + arr.length, 0),
+		0,
+	),
+)
 
 const hasLinks = computed(() => !treeView.value?.isEmpty)
 const allSelected = computed(() => treeView.value?.allSelected ?? false)
@@ -40,6 +48,7 @@ const saveLink = (linkData: Partial<Link>) => {
 			...editingLink.value,
 			...linkData,
 		})
+		trackEvent("link_edited")
 		useSonner.success("Посилання оновлено", {
 			description: "Зміни успішно збережено",
 		})
@@ -53,6 +62,7 @@ const saveLink = (linkData: Partial<Link>) => {
 			},
 			subject
 		)
+		trackEvent("link_added")
 		useSonner.success("Посилання додано", {
 			description: "Нове посилання успішно створено",
 		})
@@ -61,7 +71,8 @@ const saveLink = (linkData: Partial<Link>) => {
 
 const deleteLink = (linkId: string, subjectId: string, eventType: string) => {
 	linksStore.deleteLink(parseInt(subjectId), eventType, linkId)
-			useSonner.success("Посилання видалено", {
+	trackEvent("link_deleted")
+	useSonner.success("Посилання видалено", {
 			description: "Посилання успішно видалено",
 		})
 }
@@ -69,21 +80,25 @@ const deleteLink = (linkId: string, subjectId: string, eventType: string) => {
 const handleImportLinks = (file: File) => {
 	const reader = new FileReader()
 	reader.onload = (e) => {
+		const raw = e.target?.result as string
 		try {
-			const result = linksStore.importLinks(e.target?.result as string)
+			const parsed = JSON.parse(raw)
+			const count = Array.isArray(parsed) ? parsed.length : 0
+			const result = linksStore.importLinks(raw)
 			if (!result.success) {
+				useSonner.error("Помилка імпорту", {
+					description: result.error || "Не вдалося імпортувати посилання",
+				})
+			} else {
+				trackEvent("links_imported", { count })
+				useSonner.success("Імпорт завершено", {
+					description: "Посилання успішно імпортовані",
+				})
+			}
+		} catch {
 			useSonner.error("Помилка імпорту", {
-				description: result.error || "Не вдалося імпортувати посилання",
+				description: "Файл має неправильний формат",
 			})
-		} else {
-			useSonner.success("Імпорт завершено", {
-				description: "Посилання успішно імпортовані",
-			})
-		}
-	} catch {
-		useSonner.error("Помилка імпорту", {
-			description: "Файл має неправильний формат",
-		})
 		}
 	}
 	reader.readAsText(file)
@@ -128,21 +143,21 @@ const handleMainImport = (event: Event) => {
 				<AppIcon name="lucide:share-2" />
 				Поділитися ({{ selectedLinkIds.length }})
 			</UiButton>
-			<UiButton
-				v-if="selectedLinkIds.length > 0"
-				size="sm"
-				variant="outline"
-				@click="linksStore.exportSelectedLinks(selectedLinkIds)"
-			>
-				<AppIcon name="lucide:download" />
-				Експорт вибраного
-			</UiButton>
-			<UiButton
-				v-if="hasLinks"
-				size="sm"
-				variant="outline"
-				@click="linksStore.exportLinks()"
-			>
+		<UiButton
+			v-if="selectedLinkIds.length > 0"
+			size="sm"
+			variant="outline"
+			@click="linksStore.exportSelectedLinks(selectedLinkIds); trackEvent('links_exported', { scope: 'selected', count: selectedLinkIds.length })"
+		>
+			<AppIcon name="lucide:download" />
+			Експорт вибраного
+		</UiButton>
+		<UiButton
+			v-if="hasLinks"
+			size="sm"
+			variant="outline"
+			@click="linksStore.exportLinks(); trackEvent('links_exported', { scope: 'all', count: totalLinkCount })"
+		>
 				<AppIcon name="lucide:download" />
 				Експортувати
 			</UiButton>

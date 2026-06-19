@@ -15,6 +15,7 @@ const props = defineProps<Props>()
 
 const calendarStore = useCalendarStore()
 const { groupEventsBySameTime } = useEventGrouping()
+const { trackEvent } = useAnalytics()
 
 // Only mount the desktop popover block on lg+ screens. Mobile never mounts any
 // Reka UI popover instances — tapping a cell navigates to day view instead.
@@ -75,6 +76,7 @@ function openEventPopover(event: Schedule, triggerEl: HTMLElement) {
 	activeHiddenEvents.value = []
 	popoverMode.value = "event"
 	popoverOpen.value = true
+	trackEvent("event_opened", { lesson_type: event.type })
 }
 
 function openOverflowPopover(hiddenEvents: Schedule[], triggerEl: HTMLElement) {
@@ -88,6 +90,7 @@ function openOverflowPopover(hiddenEvents: Schedule[], triggerEl: HTMLElement) {
 function handleMobileClick() {
 	calendarStore.setSelectedDate(props.cell.date)
 	calendarStore.setView("day" as TCalendarView)
+	trackEvent("view_changed", { view: "day", source: "day_cell" })
 }
 </script>
 

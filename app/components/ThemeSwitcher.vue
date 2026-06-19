@@ -1,8 +1,11 @@
 <script lang="ts" setup>
 const colorMode = useColorMode()
+const { trackEvent } = useAnalytics()
 
 const handleClick = () => {
-	colorMode.preference = colorMode.value === "light" ? "dark" : "light"
+	const next = colorMode.value === "light" ? "dark" : "light"
+	colorMode.preference = next
+	trackEvent("theme_changed", { theme: next })
 }
 
 const themeIcon = computed(() => (colorMode.value !== "light" ? "lucide:moon" : "lucide:sun"))

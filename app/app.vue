@@ -3,6 +3,8 @@ import { storeToRefs } from "pinia"
 import { useSettingsStore } from "~/stores/settings"
 
 const { isSnowEnabled } = storeToRefs(useSettingsStore())
+
+useAnalytics()
 </script>
 
 <template>

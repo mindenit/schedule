@@ -21,6 +21,7 @@ const props = defineProps<{ class?: string }>()
 
 const filtersStore = useFiltersStore()
 const scheduleStore = useScheduleStore()
+const { trackEvent } = useAnalytics()
 
 const isOpen = ref(false)
 
@@ -94,6 +95,16 @@ const { data: groups } = useQuery(
 watch(isOpen, (open) => {
 	if (open && selectedSchedule.value) {
 		filtersStore.loadFilters(selectedSchedule.value.id, selectedSchedule.value.type)
+	}
+	if (!open && filtersStore.hasActive) {
+		const { lessonTypes, teachers, auditoriums, subjects, groups } = filtersStore.activeFilters
+		trackEvent("filters_applied", {
+			lesson_types: lessonTypes.length,
+			teachers: teachers.length,
+			auditoriums: auditoriums.length,
+			subjects: subjects.length,
+			groups: groups.length,
+		})
 	}
 })
 </script>
@@ -228,7 +239,7 @@ watch(isOpen, (open) => {
 				"
 				class="flex gap-2"
 			>
-				<UiButton variant="outline" @click="filtersStore.clearAll">
+				<UiButton variant="outline" @click="filtersStore.clearAll(); trackEvent('filters_reset')">
 					<AppIcon name="lucide:rotate-ccw" />
 					Скинути
 				</UiButton>

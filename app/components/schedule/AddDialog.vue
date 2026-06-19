@@ -28,6 +28,7 @@ const {
 } = useQuery(auditoriumsOptions())
 
 const scheduleStore = useScheduleStore()
+const { trackEvent } = useAnalytics()
 
 const searchQuery = ref("")
 const activeTab = ref<ScheduleTabType>("group")
@@ -175,6 +176,7 @@ const handleTabChange = (newTab: string | number) => {
 
 const handleCardClick = (item: GenericScheduleItem) => {
 	scheduleStore.addSchedule(item)
+	trackEvent("schedule_added", { type: item.type })
 	isDialogOpen.value = false
 }
 </script>

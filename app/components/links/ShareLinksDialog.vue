@@ -20,6 +20,7 @@ const isOpen = computed({
 })
 
 const { createSharableLink, isLoading } = useSharableLinks()
+const { trackEvent } = useAnalytics()
 const sharableUrl = ref<string | null>(null)
 const copied = ref(false)
 
@@ -27,6 +28,7 @@ const handleCreateLink = async () => {
 	const url = await createSharableLink(props.selectedLinkIds)
 	if (url) {
 		sharableUrl.value = url
+		trackEvent("links_shared", { count: props.selectedLinkIds.length })
 	}
 }
 

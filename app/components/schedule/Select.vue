@@ -2,6 +2,7 @@
 import { getScheduleIcon, getScheduleTypeLabel } from "~/constants/schedule"
 
 const scheduleStore = useScheduleStore()
+const { trackEvent } = useAnalytics()
 
 const selectedValue = computed({
 	get: () => {
@@ -12,6 +13,10 @@ const selectedValue = computed({
 			const schedule = scheduleStore.allSchedules.find((s) => s.id.toString() === value)
 			if (schedule) {
 				scheduleStore.selectSchedule(schedule)
+				trackEvent("schedule_switched", {
+					type: schedule.type,
+					total_schedules: scheduleStore.allSchedules.length,
+				})
 			}
 		}
 	},

@@ -1,8 +1,13 @@
 <script setup lang="ts">
+import { storeToRefs } from "pinia"
+
 const calendarStore = useCalendarStore()
+const { view } = storeToRefs(calendarStore)
+const { trackEvent } = useAnalytics()
 const today = new Date()
 function handleClick() {
 	calendarStore.setSelectedDate(today)
+	trackEvent("date_navigated", { direction: "today", view: view.value, source: "button" })
 }
 </script>
 

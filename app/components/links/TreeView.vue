@@ -53,6 +53,7 @@ type TreeNode = SubjectNode | EventTypeNode | LinkNode
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const linksStore = useLinksStore()
+const { trackEvent } = useAnalytics()
 
 const treeItems = computed<SubjectNode[]>(() => {
 	return Object.entries(linksStore.links).map(([subjectId, subjectData]) => {
@@ -248,13 +249,13 @@ const EVENT_TYPE_BG: Record<string, string> = {
 							</div>
 							<div class="min-w-0 flex-1 cursor-pointer" @click.stop="handleSelect()">
 								<p class="truncate text-sm">{{ item.value.name }}</p>
-								<a
-									:href="item.value.url"
-									target="_blank"
-									rel="noopener noreferrer"
-									class="text-muted-foreground hover:text-foreground truncate text-xs transition-colors"
-									@click.stop
-								>
+							<a
+								:href="item.value.url"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="text-muted-foreground hover:text-foreground truncate text-xs transition-colors"
+								@click.stop="trackEvent('link_opened')"
+							>
 									{{ item.value.url }}
 								</a>
 							</div>

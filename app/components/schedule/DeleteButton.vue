@@ -3,7 +3,8 @@ import { storeToRefs } from "pinia"
 import { getScheduleIcon, getScheduleTypeLabel } from "~/constants/schedule"
 
 const scheduleStore = useScheduleStore()
-const { selectedSchedule, isInitialized } = storeToRefs(scheduleStore)
+const { selectedSchedule, isInitialized, allSchedules } = storeToRefs(scheduleStore)
+const { trackEvent } = useAnalytics()
 const showDialog = ref(false)
 
 // Wait for the store to hydrate from localStorage before enabling the button.
@@ -11,7 +12,12 @@ const hasActiveSchedule = computed(() => isInitialized.value && !!selectedSchedu
 
 const removeActiveSchedule = () => {
 	if (selectedSchedule.value) {
-		scheduleStore.removeSchedule(selectedSchedule.value.id)
+		const removed = selectedSchedule.value
+		scheduleStore.removeSchedule(removed.id)
+		trackEvent("schedule_removed", {
+			type: removed.type,
+			total_remaining: allSchedules.value.length,
+		})
 	}
 	showDialog.value = false
 }

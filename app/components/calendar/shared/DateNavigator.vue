@@ -6,6 +6,7 @@ import { VIEW_CONFIGS } from "~/constants/calendar"
 
 const calendarStore = useCalendarStore()
 const { selectedDate, view } = storeToRefs(calendarStore)
+const { trackEvent } = useAnalytics()
 
 const { capitalize } = useEventFormatting()
 
@@ -23,11 +24,13 @@ const title = computed(() => {
 function handlePrevious() {
 	const newDate = navigateDate(selectedDate.value, view.value, "previous")
 	calendarStore.setSelectedDate(newDate)
+	trackEvent("date_navigated", { direction: "prev", view: view.value, source: "button" })
 }
 
 function handleNext() {
 	const newDate = navigateDate(selectedDate.value, view.value, "next")
 	calendarStore.setSelectedDate(newDate)
+	trackEvent("date_navigated", { direction: "next", view: view.value, source: "button" })
 }
 </script>
 

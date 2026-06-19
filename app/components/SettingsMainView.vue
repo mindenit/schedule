@@ -8,6 +8,7 @@ import { getScheduleIcon } from "~/constants/schedule"
 const scheduleStore = useScheduleStore()
 const calendarStore = useCalendarStore()
 const settingsStore = useSettingsStore()
+const { trackEvent } = useAnalytics()
 const { isSnowEnabled } = storeToRefs(settingsStore)
 
 const { selectedSchedule, allSchedules } = storeToRefs(scheduleStore)
@@ -122,6 +123,7 @@ const handleIcsExportAcademicYear = async () => {
 	await exportAcademicYearSchedule(schedule.id, schedule.type, {
 		customFilename: `academic-schedule-${schedule.name}-${new Date().getFullYear()}.ics`,
 	})
+	trackEvent("ics_exported", { schedule_type: schedule.type })
 }
 </script>
 

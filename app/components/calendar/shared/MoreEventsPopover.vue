@@ -9,6 +9,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const { formatTime, formatDate, getEventTypeColor } = useEventFormatting()
+const { trackEvent } = useAnalytics()
 
 const formattedDate = computed(() => formatDate(props.date))
 
@@ -31,6 +32,7 @@ function getEventTimeRange(event: Schedule): string {
 					<div
 						class="hover:bg-muted/50 flex cursor-pointer items-center gap-3 rounded-md p-2
 							transition-colors"
+						@click="trackEvent('event_opened', { lesson_type: event.type })"
 					>
 						<div
 							class="h-3 w-3 flex-shrink-0 rounded-full"
