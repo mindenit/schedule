@@ -29,7 +29,7 @@ withDefaults(defineProps<Props>(), {
 			v-if="variant === 'overlay'"
 			class="bg-background/70 absolute inset-0 flex items-center justify-center backdrop-blur-sm"
 		>
-			<div class="border-border bg-card rounded-lg border p-6 shadow-lg">
+			<div class="border-border bg-card mx-4 rounded-lg border p-6 shadow-lg">
 				<div class="flex items-center gap-4">
 					<AppIcon v-if="icon" :name="icon" class="shrink-0" />
 					<div>

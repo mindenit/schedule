@@ -7,7 +7,7 @@
 						<AppIcon name="lucide:menu" />
 					</UiButton>
 				</UiDrawerTrigger>
-				<UiDrawerContent>
+				<UiDrawerContent hide-knob>
 					<div class="h-full p-3">
 						<TheSidebar :show-add-dialog="false" />
 					</div>
