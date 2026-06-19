@@ -53,7 +53,7 @@ const handleAccept = async () => {
 
 			<div
 				v-else-if="error"
-				class="bg-destructive/10 border-destructive rounded-lg border p-6 text-center"
+				class="bg-destructive/10 border-destructive rounded-lg border p-8 text-center"
 			>
 				<AppIcon name="lucide:alert-circle" class="text-destructive mx-auto mb-2" size="lg" />
 				<h2 class="text-destructive text-lg font-semibold">Помилка</h2>
@@ -108,7 +108,7 @@ const handleAccept = async () => {
 							</div>
 							<a :href="link.url" target="_blank" rel="noopener noreferrer" class="flex-shrink-0">
 								<UiButton size="sm" variant="ghost">
-									<AppIcon name="lucide:external-link" class="h-4 w-4" />
+									<AppIcon name="lucide:external-link" />
 								</UiButton>
 							</a>
 						</div>

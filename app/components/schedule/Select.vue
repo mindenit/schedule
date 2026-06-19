@@ -69,7 +69,7 @@ const selectedValue = computed({
 				</UiSelectItem>
 			</template>
 			<template v-else>
-				<div class="text-muted-foreground p-2 text-center text-sm">Немає доданих розкладів</div>
+				<AppEmptyState title="Немає доданих розкладів" />
 			</template>
 		</UiSelectContent>
 	</UiSelect>

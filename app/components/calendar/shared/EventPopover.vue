@@ -105,14 +105,14 @@ const deleteLink = (linkId: string) => {
 
 		<div class="bg-muted/50 space-y-1.5 rounded-lg p-2.5 text-xs">
 			<div class="flex items-center gap-2">
-				<AppIcon name="lucide:clock" class="text-muted-foreground h-3.5 w-3.5 flex-shrink-0" />
+				<AppIcon name="lucide:clock" size="3.5" class="text-muted-foreground flex-shrink-0" />
 				<span class="font-medium">{{ formattedTimeRange }}</span>
 				<span class="text-muted-foreground">·</span>
 				<span class="text-muted-foreground">{{ pairNumber }}</span>
 			</div>
 
 			<div class="flex items-center gap-2">
-				<AppIcon name="lucide:calendar" class="text-muted-foreground h-3.5 w-3.5 flex-shrink-0" />
+				<AppIcon name="lucide:calendar" size="3.5" class="text-muted-foreground flex-shrink-0" />
 				<span>{{ formattedDate }}</span>
 				<span class="text-muted-foreground">·</span>
 				<span class="text-muted-foreground">{{ pairIndexText }}</span>
@@ -124,7 +124,8 @@ const deleteLink = (linkId: string) => {
 				<div class="flex items-start gap-2">
 					<AppIcon
 						name="lucide:map-pin"
-						class="text-muted-foreground mt-0.5 h-3.5 w-3.5 flex-shrink-0"
+						size="3.5"
+						class="text-muted-foreground mt-0.5 flex-shrink-0"
 					/>
 					<div class="min-w-0 flex-1">
 						<div class="truncate font-medium">{{ auditoriumText }}</div>
@@ -135,7 +136,8 @@ const deleteLink = (linkId: string) => {
 				<div class="flex items-start gap-2">
 					<AppIcon
 						name="lucide:user"
-						class="text-muted-foreground mt-0.5 h-3.5 w-3.5 flex-shrink-0"
+						size="3.5"
+						class="text-muted-foreground mt-0.5 flex-shrink-0"
 					/>
 					<div class="min-w-0 flex-1">
 						<div class="truncate">{{ teachersText }}</div>
@@ -149,7 +151,8 @@ const deleteLink = (linkId: string) => {
 			<div class="flex items-start gap-2">
 				<AppIcon
 					name="lucide:users"
-					class="text-muted-foreground mt-0.5 h-3.5 w-3.5 flex-shrink-0"
+					size="3.5"
+					class="text-muted-foreground mt-0.5 flex-shrink-0"
 				/>
 				<div class="flex-1">
 					<div>{{ groupsText }}</div>
@@ -164,11 +167,11 @@ const deleteLink = (linkId: string) => {
 		<div class="border-t pt-3">
 			<div class="mb-2 flex items-center justify-between">
 				<h4 class="flex items-center gap-1.5 text-xs font-semibold">
-					<AppIcon name="lucide:link" class="h-3.5 w-3.5" />
+					<AppIcon name="lucide:link" size="3.5" />
 					Посилання
 				</h4>
-				<UiButton size="icon" variant="outline" class="h-7 w-7" @click="addLink">
-					<AppIcon name="lucide:plus" class="h-3.5 w-3.5" />
+				<UiButton size="icon" variant="ghost" class="size-7" @click="addLink">
+					<AppIcon name="lucide:plus" size="3.5" />
 				</UiButton>
 			</div>
 			<div v-if="eventLinks.length" class="max-h-[140px] space-y-1 overflow-auto">
@@ -187,18 +190,21 @@ const deleteLink = (linkId: string) => {
 						{{ link.name }}
 					</a>
 					<div class="flex gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
-						<UiButton size="icon" variant="ghost" class="h-6 w-6" @click="editLink(link)">
-							<AppIcon name="lucide:pencil" class="h-3 w-3" />
+						<UiButton size="icon" variant="ghost" class="size-7" @click="editLink(link)">
+							<AppIcon name="lucide:pencil" size="xs" />
 						</UiButton>
-						<UiButton size="icon" variant="ghost" class="h-6 w-6" @click="deleteLink(link.id)">
-							<AppIcon name="lucide:trash" class="h-3 w-3" />
+						<UiButton
+							size="icon"
+							variant="ghost"
+							class="size-7 text-destructive"
+							@click="deleteLink(link.id)"
+						>
+							<AppIcon name="lucide:trash" size="xs" />
 						</UiButton>
 					</div>
 				</div>
 			</div>
-			<p v-else class="text-muted-foreground py-3 text-center text-xs italic">
-				Немає збережених посилань
-			</p>
+			<AppEmptyState v-else title="Немає збережених посилань" />
 		</div>
 
 		<LinksAddDialog v-model="showLinkDialog" :link="editingLink" @save="saveLink" />

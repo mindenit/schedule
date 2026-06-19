@@ -131,7 +131,7 @@ const handleMainImport = (event: Event) => {
 <template>
 	<div class="flex flex-col gap-3">
 		<div class="flex flex-wrap items-center justify-end gap-2">
-			<UiButton v-if="hasLinks" size="sm" variant="ghost" @click="toggleSelectAll">
+			<UiButton v-if="hasLinks" size="sm" variant="outline" @click="toggleSelectAll">
 				{{ allSelected ? "Скасувати вибір" : "Вибрати все" }}
 			</UiButton>
 			<UiButton

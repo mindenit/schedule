@@ -59,24 +59,18 @@ const hasEvents = computed(() => todayEvents.value && todayEvents.value.length >
 								:name="event.subject.title"
 							/>
 						</template>
-						<div
+						<AppEmptyState
 							v-else-if="hasActiveSchedule && !hasEvents && !isLoading"
-							class="text-muted-foreground flex flex-col items-center justify-center gap-2 p-6
-								text-center"
-						>
-							<AppIcon name="lucide:smile" size="xl" class="opacity-50" />
-							<p class="text-sm">
-								Пар на сьогодні <br /><span class="text-lg font-semibold">немає</span>
-							</p>
-						</div>
-						<div
+							variant="sidebar"
+							icon="lucide:smile"
+							title="Пар на сьогодні немає"
+						/>
+						<AppEmptyState
 							v-else
-							class="text-muted-foreground flex flex-col items-center justify-center gap-2 p-6
-								text-center"
-						>
-							<AppIcon name="lucide:calendar-plus" size="xl" class="opacity-50" />
-							<p class="text-sm">Оберіть розклад для перегляду пар</p>
-						</div>
+							variant="sidebar"
+							icon="lucide:calendar-plus"
+							title="Оберіть розклад для перегляду пар"
+						/>
 					</div>
 				</UiScrollArea>
 			</div>

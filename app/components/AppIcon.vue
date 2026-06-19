@@ -1,16 +1,18 @@
 <script setup lang="ts">
 interface Props {
 	name: string
-	size?: "xs" | "sm" | "md" | "lg" | "xl" | "2xl"
+	size?: "xs" | "3.5" | "sm" | "md" | "lg" | "xl" | "2xl"
 	class?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
 	size: "sm",
+	class: undefined,
 })
 
 const sizeClasses = {
 	xs: "!size-3", // 12px
+	"3.5": "!size-3.5", // 14px
 	sm: "!size-4", // 16px
 	md: "!size-5", // 20px
 	lg: "!size-6", // 24px

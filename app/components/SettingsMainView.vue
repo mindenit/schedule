@@ -58,7 +58,7 @@ const toUnix = (date: Date) => Math.floor(date.getTime() / 1000)
 
 const copyAllSchedulesToClipboard = async () => {
 	if (allSchedules.value.length === 0) {
-		useSonner.warning("Немає даних для копіювання")
+		useSonner.warning("Немає даних для копіювання", { description: "Додайте розклади перед копіюванням" })
 		return
 	}
 

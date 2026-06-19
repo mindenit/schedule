@@ -163,10 +163,11 @@ const EVENT_TYPE_BG: Record<string, string> = {
 </script>
 
 <template>
-	<div v-if="isEmpty" class="text-muted-foreground py-8 text-center text-sm">
-		<p>Немає збережених посилань</p>
-		<p class="mt-1 text-xs">Додайте посилання до занять через календар</p>
-	</div>
+	<AppEmptyState
+		v-if="isEmpty"
+		title="Немає збережених посилань"
+		description="Додайте посилання до занять через календар"
+	/>
 
 	<UiTree
 		v-else

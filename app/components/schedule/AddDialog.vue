@@ -201,9 +201,10 @@ const handleCardClick = (item: GenericScheduleItem) => {
 		<UiDialogContent>
 			<UiDialogHeader>
 				<UiDialogTitle class="flex items-center gap-2">
-						<AppIcon name="lucide:calendar-plus" />
-						Оберіть розклад
-					</UiDialogTitle>
+					<AppIcon name="lucide:calendar-plus" />
+					Оберіть розклад
+				</UiDialogTitle>
+				<UiDialogDescription>Оберіть групу, викладача або аудиторію</UiDialogDescription>
 			</UiDialogHeader>
 			<UiTabs class="w-fill" :model-value="activeTab" @update:model-value="handleTabChange">
 				<UiTabsList class="grid w-full grid-cols-3">
@@ -251,14 +252,13 @@ const handleCardClick = (item: GenericScheduleItem) => {
 									</div>
 								</div>
 							</template>
-							<div v-else class="text-muted-foreground p-4 text-center">
-								{{ searchQuery ? config.searchEmptyMessage : config.emptyMessage }}
-							</div>
+							<AppEmptyState
+							v-else
+							:title="searchQuery ? config.searchEmptyMessage : config.emptyMessage"
+						/>
 						</div>
 					</template>
-					<div v-else class="text-muted-foreground p-4 text-center">
-						{{ config.emptyMessage }}
-					</div>
+					<AppEmptyState v-else :title="config.emptyMessage" />
 				</UiTabsContent>
 			</UiTabs>
 		</UiDialogContent>

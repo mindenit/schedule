@@ -5,6 +5,7 @@
 				<AppIcon name="logos:android-icon" size="lg" />
 				Наш Android додаток
 			</UiDialogTitle>
+			<UiDialogDescription>Завантажте наш офіційний додаток для Android</UiDialogDescription>
 		</UiDialogHeader>
 		<div class="flex w-full flex-col gap-4">
 			<div class="flex items-center gap-3">

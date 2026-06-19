@@ -112,7 +112,7 @@ watch(isOpen, (open) => {
 <template>
 	<UiDialog v-model:open="isOpen">
 		<UiDialogTrigger as-child>
-			<UiButton variant="outline" size="icon" :class="props.class">
+			<UiButton variant="default" size="icon" :class="props.class">
 				<AppIcon name="lucide:filter" />
 			</UiButton>
 		</UiDialogTrigger>
@@ -126,12 +126,10 @@ watch(isOpen, (open) => {
 				<UiDialogDescription> Налаштуйте фільтри для відображення розкладу. </UiDialogDescription>
 			</UiDialogHeader>
 
-			<div
+			<AppEmptyState
 				v-if="!selectedSchedule"
-				class="text-muted-foreground flex items-center justify-center py-8"
-			>
-				Оберіть розклад для налаштування фільтрів
-			</div>
+				title="Оберіть розклад для налаштування фільтрів"
+			/>
 
 			<div v-else class="max-h-96 overflow-x-hidden overflow-y-auto">
 				<UiAccordion type="multiple" class="space-y-2">

@@ -12,9 +12,9 @@ function handleClick() {
 </script>
 
 <template>
-	<UiButton variant="secondary" size="icon" class="md:hidden" @click="handleClick">
+	<UiButton variant="outline" size="icon" class="md:hidden" @click="handleClick">
 		<AppIcon name="lucide:calendar-days" />
 	</UiButton>
 
-	<UiButton variant="secondary" class="max-md:hidden" @click="handleClick"> Сьогодні </UiButton>
+	<UiButton variant="outline" class="max-md:hidden" @click="handleClick"> Сьогодні </UiButton>
 </template>

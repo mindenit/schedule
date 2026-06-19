@@ -56,9 +56,10 @@ const handleClose = () => {
 		<UiDialogContent class="max-w-md">
 			<UiDialogHeader>
 				<UiDialogTitle class="flex items-center gap-2">
-						<AppIcon name="lucide:share-2" />
-						Поділіться посиланнями
-					</UiDialogTitle>
+					<AppIcon name="lucide:share-2" />
+					Поділіться посиланнями
+				</UiDialogTitle>
+				<UiDialogDescription>Створіть посилання для передачі іншим користувачам</UiDialogDescription>
 			</UiDialogHeader>
 
 			<div v-if="!sharableUrl" class="space-y-4">
@@ -89,7 +90,7 @@ const handleClose = () => {
 							:class="{ 'bg-green-100': copied }"
 							@click="copyToClipboard"
 						>
-							<AppIcon :name="copied ? 'lucide:check' : 'lucide:copy'" class="h-4 w-4" />
+							<AppIcon :name="copied ? 'lucide:check' : 'lucide:copy'" />
 						</UiButton>
 					</div>
 				</div>

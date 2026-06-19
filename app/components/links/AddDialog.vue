@@ -1,6 +1,6 @@
 <script setup lang="ts">
 interface Props {
-	modelValue: boolean
+	modelValue?: boolean
 	link?: Link | null
 }
 
@@ -35,9 +35,9 @@ const save = () => {
 		<UiDialogContent>
 			<UiDialogHeader>
 				<UiDialogTitle class="flex items-center gap-2">
-						<AppIcon :name="link ? 'lucide:pencil' : 'lucide:link'" />
-						{{ link ? "Редагувати" : "Додати" }} посилання
-					</UiDialogTitle>
+					<AppIcon :name="link ? 'lucide:pencil' : 'lucide:link'" />
+					{{ link ? "Редагувати" : "Додати" }} посилання
+				</UiDialogTitle>
 				<UiDialogDescription>
 					Вставте посилання та, за бажанням, вкажіть його назву.
 				</UiDialogDescription>

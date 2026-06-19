@@ -58,20 +58,13 @@ const overlayContent = computed(() => {
 					class="bg-background/70 absolute inset-0 flex items-center justify-center
 						backdrop-blur-sm"
 				>
-					<div
+					<AppEmptyState
 						v-if="overlayContent === 'no-schedule'"
-						class="border-border bg-card rounded-lg border p-6 shadow-lg"
-					>
-						<div class="flex items-center">
-							<AppIcon name="lucide:alert-circle" class="flex shrink-0" />
-							<div class="ml-4">
-								<h3 class="text-lg font-semibold">Розклад не обрано</h3>
-								<div class="text-sm">
-									<p>Оберіть або додайте розклад</p>
-								</div>
-							</div>
-						</div>
-					</div>
+						variant="card"
+						icon="lucide:alert-circle"
+						title="Розклад не обрано"
+						description="Оберіть або додайте розклад"
+					/>
 
 					<TheLoader v-else-if="overlayContent === 'loading'" size="lg" />
 
