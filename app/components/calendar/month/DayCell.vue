@@ -94,7 +94,7 @@ function handleMobileClick() {
 
 <template>
 	<div class="bg-card flex h-full flex-col overflow-hidden p-2.5" :class="containerClasses">
-		<div class="flex h-8 w-full flex-shrink-0 items-center justify-center">
+		<div class="flex h-8 w-full shrink-0 items-center justify-center">
 			<span
 				class="flex size-6 items-center justify-center rounded-full text-xs font-medium"
 				:class="dayClasses"
@@ -127,7 +127,7 @@ function handleMobileClick() {
 					<div
 						v-for="(group, groupIndex) in cellDisplay.displayGroups"
 						:key="groupIndex"
-						class="flex h-6 flex-shrink-0 gap-1"
+						class="flex h-6 shrink-0 gap-1"
 					>
 						<template v-if="group.length > 1">
 							<BigCalendarMonthEventBadge
@@ -150,7 +150,7 @@ function handleMobileClick() {
 						</template>
 					</div>
 
-					<div v-if="cellDisplay.hasMoreEvents" class="flex h-6 flex-shrink-0 gap-1">
+					<div v-if="cellDisplay.hasMoreEvents" class="flex h-6 shrink-0 gap-1">
 						<BigCalendarMonthEventBadge
 							@click="
 								openOverflowPopover(cellDisplay.hiddenEvents, $event.currentTarget as HTMLElement)
