@@ -37,6 +37,11 @@ const hasEvents = computed(() => todayEvents.value && todayEvents.value.length >
 		<div class="text-base font-semibold">{{ formattedDate }}</div>
 
 		<ClientOnly>
+			<template #fallback>
+				<div class="flex flex-col gap-3">
+					<UiSkeleton v-for="i in 3" :key="i" class="h-16 w-full rounded-md" />
+				</div>
+			</template>
 			<div class="flex min-h-0 flex-1 flex-col overflow-hidden">
 				<UiScrollArea class="min-h-0 flex-1">
 					<div class="flex flex-col gap-3">

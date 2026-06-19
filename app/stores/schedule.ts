@@ -94,9 +94,9 @@ export const useScheduleStore = defineStore("schedule", () => {
 	}
 
 	return {
-		allSchedules: readonly(allSchedules),
-		selectedSchedule: readonly(selectedSchedule),
-		isInitialized: readonly(isInitialized),
+		allSchedules,
+		selectedSchedule,
+		isInitialized,
 		addSchedule,
 		removeSchedule,
 		selectSchedule,

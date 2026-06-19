@@ -13,15 +13,27 @@ defineProps<Props>()
 				<FiltersDialog class="hidden md:flex" />
 			</div>
 			<div class="flex items-center gap-2">
-				<ScheduleSelect />
-				<ScheduleDeleteButton />
+				<ClientOnly>
+					<ScheduleSelect />
+					<ScheduleDeleteButton />
+					<template #fallback>
+						<UiSkeleton class="h-9 w-full" />
+						<UiSkeleton class="size-9 shrink-0" />
+					</template>
+				</ClientOnly>
 			</div>
 		</div>
 		<div v-else class="flex flex-col gap-2">
 			<BigCalendarViewSwitcher />
 			<div class="flex items-center gap-2">
-				<ScheduleSelect />
-				<ScheduleDeleteButton />
+				<ClientOnly>
+					<ScheduleSelect />
+					<ScheduleDeleteButton />
+					<template #fallback>
+						<UiSkeleton class="h-9 w-full" />
+						<UiSkeleton class="size-9 shrink-0" />
+					</template>
+				</ClientOnly>
 			</div>
 		</div>
 

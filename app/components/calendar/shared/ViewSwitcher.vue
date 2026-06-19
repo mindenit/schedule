@@ -6,6 +6,10 @@ import { VIEW_OPTIONS } from "~/constants/calendar"
 const calendarStore = useCalendarStore()
 const { view } = storeToRefs(calendarStore)
 
+const viewLabel = computed(
+	() => VIEW_OPTIONS.find((o) => o.value === view.value)?.label ?? "Місяць"
+)
+
 function updateView(newView: unknown) {
 	if (typeof newView === "string" && newView) {
 		calendarStore.setView(newView as TCalendarView)
@@ -16,7 +20,7 @@ function updateView(newView: unknown) {
 <template>
 	<UiSelect :model-value="view" @update:model-value="updateView">
 		<UiSelectTrigger class="w-auto max-md:w-full">
-			<UiSelectValue placeholder="Обрати вигляд" />
+			<UiSelectValue>{{ viewLabel }}</UiSelectValue>
 		</UiSelectTrigger>
 		<UiSelectContent>
 			<UiSelectItem v-for="option in VIEW_OPTIONS" :key="option.value" :value="option.value">

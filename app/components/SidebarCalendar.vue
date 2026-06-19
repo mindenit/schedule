@@ -23,14 +23,19 @@ const initialPage = computed(() => ({
 </script>
 
 <template>
-	<UiCalendar
-		expanded
-		locale="uk"
-		class="sidebar-calendar bg-card rounded-md"
-		:attributes="selectedAttributes"
-		:initial-page="initialPage"
-		@dayclick="onDayClick"
-	/>
+	<ClientOnly>
+		<UiCalendar
+			expanded
+			locale="uk"
+			class="sidebar-calendar bg-card rounded-md"
+			:attributes="selectedAttributes"
+			:initial-page="initialPage"
+			@dayclick="onDayClick"
+		/>
+		<template #fallback>
+			<UiSkeleton class="h-[286px] w-[280px] rounded-md" />
+		</template>
+	</ClientOnly>
 </template>
 
 <style>
