@@ -90,6 +90,27 @@ export const useLinksStore = defineStore("links", () => {
 		downloadFile(blob, `schedule-links-backup-${new Date().toISOString().split("T")[0]}.json`)
 	}
 
+	function exportSelectedLinks(linkIds: string[]) {
+		const idSet = new Set(linkIds)
+		const filtered: LinksStore = {}
+
+		Object.entries(links.value).forEach(([subjectId, subjectData]) => {
+			const filteredEvents: Record<string, typeof subjectData.events[string]> = {}
+
+			Object.entries(subjectData.events).forEach(([eventType, eventLinks]) => {
+				const matching = eventLinks.filter((l) => idSet.has(l.id))
+				if (matching.length > 0) filteredEvents[eventType] = matching
+			})
+
+			if (Object.keys(filteredEvents).length > 0) {
+				filtered[subjectId] = { subject: subjectData.subject, events: filteredEvents }
+			}
+		})
+
+		const blob = new Blob([JSON.stringify(filtered, null, 2)], { type: "application/json" })
+		downloadFile(blob, `schedule-links-selected-${new Date().toISOString().split("T")[0]}.json`)
+	}
+
 	function importLinks(jsonString: string): { success: boolean; error?: string } {
 		try {
 			const data = JSON.parse(jsonString)
@@ -178,6 +199,7 @@ export const useLinksStore = defineStore("links", () => {
 		updateLink,
 		deleteLink,
 		exportLinks,
+		exportSelectedLinks,
 		importLinks,
 		getSubjectInfo,
 	}

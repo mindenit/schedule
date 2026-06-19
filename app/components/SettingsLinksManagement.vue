@@ -12,30 +12,18 @@ const editingLink = ref<Link | null>(null)
 const editingContext = ref<{ subjectId: string; eventType: string; subject: Subject } | null>(null)
 const selectedLinkIds = ref<string[]>([])
 
-const organizedLinks = computed(() => {
-	const result: Array<{
-		subjectId: string
-		subject: Subject
-		eventType: string
-		links: Link[]
-	}> = []
+const treeView = ref<{ selectAll: () => void; clearSelection: () => void; allSelected: boolean; isEmpty: boolean } | null>(null)
 
-	Object.entries(linksStore.links).forEach(([subjectId, subjectData]) => {
-		const subject = subjectData.subject
-		Object.entries(subjectData.events).forEach(([eventType, links]) => {
-			if (links.length > 0) {
-				result.push({
-					subjectId,
-					subject,
-					eventType,
-					links,
-				})
-			}
-		})
-	})
+const hasLinks = computed(() => !treeView.value?.isEmpty)
+const allSelected = computed(() => treeView.value?.allSelected ?? false)
 
-	return result
-})
+const toggleSelectAll = () => {
+	if (allSelected.value) {
+		treeView.value?.clearSelection()
+	} else {
+		treeView.value?.selectAll()
+	}
+}
 
 const editLink = (link: Link, subjectId: string, eventType: string, subject: Subject) => {
 	editingLink.value = link
@@ -122,41 +110,56 @@ const handleMainImport = (event: Event) => {
 </script>
 
 <template>
-	<div class="flex flex-col overflow-hidden">
-		<div class="flex items-center justify-between gap-2 max-md:flex-col max-md:pb-2">
-			<h3 class="text-lg font-medium">Керування посиланнями</h3>
-			<div class="flex gap-2">
-				<UiButton
-					v-if="selectedLinkIds.length > 0"
-					size="sm"
-					variant="outline"
-					@click="showShareDialog = true"
-				>
-					<AppIcon name="lucide:share-2" />
-					Поділіться ({{ selectedLinkIds.length }})
-				</UiButton>
-				<UiButton size="sm" @click="triggerImport">
-					<AppIcon name="lucide:download" />
-					Імпортувати
-				</UiButton>
-			</div>
+	<div class="flex flex-col gap-3">
+		<div class="flex flex-wrap items-center justify-end gap-2">
+			<UiButton
+				v-if="hasLinks"
+				size="sm"
+				variant="ghost"
+				@click="toggleSelectAll"
+			>
+				{{ allSelected ? 'Скасувати вибір' : 'Вибрати все' }}
+			</UiButton>
+			<UiButton
+				v-if="selectedLinkIds.length > 0"
+				size="sm"
+				variant="outline"
+				@click="showShareDialog = true"
+			>
+				<AppIcon name="lucide:share-2" />
+				Поділитися ({{ selectedLinkIds.length }})
+			</UiButton>
+			<UiButton
+				v-if="selectedLinkIds.length > 0"
+				size="sm"
+				variant="outline"
+				@click="linksStore.exportSelectedLinks(selectedLinkIds)"
+			>
+				<AppIcon name="lucide:download" />
+				Експорт вибраного
+			</UiButton>
+			<UiButton
+				v-if="hasLinks"
+				size="sm"
+				variant="outline"
+				@click="linksStore.exportLinks()"
+			>
+				<AppIcon name="lucide:download" />
+				Експортувати
+			</UiButton>
+			<UiButton size="sm" variant="outline" @click="triggerImport">
+				<AppIcon name="lucide:upload" />
+				Імпортувати
+			</UiButton>
 		</div>
 
-		<div class="flex-1 overflow-hidden">
-			<div v-if="organizedLinks.length === 0" class="py-8 text-center text-gray-500">
-				<p>Немає збережених посилань</p>
-				<p class="mt-1 text-xs">Додайте посилання до занять через календар</p>
-			</div>
-
-			<div v-else class="h-full">
-				<LinksDataTable
-					:organized-links="organizedLinks"
-					@edit-link="editLink"
-					@delete-link="deleteLink"
-					@import-links="handleImportLinks"
-					@selection-change="(ids) => (selectedLinkIds = ids)"
-				/>
-			</div>
+		<div>
+			<LinksTreeView
+				ref="treeView"
+				:on-edit-link="editLink"
+				:on-delete-link="deleteLink"
+				@selection-change="(ids) => (selectedLinkIds = ids)"
+			/>
 		</div>
 
 		<LinksAddDialog v-model="showLinkDialog" :link="editingLink" @save="saveLink" />
