@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { toast } from "vue-sonner"
 import { useLinksStore, type Link } from "~/stores/links"
 import ShareLinksDialog from "~/components/links/ShareLinksDialog.vue"
 import type { Subject } from "nurekit"
@@ -41,7 +40,7 @@ const saveLink = (linkData: Partial<Link>) => {
 			...editingLink.value,
 			...linkData,
 		})
-		toast.success("Посилання оновлено", {
+		useSonner.success("Посилання оновлено", {
 			description: "Зміни успішно збережено",
 		})
 	} else {
@@ -54,7 +53,7 @@ const saveLink = (linkData: Partial<Link>) => {
 			},
 			subject
 		)
-		toast.success("Посилання додано", {
+		useSonner.success("Посилання додано", {
 			description: "Нове посилання успішно створено",
 		})
 	}
@@ -62,9 +61,9 @@ const saveLink = (linkData: Partial<Link>) => {
 
 const deleteLink = (linkId: string, subjectId: string, eventType: string) => {
 	linksStore.deleteLink(parseInt(subjectId), eventType, linkId)
-	toast.success("Посилання видалено", {
-		description: "Посилання успішно видалено",
-	})
+			useSonner.success("Посилання видалено", {
+			description: "Посилання успішно видалено",
+		})
 }
 
 const handleImportLinks = (file: File) => {
@@ -73,18 +72,18 @@ const handleImportLinks = (file: File) => {
 		try {
 			const result = linksStore.importLinks(e.target?.result as string)
 			if (!result.success) {
-				toast.error("Помилка імпорту", {
-					description: result.error || "Не вдалося імпортувати посилання",
-				})
-			} else {
-				toast.success("Імпорт завершено", {
-					description: "Посилання успішно імпортовані",
-				})
-			}
-		} catch {
-			toast.error("Помилка імпорту", {
-				description: "Файл має неправильний формат",
+			useSonner.error("Помилка імпорту", {
+				description: result.error || "Не вдалося імпортувати посилання",
 			})
+		} else {
+			useSonner.success("Імпорт завершено", {
+				description: "Посилання успішно імпортовані",
+			})
+		}
+	} catch {
+		useSonner.error("Помилка імпорту", {
+			description: "Файл має неправильний формат",
+		})
 		}
 	}
 	reader.readAsText(file)

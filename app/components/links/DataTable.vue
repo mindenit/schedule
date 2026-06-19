@@ -13,7 +13,6 @@ import {
 	getSortedRowModel,
 	useVueTable,
 } from "@tanstack/vue-table"
-import { toast } from "vue-sonner"
 import type { Link } from "~/stores/links"
 import type { Subject } from "nurekit"
 import AppIcon from "~/components/AppIcon.vue"
@@ -93,7 +92,7 @@ const createAppIcon = (
 const deleteSelectedLinks = () => {
 	const selectedRows = table.getFilteredSelectedRowModel().rows
 	if (selectedRows.length === 0) {
-		toast.warning("Не вибрано жодного посилання")
+		useSonner.warning("Не вибрано жодного посилання")
 		return
 	}
 
@@ -103,7 +102,7 @@ const deleteSelectedLinks = () => {
 			emit("deleteLink", link.id, link.subjectId, link.eventType)
 		})
 
-		toast.success("Посилання видалено", {
+		useSonner.success("Посилання видалено", {
 			description: `Видалено ${selectedRows.length} посилань`,
 		})
 	}
@@ -357,7 +356,7 @@ const fileInput = ref<HTMLInputElement | null>(null)
 const exportSelected = () => {
 	const selectedRows = table.getFilteredSelectedRowModel().rows
 	if (selectedRows.length === 0) {
-		toast.warning("Не вибрано жодного посилання")
+		useSonner.warning("Не вибрано жодного посилання")
 		return
 	}
 
@@ -376,7 +375,7 @@ const exportSelected = () => {
 		`schedule-links-selected-${new Date().toISOString().split("T")[0]}.json`
 	)
 
-	toast.success("Експорт завершено", {
+	useSonner.success("Експорт завершено", {
 		description: `Експортовано ${selectedRows.length} посилань`,
 	})
 }
@@ -394,7 +393,7 @@ const exportAll = () => {
 		`schedule-links-all-${new Date().toISOString().split("T")[0]}.json`
 	)
 
-	toast.success("Експорт завершено", {
+	useSonner.success("Експорт завершено", {
 		description: `Експортовано ${allData.length} посилань`,
 	})
 }

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia"
-import { toast } from "vue-sonner"
 import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek } from "date-fns"
 import { uk } from "date-fns/locale"
 import { useSettingsStore } from "~/stores/settings"
@@ -59,7 +58,7 @@ const toUnix = (date: Date) => Math.floor(date.getTime() / 1000)
 
 const copyAllSchedulesToClipboard = async () => {
 	if (allSchedules.value.length === 0) {
-		toast.warning("Немає даних для копіювання")
+		useSonner.warning("Немає даних для копіювання")
 		return
 	}
 
@@ -101,11 +100,11 @@ const copyAllSchedulesToClipboard = async () => {
 
 	try {
 		await navigator.clipboard.writeText(lines.join("\n"))
-		toast.success("Інформацію скопійовано", {
+		useSonner.success("Інформацію скопійовано", {
 			description: "Дані про розклад та часові мітки скопійовано у буфер обміну",
 		})
 	} catch {
-		toast.error("Помилка копіювання", {
+		useSonner.error("Помилка копіювання", {
 			description: "Не вдалося скопіювати дані у буфер обміну",
 		})
 	}
@@ -113,7 +112,7 @@ const copyAllSchedulesToClipboard = async () => {
 
 const handleIcsExportAcademicYear = async () => {
 	if (!selectedSchedule.value) {
-		toast.warning("Оберіть розклад", {
+		useSonner.warning("Оберіть розклад", {
 			description: "Спочатку оберіть групу, викладача або аудиторію",
 		})
 		return

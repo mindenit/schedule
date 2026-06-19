@@ -1,5 +1,4 @@
 import { ref } from "vue"
-import { toast } from "vue-sonner"
 import type { Link } from "nurekit"
 
 export interface SharableLink {
@@ -22,9 +21,9 @@ export const useSharableLinks = () => {
 
 	const createSharableLink = async (linkIds: string[]): Promise<string | null> => {
 		if (linkIds.length === 0) {
-			toast.error("Помилка", {
-				description: "Виберіть принаймні одне посилання",
-			})
+		useSonner.error("Помилка", {
+			description: "Виберіть принаймні одне посилання",
+		})
 			return null
 		}
 
@@ -39,9 +38,9 @@ export const useSharableLinks = () => {
 			return url
 		} catch (error) {
 			console.error("Error creating sharable link:", error)
-			toast.error("Помилка", {
-				description: "Не вдалося створити посилання для поділу",
-			})
+		useSonner.error("Помилка", {
+			description: "Не вдалося створити посилання для поділу",
+		})
 			return null
 		} finally {
 			isLoading.value = false
@@ -57,9 +56,9 @@ export const useSharableLinks = () => {
 			return result
 		} catch (error) {
 			console.error("Error getting sharable link:", error)
-			toast.error("Помилка", {
-				description: "Не вдалося завантажити посилання",
-			})
+		useSonner.error("Помилка", {
+			description: "Не вдалося завантажити посилання",
+		})
 			return null
 		} finally {
 			isLoading.value = false
@@ -72,15 +71,15 @@ export const useSharableLinks = () => {
 
 			await $nurekit.sharableLinks.acceptLink(linkId)
 
-			toast.success("Успішно", {
-				description: "Посилання успішно імпортовані",
-			})
+		useSonner.success("Успішно", {
+			description: "Посилання успішно імпортовані",
+		})
 			return true
 		} catch (error) {
 			console.error("Error accepting sharable link:", error)
-			toast.error("Помилка", {
-				description: "Не вдалося імпортувати посилання",
-			})
+		useSonner.error("Помилка", {
+			description: "Не вдалося імпортувати посилання",
+		})
 			return false
 		} finally {
 			isLoading.value = false

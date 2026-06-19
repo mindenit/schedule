@@ -1,5 +1,4 @@
 import type { Schedule } from "nurekit"
-import { toast } from "vue-sonner"
 import { useIcsExport } from "./useIcsExport"
 import { ref, readonly } from "vue"
 import { useQueryClient } from "@tanstack/vue-query"
@@ -26,9 +25,9 @@ export const useScheduleIcsExport = () => {
 
 			const { startTimestamp, endTimestamp } = getAcademicYearTimestamps()
 
-			toast.info("Завантаження розкладу", {
-				description: "Отримання даних за навчальний рік...",
-			})
+		useSonner.info("Завантаження розкладу", {
+			description: "Отримання даних за навчальний рік...",
+		})
 
 			let queryOptions
 			switch (scheduleType) {
@@ -54,16 +53,16 @@ export const useScheduleIcsExport = () => {
 					)
 					break
 				default:
-					toast.error("Помилка експорту", { description: "Невідомий тип розкладу" })
+					useSonner.error("Помилка експорту", { description: "Невідомий тип розкладу" })
 					return
 			}
 
 			const events: Schedule[] = await queryClient.fetchQuery(queryOptions)
 
-			if (!events || events.length === 0) {
-				toast.warning("Немає даних", {
-					description: "Розклад на цей навчальний рік не знайдено",
-				})
+		if (!events || events.length === 0) {
+			useSonner.warning("Немає даних", {
+				description: "Розклад на цей навчальний рік не знайдено",
+			})
 				return
 			}
 
@@ -78,13 +77,13 @@ export const useScheduleIcsExport = () => {
 				includeDescription: true,
 			})
 
-			toast.success("Експорт завершено", {
-				description: `Завантажено ${events.length} подій у форматі ICS`,
-			})
-		} catch {
-			toast.error("Помилка експорту", {
-				description: "Не вдалося експортувати розклад",
-			})
+		useSonner.success("Експорт завершено", {
+			description: `Завантажено ${events.length} подій у форматі ICS`,
+		})
+	} catch {
+		useSonner.error("Помилка експорту", {
+			description: "Не вдалося експортувати розклад",
+		})
 		} finally {
 			isLoading.value = false
 		}
@@ -98,10 +97,10 @@ export const useScheduleIcsExport = () => {
 		}
 	) => {
 		try {
-			if (!currentEvents || currentEvents.length === 0) {
-				toast.warning("Немає даних", {
-					description: "Немає подій для експорту",
-				})
+		if (!currentEvents || currentEvents.length === 0) {
+			useSonner.warning("Немає даних", {
+				description: "Немає подій для експорту",
+			})
 				return
 			}
 
@@ -116,13 +115,13 @@ export const useScheduleIcsExport = () => {
 				includeDescription: true,
 			})
 
-			toast.success("Експорт завершено", {
-				description: `Завантажено ${currentEvents.length} подій у форматі ICS`,
-			})
-		} catch {
-			toast.error("Помилка експорту", {
-				description: "Не вдалося експортувати поточний розклад",
-			})
+		useSonner.success("Експорт завершено", {
+			description: `Завантажено ${currentEvents.length} подій у форматі ICS`,
+		})
+	} catch {
+		useSonner.error("Помилка експорту", {
+			description: "Не вдалося експортувати поточний розклад",
+		})
 		}
 	}
 
