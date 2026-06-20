@@ -114,6 +114,20 @@ export default defineNuxtConfig({
 				subsets: ["latin", "cyrillic"],
 				global: true,
 			},
+			{
+				name: "Afacad",
+				provider: "google",
+				weights: [400, 700],
+				subsets: ["latin", "cyrillic"],
+				global: true,
+			},
+			{
+				name: "Fira Code",
+				provider: "google",
+				weights: [400, 500],
+				subsets: ["latin", "cyrillic"],
+				global: true,
+			},
 		],
 	},
 	// Schema.org identity — values mirrored in app/constants/seo.ts

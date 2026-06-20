@@ -82,7 +82,7 @@ const displayDescription = computed(() => truncate(props.description, 160))
 			<img
 				src="/logo.svg"
 				alt="Mindenit logo"
-				class="size-[260px] rounded-[32px] drop-shadow-2xl"
+				class="size-[200px] rounded-[32px] drop-shadow-2xl"
 			/>
 		</div>
 	</div>
