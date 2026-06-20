@@ -5,6 +5,7 @@ interface UseSeoOptions {
 	title: MaybeRefOrGetter<string>
 	description?: MaybeRefOrGetter<string>
 	noindex?: boolean
+	canonical?: MaybeRefOrGetter<string>
 	ogImage?: {
 		title?: MaybeRefOrGetter<string>
 		description?: MaybeRefOrGetter<string>
@@ -13,9 +14,14 @@ interface UseSeoOptions {
 }
 
 export function useSeo(opts: UseSeoOptions) {
+	const route = useRoute()
+
 	const title = computed(() => toValue(opts.title))
 	const description = computed(() =>
 		opts.description ? toValue(opts.description) : SEO_DEFAULT_DESCRIPTION
+	)
+	const canonical = computed(() =>
+		opts.canonical ? toValue(opts.canonical) : `${SEO_SITE_URL}${route.path}`
 	)
 
 	useSeoMeta({
@@ -26,6 +32,10 @@ export function useSeo(opts: UseSeoOptions) {
 		twitterTitle: title,
 		twitterDescription: description,
 		...(opts.noindex ? { robots: "noindex, nofollow" } : {}),
+	})
+
+	useHead({
+		link: [{ rel: "canonical", href: canonical }],
 	})
 
 	defineOgImage("Mindenit", {
