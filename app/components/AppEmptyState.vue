@@ -42,10 +42,7 @@ withDefaults(defineProps<Props>(), {
 	</Transition>
 
 	<!-- Bordered card without backdrop -->
-	<div
-		v-else-if="variant === 'card'"
-		class="border-border bg-card rounded-lg border p-6 shadow-lg"
-	>
+	<div v-else-if="variant === 'card'" class="border-border bg-card rounded-lg border p-6 shadow-lg">
 		<div class="flex items-center gap-4">
 			<AppIcon v-if="icon" :name="icon" class="shrink-0" />
 			<div>

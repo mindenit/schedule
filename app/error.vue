@@ -1,15 +1,10 @@
 <script setup lang="ts">
-const pageTitle = `Сторінку не знайдено`
-const pageDescription = `Вибачте, ми не можемо знайти сторінку, яку ви шукаєте. Можливо, її було переміщено або видалено.`
-
-useSeoMeta({
-	title: pageTitle,
-	ogTitle: pageTitle,
-	description: pageDescription,
-	ogDescription: pageDescription,
+useSeo({
+	title: "Сторінку не знайдено",
+	description:
+		"Вибачте, ми не можемо знайти сторінку, яку ви шукаєте. Можливо, її було переміщено або видалено.",
+	noindex: true,
 })
-
-defineOgImageComponent("Mindenit")
 
 defineProps({
 	error: Object,

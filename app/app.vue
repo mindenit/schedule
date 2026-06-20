@@ -5,6 +5,17 @@ import { useSettingsStore } from "~/stores/settings"
 const { isSnowEnabled } = storeToRefs(useSettingsStore())
 
 useAnalytics()
+
+useHead({ htmlAttrs: { lang: SEO_DEFAULT_LOCALE } })
+
+useSchemaOrg([
+	defineWebSite({
+		name: SEO_SITE_NAME,
+		alternateName: SEO_SITE_ALTERNATE_NAME,
+		description: SEO_DEFAULT_DESCRIPTION,
+		inLanguage: SEO_INLANGUAGE,
+	}),
+])
 </script>
 
 <template>

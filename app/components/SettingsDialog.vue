@@ -11,7 +11,9 @@
 					<AppIcon name="lucide:settings" />
 					Налаштування
 				</UiDialogTitle>
-				<UiDialogDescription>Керуйте розкладами, посиланнями та зовнішнім виглядом</UiDialogDescription>
+				<UiDialogDescription
+					>Керуйте розкладами, посиланнями та зовнішнім виглядом</UiDialogDescription
+				>
 			</UiDialogHeader>
 			<SettingsMainView class="flex-1" />
 		</UiDialogContent>

@@ -253,9 +253,9 @@ const handleCardClick = (item: GenericScheduleItem) => {
 								</div>
 							</template>
 							<AppEmptyState
-							v-else
-							:title="searchQuery ? config.searchEmptyMessage : config.emptyMessage"
-						/>
+								v-else
+								:title="searchQuery ? config.searchEmptyMessage : config.emptyMessage"
+							/>
 						</div>
 					</template>
 					<AppEmptyState v-else :title="config.emptyMessage" />

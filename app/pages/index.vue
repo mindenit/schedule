@@ -2,15 +2,6 @@
 import { storeToRefs } from "pinia"
 import { useScheduleQuery } from "~/composables/useScheduleQuery"
 
-const pageTitle = `Головна`
-
-useSeoMeta({
-	title: pageTitle,
-	ogTitle: pageTitle,
-})
-
-defineOgImageComponent("Mindenit")
-
 const calendarStore = useCalendarStore()
 const scheduleStore = useScheduleStore()
 
@@ -18,6 +9,20 @@ useUrlState()
 
 const { filteredEvents, selectedDate } = storeToRefs(calendarStore)
 const { selectedSchedule } = storeToRefs(scheduleStore)
+
+const seoTitle = computed(() =>
+	selectedSchedule.value ? `${selectedSchedule.value.name} — розклад` : SEO_DEFAULT_TITLE
+)
+const seoDescription = computed(() =>
+	selectedSchedule.value
+		? `Розклад занять для ${selectedSchedule.value.name}. Перегляд по днях, тижнях та на місяць.`
+		: SEO_DEFAULT_DESCRIPTION
+)
+
+useSeo({
+	title: seoTitle,
+	description: seoDescription,
+})
 
 const hasActiveSchedule = computed(() => !!selectedSchedule.value)
 const scheduleId = computed(() => selectedSchedule.value?.id)

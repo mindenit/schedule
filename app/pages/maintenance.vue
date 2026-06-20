@@ -1,4 +1,10 @@
 <script setup lang="ts">
+useSeo({
+	title: "Технічні роботи",
+	description: "Сайт тимчасово недоступний через планові технічні роботи. Скоро відновимо роботу.",
+	noindex: true,
+})
+
 definePageMeta({
 	layout: "maintenance",
 })

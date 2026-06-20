@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import type { SharableLink } from "~/composables/useSharableLinks"
 
+useSeo({
+	title: "Імпорт спільних посилань",
+	description: "Вам запропоновано імпортувати колекцію посилань до вашого розкладу.",
+	noindex: true,
+})
+
 definePageMeta({
 	layout: "without-navbar",
 })

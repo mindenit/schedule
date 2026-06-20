@@ -5,7 +5,6 @@
  * Value = payload shape (use `never` for events with no properties)
  */
 
- 
 export interface AnalyticsEvents {
 	// ── Schedule management ──────────────────────────────────────────────────
 	/** User adds a new schedule (group / teacher / auditorium). */

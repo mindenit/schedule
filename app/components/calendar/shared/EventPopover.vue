@@ -196,7 +196,7 @@ const deleteLink = (linkId: string) => {
 						<UiButton
 							size="icon"
 							variant="ghost"
-							class="size-7 text-destructive"
+							class="text-destructive size-7"
 							@click="deleteLink(link.id)"
 						>
 							<AppIcon name="lucide:trash" size="xs" />

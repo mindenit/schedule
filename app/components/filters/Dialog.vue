@@ -126,10 +126,7 @@ watch(isOpen, (open) => {
 				<UiDialogDescription> Налаштуйте фільтри для відображення розкладу. </UiDialogDescription>
 			</UiDialogHeader>
 
-			<AppEmptyState
-				v-if="!selectedSchedule"
-				title="Оберіть розклад для налаштування фільтрів"
-			/>
+			<AppEmptyState v-if="!selectedSchedule" title="Оберіть розклад для налаштування фільтрів" />
 
 			<div v-else class="max-h-96 overflow-x-hidden overflow-y-auto">
 				<UiAccordion type="multiple" class="space-y-2">
@@ -239,7 +236,12 @@ watch(isOpen, (open) => {
 			>
 				<UiButton
 					variant="outline"
-					@click="() => { filtersStore.clearAll(); trackEvent('filters_reset') }"
+					@click="
+						() => {
+							filtersStore.clearAll()
+							trackEvent('filters_reset')
+						}
+					"
 				>
 					<AppIcon name="lucide:rotate-ccw" />
 					Скинути

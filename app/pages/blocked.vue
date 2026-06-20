@@ -1,9 +1,8 @@
 <script lang="ts" setup>
-useSeoMeta({
-	title: "Виявлено підорський софт",
+useSeo({
+	title: "Виявлено шкідливий браузер",
+	noindex: true,
 })
-
-defineOgImageComponent("Mindenit")
 
 definePageMeta({
 	layout: "without-navbar",

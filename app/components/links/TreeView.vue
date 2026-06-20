@@ -194,7 +194,8 @@ const EVENT_TYPE_BG: Record<string, string> = {
 					<!-- Subject row ─────────────────────────────────────────────── -->
 					<template v-if="item.value.kind === 'subject'">
 						<div
-							class="hover:bg-muted/50 flex w-full items-center gap-2 rounded-md py-2 pr-2 pl-2 transition-colors"
+							class="hover:bg-muted/50 flex w-full items-center gap-2 rounded-md py-2 pr-2 pl-2
+								transition-colors"
 						>
 							<!-- checkbox zone: select only -->
 							<div class="shrink-0 cursor-pointer" @click.stop="handleSelect()">
@@ -216,7 +217,8 @@ const EVENT_TYPE_BG: Record<string, string> = {
 					<!-- Event type row ───────────────────────────────────────────── -->
 					<template v-else-if="item.value.kind === 'eventType'">
 						<div
-							class="hover:bg-muted/50 flex w-full items-center gap-2 rounded-md py-1.5 pr-2 pl-6 transition-colors"
+							class="hover:bg-muted/50 flex w-full items-center gap-2 rounded-md py-1.5 pr-2 pl-6
+								transition-colors"
 						>
 							<!-- checkbox zone: select only -->
 							<div class="shrink-0 cursor-pointer" @click.stop="handleSelect()">
@@ -243,7 +245,8 @@ const EVENT_TYPE_BG: Record<string, string> = {
 					<!-- Link leaf row ────────────────────────────────────────────── -->
 					<template v-else-if="item.value.kind === 'link'">
 						<div
-							class="hover:bg-muted/50 flex w-full items-center gap-2 rounded-md py-1.5 pr-2 pl-10 transition-colors"
+							class="hover:bg-muted/50 flex w-full items-center gap-2 rounded-md py-1.5 pr-2 pl-10
+								transition-colors"
 						>
 							<!-- checkbox + label zone: select only (leaves don't expand) -->
 							<div class="shrink-0 cursor-pointer" @click.stop="handleSelect()">

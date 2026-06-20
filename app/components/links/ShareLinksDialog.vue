@@ -59,7 +59,9 @@ const handleClose = () => {
 					<AppIcon name="lucide:share-2" />
 					Поділіться посиланнями
 				</UiDialogTitle>
-				<UiDialogDescription>Створіть посилання для передачі іншим користувачам</UiDialogDescription>
+				<UiDialogDescription
+					>Створіть посилання для передачі іншим користувачам</UiDialogDescription
+				>
 			</UiDialogHeader>
 
 			<div v-if="!sharableUrl" class="space-y-4">

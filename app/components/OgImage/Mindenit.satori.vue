@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import { computed } from "vue"
-
 interface Props {
 	title?: string
 	description?: string
@@ -8,62 +6,84 @@ interface Props {
 }
 
 const props = withDefaults(defineProps<Props>(), {
-	title: "title",
-	description: "description",
-	headline: "Mindenit",
+	title: "Розклад занять ХНУРЕ",
+	description: "Зручний перегляд розкладу занять для студентів та викладачів.",
+	headline: "Mindenit Schedule",
 })
 
-const title = computed(() => props.title.slice(0, 60))
-const description = computed(() => props.description.slice(0, 200))
+const truncate = (str: string, max: number) => {
+	if (str.length <= max) return str
+	const cut = str.slice(0, max)
+	const lastSpace = cut.lastIndexOf(" ")
+	return (lastSpace > max * 0.6 ? cut.slice(0, lastSpace) : cut) + "…"
+}
+
+const displayTitle = computed(() => truncate(props.title, 60))
+const displayDescription = computed(() => truncate(props.description, 160))
 </script>
 
 <template>
 	<div
-		class="flex h-full w-full flex-row items-center justify-between bg-[#090f1f] px-[100px]
-			py-[20px]"
+		class="flex h-full w-full flex-row items-center justify-between bg-[#090f1f] px-[80px]
+			py-[40px]"
 	>
+		<!-- background blob -->
 		<svg
 			class="absolute top-0 right-0"
 			width="1200"
-			height="675"
-			viewBox="0 0 1200 675"
+			height="630"
+			viewBox="0 0 1200 630"
 			fill="none"
 			xmlns="http://www.w3.org/2000/svg"
 		>
-			<g style="mix-blend-mode: overlay" opacity="0.7" filter="url(#filter0_f_448_25)">
-				<circle cx="901.5" cy="45.5" r="199.5" fill="#43578F" />
-				<circle cx="600.5" cy="216.5" r="199.5" fill="#57668F" />
-				<circle cx="179.5" cy="317.5" r="199.5" fill="#43578F" />
+			<g style="mix-blend-mode: overlay" opacity="0.7" filter="url(#blur)">
+				<circle cx="950" cy="60" r="220" fill="#43578F" />
+				<circle cx="650" cy="220" r="200" fill="#57668F" />
+				<circle cx="200" cy="360" r="200" fill="#43578F" />
 			</g>
 			<defs>
 				<filter
-					id="filter0_f_448_25"
-					x="-240"
-					y="-374"
-					width="1561"
-					height="1111"
+					id="blur"
+					x="-260"
+					y="-380"
+					width="1580"
+					height="1150"
 					filterUnits="userSpaceOnUse"
 					color-interpolation-filters="sRGB"
 				>
 					<feFlood flood-opacity="0" result="BackgroundImageFix" />
 					<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-					<feGaussianBlur stdDeviation="110" result="effect1_foregroundBlur_448_25" />
+					<feGaussianBlur stdDeviation="110" result="effect1_foregroundBlur" />
 				</filter>
 			</defs>
 		</svg>
 
-		<div class="flex w-[600px] flex-col gap-4">
-			<p v-if="headline" class="text-[24px] font-semibold text-[#57668F] uppercase">
+		<!-- content -->
+		<div class="relative flex w-[620px] flex-col gap-5">
+			<p
+				class="m-0 text-[20px] font-semibold tracking-widest text-[#57668F] uppercase"
+				style="font-family: Inter, sans-serif"
+			>
 				{{ headline }}
 			</p>
-			<h1 class="m-0 flex w-[600px] items-center text-[75px] font-semibold text-white">
-				<span>{{ title }}</span>
+			<h1
+				class="m-0 text-[64px] leading-none font-bold text-white"
+				style="font-family: Inter, sans-serif"
+			>
+				{{ displayTitle }}
 			</h1>
-			<p class="text-[32px] leading-tight text-[#E4E4E7]">
-				{{ description }}
+			<p class="m-0 text-[28px] leading-snug text-[#a1a1aa]" style="font-family: Inter, sans-serif">
+				{{ displayDescription }}
 			</p>
 		</div>
 
-		<img src="/logo.svg" alt="Logo" class="size-[300px] rounded-3xl drop-shadow-2xl" />
+		<!-- logo -->
+		<div class="relative flex-shrink-0">
+			<img
+				src="/logo.svg"
+				alt="Mindenit logo"
+				class="size-[260px] rounded-[32px] drop-shadow-2xl"
+			/>
+		</div>
 	</div>
 </template>
