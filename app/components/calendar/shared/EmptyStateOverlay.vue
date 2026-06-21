@@ -26,9 +26,9 @@ const filtersStore = useFiltersStore()
 	>
 		<div
 			v-if="show"
-			class="bg-background/70 absolute inset-0 flex items-center justify-center backdrop-blur-sm"
+			class="bg-background/70 pointer-events-none absolute inset-0 flex items-center justify-center backdrop-blur-sm"
 		>
-			<div class="border-border bg-card mx-4 rounded-lg border p-6 shadow-lg">
+			<div class="border-border bg-card pointer-events-auto mx-4 rounded-lg border p-6 shadow-lg">
 				<div class="flex items-center gap-4">
 					<AppIcon :name="icon" class="shrink-0" />
 					<div>

@@ -43,39 +43,22 @@ export const SWIPE_ANIMATION_CONFIG = {
 			}
 		},
 	},
-
-	/** Shared transition object */
-	transition: {
-		duration: 0.25,
-		type: "tween",
-	},
-
-	/** Animation duration in milliseconds (for setTimeout) */
-	duration: 300,
-
-	/** Animation duration in seconds (for CSS/Motion) */
-	durationSeconds: 0.25,
 } as const
 
-export const SWIPE_ANIMATION_TRANSITION = {
-	duration: 0.25,
-	ease: [0.42, 0, 0.58, 1],
+/**
+ * Spring transition that mimics native mobile feel.
+ * stiffness + damping tuned to match iOS scroll-view deceleration.
+ */
+export const SWIPE_SPRING_TRANSITION = {
+	type: "spring",
+	stiffness: 300,
+	damping: 30,
+	mass: 0.8,
 } as const
 
 export type SwipeDirection = "left" | "right"
 
 export const CalendarAnimationUtils = {
-	getAnimationDirection(
-		navigationDirection: "next" | "previous",
-		swipeDirection: SwipeDirection
-	): SwipeDirection {
-		if (navigationDirection === "next") {
-			return swipeDirection === "left" ? "left" : "right"
-		} else {
-			return swipeDirection === "right" ? "right" : "left"
-		}
-	},
-
 	createDateKey(date: Date): string {
 		return date.toISOString()
 	},

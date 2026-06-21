@@ -16,6 +16,12 @@ export const useCalendarStore = defineStore("calendar", () => {
 	const allEvents = ref<Schedule[]>([])
 	const selectedDate = ref(new Date())
 
+	// Tracks the animation direction for the most recent navigation action.
+	// "left"  = forward in time (next month/day)
+	// "right" = backward in time (previous month/day)
+	// null    = no animation (initial load, today button, etc.)
+	const navigationDirection = ref<"left" | "right" | null>(null)
+
 	// useCookie is SSR-compatible: server reads the cookie from the request,
 	// client reads/writes it reactively. This means SSR renders the correct
 	// view (no hydration mismatch) and the value persists across page loads.
@@ -122,14 +128,20 @@ export const useCalendarStore = defineStore("calendar", () => {
 		}
 	}
 
+	function setNavigationDirection(direction: "left" | "right" | null) {
+		navigationDirection.value = direction
+	}
+
 	return {
 		allEvents,
 		selectedDate,
 		view,
 		filteredEvents,
 		eventsByDayKey,
+		navigationDirection,
 		setEvents,
 		setView,
 		setSelectedDate,
+		setNavigationDirection,
 	}
 })

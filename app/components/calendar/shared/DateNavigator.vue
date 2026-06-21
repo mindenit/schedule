@@ -23,12 +23,16 @@ const title = computed(() => {
 
 function handlePrevious() {
 	const newDate = navigateDate(selectedDate.value, view.value, "previous")
+	// Set direction before date so views can read it on the same tick.
+	calendarStore.setNavigationDirection("right")
 	calendarStore.setSelectedDate(newDate)
 	trackEvent("date_navigated", { direction: "prev", view: view.value, source: "button" })
 }
 
 function handleNext() {
 	const newDate = navigateDate(selectedDate.value, view.value, "next")
+	// Set direction before date so views can read it on the same tick.
+	calendarStore.setNavigationDirection("left")
 	calendarStore.setSelectedDate(newDate)
 	trackEvent("date_navigated", { direction: "next", view: view.value, source: "button" })
 }

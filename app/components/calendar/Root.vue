@@ -55,8 +55,8 @@ const overlayContent = computed(() => {
 			>
 				<div
 					v-if="showOverlay"
-					class="bg-background/70 absolute inset-0 flex items-center justify-center
-						backdrop-blur-sm"
+					class="bg-background/70 pointer-events-none absolute inset-0 flex items-center
+						justify-center backdrop-blur-sm"
 				>
 					<AppEmptyState
 						v-if="overlayContent === 'no-schedule'"
@@ -64,11 +64,12 @@ const overlayContent = computed(() => {
 						icon="lucide:alert-circle"
 						title="Розклад не обрано"
 						description="Оберіть або додайте розклад"
+						class="pointer-events-auto"
 					/>
 
-					<TheLoader v-else-if="overlayContent === 'loading'" size="lg" />
+					<TheLoader v-else-if="overlayContent === 'loading'" size="lg" class="pointer-events-auto" />
 
-					<UiAlert v-else-if="overlayContent === 'error'" variant="destructive" class="mx-2 w-sm">
+					<UiAlert v-else-if="overlayContent === 'error'" variant="destructive" class="pointer-events-auto mx-2 w-sm">
 						<UiAlertTitle>Помилка</UiAlertTitle>
 						<UiAlertDescription>
 							<p v-if="error">Не вдалося завантажити розклад: {{ error.message }}</p>
