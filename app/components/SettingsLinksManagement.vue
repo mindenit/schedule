@@ -145,32 +145,27 @@ const handleMainImport = (event: Event) => {
 				Поділитися ({{ selectedLinkIds.length }})
 			</UiButton>
 			<UiButton
-				v-if="selectedLinkIds.length > 0"
-				size="sm"
-				variant="outline"
-				@click="
-					() => {
-						linksStore.exportSelectedLinks(selectedLinkIds)
-						trackEvent('links_exported', { scope: 'selected', count: selectedLinkIds.length })
-					}
-				"
-			>
-				<AppIcon name="lucide:download" />
-				Експорт вибраного
-			</UiButton>
-			<UiButton
 				v-if="hasLinks"
 				size="sm"
 				variant="outline"
 				@click="
 					() => {
-						linksStore.exportLinks()
-						trackEvent('links_exported', { scope: 'all', count: totalLinkCount })
+						if (selectedLinkIds.length > 0) {
+							linksStore.exportSelectedLinks(selectedLinkIds)
+							trackEvent('links_exported', { scope: 'selected', count: selectedLinkIds.length })
+						} else {
+							linksStore.exportLinks()
+							trackEvent('links_exported', { scope: 'all', count: totalLinkCount })
+						}
 					}
 				"
 			>
 				<AppIcon name="lucide:download" />
-				Експортувати
+				{{
+					selectedLinkIds.length > 0
+						? `Експортувати (${selectedLinkIds.length})`
+						: "Експортувати все"
+				}}
 			</UiButton>
 			<UiButton size="sm" variant="outline" @click="triggerImport">
 				<AppIcon name="lucide:upload" />
