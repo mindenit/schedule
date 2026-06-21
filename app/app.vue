@@ -6,6 +6,8 @@ const { isSnowEnabled } = storeToRefs(useSettingsStore())
 
 useAnalytics()
 
+const { isShortcutsOpen } = useKeyboardShortcuts()
+
 useHead({ htmlAttrs: { lang: SEO_DEFAULT_LOCALE } })
 
 useSchemaOrg([
@@ -27,4 +29,5 @@ useSchemaOrg([
 		<SnowEffect v-if="isSnowEnabled" />
 	</ClientOnly>
 	<UiSonner />
+	<AppShortcutsDialog v-model:open="isShortcutsOpen" />
 </template>

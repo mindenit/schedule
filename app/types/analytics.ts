@@ -18,13 +18,13 @@ export interface AnalyticsEvents {
 	/** User changes the calendar view (day / week / month). */
 	view_changed: {
 		view: "day" | "week" | "month"
-		source: "switcher" | "day_cell" | "sidebar_calendar"
+		source: "switcher" | "day_cell" | "sidebar_calendar" | "keyboard"
 	}
 	/** User navigates to a different date period. */
 	date_navigated: {
 		direction: "prev" | "next" | "today"
 		view: "day" | "week" | "month"
-		source: "button" | "swipe"
+		source: "button" | "swipe" | "keyboard"
 	}
 
 	// ── Event interaction ─────────────────────────────────────────────────────
