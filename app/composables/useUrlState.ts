@@ -86,14 +86,27 @@ export function useUrlState() {
 		}
 	)
 
-	// ── Read URL → stores (runs once on mount, after localStorage is hydrated) ──
+	// ── Read URL → stores ──
 
-	onMounted(async () => {
+	// Track the last view that was committed to the URL so we can detect view
+	// changes and push a new history entry (enabling browser Back/Forward).
+	// Initialized from the URL so that the very first syncToUrl (immediate watcher)
+	// doesn't treat the initial state as a view change.
+	let lastCommittedView: string | null =
+		typeof route.query.view === "string" ? route.query.view : null
+
+	// Apply the current route.query values to the stores. Called both on initial
+	// mount and whenever the URL changes due to browser Back/Forward navigation.
+	const applyUrlToStores = async (query: typeof route.query) => {
 		if (!settingsStore.isUrlSyncEnabled) return
-		const { view, date, schedule, type } = route.query
+		const { view, date, schedule, type } = query
 
 		// view
 		if (typeof view === "string" && VALID_VIEWS.includes(view)) {
+			// Keep lastCommittedView in sync so that the subsequent syncToUrl
+			// (triggered by the store change below) does not treat this URL-driven
+			// change as a user-initiated view switch and issue a second router.push.
+			lastCommittedView = view
 			calendarStore.setView(view as TCalendarView)
 		}
 
@@ -122,9 +135,17 @@ export function useUrlState() {
 				scheduleStore.selectScheduleFromUrl({ id, name, type: scheduleType })
 			}
 		}
-	})
+	}
 
-	// ── Sync stores → URL (replace, no history entry) ──
+	// Run once on mount (initial page load / direct URL entry).
+	onMounted(() => applyUrlToStores(route.query))
+
+	// Re-run whenever the URL query changes — this handles browser Back/Forward.
+	// The guard inside syncToUrl prevents the store→URL watcher from creating a
+	// loop: if the URL is already correct, syncToUrl is a no-op.
+	watch(() => route.query, applyUrlToStores, { deep: true })
+
+	// ── Sync stores → URL ──
 
 	// Collect what the URL should look like right now.
 	const buildQuery = () => ({
@@ -136,8 +157,10 @@ export function useUrlState() {
 		}),
 	})
 
-	// Guard: only call router.replace when something actually changed to avoid
-	// infinite feedback loops.
+	// Guard: only navigate when something actually changed to avoid infinite
+	// feedback loops. Use router.push() when the view changes so the browser
+	// Back button returns to the previous view; use router.replace() for
+	// date/schedule changes within the same view.
 	const syncToUrl = () => {
 		if (!settingsStore.isUrlSyncEnabled) return
 
@@ -150,7 +173,14 @@ export function useUrlState() {
 			q.schedule !== (next.schedule ?? undefined) ||
 			q.type !== (next.type ?? undefined)
 
-		if (changed) {
+		if (!changed) return
+
+		const viewChanged = lastCommittedView !== null && lastCommittedView !== next.view
+		lastCommittedView = next.view
+
+		if (viewChanged) {
+			router.push({ query: next })
+		} else {
 			router.replace({ query: next })
 		}
 	}
