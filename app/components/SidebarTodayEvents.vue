@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { isSameDay, addDays, subDays, isToday } from "date-fns"
+import { addDays, subDays, isToday } from "date-fns"
+import { formatInTimeZone } from "date-fns-tz"
 import { storeToRefs } from "pinia"
 import type { TEventType } from "~/types/calendar"
 
@@ -8,6 +9,7 @@ const calendarStore = useCalendarStore()
 const { selectedSchedule } = storeToRefs(scheduleStore)
 const { allEvents } = storeToRefs(calendarStore)
 const { formatTime, formatDate, capitalize } = useEventFormatting()
+const { effectiveTimezone } = useTimezone()
 
 // Dev-only date override — lets you navigate days to test sidebar event rendering.
 // Always starts at today; tree-shaken out in production builds.
@@ -23,9 +25,13 @@ const formattedDate = computed(() => {
 
 // Filter the already-loaded full-year events to the preview date — no extra network request.
 // 3.3 fix: guard auditorium?.name — auditorium can be null for online lessons.
-const todayEvents = computed(() =>
-	allEvents.value.filter((e) => isSameDay(new Date(e.startedAt * 1000), previewDate.value))
-)
+const todayEvents = computed(() => {
+	const tz = effectiveTimezone.value
+	const targetKey = formatInTimeZone(previewDate.value, tz, "yyyy-MM-dd")
+	return allEvents.value.filter(
+		(e) => formatInTimeZone(new Date(e.startedAt * 1000), tz, "yyyy-MM-dd") === targetKey
+	)
+})
 
 const hasActiveSchedule = computed(() => !!selectedSchedule.value)
 const hasEvents = computed(() => todayEvents.value.length > 0)

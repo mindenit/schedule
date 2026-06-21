@@ -11,9 +11,7 @@ export const useEventFormatting = () => {
 	}
 
 	const formatHour = (hour: number): string => {
-		const date = new Date()
-		date.setHours(hour, 0, 0, 0)
-		return formatTime(date)
+		return `${String(hour).padStart(2, "0")}:00`
 	}
 
 	const formatTimeRange = (event: Schedule): string => {

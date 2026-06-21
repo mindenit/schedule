@@ -1,12 +1,5 @@
-import {
-	isSameDay,
-	startOfDay,
-	differenceInMinutes,
-	startOfMonth,
-	endOfMonth,
-	startOfWeek,
-	endOfWeek,
-} from "date-fns"
+import { differenceInMinutes, startOfMonth, endOfMonth, startOfWeek, endOfWeek } from "date-fns"
+import { formatInTimeZone, toZonedTime } from "date-fns-tz"
 import type { Schedule } from "nurekit"
 import { WEEK_OPTIONS, CALENDAR_START_HOUR, CALENDAR_END_HOUR } from "~/constants/calendar"
 
@@ -55,9 +48,15 @@ export function groupEventsBySameTime(events: Schedule[]): Schedule[][] {
 	return Array.from(timeGroups.values()).sort((a, b) => a[0]!.startedAt - b[0]!.startedAt)
 }
 
-export function getEventsForDate(events: Schedule[], date: Date | string | number): Schedule[] {
-	const targetDate = parseDate(date)
-	return events.filter((event) => isSameDay(new Date(event.startedAt * 1000), targetDate))
+export function getEventsForDate(
+	events: Schedule[],
+	date: Date | string | number,
+	tz: string
+): Schedule[] {
+	const targetKey = formatInTimeZone(parseDate(date), tz, "yyyy-MM-dd")
+	return events.filter(
+		(event) => formatInTimeZone(new Date(event.startedAt * 1000), tz, "yyyy-MM-dd") === targetKey
+	)
 }
 
 export function getEventsForDateRange(
@@ -77,17 +76,20 @@ export function getEventBlockStyle(
 	event: Schedule,
 	day: Date | string | number,
 	groupIndex: number,
-	groupSize: number
+	groupSize: number,
+	tz: string
 ) {
-	// Parse each input once at the top of the function
-	const startDate = new Date(event.startedAt * 1000)
-	const endDate = new Date(event.endedAt * 1000)
-	const dayStart = startOfDay(parseDate(day))
+	// Convert all timestamps to zoned Date objects so .getHours()/.getMinutes()
+	// reflect the selected timezone rather than the browser's local timezone.
+	const startDate = toZonedTime(event.startedAt * 1000, tz)
+	const endDate = toZonedTime(event.endedAt * 1000, tz)
+	const dayZoned = toZonedTime(parseDate(day), tz)
+	dayZoned.setHours(0, 0, 0, 0)
 
-	const calendarStart = new Date(dayStart)
+	const calendarStart = new Date(dayZoned)
 	calendarStart.setHours(CALENDAR_START_HOUR, 0, 0, 0)
 
-	const calendarEnd = new Date(dayStart)
+	const calendarEnd = new Date(dayZoned)
 	calendarEnd.setHours(CALENDAR_END_HOUR, 59, 59, 999)
 
 	const eventStart = startDate < calendarStart ? calendarStart : startDate
@@ -126,11 +128,11 @@ export function getEventsForMonth(
 	return getEventsForDateRange(events, monthStart, monthEnd)
 }
 
-export function groupEventsByDate(events: Schedule[]): Record<string, Schedule[]> {
+export function groupEventsByDate(events: Schedule[], tz: string): Record<string, Schedule[]> {
 	const grouped: Record<string, Schedule[]> = {}
 
 	for (const event of events) {
-		const dateKey = startOfDay(new Date(event.startedAt * 1000)).toISOString()
+		const dateKey = formatInTimeZone(new Date(event.startedAt * 1000), tz, "yyyy-MM-dd")
 		if (!grouped[dateKey]) grouped[dateKey] = []
 		grouped[dateKey].push(event)
 	}

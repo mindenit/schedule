@@ -5,6 +5,7 @@ import type { Schedule } from "nurekit"
 interface Props {
 	groupedEvents: Schedule[][]
 	day: Date | string | number
+	tz: string
 }
 
 const props = defineProps<Props>()
@@ -42,7 +43,7 @@ const renderEvents = computed(() => {
 
 	return groups.flatMap((group, groupIndex) =>
 		group.map((event) => {
-			const style = getEventBlockStyle(event, dayDate, groupIndex, groups.length)
+			const style = getEventBlockStyle(event, dayDate, groupIndex, groups.length, props.tz)
 			const hasOverlap = overlappingGroups.has(groupIndex)
 			return {
 				event,

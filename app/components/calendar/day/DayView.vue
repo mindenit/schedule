@@ -21,6 +21,7 @@ const { trackEvent } = useAnalytics()
 
 const { getEventsForDate, groupEvents } = useEventGrouping()
 const { formatHour } = useEventFormatting()
+const { effectiveTimezone } = useTimezone()
 
 const isToday = computed(() => {
 	return selectedDate.value.toDateString() === new Date().toDateString()
@@ -28,7 +29,7 @@ const isToday = computed(() => {
 
 const hours = CALENDAR_HOURS
 
-const dayEvents = computed(() => getEventsForDate(props.events, selectedDate.value))
+const dayEvents = computed(() => getEventsForDate(props.events, selectedDate.value, effectiveTimezone.value))
 const groupedEvents = computed(() => groupEvents(dayEvents.value))
 
 const hasEvents = computed(() => dayEvents.value.length > 0)
@@ -114,7 +115,7 @@ watch(isSwiping, (swiping) => {
 								<div v-for="hour in hours" :key="hour" class="bg-card relative flex-1"></div>
 							</div>
 							<div class="absolute inset-0">
-								<BigCalendarEventRenderer :grouped-events="groupedEvents" :day="selectedDate" />
+								<BigCalendarEventRenderer :grouped-events="groupedEvents" :day="selectedDate" :tz="effectiveTimezone" />
 							</div>
 							<BigCalendarTimeline v-if="isToday" />
 						</div>

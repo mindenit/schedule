@@ -17,6 +17,7 @@ const { selectedDate } = storeToRefs(calendarStore)
 const { getWeekDaysDetailed } = useCalendarCells()
 const { getEventsForDate, groupEvents } = useEventGrouping()
 const { formatHour, capitalize } = useEventFormatting()
+const { effectiveTimezone } = useTimezone()
 
 const weekDays = computed(() => getWeekDaysDetailed(selectedDate.value))
 const hours = CALENDAR_HOURS
@@ -24,7 +25,7 @@ const hours = CALENDAR_HOURS
 // Pre-compute all 7 days' grouped events in one computed instead of calling
 // plain functions from the template (which re-runs on every render cycle).
 const groupedEventsByDay = computed(() =>
-	weekDays.value.map((day) => groupEvents(getEventsForDate(props.events, day)))
+	weekDays.value.map((day) => groupEvents(getEventsForDate(props.events, day, effectiveTimezone.value)))
 )
 
 const hasEvents = computed(() =>
@@ -98,10 +99,11 @@ const hasEvents = computed(() =>
 										}"
 									></div>
 								</div>
-								<BigCalendarEventRenderer
-									:grouped-events="groupedEventsByDay[dayIndex]"
-									:day="day"
-								/>
+							<BigCalendarEventRenderer
+								:grouped-events="groupedEventsByDay[dayIndex]"
+								:day="day"
+								:tz="effectiveTimezone"
+							/>
 							</div>
 						</div>
 						<BigCalendarTimeline :week-days="weekDays" />
