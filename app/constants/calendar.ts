@@ -40,6 +40,7 @@ export const VIEW_OPTIONS = [
 	{ value: "day", label: "День" },
 	{ value: "week", label: "Тиждень" },
 	{ value: "month", label: "Місяць" },
+	{ value: "year", label: "Рік" },
 ] as const
 
 export const VIEW_CONFIGS: Record<string, { format: string; capitalize: boolean }> = {

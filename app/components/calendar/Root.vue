@@ -35,8 +35,9 @@ const overlayContent = computed(() => {
 			class="min-h-0 flex-1 transition-all duration-300 ease-in-out"
 			:class="{ 'blur-sm': showOverlay }"
 		>
+			<BigCalendarYearView v-if="view === 'year'" :events="props.events" class="h-full" />
 			<BigCalendarMonthView
-				v-if="view === 'month'"
+				v-else-if="view === 'month'"
 				:events="props.events"
 				class="h-full overflow-y-hidden"
 			/>

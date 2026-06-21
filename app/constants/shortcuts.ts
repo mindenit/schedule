@@ -40,6 +40,11 @@ export const KEYBOARD_SHORTCUTS = [
 		keys: ["M"],
 	},
 	{
+		key: "y",
+		label: "Вигляд: Рік",
+		keys: ["Y"],
+	},
+	{
 		key: "?",
 		label: "Показати shortcuts",
 		keys: ["?"],

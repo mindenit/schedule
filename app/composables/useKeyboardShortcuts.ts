@@ -66,10 +66,16 @@ export function useKeyboardShortcuts() {
 				trackEvent("view_changed", { view: "week", source: "keyboard" })
 				break
 			}
-			case "m":
-			case "M": {
+		case "m":
+		case "M": {
 				calendarStore.setView("month")
 				trackEvent("view_changed", { view: "month", source: "keyboard" })
+				break
+			}
+			case "y":
+			case "Y": {
+				calendarStore.setView("year")
+				trackEvent("view_changed", { view: "year", source: "keyboard" })
 				break
 			}
 			case "?": {

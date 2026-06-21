@@ -1,12 +1,12 @@
 import { defineStore, storeToRefs } from "pinia"
-import { startOfMonth, endOfMonth, startOfWeek, endOfWeek } from "date-fns"
+import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, startOfYear, endOfYear } from "date-fns"
 import type { Schedule } from "nurekit"
 import type { TCalendarView } from "~/types/calendar"
 import { WEEK_OPTIONS } from "~/constants/calendar"
 import { resolveTimezone } from "~/constants/timezones"
 import { getEventDayKey } from "~/utils/event-cache"
 
-const VALID_VIEWS: TCalendarView[] = ["month", "week", "day"]
+const VALID_VIEWS: TCalendarView[] = ["month", "week", "day", "year"]
 
 export const useCalendarStore = defineStore("calendar", () => {
 	const settingsStore = useSettingsStore()
@@ -63,6 +63,8 @@ export const useCalendarStore = defineStore("calendar", () => {
 			return getEventsForWeekView(allEvents.value)
 		} else if (view.value === "day") {
 			return getEventsForDayView(allEvents.value)
+		} else if (view.value === "year") {
+			return getEventsForYearView(allEvents.value)
 		}
 
 		return allEvents.value
@@ -108,6 +110,15 @@ export const useCalendarStore = defineStore("calendar", () => {
 			59,
 			999
 		).getTime()
+
+		return events.filter((event) => {
+			return event.startedAt * 1000 <= rangeEnd && event.endedAt * 1000 >= rangeStart
+		})
+	}
+
+	function getEventsForYearView(events: Schedule[]): Schedule[] {
+		const rangeStart = startOfYear(selectedDate.value).getTime()
+		const rangeEnd = endOfYear(selectedDate.value).getTime()
 
 		return events.filter((event) => {
 			return event.startedAt * 1000 <= rangeEnd && event.endedAt * 1000 >= rangeStart

@@ -2,12 +2,15 @@ import {
 	addDays,
 	addMonths,
 	addWeeks,
+	addYears,
 	subDays,
 	subMonths,
 	subWeeks,
+	subYears,
 	isSameWeek,
 	isSameDay,
 	isSameMonth,
+	isSameYear,
 	format,
 	startOfMonth,
 	endOfMonth,
@@ -28,18 +31,21 @@ const NEXT_OPERATIONS: Record<TCalendarView, DateOperation> = {
 	month: addMonths,
 	week: addWeeks,
 	day: addDays,
+	year: addYears,
 }
 
 const PREV_OPERATIONS: Record<TCalendarView, DateOperation> = {
 	month: subMonths,
 	week: subWeeks,
 	day: subDays,
+	year: subYears,
 }
 
 const COMPARE_FUNCTIONS: Record<TCalendarView, (d1: Date, d2: Date) => boolean> = {
 	day: isSameDay,
 	week: (d1, d2) => isSameWeek(d1, d2, WEEK_OPTIONS),
 	month: isSameMonth,
+	year: isSameYear,
 }
 
 export const parseDate = (date: Date | string | number | null | undefined): Date => {
@@ -66,6 +72,8 @@ export function rangeText(view: TCalendarView, date: Date | string | number): st
 	let end: Date
 
 	switch (view) {
+		case "year":
+			return format(parsedDate, "yyyy", { locale: uk })
 		case "month":
 			start = startOfMonth(parsedDate)
 			end = endOfMonth(parsedDate)
