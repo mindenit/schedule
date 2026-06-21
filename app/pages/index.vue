@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia"
 import { useScheduleQuery } from "~/composables/useScheduleQuery"
-import { useMockSchedule } from "~/composables/useMockSchedule"
-
-// Set to true to fill the calendar with generated data (dev only).
-const USE_MOCK = true
 
 const calendarStore = useCalendarStore()
 const scheduleStore = useScheduleStore()
@@ -72,19 +68,15 @@ const scheduleKey = computed(() =>
 	selectedSchedule.value ? `${selectedSchedule.value.type}-${selectedSchedule.value.id}` : null
 )
 
-if (USE_MOCK) {
-	calendarStore.setEvents(useMockSchedule())
-} else {
-	// Clear events immediately when the selected schedule changes,
-	// then fill with fresh data once the query resolves.
-	watch(scheduleKey, () => {
-		calendarStore.setEvents([])
-	})
+// Clear events immediately when the selected schedule changes,
+// then fill with fresh data once the query resolves.
+watch(scheduleKey, () => {
+	calendarStore.setEvents([])
+})
 
-	watch(scheduleData, (data) => {
-		if (data) calendarStore.setEvents(data)
-	})
-}
+watch(scheduleData, (data) => {
+	if (data) calendarStore.setEvents(data)
+})
 </script>
 
 <template>
