@@ -147,6 +147,15 @@ export const useFiltersStore = defineStore("filters", () => {
 			groupsFilters.value.length > 0
 	)
 
+	const activeCount = computed(
+		() =>
+			lessonTypesFilters.value.length +
+			teachersFilters.value.length +
+			auditoriumsFilters.value.length +
+			subjectsFilters.value.length +
+			groupsFilters.value.length
+	)
+
 	const activeFilters = computed(() => ({
 		lessonTypes: lessonTypesFilters.value,
 		teachers: teachersFilters.value,
@@ -164,6 +173,7 @@ export const useFiltersStore = defineStore("filters", () => {
 		activeFilters,
 		version,
 		hasActive,
+		activeCount,
 		loadFilters,
 		saveFilters,
 		toggleLessonTypeFilter,

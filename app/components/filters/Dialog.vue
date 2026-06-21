@@ -111,11 +111,28 @@ watch(isOpen, (open) => {
 
 <template>
 	<UiDialog v-model:open="isOpen">
-		<UiDialogTrigger as-child>
-			<UiButton variant="default" size="icon" :class="props.class" aria-label="Фільтри">
-				<AppIcon name="lucide:filter" />
-			</UiButton>
-		</UiDialogTrigger>
+		<div class="relative inline-flex shrink-0">
+			<UiDialogTrigger as-child>
+				<UiButton variant="default" size="icon" :class="props.class" aria-label="Фільтри">
+					<AppIcon name="lucide:filter" />
+				</UiButton>
+			</UiDialogTrigger>
+			<Transition
+				enter-active-class="transition-all duration-200 ease-out"
+				enter-from-class="scale-0 opacity-0"
+				enter-to-class="scale-100 opacity-100"
+				leave-active-class="transition-all duration-150 ease-in"
+				leave-from-class="scale-100 opacity-100"
+				leave-to-class="scale-0 opacity-0"
+			>
+				<span
+					v-if="filtersStore.activeCount > 0"
+					class="bg-warning text-warning-foreground ring-background absolute -top-1.5 -right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full p-0.5 text-[10px] font-medium ring-2"
+				>
+					{{ filtersStore.activeCount }}
+				</span>
+			</Transition>
+		</div>
 
 		<UiDialogContent>
 			<UiDialogHeader>
