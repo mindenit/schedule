@@ -7,6 +7,14 @@ import type { ScheduleTabType } from "~/types/schedule"
 const VALID_VIEWS = VIEW_OPTIONS.map((o) => o.value)
 const VALID_TYPES = Object.keys(SCHEDULE_TYPES) as ScheduleTabType[]
 
+// Shape of the state object stored in history entries when URL sync is off.
+interface HistoryState {
+	view: string
+	date: string
+	scheduleId?: number
+	scheduleType?: string
+}
+
 // Resolve the display name for an entity by checking the TanStack Query cache
 // first (zero cost if AddDialog was already opened), then falling back to a
 // direct API call. This keeps the shared-link experience instantaneous when
@@ -88,8 +96,9 @@ export function useUrlState() {
 
 	// ── Read URL → stores ──
 
-	// Track the last view that was committed to the URL so we can detect view
-	// changes and push a new history entry (enabling browser Back/Forward).
+	// Track the last view that was committed to the URL (sync-on) or pushed to
+	// history state (sync-off) so we can detect view changes and push a new
+	// history entry (enabling browser Back/Forward).
 	// Initialized from the URL so that the very first syncToUrl (immediate watcher)
 	// doesn't treat the initial state as a view change.
 	let lastCommittedView: string | null =
@@ -140,12 +149,11 @@ export function useUrlState() {
 	// Run once on mount (initial page load / direct URL entry).
 	onMounted(() => applyUrlToStores(route.query))
 
-	// Re-run whenever the URL query changes — this handles browser Back/Forward.
-	// The guard inside syncToUrl prevents the store→URL watcher from creating a
-	// loop: if the URL is already correct, syncToUrl is a no-op.
+	// Re-run whenever the URL query changes — this handles browser Back/Forward
+	// when URL sync is enabled.
 	watch(() => route.query, applyUrlToStores, { deep: true })
 
-	// ── Sync stores → URL ──
+	// ── Sync stores → URL (sync enabled) ──
 
 	// Collect what the URL should look like right now.
 	const buildQuery = () => ({
@@ -185,6 +193,97 @@ export function useUrlState() {
 		}
 	}
 
+	// ── History state management (sync disabled) ──
+
+	// Build a plain state object from current store values. Stored inside
+	// history entries via history.pushState() / history.replaceState() so that
+	// popstate can restore the UI without touching the URL.
+	const buildHistoryState = (): HistoryState => ({
+		view: calendarStore.view,
+		date: format(calendarStore.selectedDate, DATE_FORMAT_ISO),
+		...(scheduleStore.selectedSchedule && {
+			scheduleId: scheduleStore.selectedSchedule.id,
+			scheduleType: scheduleStore.selectedSchedule.type,
+		}),
+	})
+
+	// Restore stores from a history state object (called from the popstate handler).
+	const applyHistoryState = async (state: HistoryState) => {
+		if (VALID_VIEWS.includes(state.view)) {
+			lastCommittedView = state.view
+			calendarStore.setView(state.view as TCalendarView)
+		}
+
+		const parsed = parseISO(state.date)
+		if (isValid(parsed)) {
+			calendarStore.setSelectedDate(parsed)
+		}
+
+		if (
+			typeof state.scheduleId === "number" &&
+			typeof state.scheduleType === "string" &&
+			VALID_TYPES.includes(state.scheduleType as ScheduleTabType)
+		) {
+			const scheduleType = state.scheduleType as ScheduleTabType
+			if (!scheduleStore.isInitialized) await nextTick()
+			const name = await resolveEntityName(scheduleType, state.scheduleId, queryClient, $nurekit)
+			scheduleStore.selectScheduleFromUrl({ id: state.scheduleId, name, type: scheduleType })
+		}
+	}
+
+	// Seed the very first history entry with the current state so that Back from
+	// the initial page load doesn't leave the user stranded without state.
+	const seedInitialHistoryState = () => {
+		if (settingsStore.isUrlSyncEnabled) return
+		// Only seed if the current history entry has no app state yet.
+		if (history.state?.__mindenit) return
+		history.replaceState({ ...history.state, __mindenit: buildHistoryState() }, "")
+	}
+
+	// Push or replace a history entry (no URL change) when sync is off.
+	const syncToHistoryState = () => {
+		if (settingsStore.isUrlSyncEnabled) return
+
+		const next = buildHistoryState()
+		const prev = history.state?.__mindenit as HistoryState | undefined
+
+		// Nothing changed — skip to avoid polluting the history stack.
+		if (
+			prev &&
+			prev.view === next.view &&
+			prev.date === next.date &&
+			prev.scheduleId === next.scheduleId &&
+			prev.scheduleType === next.scheduleType
+		)
+			return
+
+		const viewChanged = lastCommittedView !== null && lastCommittedView !== next.view
+		lastCommittedView = next.view
+
+		if (viewChanged) {
+			history.pushState({ ...history.state, __mindenit: next }, "")
+		} else {
+			history.replaceState({ ...history.state, __mindenit: next }, "")
+		}
+	}
+
+	// popstate fires when the user navigates Back/Forward. If the entry carries
+	// app state and URL sync is off, restore the stores from it.
+	const onPopState = (e: PopStateEvent) => {
+		if (settingsStore.isUrlSyncEnabled) return
+		const state = e.state?.__mindenit as HistoryState | undefined
+		if (state) applyHistoryState(state)
+	}
+
+	onMounted(() => {
+		seedInitialHistoryState()
+		window.addEventListener("popstate", onPopState)
+	})
+
+	onUnmounted(() => {
+		window.removeEventListener("popstate", onPopState)
+	})
+
 	watch(
 		[
 			() => calendarStore.view,
@@ -192,7 +291,10 @@ export function useUrlState() {
 			() => scheduleStore.selectedSchedule,
 			() => settingsStore.isUrlSyncEnabled,
 		],
-		syncToUrl,
+		() => {
+			syncToUrl()
+			syncToHistoryState()
+		},
 		{ immediate: true }
 	)
 }
