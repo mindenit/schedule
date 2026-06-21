@@ -80,7 +80,8 @@ const stackTrace = computed(() => {
 					Dev — Error details
 				</p>
 				<pre
-					class="bg-muted border-border max-h-96 overflow-auto rounded-md border p-4 font-mono text-xs leading-relaxed"
+					class="bg-muted border-border max-h-96 overflow-auto rounded-md border p-4 font-mono
+						text-xs leading-relaxed"
 					>{{ stackTrace }}</pre
 				>
 			</div>

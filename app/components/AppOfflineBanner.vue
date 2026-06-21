@@ -32,7 +32,8 @@ watch(isOnline, (online) => {
 	>
 		<div
 			v-if="!isOnline"
-			class="bg-warning/15 text-warning-foreground border-warning/30 flex items-center justify-center gap-2 border-b px-4 py-2 text-sm font-medium"
+			class="bg-warning/15 text-warning-foreground border-warning/30 flex items-center
+				justify-center gap-2 border-b px-4 py-2 text-sm font-medium"
 			role="alert"
 			aria-live="assertive"
 		>

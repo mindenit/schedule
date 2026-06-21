@@ -92,8 +92,8 @@ const handleAccept = async () => {
 				<div class="space-y-2 text-center">
 					<h1 class="text-3xl font-bold">Поділена колекція посилань</h1>
 					<p class="text-muted-foreground">
-					Вам запропоновано імпортувати {{ sharableData.links.length }}
-					{{ pluralUk(sharableData.links.length, "посилання", "посилання", "посилань") }}
+						Вам запропоновано імпортувати {{ sharableData.links.length }}
+						{{ pluralUk(sharableData.links.length, "посилання", "посилання", "посилань") }}
 					</p>
 				</div>
 

@@ -36,7 +36,12 @@ const hasEvents = computed(() => todayEvents.value.length > 0)
 		<div class="flex items-center gap-1">
 			<span class="flex-1 text-base font-semibold">{{ formattedDate }}</span>
 			<template v-if="isDev">
-				<UiButton size="icon" variant="ghost" class="size-6" @click="previewDate = subDays(previewDate, 1)">
+				<UiButton
+					size="icon"
+					variant="ghost"
+					class="size-6"
+					@click="previewDate = subDays(previewDate, 1)"
+				>
 					<Icon name="lucide:chevron-left" class="size-3" />
 				</UiButton>
 				<UiButton
@@ -48,7 +53,12 @@ const hasEvents = computed(() => todayEvents.value.length > 0)
 				>
 					<Icon name="lucide:rotate-ccw" class="size-3" />
 				</UiButton>
-				<UiButton size="icon" variant="ghost" class="size-6" @click="previewDate = addDays(previewDate, 1)">
+				<UiButton
+					size="icon"
+					variant="ghost"
+					class="size-6"
+					@click="previewDate = addDays(previewDate, 1)"
+				>
 					<Icon name="lucide:chevron-right" class="size-3" />
 				</UiButton>
 			</template>

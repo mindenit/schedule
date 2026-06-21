@@ -158,8 +158,8 @@ function handleMobileClick() {
 							"
 						>
 							<span class="flex-1 shrink-0 truncate">
-							ще {{ cellDisplay.remainingEventsCount }}
-							{{ pluralUk(cellDisplay.remainingEventsCount, "заняття", "заняття", "занять") }}
+								ще {{ cellDisplay.remainingEventsCount }}
+								{{ pluralUk(cellDisplay.remainingEventsCount, "заняття", "заняття", "занять") }}
 							</span>
 						</BigCalendarMonthEventBadge>
 					</div>
