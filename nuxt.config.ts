@@ -28,6 +28,8 @@ export default defineNuxtConfig({
 	runtimeConfig: {
 		public: {
 			maintenance: false,
+			// Bumped on every build — used to bust the IndexedDB query cache on deploy
+			buildId: String(Date.now()),
 		},
 	},
 	modules: [

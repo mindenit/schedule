@@ -15,7 +15,7 @@ const meta = computed(() =>
 	is404.value
 		? {
 				code: "404",
-				icon: "lucide:map-off",
+				icon: "lucide:map-minus",
 				title: "Сторінку не знайдено",
 				description:
 					"Вибачте, ми не можемо знайти сторінку, яку ви шукаєте. Можливо, її було переміщено або видалено.",
@@ -76,12 +76,13 @@ const stackTrace = computed(() => {
 
 		<IsDevelopment>
 			<div class="w-full max-w-2xl text-left">
-				<p class="text-muted-foreground mb-2 text-xs font-medium uppercase tracking-wide">
+				<p class="text-muted-foreground mb-2 text-xs font-medium tracking-wide uppercase">
 					Dev — Error details
 				</p>
 				<pre
-					class="bg-muted border-border overflow-auto rounded-md border p-4 text-xs leading-relaxed font-mono max-h-96"
-				>{{ stackTrace }}</pre>
+					class="bg-muted border-border max-h-96 overflow-auto rounded-md border p-4 font-mono text-xs leading-relaxed"
+					>{{ stackTrace }}</pre
+				>
 			</div>
 		</IsDevelopment>
 	</div>

@@ -4,6 +4,7 @@
 		<div class="relative flex h-dvh flex-col overflow-hidden md:hidden">
 			<div class="flex-shrink-0">
 				<HiringInfo />
+				<AppOfflineBanner />
 			</div>
 
 			<TheNavbar />
@@ -21,6 +22,7 @@
 		<div class="hidden h-dvh flex-col overflow-hidden md:flex">
 			<div class="flex-shrink-0">
 				<HiringInfo />
+				<AppOfflineBanner />
 			</div>
 
 			<div class="flex min-h-0 flex-1 flex-col p-6">
