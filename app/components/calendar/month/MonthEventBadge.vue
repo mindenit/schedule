@@ -10,6 +10,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const { getEventTypeColor } = useEventFormatting()
+const { effectiveTimezone } = useTimezone()
 
 // Static portion hoisted to module level — avoids allocating a new string on every render.
 const BASE_CLASSES =
@@ -21,8 +22,10 @@ const badgeClasses = computed(() => [
 	props.class,
 ])
 
-// Time range is cached per Schedule object — no re-formatting on re-render.
-const formattedTime = computed(() => (props.event ? getEventTimeRange(props.event) : ""))
+// Time range is cached per Schedule object + timezone — no re-formatting on re-render.
+const formattedTime = computed(() =>
+	props.event ? getEventTimeRange(props.event, effectiveTimezone.value) : ""
+)
 </script>
 
 <template>

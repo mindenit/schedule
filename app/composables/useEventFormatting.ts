@@ -1,13 +1,13 @@
-import { format } from "date-fns"
 import { uk } from "date-fns/locale"
 import type { Schedule } from "nurekit"
 import type { TEventType } from "~/types/calendar"
 import { EVENT_TYPE_COLORS, EVENT_TYPE_LABELS } from "~/constants/calendar"
 
 export const useEventFormatting = () => {
+	const { tzFormat } = useTimezone()
+
 	const formatTime = (date: Date | string | number): string => {
-		const parsedDate = parseDate(date)
-		return format(parsedDate, "HH:mm")
+		return tzFormat(date, "HH:mm")
 	}
 
 	const formatHour = (hour: number): string => {
@@ -17,18 +17,14 @@ export const useEventFormatting = () => {
 	}
 
 	const formatTimeRange = (event: Schedule): string => {
-		const start = parseDate(event.startedAt)
-		const end = parseDate(event.endedAt)
-
-		return `${formatTime(start)} - ${formatTime(end)}`
+		return `${formatTime(event.startedAt)} - ${formatTime(event.endedAt)}`
 	}
 
 	const formatDate = (
 		date: Date | string | number,
 		formatString: string = "d MMMM yyyy"
 	): string => {
-		const parsedDate = parseDate(date)
-		return format(parsedDate, formatString, { locale: uk })
+		return tzFormat(date, formatString, { locale: uk })
 	}
 
 	const getEventTypeColor = (type: string): string => {
@@ -55,8 +51,7 @@ export const useEventFormatting = () => {
 		date: Date | string | number,
 		formatString: string = "d MMMM yyyy, HH:mm"
 	): string => {
-		const parsedDate = parseDate(date)
-		return format(parsedDate, formatString, { locale: uk })
+		return tzFormat(date, formatString, { locale: uk })
 	}
 
 	const toISOString = (date: Date | string | number): string => {

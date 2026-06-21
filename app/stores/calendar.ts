@@ -1,13 +1,18 @@
-import { defineStore } from "pinia"
+import { defineStore, storeToRefs } from "pinia"
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek } from "date-fns"
 import type { Schedule } from "nurekit"
 import type { TCalendarView } from "~/types/calendar"
 import { WEEK_OPTIONS } from "~/constants/calendar"
+import { resolveTimezone } from "~/constants/timezones"
 import { getEventDayKey } from "~/utils/event-cache"
 
 const VALID_VIEWS: TCalendarView[] = ["month", "week", "day"]
 
 export const useCalendarStore = defineStore("calendar", () => {
+	const settingsStore = useSettingsStore()
+	const { timezone } = storeToRefs(settingsStore)
+	const effectiveTimezone = computed(() => resolveTimezone(timezone.value))
+
 	const allEvents = ref<Schedule[]>([])
 	const selectedDate = ref(new Date())
 
@@ -27,14 +32,14 @@ export const useCalendarStore = defineStore("calendar", () => {
 		},
 	})
 
-	// Pre-indexed by day-start Unix ms. Rebuilds only when allEvents changes
-	// (i.e. on a new network fetch), not on selectedDate navigation.
-	// MonthView reads from this map directly so month switching never rebuilds
-	// the index — it's just 42 Map.get() calls regardless of event count.
+	// Pre-indexed by day-start Unix ms. Rebuilds when allEvents or the timezone
+	// changes. MonthView reads from this map directly so month switching never
+	// rebuilds the index — it's just 42 Map.get() calls regardless of event count.
 	const eventsByDayKey = computed(() => {
+		const tz = effectiveTimezone.value
 		const map = new Map<number, Schedule[]>()
 		for (const event of allEvents.value) {
-			const key = getEventDayKey(event)
+			const key = getEventDayKey(event, tz)
 			let bucket = map.get(key)
 			if (!bucket) {
 				bucket = []

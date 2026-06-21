@@ -9,26 +9,56 @@
  *   call, regardless of how many components read the same event in the same
  *   render pass.
  *
- * Day key is the Unix timestamp (ms) of the event's local midnight — used as
- * a numeric Map key in MonthView so no ISO string allocation is required.
+ * Timezone bucketing:
+ * - Caches are keyed first by the resolved IANA timezone string, then by event
+ *   reference. This means changing the timezone produces cache misses and fresh
+ *   values without any manual invalidation.
+ *
+ * Day key is the Unix timestamp (ms) of the event's midnight in the selected
+ * timezone — used as a numeric Map key in MonthView so no ISO string allocation
+ * is required.
  */
 
 import type { Schedule } from "nurekit"
-import { format } from "date-fns"
+import { formatInTimeZone, toZonedTime } from "date-fns-tz"
 import { uk } from "date-fns/locale"
 
 // ---------------------------------------------------------------------------
-// Day key: Unix ms of the local midnight of the event's start date
+// Internal helpers
 // ---------------------------------------------------------------------------
 
-const dayKeyCache = new WeakMap<Schedule, number>()
+function pad2(n: number): string {
+	return n < 10 ? `0${n}` : `${n}`
+}
 
-export function getEventDayKey(event: Schedule): number {
-	let key = dayKeyCache.get(event)
+/** Returns (or creates) the WeakMap for the given timezone bucket. */
+function bucket<V>(map: Map<string, WeakMap<Schedule, V>>, tz: string): WeakMap<Schedule, V> {
+	let wm = map.get(tz)
+	if (!wm) {
+		wm = new WeakMap()
+		map.set(tz, wm)
+	}
+	return wm
+}
+
+// ---------------------------------------------------------------------------
+// Day key: Unix ms of the event's start-date midnight in the selected timezone
+// ---------------------------------------------------------------------------
+
+const dayKeyCache = new Map<string, WeakMap<Schedule, number>>()
+
+export function getEventDayKey(event: Schedule, tz: string): number {
+	const wm = bucket(dayKeyCache, tz)
+	let key = wm.get(event)
 	if (key === undefined) {
-		const d = new Date(event.startedAt * 1000)
-		key = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
-		dayKeyCache.set(event, key)
+		// Convert the UTC timestamp to a zoned Date, then take its local midnight
+		const zonedDate = toZonedTime(new Date(event.startedAt * 1000), tz)
+		key = new Date(
+			zonedDate.getFullYear(),
+			zonedDate.getMonth(),
+			zonedDate.getDate()
+		).getTime()
+		wm.set(event, key)
 	}
 	return key
 }
@@ -37,19 +67,16 @@ export function getEventDayKey(event: Schedule): number {
 // Formatted time range: "HH:mm - HH:mm"
 // ---------------------------------------------------------------------------
 
-const timeRangeCache = new WeakMap<Schedule, string>()
+const timeRangeCache = new Map<string, WeakMap<Schedule, string>>()
 
-function pad2(n: number): string {
-	return n < 10 ? `0${n}` : `${n}`
-}
-
-export function getEventTimeRange(event: Schedule): string {
-	let range = timeRangeCache.get(event)
+export function getEventTimeRange(event: Schedule, tz: string): string {
+	const wm = bucket(timeRangeCache, tz)
+	let range = wm.get(event)
 	if (range === undefined) {
-		const start = new Date(event.startedAt * 1000)
-		const end = new Date(event.endedAt * 1000)
+		const start = toZonedTime(new Date(event.startedAt * 1000), tz)
+		const end = toZonedTime(new Date(event.endedAt * 1000), tz)
 		range = `${pad2(start.getHours())}:${pad2(start.getMinutes())} - ${pad2(end.getHours())}:${pad2(end.getMinutes())}`
-		timeRangeCache.set(event, range)
+		wm.set(event, range)
 	}
 	return range
 }
@@ -58,13 +85,14 @@ export function getEventTimeRange(event: Schedule): string {
 // Formatted date string: "d MMMM yyyy" in Ukrainian
 // ---------------------------------------------------------------------------
 
-const dateStringCache = new WeakMap<Schedule, string>()
+const dateStringCache = new Map<string, WeakMap<Schedule, string>>()
 
-export function getEventDateString(event: Schedule): string {
-	let str = dateStringCache.get(event)
+export function getEventDateString(event: Schedule, tz: string): string {
+	const wm = bucket(dateStringCache, tz)
+	let str = wm.get(event)
 	if (str === undefined) {
-		str = format(new Date(event.startedAt * 1000), "d MMMM yyyy", { locale: uk })
-		dateStringCache.set(event, str)
+		str = formatInTimeZone(new Date(event.startedAt * 1000), tz, "d MMMM yyyy", { locale: uk })
+		wm.set(event, str)
 	}
 	return str
 }
