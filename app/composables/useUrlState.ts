@@ -21,7 +21,7 @@ async function resolveEntityName(
 	const cacheKeyMap: Record<ScheduleTabType, unknown[]> = {
 		group: ["groups"],
 		teacher: ["teachers"],
-		auditorium: ["auditories"],
+		auditorium: ["auditoriums"],
 	}
 
 	const cached = queryClient.getQueryData<(Group | Teacher | Auditorium)[]>(cacheKeyMap[type])

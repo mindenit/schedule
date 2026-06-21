@@ -3,7 +3,7 @@
 		<div class="flex shrink-0 items-center">
 			<UiDrawer direction="left">
 				<UiDrawerTrigger as-child>
-					<UiButton variant="ghost" size="icon">
+					<UiButton variant="ghost" size="icon" aria-label="Відкрити меню">
 						<AppIcon name="lucide:menu" />
 					</UiButton>
 				</UiDrawerTrigger>

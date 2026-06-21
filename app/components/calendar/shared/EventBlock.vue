@@ -28,6 +28,8 @@ const formattedTimeRange = computed(() => formatTimeRange(props.event))
 				tabindex="0"
 				:class="blockClasses"
 				@click="trackEvent('event_opened', { lesson_type: event.type })"
+				@keydown.enter.prevent="trackEvent('event_opened', { lesson_type: event.type })"
+				@keydown.space.prevent="($event.currentTarget as HTMLElement).click()"
 			>
 				<p class="w-full truncate text-center font-semibold">{{ event.subject.brief }}</p>
 				<p class="w-full truncate text-center">

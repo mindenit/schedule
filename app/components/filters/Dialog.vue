@@ -112,7 +112,7 @@ watch(isOpen, (open) => {
 <template>
 	<UiDialog v-model:open="isOpen">
 		<UiDialogTrigger as-child>
-			<UiButton variant="default" size="icon" :class="props.class">
+			<UiButton variant="default" size="icon" :class="props.class" aria-label="Фільтри">
 				<AppIcon name="lucide:filter" />
 			</UiButton>
 		</UiDialogTrigger>

@@ -4,6 +4,8 @@ export const useFiltersStore = defineStore("filters", () => {
 	const auditoriumsFilters = ref<number[]>([])
 	const subjectsFilters = ref<number[]>([])
 	const groupsFilters = ref<number[]>([])
+	// version is appended to the schedule queryKey in useScheduleQuery so that
+	// TanStack Query re-hashes and refetches whenever any filter is toggled.
 	const version = ref(0)
 
 	let currentScheduleKey = ""

@@ -26,7 +26,13 @@ const formattedTime = computed(() => (props.event ? getEventTimeRange(props.even
 </script>
 
 <template>
-	<div role="button" tabindex="0" :class="badgeClasses">
+	<div
+		role="button"
+		tabindex="0"
+		:class="badgeClasses"
+		@keydown.enter.prevent="($event.currentTarget as HTMLElement).click()"
+		@keydown.space.prevent="($event.currentTarget as HTMLElement).click()"
+	>
 		<slot v-if="$slots.default" />
 		<template v-else>
 			<span class="flex-1 shrink-0 truncate">

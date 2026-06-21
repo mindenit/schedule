@@ -9,7 +9,7 @@ import {
 const auditoriumsOptions = () => {
 	const { $nurekit } = useNuxtApp()
 	return queryOptions({
-		queryKey: ["auditories"],
+		queryKey: ["auditoriums"],
 		queryFn: () => $nurekit.auditoriums.findMany(),
 		staleTime: STALE_TIME_ENTITY_LIST,
 	})

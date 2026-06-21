@@ -23,6 +23,7 @@ export const useScheduleQuery = (
 		auditoriumsFilters,
 		subjectsFilters,
 		groupsFilters,
+		version,
 	} = storeToRefs(filtersStore)
 
 	// Load per-schedule filters when the active schedule changes.
@@ -96,7 +97,11 @@ export const useScheduleQuery = (
 					enabled: false,
 				}
 			}
-			return { ...queryOptions.value, enabled: true }
+			return {
+				...queryOptions.value,
+				queryKey: [...queryOptions.value.queryKey, version.value],
+				enabled: true,
+			}
 		})
 	)
 

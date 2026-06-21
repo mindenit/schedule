@@ -110,7 +110,7 @@ export const useIcsExport = () => {
 					: ""
 			}`,
 			"X-WR-CALDESC:Розклад занять на навчальний рік",
-			"X-WR-TIMEZONE:Europe/Kiev",
+			"X-WR-TIMEZONE:Europe/Kyiv",
 		].join("\r\n")
 
 		const icsFooter = "END:VCALENDAR"
