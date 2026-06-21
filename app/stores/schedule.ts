@@ -95,6 +95,18 @@ export const useScheduleStore = defineStore("schedule", () => {
 		selectedSchedule.value = schedule
 	}
 
+	// True when the active schedule came from a shared URL and hasn't been saved yet.
+	// Used by ScheduleEphemeralBanner to prompt the user to persist it.
+	const isEphemeralActive = computed(
+		() =>
+			selectedSchedule.value !== null &&
+			!allSchedules.value.some(
+				(s) =>
+					String(s.id) === String(selectedSchedule.value!.id) &&
+					s.type === selectedSchedule.value!.type
+			)
+	)
+
 	// Defer until after Pinia SSR hydration so localStorage wins.
 	if (import.meta.client) {
 		nextTick(() => initializeStore())
@@ -104,6 +116,7 @@ export const useScheduleStore = defineStore("schedule", () => {
 		allSchedules,
 		selectedSchedule,
 		isInitialized,
+		isEphemeralActive,
 		addSchedule,
 		removeSchedule,
 		selectSchedule,

@@ -5,6 +5,9 @@
 			<div class="flex-shrink-0">
 				<HiringInfo />
 				<AppOfflineBanner />
+				<ClientOnly>
+					<ScheduleEphemeralBanner />
+				</ClientOnly>
 			</div>
 
 			<TheNavbar />

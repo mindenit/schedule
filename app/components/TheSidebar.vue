@@ -40,6 +40,10 @@ defineProps<Props>()
 		<SidebarCalendar />
 		<SidebarTodayEvents />
 
+		<ClientOnly>
+			<ScheduleEphemeralBanner variant="card" />
+		</ClientOnly>
+
 		<TelegramButton />
 		<div class="mt-auto flex items-center justify-between gap-2">
 			<div class="min-w-0 flex-1">
