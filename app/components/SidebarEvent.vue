@@ -15,8 +15,7 @@ defineProps<Props>()
 
 <template>
 	<div
-		class="group bg-card relative overflow-hidden rounded-lg border p-2.5 shadow-sm transition-all
-			hover:shadow-md"
+		class="group bg-card relative overflow-hidden rounded-lg border p-2.5 shadow-sm"
 	>
 		<div class="flex items-start gap-2.5">
 			<div class="flex flex-col items-center gap-0.5 pt-0.5">

@@ -2,6 +2,7 @@
 import { addDays, subDays, isToday } from "date-fns"
 import { formatInTimeZone } from "date-fns-tz"
 import { storeToRefs } from "pinia"
+import { motion, AnimatePresence } from "motion-v"
 import type { TEventType } from "~/types/calendar"
 
 const scheduleStore = useScheduleStore()
@@ -78,31 +79,70 @@ const hasEvents = computed(() => todayEvents.value.length > 0)
 			</template>
 			<div class="flex min-h-0 flex-1 flex-col overflow-hidden">
 				<UiScrollArea class="min-h-0 flex-1">
-					<div class="flex flex-col gap-3">
-						<template v-if="hasActiveSchedule && hasEvents">
-							<SidebarEvent
-								v-for="event in todayEvents"
-								:key="event.id"
-								:start-time="formatTime(event.startedAt)"
-								:end-time="formatTime(event.endedAt)"
-								:auditorium="event.auditorium?.name ?? 'Не вказана'"
-								:type="event.type as TEventType"
-								:name="event.subject.title"
-							/>
-						</template>
-						<AppEmptyState
+					<AnimatePresence mode="wait">
+						<!-- Event list state -->
+						<motion.div
+							v-if="hasActiveSchedule && hasEvents"
+							key="event-list"
+							:initial="{ opacity: 0, y: 6 }"
+							:animate="{ opacity: 1, y: 0 }"
+							:exit="{ opacity: 0, y: -6 }"
+							:transition="{ duration: 0.18 }"
+						>
+							<div class="flex flex-col gap-3">
+								<AnimatePresence>
+									<motion.div
+										v-for="(event, index) in todayEvents"
+										:key="event.id"
+										:initial="{ opacity: 0, y: 10 }"
+										:animate="{ opacity: 1, y: 0 }"
+										:exit="{ opacity: 0 }"
+										:transition="{ duration: 0.2, delay: Math.min(index * 0.05, 0.2) }"
+									>
+										<SidebarEvent
+											:start-time="formatTime(event.startedAt)"
+											:end-time="formatTime(event.endedAt)"
+											:auditorium="event.auditorium?.name ?? 'Не вказана'"
+											:type="event.type as TEventType"
+											:name="event.subject.title"
+										/>
+									</motion.div>
+								</AnimatePresence>
+							</div>
+						</motion.div>
+
+						<!-- No events state -->
+						<motion.div
 							v-else-if="hasActiveSchedule && !hasEvents"
-							variant="sidebar"
-							icon="lucide:smile"
-							title="Пар на сьогодні немає"
-						/>
-						<AppEmptyState
+							key="no-events"
+							:initial="{ opacity: 0, y: 6 }"
+							:animate="{ opacity: 1, y: 0 }"
+							:exit="{ opacity: 0, y: -6 }"
+							:transition="{ duration: 0.18 }"
+						>
+							<AppEmptyState
+								variant="sidebar"
+								icon="lucide:smile"
+								title="Пар на сьогодні немає"
+							/>
+						</motion.div>
+
+						<!-- No schedule state -->
+						<motion.div
 							v-else
-							variant="sidebar"
-							icon="lucide:calendar-plus"
-							title="Оберіть розклад для перегляду пар"
-						/>
-					</div>
+							key="no-schedule"
+							:initial="{ opacity: 0, y: 6 }"
+							:animate="{ opacity: 1, y: 0 }"
+							:exit="{ opacity: 0, y: -6 }"
+							:transition="{ duration: 0.18 }"
+						>
+							<AppEmptyState
+								variant="sidebar"
+								icon="lucide:calendar-plus"
+								title="Оберіть розклад для перегляду пар"
+							/>
+						</motion.div>
+					</AnimatePresence>
 				</UiScrollArea>
 			</div>
 		</ClientOnly>
