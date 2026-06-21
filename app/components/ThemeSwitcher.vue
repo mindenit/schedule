@@ -12,7 +12,12 @@ const themeIcon = computed(() => (colorMode.value !== "light" ? "lucide:moon" : 
 </script>
 
 <template>
-	<UiButton variant="ghost" size="icon" @click="handleClick()">
+	<UiButton
+		variant="ghost"
+		size="icon"
+		:aria-label="colorMode.value === 'light' ? 'Увімкнути темну тему' : 'Увімкнути світлу тему'"
+		@click="handleClick()"
+	>
 		<AppIcon :name="themeIcon" />
 	</UiButton>
 </template>

@@ -50,7 +50,7 @@ async function resolveEntityName(
 		}
 		if (type === "auditorium") {
 			const list = await nurekit.auditoriums.findMany()
-			queryClient.setQueryData(["auditories"], list)
+			queryClient.setQueryData(["auditoriums"], list)
 			return list.find((a) => a.id === id)?.name ?? ""
 		}
 	} catch {

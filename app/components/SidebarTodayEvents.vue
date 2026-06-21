@@ -1,40 +1,58 @@
 <script lang="ts" setup>
+import { isSameDay, addDays, subDays, isToday } from "date-fns"
 import { storeToRefs } from "pinia"
-import { startOfDay, endOfDay } from "date-fns"
-import { useScheduleQuery } from "~/composables/useScheduleQuery"
 import type { TEventType } from "~/types/calendar"
 
 const scheduleStore = useScheduleStore()
+const calendarStore = useCalendarStore()
 const { selectedSchedule } = storeToRefs(scheduleStore)
+const { allEvents } = storeToRefs(calendarStore)
 const { formatTime, formatDate, capitalize } = useEventFormatting()
 
-const today = new Date()
+// Dev-only date override — lets you navigate days to test sidebar event rendering.
+// Always starts at today; tree-shaken out in production builds.
+const previewDate = ref(new Date())
+const isDev = import.meta.dev
+const isPreviewToday = computed(() => isToday(previewDate.value))
 
 const formattedDate = computed(() => {
-	const day = capitalize(formatDate(today, "EEEE"))
-	const date = formatDate(today, "d MMMM")
+	const day = capitalize(formatDate(previewDate.value, "EEEE"))
+	const date = formatDate(previewDate.value, "d MMMM")
 	return `${day}, ${date}`
 })
 
-const startTimestamp = computed(() => {
-	return Math.floor(startOfDay(today).getTime() / 1000)
-})
-
-const endTimestamp = computed(() => {
-	return Math.floor(endOfDay(today).getTime() / 1000)
-})
-
-const scheduleId = computed(() => selectedSchedule.value?.id)
-
-const { data: todayEvents, isLoading } = useScheduleQuery(scheduleId, startTimestamp, endTimestamp)
+// Filter the already-loaded full-year events to the preview date — no extra network request.
+// 3.3 fix: guard auditorium?.name — auditorium can be null for online lessons.
+const todayEvents = computed(() =>
+	allEvents.value.filter((e) => isSameDay(new Date(e.startedAt * 1000), previewDate.value))
+)
 
 const hasActiveSchedule = computed(() => !!selectedSchedule.value)
-const hasEvents = computed(() => todayEvents.value && todayEvents.value.length > 0)
+const hasEvents = computed(() => todayEvents.value.length > 0)
 </script>
 
 <template>
 	<div class="flex min-h-0 flex-1 flex-col gap-4">
-		<div class="text-base font-semibold">{{ formattedDate }}</div>
+		<div class="flex items-center gap-1">
+			<span class="flex-1 text-base font-semibold">{{ formattedDate }}</span>
+			<template v-if="isDev">
+				<UiButton size="icon" variant="ghost" class="size-6" @click="previewDate = subDays(previewDate, 1)">
+					<Icon name="lucide:chevron-left" class="size-3" />
+				</UiButton>
+				<UiButton
+					v-if="!isPreviewToday"
+					size="icon"
+					variant="ghost"
+					class="size-6"
+					@click="previewDate = new Date()"
+				>
+					<Icon name="lucide:rotate-ccw" class="size-3" />
+				</UiButton>
+				<UiButton size="icon" variant="ghost" class="size-6" @click="previewDate = addDays(previewDate, 1)">
+					<Icon name="lucide:chevron-right" class="size-3" />
+				</UiButton>
+			</template>
+		</div>
 
 		<ClientOnly>
 			<template #fallback>
@@ -45,22 +63,19 @@ const hasEvents = computed(() => todayEvents.value && todayEvents.value.length >
 			<div class="flex min-h-0 flex-1 flex-col overflow-hidden">
 				<UiScrollArea class="min-h-0 flex-1">
 					<div class="flex flex-col gap-3">
-						<div v-if="isLoading && hasActiveSchedule" class="flex justify-center p-4">
-							<TheLoader />
-						</div>
-						<template v-else-if="hasActiveSchedule && hasEvents">
+						<template v-if="hasActiveSchedule && hasEvents">
 							<SidebarEvent
 								v-for="event in todayEvents"
 								:key="event.id"
 								:start-time="formatTime(event.startedAt)"
 								:end-time="formatTime(event.endedAt)"
-								:auditorium="event.auditorium.name"
+								:auditorium="event.auditorium?.name ?? 'Не вказана'"
 								:type="event.type as TEventType"
 								:name="event.subject.title"
 							/>
 						</template>
 						<AppEmptyState
-							v-else-if="hasActiveSchedule && !hasEvents && !isLoading"
+							v-else-if="hasActiveSchedule && !hasEvents"
 							variant="sidebar"
 							icon="lucide:smile"
 							title="Пар на сьогодні немає"

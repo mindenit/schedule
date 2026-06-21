@@ -132,7 +132,7 @@ const handleIcsExportAcademicYear = async () => {
 			<UiTabsList class="grid w-full shrink-0 grid-cols-3">
 				<UiTabsTrigger value="schedule">Загальні</UiTabsTrigger>
 				<UiTabsTrigger value="links">Посилання</UiTabsTrigger>
-				<UiTabsTrigger value="bug">Debug</UiTabsTrigger>
+				<UiTabsTrigger value="bug">Діагностика</UiTabsTrigger>
 			</UiTabsList>
 
 			<UiTabsContent value="schedule" class="min-h-0 flex-1">

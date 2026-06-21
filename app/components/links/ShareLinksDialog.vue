@@ -67,7 +67,7 @@ const handleClose = () => {
 			<div v-if="!sharableUrl" class="space-y-4">
 				<p class="text-muted-foreground text-sm">
 					Буде створено посилання для {{ selectedLinkIds.length }}
-					{{ selectedLinkIds.length === 1 ? "посилання" : "посилань" }}
+					{{ pluralUk(selectedLinkIds.length, "посилання", "посилання", "посилань") }}
 				</p>
 				<UiButton
 					class="w-full"

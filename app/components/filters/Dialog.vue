@@ -111,9 +111,9 @@ watch(isOpen, (open) => {
 
 <template>
 	<UiDialog v-model:open="isOpen">
-		<div class="relative inline-flex shrink-0">
+		<div :class="['relative inline-flex shrink-0', props.class]">
 			<UiDialogTrigger as-child>
-				<UiButton variant="default" size="icon" :class="props.class" aria-label="Фільтри">
+				<UiButton variant="default" size="icon" aria-label="Фільтри">
 					<AppIcon name="lucide:filter" />
 				</UiButton>
 			</UiDialogTrigger>

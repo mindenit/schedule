@@ -87,14 +87,15 @@ const handleImportLinks = (file: File) => {
 	reader.onload = (e) => {
 		const raw = e.target?.result as string
 		try {
-			const parsed = JSON.parse(raw)
-			const count = Array.isArray(parsed) ? parsed.length : 0
+			const countBefore = totalLinkCount.value
 			const result = linksStore.importLinks(raw)
 			if (!result.success) {
 				useSonner.error("Помилка імпорту", {
 					description: result.error || "Не вдалося імпортувати посилання",
 				})
 			} else {
+				// Diff against pre-import count — works for both array and object backup formats.
+				const count = totalLinkCount.value - countBefore
 				trackEvent("links_imported", { count })
 				useSonner.success("Імпорт завершено", {
 					description: "Посилання успішно імпортовані",

@@ -13,6 +13,6 @@ const { trackEvent } = useAnalytics()
 		@click="trackEvent('telegram_clicked')"
 	>
 		<AppIcon name="mingcute:telegram-fill" size="md" />
-		Join us on Telegram
+		Приєднатися до Telegram
 	</UiButton>
 </template>

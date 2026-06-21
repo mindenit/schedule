@@ -114,6 +114,7 @@ function handleMobileClick() {
 			>
 				<span
 					v-if="cellDisplay.totalEventsCount > 0"
+					:aria-label="`${cellDisplay.totalEventsCount} ${pluralUk(cellDisplay.totalEventsCount, 'заняття', 'заняття', 'занять')}`"
 					class="bg-primary flex size-5 items-center justify-center rounded-full text-xs
 						font-semibold"
 				>
@@ -157,8 +158,8 @@ function handleMobileClick() {
 							"
 						>
 							<span class="flex-1 shrink-0 truncate">
-								ще {{ cellDisplay.remainingEventsCount }}
-								{{ cellDisplay.remainingEventsCount === 1 ? "заняття" : "занять" }}
+							ще {{ cellDisplay.remainingEventsCount }}
+							{{ pluralUk(cellDisplay.remainingEventsCount, "заняття", "заняття", "занять") }}
 							</span>
 						</BigCalendarMonthEventBadge>
 					</div>

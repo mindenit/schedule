@@ -11,8 +11,32 @@ export interface IcsExportOptions {
 
 export const useIcsExport = () => {
 	const formatDateTime = (timestamp: number): string => {
+		// Floating local time — paired with TZID=Europe/Kyiv on DTSTART/DTEND
 		return format(new Date(timestamp * 1000), "yyyyMMdd'T'HHmmss")
 	}
+
+	// RFC 5545 §3.6.5 VTIMEZONE for Europe/Kyiv.
+	// Ukraine permanently adopted UTC+3 (no DST) in 2022, but we include the
+	// historical DAYLIGHT block so pre-2022 events in old exports remain correct.
+	const VTIMEZONE_KYIV = [
+		"BEGIN:VTIMEZONE",
+		"TZID:Europe/Kyiv",
+		"BEGIN:STANDARD",
+		"DTSTART:19701025T040000",
+		"TZNAME:EET",
+		"TZOFFSETFROM:+0300",
+		"TZOFFSETTO:+0200",
+		"RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=10",
+		"END:STANDARD",
+		"BEGIN:DAYLIGHT",
+		"DTSTART:19700329T030000",
+		"TZNAME:EEST",
+		"TZOFFSETFROM:+0200",
+		"TZOFFSETTO:+0300",
+		"RRULE:FREQ=YEARLY;BYDAY=-1SU;BYMONTH=3",
+		"END:DAYLIGHT",
+		"END:VTIMEZONE",
+	].join("\r\n")
 
 	const escapeIcsText = (text: string): string => {
 		return text
@@ -58,8 +82,8 @@ export const useIcsExport = () => {
 		return [
 			"BEGIN:VEVENT",
 			`UID:${generateEventUid(event)}`,
-			`DTSTART:${startTime}`,
-			`DTEND:${endTime}`,
+			`DTSTART;TZID=Europe/Kyiv:${startTime}`,
+			`DTEND;TZID=Europe/Kyiv:${endTime}`,
 			`SUMMARY:${escapeIcsText(summary)}`,
 			`DESCRIPTION:${description}`,
 			location ? `LOCATION:${escapeIcsText(location)}` : "",
@@ -117,7 +141,7 @@ export const useIcsExport = () => {
 
 		const icsEvents = filteredEvents.map((event) => createIcsEvent(event)).join("\r\n")
 
-		return [icsHeader, icsEvents, icsFooter].join("\r\n")
+		return [icsHeader, VTIMEZONE_KYIV, icsEvents, icsFooter].join("\r\n")
 	}
 
 	const exportScheduleToIcs = (

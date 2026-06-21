@@ -25,9 +25,11 @@ import { AUTHORS } from "~/constants"
 					:key="author.name"
 					class="bg-muted flex items-center gap-3 rounded-lg p-3"
 				>
-					<img
+					<NuxtImg
 						:src="author.avatar"
 						:alt="author.name"
+						width="40"
+						height="40"
 						class="pointer-events-none size-10 rounded-full object-cover"
 						loading="lazy"
 					/>
