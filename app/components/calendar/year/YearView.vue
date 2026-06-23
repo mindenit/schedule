@@ -167,20 +167,19 @@ function onMonthClick(date: Date) {
 			class="relative hidden min-h-0 flex-1 overflow-hidden lg:block"
 			:class="{ 'blur-sm': !hasEvents }"
 		>
-			<!-- Incoming panel -->
-			<motion.div
-				v-if="incomingPanel"
-				class="absolute inset-0 grid grid-cols-4 gap-2 p-1"
-				:style="{ x: incomingX, willChange: 'transform', contain: 'layout paint' }"
-			>
-				<BigCalendarMonthMini
-					v-for="month in incomingPanel.months"
-					:key="month.date.getTime()"
-					:month="month"
-					@day-click="onDayClick"
-					@month-click="onMonthClick"
-				/>
-			</motion.div>
+		<!-- Incoming panel — non-interactive during slide animation -->
+		<motion.div
+			v-if="incomingPanel"
+			class="absolute inset-0 grid grid-cols-4 gap-2 p-1"
+			:style="{ x: incomingX, willChange: 'transform', contain: 'layout paint' }"
+		>
+			<BigCalendarMonthMini
+				v-for="month in incomingPanel.months"
+				:key="month.date.getTime()"
+				:month="month"
+				:interactive="false"
+			/>
+		</motion.div>
 
 			<!-- Current panel — draggable -->
 			<motion.div

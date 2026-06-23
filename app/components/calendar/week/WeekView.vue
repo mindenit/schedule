@@ -133,11 +133,13 @@ onMounted(() => {
 											}"
 										></div>
 									</div>
-									<BigCalendarEventRenderer
-										:grouped-events="incomingPanel.groupedEventsByDay[dayIndex]"
-										:day="day"
-										:tz="effectiveTimezone"
-									/>
+							<BigCalendarEventRenderer
+								:key="`${incomingPanel.date.getTime()}-${dayIndex}`"
+								:grouped-events="incomingPanel.groupedEventsByDay[dayIndex]"
+								:day="day"
+								:tz="effectiveTimezone"
+								:interactive="false"
+							/>
 								</div>
 							</div>
 						</div>
@@ -211,11 +213,12 @@ onMounted(() => {
 											}"
 										></div>
 									</div>
-									<BigCalendarEventRenderer
-										:grouped-events="currentPanel.groupedEventsByDay[dayIndex]"
-										:day="day"
-										:tz="effectiveTimezone"
-									/>
+								<BigCalendarEventRenderer
+									:key="`${currentPanel.date.getTime()}-${dayIndex}`"
+									:grouped-events="currentPanel.groupedEventsByDay[dayIndex]"
+									:day="day"
+									:tz="effectiveTimezone"
+								/>
 								</div>
 							</div>
 							<BigCalendarTimeline :week-days="currentPanel.weekDays" />

@@ -155,17 +155,24 @@ const {
 			class="relative min-h-0 flex-1 overflow-hidden rounded-b-2xl"
 			:class="{ 'blur-sm': !hasEvents }"
 		>
-			<!-- Incoming panel (peek panel during drag, or animating in) -->
-			<motion.div
-				v-if="incomingPanel"
-				class="absolute inset-0 grid grid-cols-7 gap-1 overflow-hidden"
-				:style="{
-					gridTemplateRows: `repeat(${incomingPanel.weeksCount}, 1fr)`,
-					x: incomingX,
-					willChange: 'transform',
-					contain: 'layout paint',
-				}"
-			>
+		<!--
+			Incoming panel — rendered as a non-interactive grid during animation.
+			:interactive="false" on each DayCell skips UiPopover + click handlers +
+			hover/cursor/transition on badges, eliminating the per-cell component
+			mount cost (~42 Popover trees) that caused dense-month animation lag.
+			Markup and sizing are pixel-identical to the live panel, so there is no
+			visible pop when currentPanel is promoted on settle.
+		-->
+		<motion.div
+			v-if="incomingPanel"
+			class="absolute inset-0 grid grid-cols-7 gap-1 overflow-hidden"
+			:style="{
+				gridTemplateRows: `repeat(${incomingPanel.weeksCount}, 1fr)`,
+				x: incomingX,
+				willChange: 'transform',
+				contain: 'layout paint',
+			}"
+		>
 			<BigCalendarDayCell
 				v-for="(snapshot, index) in incomingPanel.cellSnapshots"
 				:key="index"
@@ -177,11 +184,12 @@ const {
 				:has-more-events="snapshot.hasMoreEvents"
 				:remaining-events-count="snapshot.remainingEventsCount"
 				:total-events-count="snapshot.totalEventsCount"
+				:interactive="false"
 				class="min-h-0"
 			/>
-			</motion.div>
+		</motion.div>
 
-			<!-- Current panel — always rendered, draggable -->
+			<!-- Current panel — always rendered, interactive, draggable -->
 			<motion.div
 				class="absolute inset-0 grid grid-cols-7 gap-1 overflow-hidden"
 				:style="{
@@ -198,19 +206,19 @@ const {
 				@drag="onDrag"
 				@drag-end="onDragEnd"
 			>
-			<BigCalendarDayCell
-				v-for="(snapshot, index) in currentPanel.cellSnapshots"
-				:key="index"
-				:cell="snapshot.cell"
-				:is-date-today="snapshot.isDateToday"
-				:display-groups="snapshot.displayGroups"
-				:badges="snapshot.badges"
-				:hidden-events="snapshot.hiddenEvents"
-				:has-more-events="snapshot.hasMoreEvents"
-				:remaining-events-count="snapshot.remainingEventsCount"
-				:total-events-count="snapshot.totalEventsCount"
-				class="min-h-0"
-			/>
+				<BigCalendarDayCell
+					v-for="(snapshot, index) in currentPanel.cellSnapshots"
+					:key="index"
+					:cell="snapshot.cell"
+					:is-date-today="snapshot.isDateToday"
+					:display-groups="snapshot.displayGroups"
+					:badges="snapshot.badges"
+					:hidden-events="snapshot.hiddenEvents"
+					:has-more-events="snapshot.hasMoreEvents"
+					:remaining-events-count="snapshot.remainingEventsCount"
+					:total-events-count="snapshot.totalEventsCount"
+					class="min-h-0"
+				/>
 			</motion.div>
 		</div>
 

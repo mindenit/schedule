@@ -6,9 +6,11 @@ interface Props {
 	groupedEvents: Schedule[][]
 	day: Date | string | number
 	tz: string
+	/** Forwarded to each EventBlock — false disables Popover/click during animation. */
+	interactive?: boolean
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), { interactive: true })
 
 /**
  * Cache the overlap set by groupedEvents array identity.
@@ -74,6 +76,6 @@ const renderEvents = computed(() => {
 		class="absolute px-1"
 		:style="style"
 	>
-		<BigCalendarEventBlock :event="event" />
+		<BigCalendarEventBlock :event="event" :interactive="props.interactive" />
 	</div>
 </template>

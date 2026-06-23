@@ -17,23 +17,35 @@ interface Props {
 	 * Skips getEventTimeRange + useTimezone() when provided.
 	 */
 	timeRange?: string
+	/**
+	 * When false (incoming panel during slide animation), interactive affordances
+	 * are stripped: no role=button, no tabindex, no keydown, no cursor-pointer,
+	 * no hover shadow, no transition. Markup and sizing stay pixel-identical.
+	 * Defaults to true (live panel, fully interactive).
+	 */
+	interactive?: boolean
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), { interactive: true })
 
 // Only instantiate composables when pre-baked data is not provided.
 // This is the backward-compat path (e.g. the "+N more" overflow badge has no event).
 const _formatting = !props.colorClass ? useEventFormatting() : null
 const _timezone = !props.timeRange && props.event ? useTimezone() : null
 
-// Static portion hoisted to module level — avoids allocating a new string on every render.
+// Interactive base — includes cursor, hover shadow, transition.
 const BASE_CLASSES =
 	"group flex w-full h-6.5 select-none items-center gap-1 rounded-md px-2 text-xs font-medium cursor-pointer transition-shadow duration-200 hover:shadow-sm"
+
+// Non-interactive base — same layout, no interactivity affordances.
+// Used when :interactive=false (incoming panel during animation).
+const BASE_CLASSES_STATIC =
+	"group flex w-full h-6.5 select-none items-center gap-1 rounded-md px-2 text-xs font-medium"
 
 const FALLBACK_COLOR = "bg-muted text-muted-foreground w-full"
 
 const badgeClasses = computed(() => [
-	BASE_CLASSES,
+	props.interactive ? BASE_CLASSES : BASE_CLASSES_STATIC,
 	props.colorClass ??
 		(props.event ? _formatting!.getEventTypeColor(props.event.type) : FALLBACK_COLOR),
 	props.class,
@@ -49,11 +61,11 @@ const formattedTime = computed(() => {
 
 <template>
 	<div
-		role="button"
-		tabindex="0"
+		:role="interactive ? 'button' : undefined"
+		:tabindex="interactive ? 0 : undefined"
 		:class="badgeClasses"
-		@keydown.enter.prevent="($event.currentTarget as HTMLElement).click()"
-		@keydown.space.prevent="($event.currentTarget as HTMLElement).click()"
+		@keydown.enter.prevent="interactive && ($event.currentTarget as HTMLElement).click()"
+		@keydown.space.prevent="interactive && ($event.currentTarget as HTMLElement).click()"
 	>
 		<slot v-if="$slots.default" />
 		<template v-else>

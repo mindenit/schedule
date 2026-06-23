@@ -91,13 +91,15 @@ const hasEvents = computed(() => currentPanel.value.groupedEvents.length > 0)
 						<div class="flex h-full flex-col gap-1">
 							<div v-for="hour in hours" :key="hour" class="bg-card relative flex-1"></div>
 						</div>
-						<div class="absolute inset-0">
-							<BigCalendarEventRenderer
-								:grouped-events="incomingPanel.groupedEvents"
-								:day="incomingPanel.date"
-								:tz="effectiveTimezone"
-							/>
-						</div>
+					<div class="absolute inset-0">
+						<BigCalendarEventRenderer
+							:key="incomingPanel.key"
+							:grouped-events="incomingPanel.groupedEvents"
+							:day="incomingPanel.date"
+							:tz="effectiveTimezone"
+							:interactive="false"
+						/>
+					</div>
 					</div>
 				</div>
 			</motion.div>
@@ -133,6 +135,7 @@ const hasEvents = computed(() => currentPanel.value.groupedEvents.length > 0)
 						</div>
 						<div class="absolute inset-0">
 							<BigCalendarEventRenderer
+								:key="currentPanel.key"
 								:grouped-events="currentPanel.groupedEvents"
 								:day="currentPanel.date"
 								:tz="effectiveTimezone"

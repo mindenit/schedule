@@ -29,6 +29,7 @@
 		0% {
 			transform: translateY(-50%);
 		}
+
 		100% {
 			transform: translateY(0);
 		}
@@ -38,6 +39,7 @@
 		0% {
 			background-position: 200% 0;
 		}
+
 		25%,
 		100% {
 			background-position: -200% 0;
@@ -48,6 +50,7 @@
 		50% {
 			background-position: 100% 50%;
 		}
+
 		0%,
 		100% {
 			background-position: 0% 50%;
@@ -59,9 +62,11 @@
 			transform: rotate(var(--angle)) translateX(0);
 			opacity: 1;
 		}
+
 		70% {
 			opacity: 1;
 		}
+
 		100% {
 			transform: rotate(var(--angle)) translateX(-500px);
 			opacity: 0;
@@ -72,6 +77,7 @@
 		0% {
 			background-position: top center;
 		}
+
 		100% {
 			background-position: bottom center;
 		}
@@ -81,6 +87,7 @@
 		from {
 			height: 0;
 		}
+
 		to {
 			height: var(--reka-accordion-content-height);
 		}
@@ -90,6 +97,7 @@
 		from {
 			height: var(--reka-accordion-content-height);
 		}
+
 		to {
 			height: 0;
 		}
@@ -305,39 +313,50 @@
 	* {
 		@apply border-border outline-ring/50 selection:bg-selection;
 	}
+
 	* {
 		scrollbar-width: thin;
 		scrollbar-color: var(--border) transparent;
 	}
+
 	html {
 		@apply antialiased;
 	}
+
 	body {
 		@apply bg-background text-foreground;
 	}
+
 	::-webkit-scrollbar {
 		width: 4px;
 	}
+
 	::-webkit-scrollbar-track {
 		background: transparent;
 	}
+
 	::-webkit-scrollbar-thumb {
 		background: var(--border);
 		border-radius: 4px;
 	}
+
 	button:not(:disabled),
 	[role="button"]:not(:disabled) {
 		cursor: pointer;
 	}
+
 	html {
 		color-scheme: light dark;
 	}
+
 	html.dark {
 		color-scheme: dark;
 	}
+
 	html.light {
 		color-scheme: light;
 	}
+
 	@media (prefers-color-scheme: dark) {
 		select {
 			background-color: var(--popover);
@@ -355,9 +374,11 @@
 	}
 }
 
+
 @utility no-scrollbar {
 	-ms-overflow-style: none;
 	scrollbar-width: none;
+
 	&::-webkit-scrollbar {
 		display: none;
 	}

@@ -23,9 +23,16 @@ interface Props {
 	hasMoreEvents: boolean
 	remainingEventsCount: number
 	totalEventsCount: number
+	/**
+	 * When false (incoming panel during slide animation), all interactive
+	 * machinery is skipped: UiPopover, click handlers, cursor-pointer.
+	 * Markup, sizing and badge presentation stay pixel-identical to the live cell.
+	 * Defaults to true.
+	 */
+	interactive?: boolean
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), { interactive: true })
 
 const calendarStore = useCalendarStore()
 
@@ -102,11 +109,12 @@ const badgeMap = computed(() => {
 			class="flex flex-1 gap-1 overflow-hidden lg:flex-col lg:gap-1"
 			:class="{ 'opacity-50': !cell.currentMonth }"
 		>
-			<!-- Mobile: tap whole cell → day view -->
-			<div
-				class="flex w-full cursor-pointer flex-wrap justify-center gap-1 lg:hidden"
-				@click="handleMobileClick"
-			>
+		<!-- Mobile: tap whole cell → day view -->
+		<div
+			class="flex w-full flex-wrap justify-center gap-1 lg:hidden"
+			:class="{ 'cursor-pointer': interactive }"
+			@click="interactive && handleMobileClick()"
+		>
 				<span
 					v-if="totalEventsCount > 0"
 					:aria-label="`${totalEventsCount} ${pluralUk(totalEventsCount, 'заняття', 'заняття', 'занять')}`"
@@ -127,47 +135,53 @@ const badgeMap = computed(() => {
 					:key="groupIndex"
 					class="flex h-6 shrink-0 gap-1"
 				>
-					<template v-if="group.length > 1">
-						<BigCalendarMonthEventBadge
-							v-for="event in group"
-							:key="event.id"
-							:event="event"
-							:color-class="badgeMap.get(event.id)?.colorClass"
-							:time-range="badgeMap.get(event.id)?.timeRange"
-							:cell-date="startOfDay(cell.date)"
-							class="hide-time min-w-0 flex-1"
-							@click="openEventPopover(event, $event.currentTarget as HTMLElement)"
-						/>
-					</template>
-
-					<template v-else-if="group[0]">
-						<BigCalendarMonthEventBadge
-							:event="group[0]"
-							:color-class="badgeMap.get(group[0].id)?.colorClass"
-							:time-range="badgeMap.get(group[0].id)?.timeRange"
-							:cell-date="startOfDay(cell.date)"
-							class="w-full"
-							@click="openEventPopover(group[0], $event.currentTarget as HTMLElement)"
-						/>
-					</template>
-				</div>
-
-				<div v-if="hasMoreEvents" class="flex h-6 shrink-0 gap-1">
+				<template v-if="group.length > 1">
 					<BigCalendarMonthEventBadge
-						@click="
-							openOverflowPopover(hiddenEvents, $event.currentTarget as HTMLElement)
-						"
-					>
-						<span class="flex-1 shrink-0 truncate">
-							ще {{ remainingEventsCount }}
-							{{ pluralUk(remainingEventsCount, "заняття", "заняття", "занять") }}
-						</span>
-					</BigCalendarMonthEventBadge>
+						v-for="event in group"
+						:key="event.id"
+						:event="event"
+						:color-class="badgeMap.get(event.id)?.colorClass"
+						:time-range="badgeMap.get(event.id)?.timeRange"
+						:cell-date="startOfDay(cell.date)"
+						:interactive="interactive"
+						class="hide-time min-w-0 flex-1"
+						@click="interactive && openEventPopover(event, $event.currentTarget as HTMLElement)"
+					/>
+				</template>
+
+				<template v-else-if="group[0]">
+					<BigCalendarMonthEventBadge
+						:event="group[0]"
+						:color-class="badgeMap.get(group[0].id)?.colorClass"
+						:time-range="badgeMap.get(group[0].id)?.timeRange"
+						:cell-date="startOfDay(cell.date)"
+						:interactive="interactive"
+						class="w-full"
+						@click="interactive && openEventPopover(group[0], $event.currentTarget as HTMLElement)"
+					/>
+				</template>
 				</div>
+
+			<div v-if="hasMoreEvents" class="flex h-6 shrink-0 gap-1">
+				<BigCalendarMonthEventBadge
+					:interactive="interactive"
+					@click="
+						interactive &&
+							openOverflowPopover(hiddenEvents, $event.currentTarget as HTMLElement)
+					"
+				>
+					<span class="flex-1 shrink-0 truncate">
+						ще {{ remainingEventsCount }}
+						{{ pluralUk(remainingEventsCount, "заняття", "заняття", "занять") }}
+					</span>
+				</BigCalendarMonthEventBadge>
+			</div>
 			</div>
 
-			<!-- One shared popover per cell, anchored to the last-clicked badge element -->
-			<UiPopover v-model:open="popoverOpen">
+		<!-- One shared popover per cell, anchored to the last-clicked badge element -->
+		<!-- v-if="interactive": skip mounting the Popover tree entirely on the incoming -->
+		<!-- (non-interactive) panel — this is the primary cost saving for animation lag. -->
+		<UiPopover v-if="interactive" v-model:open="popoverOpen">
 				<UiPopoverAnchor :reference="anchorEl ?? undefined" />
 				<UiPopoverContent class="w-80">
 					<BigCalendarEventPopover

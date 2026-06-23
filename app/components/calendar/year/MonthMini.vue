@@ -26,9 +26,16 @@ interface MonthMiniData {
 
 interface Props {
 	month: MonthMiniData
+	/**
+	 * When false (incoming panel during slide animation), interactive affordances
+	 * are stripped: month header and day cells render as plain divs/spans,
+	 * @click emits are suppressed, hover ring classes are omitted.
+	 * Markup and sizing stay pixel-identical to the live mini. Defaults to true.
+	 */
+	interactive?: boolean
 }
 
-defineProps<Props>()
+withDefaults(defineProps<Props>(), { interactive: true })
 
 const emit = defineEmits<{
 	dayClick: [date: Date]
@@ -49,18 +56,20 @@ const WEEK_INITIALS = ["М", "П", "С", "Ч", "П", "С", "Н"]
 		class="flex flex-col rounded-lg p-1.5 lg:min-h-0 lg:p-2"
 		:class="[month.isThisMonth ? 'bg-primary/8 ring-primary/30 ring-1' : 'bg-muted/30']"
 	>
-		<!-- Month header — click to navigate to month view -->
-		<button
-			class="mb-1 cursor-pointer text-left font-semibold capitalize text-[10px] leading-tight lg:text-xs"
+		<!-- Month header — click to navigate to month view (interactive only) -->
+		<component
+			:is="interactive ? 'button' : 'span'"
+			class="mb-1 text-left font-semibold capitalize text-[10px] leading-tight lg:text-xs"
 			:class="[
+				interactive ? 'cursor-pointer' : '',
 				month.isThisMonth
-					? 'text-primary hover:text-primary/80'
-					: 'text-foreground hover:text-primary',
+					? interactive ? 'text-primary hover:text-primary/80' : 'text-primary'
+					: interactive ? 'text-foreground hover:text-primary' : 'text-foreground',
 			]"
-			@click="emit('monthClick', month.date)"
+			@click="interactive && emit('monthClick', month.date)"
 		>
 			{{ month.label }}
-		</button>
+		</component>
 
 		<!-- Week day initials header — hidden on mobile, visible on lg+ -->
 		<div class="mb-0.5 hidden grid-cols-7 lg:grid">
@@ -75,34 +84,47 @@ const WEEK_INITIALS = ["М", "П", "С", "Ч", "П", "С", "Н"]
 
 		<!-- Day cells grid -->
 		<div class="grid grid-cols-7 gap-[2px] lg:min-h-0 lg:flex-1">
-			<button
+			<component
+				:is="interactive ? 'button' : 'div'"
 				v-for="(cell, i) in month.cells"
 				:key="i"
 				class="group flex items-center justify-center"
-				:class="[cell.currentMonth ? 'cursor-pointer' : 'pointer-events-none opacity-0']"
-				:disabled="!cell.currentMonth"
-				@click="cell.currentMonth && emit('dayClick', cell.date)"
+				:class="[
+					!cell.currentMonth
+						? 'pointer-events-none opacity-0'
+						: interactive
+							? 'cursor-pointer'
+							: '',
+				]"
+				:disabled="interactive && !cell.currentMonth ? true : undefined"
+				@click="interactive && cell.currentMonth && emit('dayClick', cell.date)"
 			>
-				<!--
-					Mobile: 14px dot with day number visible.
-					lg+: 18px dot with full hover interactions.
-				-->
 				<span
 					class="flex aspect-square items-center justify-center rounded-full
 						w-[14px] text-[7px] font-medium
-						lg:w-full lg:max-w-[18px] lg:rounded-sm lg:text-[9px]
-						lg:group-hover:ring-1 lg:group-hover:ring-offset-0"
+						lg:w-full lg:max-w-[18px] lg:rounded-sm lg:text-[9px]"
 					:class="[
+						interactive ? 'lg:group-hover:ring-1 lg:group-hover:ring-offset-0' : '',
 						cell.isToday
-							? 'bg-primary text-primary-foreground lg:group-hover:ring-primary/40'
+							? [
+									'bg-primary text-primary-foreground',
+									interactive ? 'lg:group-hover:ring-primary/40' : '',
+								]
 							: cell.colorClass
-								? [cell.colorClass, 'text-white lg:group-hover:ring-white/30']
-								: 'text-muted-foreground lg:group-hover:bg-muted lg:group-hover:ring-border',
+								? [
+										cell.colorClass,
+										'text-white',
+										interactive ? 'lg:group-hover:ring-white/30' : '',
+									]
+								: [
+										'text-muted-foreground',
+										interactive ? 'lg:group-hover:bg-muted lg:group-hover:ring-border' : '',
+									],
 					]"
 				>
 					{{ cell.date.getDate() }}
 				</span>
-			</button>
+			</component>
 		</div>
 	</div>
 </template>

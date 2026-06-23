@@ -191,9 +191,12 @@ export function useSwipeNavigator<TPanel extends SwipeablePanel>(
 
 		isNavigating.value = false
 
-		// Promote the incoming panel snapshot rather than re-building.
-		// incomingPanel may have been refreshed mid-flight by the events watcher,
-		// so it already holds the latest data — no extra buildPanel call needed.
+		// Always promote the settled incoming panel first — this keeps the
+		// navigator state consistent (currentPanel, currentX, incomingPanel all
+		// in sync) regardless of whether a further nav is queued. Skipping the
+		// promotion on pendingDate was the Option-1 regression: it left currentX
+		// at exitX and currentPanel stale, causing EventRenderer to desync and
+		// render empty blocks when the events watcher fired mid-recursion.
 		currentPanel.value = (incomingPanel.value ?? incoming) as TPanel
 		incomingPanel.value = null
 		currentX.set(0)
@@ -293,7 +296,8 @@ export function useSwipeNavigator<TPanel extends SwipeablePanel>(
 			if (currentToken !== token) return
 
 			isNavigating.value = false
-			// Promote snapshot (may have been refreshed mid-flight by events watcher).
+
+			// Always promote first (see navigateTo tail comment for rationale).
 			currentPanel.value = (incomingPanel.value ?? committed) as TPanel
 			incomingPanel.value = null
 			currentX.set(0)

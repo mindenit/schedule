@@ -37,11 +37,11 @@ const overlayContent = computed(() => {
 		>
 			<NuxtErrorBoundary @error="(err) => console.error('[Calendar] render error:', err)">
 				<BigCalendarYearView v-if="view === 'year'" :events="props.events" class="h-full" />
-				<BigCalendarMonthView
-					v-else-if="view === 'month'"
-					:events="props.events"
-					class="h-full overflow-y-hidden"
-				/>
+			<BigCalendarMonthView
+				v-else-if="view === 'month'"
+				:events="props.events"
+				class="h-full overflow-y-hidden"
+			/>
 				<BigCalendarWeekView v-else-if="view === 'week'" :events="props.events" class="h-full" />
 				<BigCalendarDayView v-else-if="view === 'day'" :events="props.events" class="h-full" />
 
