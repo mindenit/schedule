@@ -6,6 +6,12 @@ import { groupScheduleOptions } from "~/queries/groups"
 import { teacherScheduleOptions } from "~/queries/teachers"
 import { auditoriumScheduleOptions } from "~/queries/auditoriums"
 
+const scheduleOptionsByType = {
+	group: groupScheduleOptions,
+	teacher: teacherScheduleOptions,
+	auditorium: auditoriumScheduleOptions,
+} as const
+
 export const useScheduleIcsExport = () => {
 	const { exportScheduleToIcs, getAcademicYearTimestamps } = useIcsExport()
 	const queryClient = useQueryClient()
@@ -29,35 +35,15 @@ export const useScheduleIcsExport = () => {
 				description: "Отримання даних за навчальний рік...",
 			})
 
-			let queryOptions
-			switch (scheduleType) {
-				case "group":
-					queryOptions = groupScheduleOptions(
-						ref(scheduleId),
-						ref(startTimestamp),
-						ref(endTimestamp)
-					)
-					break
-				case "teacher":
-					queryOptions = teacherScheduleOptions(
-						ref(scheduleId),
-						ref(startTimestamp),
-						ref(endTimestamp)
-					)
-					break
-				case "auditorium":
-					queryOptions = auditoriumScheduleOptions(
-						ref(scheduleId),
-						ref(startTimestamp),
-						ref(endTimestamp)
-					)
-					break
-				default:
-					useSonner.error("Помилка експорту", { description: "Невідомий тип розкладу" })
-					return
+			const buildOptions = scheduleOptionsByType[scheduleType]
+			if (!buildOptions) {
+				useSonner.error("Помилка експорту", { description: "Невідомий тип розкладу" })
+				return
 			}
 
-			const events: Schedule[] = await queryClient.fetchQuery(queryOptions)
+			const events: Schedule[] = await queryClient.fetchQuery(
+				buildOptions(scheduleId, startTimestamp, endTimestamp)
+			)
 
 			if (!events || events.length === 0) {
 				useSonner.warning("Немає даних", {

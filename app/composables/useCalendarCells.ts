@@ -18,8 +18,12 @@ const WEEK_DAY_NAMES: string[] = (() => {
 // Calendar cell arrays are memoized by "YYYY-M" key. The same month always
 // produces identical cell grids, so reusing the cached array means Vue's v-for
 // skips patching entirely when the user navigates within the same month.
-// Memory cost: ~42 objects × cached months. Capped at 24 entries (two years
-// of navigation) before the oldest entry is evicted.
+//
+// Eviction policy: LRU. JavaScript's Map preserves insertion order, so a hit
+// re-inserts the entry to make it the newest, and overflow drops `keys().next()`
+// (the genuinely oldest). This matches typical user navigation — a user
+// flipping between current month and the next two months keeps those hot.
+// Memory cost: ~42 objects × cached months. Capped at 24 entries (~2 years).
 const MAX_CELLS_CACHE = 24
 const cellsCache = new Map<string, ICalendarCell[]>()
 
@@ -30,7 +34,12 @@ export const useCalendarCells = () => {
 		const cacheKey = `${year}-${month}`
 
 		const cached = cellsCache.get(cacheKey)
-		if (cached) return cached
+		if (cached) {
+			// LRU touch: move this key to the newest position.
+			cellsCache.delete(cacheKey)
+			cellsCache.set(cacheKey, cached)
+			return cached
+		}
 
 		const daysInMonth = endOfMonth(selectedDate).getDate()
 		const firstDayOfMonth = startOfMonth(selectedDate)
@@ -63,7 +72,7 @@ export const useCalendarCells = () => {
 		const cells = [...prevMonthDays, ...currentMonthDays, ...nextMonthDays]
 
 		if (cellsCache.size >= MAX_CELLS_CACHE) {
-			// Evict oldest entry
+			// Evict least-recently-used entry (first key in insertion order).
 			cellsCache.delete(cellsCache.keys().next().value!)
 		}
 		cellsCache.set(cacheKey, cells)

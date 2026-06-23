@@ -148,20 +148,7 @@ export function groupEventsByDate(events: Schedule[], tz: string): Record<string
 	return grouped
 }
 
-// ---------------------------------------------------------------------------
-// Composable wrapper — thin passthrough so existing callers using
-// useEventGrouping() destructuring continue to work unchanged.
-// New call sites should import the named functions directly.
-// ---------------------------------------------------------------------------
-
-export const useEventGrouping = () => ({
-	parseDate,
-	groupEvents,
-	groupEventsBySameTime,
-	getEventsForDate,
-	getEventsForDateRange,
-	getEventsForWeek,
-	getEventsForMonth,
-	groupEventsByDate,
-	getEventBlockStyle,
-})
+// Note: all helpers above are exported as named functions and auto-imported
+// by Nuxt (the `~/composables` directory is auto-scanned). Components should
+// reference them directly — there is no `useEventGrouping()` wrapper because
+// these functions are pure and do not depend on a component lifecycle.

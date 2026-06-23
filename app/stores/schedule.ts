@@ -1,116 +1,83 @@
+import { defineStore, skipHydrate } from "pinia"
+import { useStorage } from "@vueuse/core"
 import type { GenericScheduleItem } from "~/types/schedule"
+import { STORAGE_KEYS } from "~/constants/storage"
+
+const sameSchedule = (a: GenericScheduleItem, b: GenericScheduleItem) =>
+	String(a.id) === String(b.id) && a.type === b.type
 
 export const useScheduleStore = defineStore("schedule", () => {
-	const allSchedules = ref<GenericScheduleItem[]>([])
-	const selectedSchedule = ref<GenericScheduleItem | null>(null)
-	const isInitialized = ref(false)
-
-	const initializeStore = () => {
-		if (import.meta.client && !isInitialized.value) {
-			const savedSchedules = localStorage.getItem("all-schedules")
-			if (savedSchedules) {
-				try {
-					const parsed = JSON.parse(savedSchedules)
-					allSchedules.value = Array.isArray(parsed) ? parsed : []
-				} catch {
-					localStorage.removeItem("all-schedules")
-					allSchedules.value = []
-				}
-			}
-
-			const savedSchedule = localStorage.getItem("selected-schedule")
-			if (savedSchedule) {
-				try {
-					const parsed = JSON.parse(savedSchedule)
-					const existsInAll = allSchedules.value.find(
-						(s) => String(s.id) === String(parsed.id) && s.type === parsed.type
-					)
-					if (existsInAll) {
-						selectedSchedule.value = parsed
-					} else {
-						localStorage.removeItem("selected-schedule")
+	const allSchedules = skipHydrate(
+		useStorage<GenericScheduleItem[]>(STORAGE_KEYS.schedules, [])
+	)
+	const selectedSchedule = skipHydrate(
+		useStorage<GenericScheduleItem | null>(STORAGE_KEYS.selectedSchedule, null, undefined, {
+			// Allow `null` to round-trip through localStorage.
+			serializer: {
+				read: (raw) => {
+					try {
+						return JSON.parse(raw) as GenericScheduleItem | null
+					} catch {
+						return null
 					}
-				} catch {
-					localStorage.removeItem("selected-schedule")
-				}
+				},
+				write: (value) => JSON.stringify(value),
+			},
+		})
+	)
+
+	// Guarantee selectedSchedule still exists in allSchedules. If it was removed
+	// from another tab we drop the dangling reference.
+	if (import.meta.client) {
+		nextTick(() => {
+			if (
+				selectedSchedule.value &&
+				!allSchedules.value.some((s) => sameSchedule(s, selectedSchedule.value!))
+			) {
+				selectedSchedule.value = null
 			}
-
-			isInitialized.value = true
-		}
-	}
-
-	const saveAllSchedules = () => {
-		if (import.meta.client && isInitialized.value) {
-			localStorage.setItem("all-schedules", JSON.stringify(allSchedules.value))
-		}
+		})
 	}
 
 	const addSchedule = (schedule: GenericScheduleItem) => {
-		if (!isInitialized.value) initializeStore()
-
-		const existing = allSchedules.value.find(
-			(s) => String(s.id) === String(schedule.id) && s.type === schedule.type
-		)
+		const existing = allSchedules.value.find((s) => sameSchedule(s, schedule))
 		if (existing) {
-			selectSchedule(existing)
+			selectedSchedule.value = existing
 			return
 		}
-
 		allSchedules.value.push(schedule)
-		selectSchedule(schedule)
-		saveAllSchedules()
+		selectedSchedule.value = schedule
 	}
 
 	const removeSchedule = (scheduleId: string | number) => {
-		if (!isInitialized.value) initializeStore()
-
-		const scheduleIdStr = String(scheduleId)
-		allSchedules.value = allSchedules.value.filter((s) => String(s.id) !== scheduleIdStr)
-
-		if (selectedSchedule.value && String(selectedSchedule.value.id) === scheduleIdStr) {
+		const idStr = String(scheduleId)
+		allSchedules.value = allSchedules.value.filter((s) => String(s.id) !== idStr)
+		if (selectedSchedule.value && String(selectedSchedule.value.id) === idStr) {
 			selectedSchedule.value = allSchedules.value[0] ?? null
-			if (import.meta.client) {
-				if (selectedSchedule.value) {
-					localStorage.setItem("selected-schedule", JSON.stringify(selectedSchedule.value))
-				} else {
-					localStorage.removeItem("selected-schedule")
-				}
-			}
 		}
-
-		saveAllSchedules()
 	}
 
 	const selectSchedule = (schedule: GenericScheduleItem) => {
 		selectedSchedule.value = schedule
-		if (import.meta.client && isInitialized.value) {
-			localStorage.setItem("selected-schedule", JSON.stringify(schedule))
-		}
 	}
 
-	// Select a schedule that came from a shared URL — sets it as active without
-	// adding it to allSchedules or touching localStorage. The selection is
-	// intentionally ephemeral: if the user wants to keep it they add it normally.
+	// Selecting from a shared URL doesn't mutate allSchedules — the selection
+	// is ephemeral until the user confirms via ScheduleEphemeralBanner.
 	const selectScheduleFromUrl = (schedule: GenericScheduleItem) => {
 		selectedSchedule.value = schedule
 	}
 
-	// True when the active schedule came from a shared URL and hasn't been saved yet.
-	// Used by ScheduleEphemeralBanner to prompt the user to persist it.
+	// True when the active schedule is not yet saved (came from a shared URL).
 	const isEphemeralActive = computed(
 		() =>
 			selectedSchedule.value !== null &&
-			!allSchedules.value.some(
-				(s) =>
-					String(s.id) === String(selectedSchedule.value!.id) &&
-					s.type === selectedSchedule.value!.type
-			)
+			!allSchedules.value.some((s) => sameSchedule(s, selectedSchedule.value!))
 	)
 
-	// Defer until after Pinia SSR hydration so localStorage wins.
-	if (import.meta.client) {
-		nextTick(() => initializeStore())
-	}
+	// `useStorage` reads synchronously on the client. We expose `isInitialized`
+	// for parity with the previous API — consumers that gated on it (sidebar,
+	// share page, url-state) still work without changes.
+	const isInitialized = computed(() => import.meta.client)
 
 	return {
 		allSchedules,
@@ -121,6 +88,5 @@ export const useScheduleStore = defineStore("schedule", () => {
 		removeSchedule,
 		selectSchedule,
 		selectScheduleFromUrl,
-		initializeStore,
 	}
 })

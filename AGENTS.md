@@ -52,9 +52,7 @@ app/
     tanstack-table.ts # valueUpdater helper for @tanstack/vue-table
     tw-helper.ts      # tw() tagged template for Tailwind autocomplete
   assets/css/
-    main.css          # active: shadcn-era base + full token/palette set
-    tailwind.css      # active: UI Thing base + full token/palette set (both loaded)
-    main.shadcn.css   # backup only — NOT loaded
+    tailwind.css      # single canonical CSS — Tailwind v4 + UI Thing base + full token/palette set
 server/
   api/[...any].ts     # dev-only proxy → https://sh.mindenit.org/api (404 in prod)
 ```
@@ -76,7 +74,7 @@ Beyond Nuxt's defaults, `nuxt.config` adds:
 - **Never edit `app/components/Ui/` files for lint compliance** — they are ESLint-ignored. Re-scaffold via `npx ui-thing@latest add <name>` (config: `ui-thing.config.ts`, pnpm, `app/components/Ui`).
 - Add new UI components: `npx ui-thing@latest add button dialog select ...`
 - Styling inside `Ui/` uses **`tv()` from `tailwind-variants`**, not `cn()`/CVA. `cn()` is for everything outside `Ui/`.
-- For components used inside `h()` render functions, use `resolveComponent("UiButton")` — Nuxt auto-import cannot resolve through `h()`. See `app/components/links/DataTable.vue` for the pattern.
+- For components used inside `h()` render functions, use `resolveComponent("UiButton")` — Nuxt auto-import cannot resolve through `h()`.
 - `app/components/Ui/Calendar.vue` wraps **v-calendar** (not reka-ui). Key props: `expanded`, `locale="uk"`, `:attributes`, `@dayclick` (payload has `.date: Date`). The old reka-ui `DateValue` / `:weekday-format` API does not apply.
 
 ---
@@ -85,7 +83,7 @@ Beyond Nuxt's defaults, `nuxt.config` adds:
 
 - **Tailwind v4** (CSS-first). No `tailwind.config.js`. All theme tokens live in `@theme` / `@theme inline` blocks inside the CSS files.
 - **Never wrap OKLCH tokens in `hsl()`** — the tokens are already OKLCH values; `hsl(var(--border))` produces invalid CSS here.
-- **Two CSS files are both loaded** (order: main.css → tailwind.css). Both `@import "tailwindcss"` and both define `:root`/`.dark` token blocks and the full palette scales (`fiord`, `royal-blue`, `amaranth`, `christi`). When changing theme tokens, keep both files in sync or edit `tailwind.css` only (it is the later/canonical version post-migration).
+- **Single CSS file:** `~/assets/css/tailwind.css` (`@import "tailwindcss"` + `tw-animate-css` + `@tailwindcss/forms`). Defines `:root` / `.dark` token blocks, the full palette scales (`fiord`, `royal-blue`, `amaranth`, `christi`), `--font-accent` (used by `TheLogo`), and the `.hide-scrollbar` / `no-scrollbar` utilities. Edit only this file when changing theme tokens.
 - Palette variables (`--color-fiord-*`, `--color-royal-blue-*`, etc.) must be defined in `@theme inline` before they can be referenced in `:root`/`.dark` blocks and used as Tailwind utilities.
 - Dark mode class: `.dark` (no suffix). Set via `@nuxtjs/color-mode`, `storageKey: "nuxt-color-mode"`.
 - `.prettierrc`: **tabs**, no semis, double quotes, `printWidth: 100`, `tailwindFunctions: ["clsx", "cn", "tv"]`.

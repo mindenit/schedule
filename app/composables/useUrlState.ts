@@ -147,11 +147,23 @@ export function useUrlState() {
 	}
 
 	// Run once on mount (initial page load / direct URL entry).
-	onMounted(() => applyUrlToStores(route.query))
+	onMounted(() => applyUrlToStores(route.query).catch((err) => {
+		console.warn("[useUrlState] applyUrlToStores failed:", err)
+	}))
 
 	// Re-run whenever the URL query changes — this handles browser Back/Forward
-	// when URL sync is enabled.
-	watch(() => route.query, applyUrlToStores, { deep: true })
+	// when URL sync is enabled. When sync is OFF the source resolves to a
+	// constant `null`, so Vue stops tracking `route.query` entirely and we
+	// avoid the deep-watcher cost on every navigation.
+	watch(
+		() => (settingsStore.isUrlSyncEnabled ? route.query : null),
+		(next) => {
+			if (next) applyUrlToStores(next).catch((err) => {
+				console.warn("[useUrlState] applyUrlToStores failed:", err)
+			})
+		},
+		{ deep: true }
+	)
 
 	// ── Sync stores → URL (sync enabled) ──
 
@@ -186,10 +198,17 @@ export function useUrlState() {
 		const viewChanged = lastCommittedView !== null && lastCommittedView !== next.view
 		lastCommittedView = next.view
 
-		if (viewChanged) {
-			router.push({ query: next })
-		} else {
-			router.replace({ query: next })
+		try {
+			if (viewChanged) {
+				router.push({ query: next })
+			} else {
+				router.replace({ query: next })
+			}
+		} catch (err) {
+			// router.push/replace can fail if Vue Router serialises history state
+			// that still contains a reactive proxy (DOMException: Proxy object could
+			// not be cloned). Non-fatal — the UI stays correct, only the URL differs.
+			console.warn("[useUrlState] syncToUrl failed:", err)
 		}
 	}
 
@@ -231,13 +250,24 @@ export function useUrlState() {
 		}
 	}
 
+	// Build a structured-clone-safe history payload. We avoid spreading
+	// `history.state` (which may contain reactive proxies pushed by Vue Router
+	// or other code paths — those throw `DOMException: Proxy object could not
+	// be cloned` when the browser serializes the next history entry). We also
+	// keep `__mindenit` as the only namespace so we never need foreign data.
+	const buildHistoryPayload = (state: HistoryState): { __mindenit: HistoryState } => {
+		// JSON round-trip guarantees a plain POJO — refs, getters, Map/Set
+		// would all be stripped, but our HistoryState is already primitive.
+		return { __mindenit: JSON.parse(JSON.stringify(state)) }
+	}
+
 	// Seed the very first history entry with the current state so that Back from
 	// the initial page load doesn't leave the user stranded without state.
 	const seedInitialHistoryState = () => {
 		if (settingsStore.isUrlSyncEnabled) return
 		// Only seed if the current history entry has no app state yet.
 		if (history.state?.__mindenit) return
-		history.replaceState({ ...history.state, __mindenit: buildHistoryState() }, "")
+		history.replaceState(buildHistoryPayload(buildHistoryState()), "")
 	}
 
 	// Push or replace a history entry (no URL change) when sync is off.
@@ -260,10 +290,19 @@ export function useUrlState() {
 		const viewChanged = lastCommittedView !== null && lastCommittedView !== next.view
 		lastCommittedView = next.view
 
-		if (viewChanged) {
-			history.pushState({ ...history.state, __mindenit: next }, "")
-		} else {
-			history.replaceState({ ...history.state, __mindenit: next }, "")
+		try {
+			const payload = buildHistoryPayload(next)
+			if (viewChanged) {
+				history.pushState(payload, "")
+			} else {
+				history.replaceState(payload, "")
+			}
+		} catch (err) {
+			// history.pushState/replaceState can throw a DOMException if any value
+			// in the state object is not structured-clone-safe. buildHistoryPayload
+			// already JSON-round-trips the state, so this should not occur, but we
+			// guard defensively. Non-fatal — Back/Forward navigation may lose state.
+			console.warn("[useUrlState] syncToHistoryState failed:", err)
 		}
 	}
 
@@ -278,12 +317,24 @@ export function useUrlState() {
 	onMounted(() => {
 		seedInitialHistoryState()
 		window.addEventListener("popstate", onPopState)
+
+		// Defer the initial sync past Vue Router's own hydration setup.
+		// If we call router.replace() / history.replaceState() synchronously
+		// during the first render tick, Vue Router's internal state object may
+		// still contain reactive proxies — causing "Proxy object could not be
+		// cloned" DOMExceptions when the browser serialises the history entry.
+		nextTick(() => {
+			syncToUrl()
+			syncToHistoryState()
+		})
 	})
 
 	onUnmounted(() => {
 		window.removeEventListener("popstate", onPopState)
 	})
 
+	// Subsequent store changes (user navigates, changes schedule, etc.)
+	// are safe to sync immediately — Vue Router is fully initialised by then.
 	watch(
 		[
 			() => calendarStore.view,
@@ -294,7 +345,6 @@ export function useUrlState() {
 		() => {
 			syncToUrl()
 			syncToHistoryState()
-		},
-		{ immediate: true }
+		}
 	)
 }

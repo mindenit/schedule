@@ -3,6 +3,7 @@ import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, startOfYear, endOfYea
 import type { Schedule } from "nurekit"
 import type { TCalendarView } from "~/types/calendar"
 import { WEEK_OPTIONS } from "~/constants/calendar"
+import { STORAGE_KEYS } from "~/constants/storage"
 import { resolveTimezone } from "~/constants/timezones"
 import { getEventDayKey } from "~/utils/event-cache"
 
@@ -14,7 +15,22 @@ export const useCalendarStore = defineStore("calendar", () => {
 	const effectiveTimezone = computed(() => resolveTimezone(timezone.value))
 
 	const allEvents = ref<Schedule[]>([])
-	const selectedDate = ref(new Date())
+	// useState keeps the value stable across SSR → client hydration.
+	// ref(new Date()) would differ between server render time and client
+	// hydration time, causing a hydration mismatch on every page load.
+	// Nuxt serialises useState as JSON, so Date → ISO string in the payload.
+	// We store a string internally and expose a computed Date so consumers
+	// are unchanged, and the serialised form is unambiguously a primitive.
+	const _selectedDateStr = useState<string>(
+		"calendar:selectedDate",
+		() => new Date().toISOString()
+	)
+	const selectedDate = computed({
+		get: () => new Date(_selectedDateStr.value),
+		set: (d: Date) => {
+			_selectedDateStr.value = d.toISOString()
+		},
+	})
 
 	// Tracks the animation direction for the most recent navigation action.
 	// "left"  = forward in time (next month/day)
@@ -27,7 +43,7 @@ export const useCalendarStore = defineStore("calendar", () => {
 	// view (no hydration mismatch) and the value persists across page loads.
 	// When the team adds ?view= URL param support, read that first and fall
 	// back to this cookie as the persistent default.
-	const viewCookie = useCookie<TCalendarView>("calendar-view", {
+	const viewCookie = useCookie<TCalendarView>(STORAGE_KEYS.calendarView, {
 		default: () => "month",
 	})
 

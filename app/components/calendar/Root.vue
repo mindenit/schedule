@@ -35,14 +35,33 @@ const overlayContent = computed(() => {
 			class="min-h-0 flex-1 transition-all duration-300 ease-in-out"
 			:class="{ 'blur-sm': showOverlay }"
 		>
-			<BigCalendarYearView v-if="view === 'year'" :events="props.events" class="h-full" />
-			<BigCalendarMonthView
-				v-else-if="view === 'month'"
-				:events="props.events"
-				class="h-full overflow-y-hidden"
-			/>
-			<BigCalendarWeekView v-else-if="view === 'week'" :events="props.events" class="h-full" />
-			<BigCalendarDayView v-else-if="view === 'day'" :events="props.events" class="h-full" />
+			<NuxtErrorBoundary @error="(err) => console.error('[Calendar] render error:', err)">
+				<BigCalendarYearView v-if="view === 'year'" :events="props.events" class="h-full" />
+				<BigCalendarMonthView
+					v-else-if="view === 'month'"
+					:events="props.events"
+					class="h-full overflow-y-hidden"
+				/>
+				<BigCalendarWeekView v-else-if="view === 'week'" :events="props.events" class="h-full" />
+				<BigCalendarDayView v-else-if="view === 'day'" :events="props.events" class="h-full" />
+
+				<template #error="{ error: renderError, clearError }">
+					<div class="flex h-full items-center justify-center p-4">
+						<UiAlert variant="destructive" class="mx-2 w-sm">
+							<UiAlertTitle>Помилка відображення календаря</UiAlertTitle>
+							<UiAlertDescription>
+								<p class="mb-3">
+									{{
+										renderError?.message ||
+										"Виникла непередбачена помилка при рендерингу календаря."
+									}}
+								</p>
+								<UiButton size="sm" variant="outline" @click="clearError">Спробувати знову</UiButton>
+							</UiAlertDescription>
+						</UiAlert>
+					</div>
+				</template>
+			</NuxtErrorBoundary>
 		</div>
 
 		<ClientOnly>

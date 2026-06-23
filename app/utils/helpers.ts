@@ -25,29 +25,6 @@ import { WEEK_OPTIONS } from "~/constants/calendar"
 
 const FORMAT_STRING = "MMM d, yyyy"
 
-type DateOperation = (date: Date, amount: number) => Date
-
-const NEXT_OPERATIONS: Record<TCalendarView, DateOperation> = {
-	month: addMonths,
-	week: addWeeks,
-	day: addDays,
-	year: addYears,
-}
-
-const PREV_OPERATIONS: Record<TCalendarView, DateOperation> = {
-	month: subMonths,
-	week: subWeeks,
-	day: subDays,
-	year: subYears,
-}
-
-const COMPARE_FUNCTIONS: Record<TCalendarView, (d1: Date, d2: Date) => boolean> = {
-	day: isSameDay,
-	week: (d1, d2) => isSameWeek(d1, d2, WEEK_OPTIONS),
-	month: isSameMonth,
-	year: isSameYear,
-}
-
 export const parseDate = (date: Date | string | number | null | undefined): Date => {
 	if (!date) return new Date()
 
@@ -100,14 +77,20 @@ export function navigateDate(
 	direction: "previous" | "next"
 ): Date {
 	const parsedDate = parseDate(date)
-	const operations = direction === "next" ? NEXT_OPERATIONS : PREV_OPERATIONS
-	const operation = operations[view]
+	const step = direction === "next" ? 1 : -1
 
-	if (!operation) {
-		throw new Error(`Unsupported view for navigation: ${view}`)
+	switch (view) {
+		case "day":
+			return step > 0 ? addDays(parsedDate, 1) : subDays(parsedDate, 1)
+		case "week":
+			return step > 0 ? addWeeks(parsedDate, 1) : subWeeks(parsedDate, 1)
+		case "month":
+			return step > 0 ? addMonths(parsedDate, 1) : subMonths(parsedDate, 1)
+		case "year":
+			return step > 0 ? addYears(parsedDate, 1) : subYears(parsedDate, 1)
+		default:
+			throw new Error(`Unsupported view for navigation: ${view}`)
 	}
-
-	return operation(parsedDate, 1)
 }
 
 export function getEventsCount(
@@ -118,19 +101,27 @@ export function getEventsCount(
 	if (!events.length) return 0
 
 	const parsedDate = parseDate(date)
-	const compareFn = COMPARE_FUNCTIONS[view]
 
-	if (!compareFn) {
-		throw new Error(`Unsupported view for events count: ${view}`)
+	const compareFn = (eventDate: Date): boolean => {
+		switch (view) {
+			case "day":
+				return isSameDay(eventDate, parsedDate)
+			case "week":
+				return isSameWeek(eventDate, parsedDate, WEEK_OPTIONS)
+			case "month":
+				return isSameMonth(eventDate, parsedDate)
+			case "year":
+				return isSameYear(eventDate, parsedDate)
+			default:
+				throw new Error(`Unsupported view for events count: ${view}`)
+		}
 	}
 
 	let count = 0
 	for (let i = 0; i < events.length; i++) {
 		try {
 			const eventDate = parseDate(events[i]!.startedAt)
-			if (compareFn(eventDate, parsedDate)) {
-				count++
-			}
+			if (compareFn(eventDate)) count++
 		} catch {
 			console.warn(`Invalid date in event ${events[i]!.id}:`, events[i]!.startedAt)
 		}

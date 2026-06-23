@@ -10,7 +10,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const { getEventBlockStyle } = useEventGrouping()
+
 
 const renderEvents = computed(() => {
 	const dayDate = parseDate(props.day)

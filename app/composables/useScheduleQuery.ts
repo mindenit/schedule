@@ -13,19 +13,6 @@ export const useScheduleQuery = (
 	const filtersStore = useFiltersStore()
 	const { selectedSchedule } = storeToRefs(scheduleStore)
 
-	// Reference raw filter arrays directly — no spread, no intermediate computed.
-	// TanStack Query hashes keys with deep equality so reference identity doesn't matter
-	// for cache lookup; only content does. Each toggle still produces a new unique key
-	// because the array contents change, triggering a refetch as intended.
-	const {
-		lessonTypesFilters,
-		teachersFilters,
-		auditoriumsFilters,
-		subjectsFilters,
-		groupsFilters,
-		version,
-	} = storeToRefs(filtersStore)
-
 	// Load per-schedule filters when the active schedule changes.
 	// Side-effect must not live inside a computed — watchers are the correct place.
 	watch(
@@ -44,64 +31,42 @@ export const useScheduleQuery = (
 		}
 
 		const { type } = selectedSchedule.value
-		const scheduleId = id.value
-		const baseParams = [scheduleId, startTimestamp.value, endTimestamp.value] as const
+		const sid = id.value
+		const start = startTimestamp.value
+		const end = endTimestamp.value
 
-		const filterOptions = {
-			group: {
-				lessonTypes: lessonTypesFilters,
-				teachers: teachersFilters,
-				auditoriums: auditoriumsFilters,
-				subjects: subjectsFilters,
-			},
-			teacher: {
-				lessonTypes: lessonTypesFilters,
-				groups: groupsFilters,
-				auditoriums: auditoriumsFilters,
-				subjects: subjectsFilters,
-			},
-			auditorium: {
-				lessonTypes: lessonTypesFilters,
-				teachers: teachersFilters,
-				groups: groupsFilters,
-				subjects: subjectsFilters,
-			},
+		// The filters store owns the per-type whitelist of which filter keys belong to which
+		// entity's API. Each branch pairs the correct factory with the correctly-shaped filters,
+		// preserving exact TypeScript narrowing.
+		switch (type) {
+			case "group":
+				return groupScheduleOptions(sid, start, end, filtersStore.filtersForType("group"))
+			case "teacher":
+				return teacherScheduleOptions(sid, start, end, filtersStore.filtersForType("teacher"))
+			case "auditorium":
+				return auditoriumScheduleOptions(
+					sid,
+					start,
+					end,
+					filtersStore.filtersForType("auditorium")
+				)
+			default:
+				return null
 		}
-
-		const queryMap = {
-			group: () => groupScheduleOptions(...baseParams, filterOptions.group),
-			teacher: () => teacherScheduleOptions(...baseParams, filterOptions.teacher),
-			auditorium: () => auditoriumScheduleOptions(...baseParams, filterOptions.auditorium),
-		}
-
-		return queryMap[type]?.() || null
 	})
 
-	const isEnabled = computed(
-		() =>
-			!!(
-				selectedSchedule.value &&
-				id.value &&
-				startTimestamp.value &&
-				endTimestamp.value &&
-				queryOptions.value
-			)
-	)
+	const isEnabled = computed(() => queryOptions.value !== null)
 
 	const query = useQuery(
 		computed(() => {
-			if (!isEnabled.value || !queryOptions.value) {
+			if (!queryOptions.value) {
 				return {
 					queryKey: ["disabled-schedule"],
 					queryFn: () => Promise.resolve([]),
 					enabled: false,
 				}
 			}
-			return {
-				...queryOptions.value,
-				queryKey: [...queryOptions.value.queryKey, version.value],
-				enabled: true,
-			}
+			return { ...queryOptions.value, enabled: true }
 		})
 	)
 

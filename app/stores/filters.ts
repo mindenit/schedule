@@ -1,168 +1,175 @@
-export const useFiltersStore = defineStore("filters", () => {
-	const lessonTypesFilters = ref<string[]>([])
-	const teachersFilters = ref<number[]>([])
-	const auditoriumsFilters = ref<number[]>([])
-	const subjectsFilters = ref<number[]>([])
-	const groupsFilters = ref<number[]>([])
-	// version is appended to the schedule queryKey in useScheduleQuery so that
-	// TanStack Query re-hashes and refetches whenever any filter is toggled.
-	const version = ref(0)
+import { STORAGE_KEYS } from "~/constants/storage"
 
-	let currentScheduleKey = ""
+type FilterKey = "lessonTypes" | "teachers" | "auditoriums" | "subjects" | "groups"
+
+type FilterValue<K extends FilterKey> = K extends "lessonTypes" ? string : number
+
+type FilterState = {
+	lessonTypes: string[]
+	teachers: number[]
+	auditoriums: number[]
+	subjects: number[]
+	groups: number[]
+}
+
+const emptyState = (): FilterState => ({
+	lessonTypes: [],
+	teachers: [],
+	auditoriums: [],
+	subjects: [],
+	groups: [],
+})
+
+export const useFiltersStore = defineStore("filters", () => {
+	const state = ref<FilterState>(emptyState())
+
+	let currentStorageKey = ""
 
 	const loadFilters = (scheduleId: string | number, scheduleType: string) => {
-		const key = `${scheduleType}-${scheduleId}`
+		const key = STORAGE_KEYS.filters(scheduleType, scheduleId)
+		if (key === currentStorageKey) return
+		currentStorageKey = key
 
-		if (key !== currentScheduleKey) {
-			currentScheduleKey = key
+		if (!import.meta.client) return
 
-			if (import.meta.client) {
-				const saved = localStorage.getItem(`filters-${key}`)
-				if (saved) {
-					try {
-						const parsed = JSON.parse(saved)
-						lessonTypesFilters.value = parsed.lessonTypes || []
-						teachersFilters.value = parsed.teachers || []
-						auditoriumsFilters.value = parsed.auditoriums || []
-						subjectsFilters.value = parsed.subjects || []
-						groupsFilters.value = parsed.groups || []
-					} catch {
-						clearAllFilters()
-					}
-				} else {
-					clearAllFilters()
-				}
+		const saved = localStorage.getItem(key)
+		if (!saved) {
+			state.value = emptyState()
+			return
+		}
+
+		try {
+			const parsed = JSON.parse(saved) as Partial<FilterState>
+			state.value = {
+				lessonTypes: parsed.lessonTypes ?? [],
+				teachers: parsed.teachers ?? [],
+				auditoriums: parsed.auditoriums ?? [],
+				subjects: parsed.subjects ?? [],
+				groups: parsed.groups ?? [],
 			}
+		} catch {
+			state.value = emptyState()
 		}
 	}
 
 	const saveFilters = () => {
-		if (import.meta.client && currentScheduleKey) {
-			const filters = {
-				lessonTypes: lessonTypesFilters.value,
-				teachers: teachersFilters.value,
-				auditoriums: auditoriumsFilters.value,
-				subjects: subjectsFilters.value,
-				groups: groupsFilters.value,
-			}
-			localStorage.setItem(`filters-${currentScheduleKey}`, JSON.stringify(filters))
-		}
+		if (!import.meta.client || !currentStorageKey) return
+		localStorage.setItem(currentStorageKey, JSON.stringify(state.value))
 	}
 
-	const clearAllFilters = () => {
-		lessonTypesFilters.value = []
-		teachersFilters.value = []
-		auditoriumsFilters.value = []
-		subjectsFilters.value = []
-		groupsFilters.value = []
-	}
-
-	const toggleLessonTypeFilter = (filterId: string) => {
-		const index = lessonTypesFilters.value.indexOf(filterId)
-		if (index > -1) {
-			lessonTypesFilters.value.splice(index, 1)
-		} else {
-			lessonTypesFilters.value.push(filterId)
-		}
+	const toggle = <K extends FilterKey>(key: K, value: FilterValue<K>) => {
+		const arr = state.value[key] as FilterValue<K>[]
+		const index = arr.indexOf(value)
+		if (index > -1) arr.splice(index, 1)
+		else arr.push(value)
 		saveFilters()
-		version.value++
 	}
 
-	const toggleTeacherFilter = (filterId: number) => {
-		const index = teachersFilters.value.indexOf(filterId)
-		if (index > -1) {
-			teachersFilters.value.splice(index, 1)
-		} else {
-			teachersFilters.value.push(filterId)
-		}
-		saveFilters()
-		version.value++
-	}
-
-	const toggleAuditoriumFilter = (filterId: number) => {
-		const index = auditoriumsFilters.value.indexOf(filterId)
-		if (index > -1) {
-			auditoriumsFilters.value.splice(index, 1)
-		} else {
-			auditoriumsFilters.value.push(filterId)
-		}
-		saveFilters()
-		version.value++
-	}
-
-	const toggleSubjectFilter = (filterId: number) => {
-		const index = subjectsFilters.value.indexOf(filterId)
-		if (index > -1) {
-			subjectsFilters.value.splice(index, 1)
-		} else {
-			subjectsFilters.value.push(filterId)
-		}
-		saveFilters()
-		version.value++
-	}
-
-	const toggleGroupFilter = (filterId: number) => {
-		const index = groupsFilters.value.indexOf(filterId)
-		if (index > -1) {
-			groupsFilters.value.splice(index, 1)
-		} else {
-			groupsFilters.value.push(filterId)
-		}
-		saveFilters()
-		version.value++
-	}
-
-	const isLessonTypeActive = (filterId: string) => {
-		return lessonTypesFilters.value.includes(filterId)
-	}
-
-	const isTeacherActive = (filterId: number) => {
-		return teachersFilters.value.includes(filterId)
-	}
-
-	const isAuditoriumActive = (filterId: number) => {
-		return auditoriumsFilters.value.includes(filterId)
-	}
-
-	const isSubjectActive = (filterId: number) => {
-		return subjectsFilters.value.includes(filterId)
-	}
-
-	const isGroupActive = (filterId: number) => {
-		return groupsFilters.value.includes(filterId)
+	const isActive = <K extends FilterKey>(key: K, value: FilterValue<K>) => {
+		return (state.value[key] as FilterValue<K>[]).includes(value)
 	}
 
 	const clearAll = () => {
-		clearAllFilters()
+		state.value = emptyState()
 		saveFilters()
-		version.value++
 	}
+
+	// Per-type refs (kept for backwards-compatible reactivity in templates / queries).
+	const lessonTypesFilters = computed(() => state.value.lessonTypes)
+	const teachersFilters = computed(() => state.value.teachers)
+	const auditoriumsFilters = computed(() => state.value.auditoriums)
+	const subjectsFilters = computed(() => state.value.subjects)
+	const groupsFilters = computed(() => state.value.groups)
+
+	// Per-type toggles / isActive wrappers preserve the previous public API so call sites
+	// can opt into the generic `toggle(key, value)` form gradually.
+	const toggleLessonTypeFilter = (id: string) => toggle("lessonTypes", id)
+	const toggleTeacherFilter = (id: number) => toggle("teachers", id)
+	const toggleAuditoriumFilter = (id: number) => toggle("auditoriums", id)
+	const toggleSubjectFilter = (id: number) => toggle("subjects", id)
+	const toggleGroupFilter = (id: number) => toggle("groups", id)
+
+	const isLessonTypeActive = (id: string) => isActive("lessonTypes", id)
+	const isTeacherActive = (id: number) => isActive("teachers", id)
+	const isAuditoriumActive = (id: number) => isActive("auditoriums", id)
+	const isSubjectActive = (id: number) => isActive("subjects", id)
+	const isGroupActive = (id: number) => isActive("groups", id)
 
 	const hasActive = computed(
 		() =>
-			lessonTypesFilters.value.length > 0 ||
-			teachersFilters.value.length > 0 ||
-			auditoriumsFilters.value.length > 0 ||
-			subjectsFilters.value.length > 0 ||
-			groupsFilters.value.length > 0
+			state.value.lessonTypes.length > 0 ||
+			state.value.teachers.length > 0 ||
+			state.value.auditoriums.length > 0 ||
+			state.value.subjects.length > 0 ||
+			state.value.groups.length > 0
 	)
 
 	const activeCount = computed(
 		() =>
-			lessonTypesFilters.value.length +
-			teachersFilters.value.length +
-			auditoriumsFilters.value.length +
-			subjectsFilters.value.length +
-			groupsFilters.value.length
+			state.value.lessonTypes.length +
+			state.value.teachers.length +
+			state.value.auditoriums.length +
+			state.value.subjects.length +
+			state.value.groups.length
 	)
 
-	const activeFilters = computed(() => ({
-		lessonTypes: lessonTypesFilters.value,
-		teachers: teachersFilters.value,
-		auditoriums: auditoriumsFilters.value,
-		subjects: subjectsFilters.value,
-		groups: groupsFilters.value,
-	}))
+	const activeFilters = computed(() => ({ ...state.value }))
+
+	/**
+	 * Returns the filter slice a given entity's schedule API accepts.
+	 * Encodes the per-type whitelist that used to live in `useScheduleQuery`.
+	 *
+	 * - group       → lessonTypes, teachers, auditoriums, subjects
+	 * - teacher     → lessonTypes, groups,   auditoriums, subjects
+	 * - auditorium  → lessonTypes, teachers, groups,      subjects
+	 */
+	type FiltersForType = {
+		group: {
+			lessonTypes: typeof lessonTypesFilters
+			teachers: typeof teachersFilters
+			auditoriums: typeof auditoriumsFilters
+			subjects: typeof subjectsFilters
+		}
+		teacher: {
+			lessonTypes: typeof lessonTypesFilters
+			groups: typeof groupsFilters
+			auditoriums: typeof auditoriumsFilters
+			subjects: typeof subjectsFilters
+		}
+		auditorium: {
+			lessonTypes: typeof lessonTypesFilters
+			teachers: typeof teachersFilters
+			groups: typeof groupsFilters
+			subjects: typeof subjectsFilters
+		}
+	}
+
+	function filtersForType<T extends keyof FiltersForType>(type: T): FiltersForType[T]
+	function filtersForType(type: keyof FiltersForType) {
+		switch (type) {
+			case "group":
+				return {
+					lessonTypes: lessonTypesFilters,
+					teachers: teachersFilters,
+					auditoriums: auditoriumsFilters,
+					subjects: subjectsFilters,
+				}
+			case "teacher":
+				return {
+					lessonTypes: lessonTypesFilters,
+					groups: groupsFilters,
+					auditoriums: auditoriumsFilters,
+					subjects: subjectsFilters,
+				}
+			case "auditorium":
+				return {
+					lessonTypes: lessonTypesFilters,
+					teachers: teachersFilters,
+					groups: groupsFilters,
+					subjects: subjectsFilters,
+				}
+		}
+	}
 
 	return {
 		lessonTypesFilters,
@@ -171,11 +178,12 @@ export const useFiltersStore = defineStore("filters", () => {
 		subjectsFilters,
 		groupsFilters,
 		activeFilters,
-		version,
 		hasActive,
 		activeCount,
 		loadFilters,
 		saveFilters,
+		toggle,
+		isActive,
 		toggleLessonTypeFilter,
 		toggleTeacherFilter,
 		toggleAuditoriumFilter,
@@ -186,6 +194,7 @@ export const useFiltersStore = defineStore("filters", () => {
 		isAuditoriumActive,
 		isSubjectActive,
 		isGroupActive,
+		filtersForType,
 		clearAll,
 	}
 })

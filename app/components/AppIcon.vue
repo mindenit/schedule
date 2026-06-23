@@ -1,4 +1,21 @@
 <script setup lang="ts">
+/**
+ * AppIcon — thin wrapper around `<Icon>` (@nuxt/icon) that enforces a fixed
+ * design-system size scale.
+ *
+ * Why the `!size-*` (Tailwind `!important`) prefix?
+ * @nuxt/icon injects its own `width`/`height` *attributes* and inline styles on
+ * the SVG (driven by its `size` prop and the icon's intrinsic viewBox). Plain
+ * `size-*` utilities lose the specificity battle against those inline styles
+ * and the icon ends up rendering at its own size — visibly wrong inside our
+ * buttons/menus. `!important` is the simplest, most local fix: it scopes the
+ * override to *this* wrapper without polluting global CSS, and the values
+ * here are still part of the design token scale (xs → 2xl).
+ *
+ * Do not drop the `!` prefix without verifying that @nuxt/icon no longer
+ * inlines size styles (check the rendered <svg> in the browser).
+ */
+
 interface Props {
 	name: string
 	size?: "xs" | "3.5" | "sm" | "md" | "lg" | "xl" | "2xl"
@@ -10,6 +27,8 @@ const props = withDefaults(defineProps<Props>(), {
 	class: undefined,
 })
 
+// `!` (Tailwind important modifier) overrides @nuxt/icon's inline width/height.
+// See the block comment above before changing.
 const sizeClasses = {
 	xs: "!size-3", // 12px
 	"3.5": "!size-3.5", // 14px

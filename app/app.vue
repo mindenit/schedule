@@ -1,23 +1,15 @@
 <script lang="ts" setup>
-import { storeToRefs } from "pinia"
-import { useSettingsStore } from "~/stores/settings"
+import { defineAsyncComponent } from "vue"
 
-const { isSnowEnabled } = storeToRefs(useSettingsStore())
+/**
+ * SnowEffect is a ~500 LOC seasonal canvas component that's off by default.
+ * Loading it lazily keeps it out of the initial JS bundle so users who never
+ * toggle the setting pay nothing for it. Wrapped in <ClientOnly> already, so
+ * SSR doesn't try to resolve the dynamic import.
+ */
+const SnowEffect = defineAsyncComponent(() => import("~/components/SnowEffect.vue"))
 
-useAnalytics()
-
-const { isShortcutsOpen } = useKeyboardShortcuts()
-
-useHead({ htmlAttrs: { lang: SEO_DEFAULT_LOCALE } })
-
-useSchemaOrg([
-	defineWebSite({
-		name: SEO_SITE_NAME,
-		alternateName: SEO_SITE_ALTERNATE_NAME,
-		description: SEO_DEFAULT_DESCRIPTION,
-		inLanguage: SEO_INLANGUAGE,
-	}),
-])
+const { isSnowEnabled, isShortcutsOpen } = useAppShell()
 </script>
 
 <template>

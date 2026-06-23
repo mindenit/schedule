@@ -245,13 +245,6 @@ Option B: remove the module if image optimization is not a priority.
 
 ---
 
-### 4.2 Duplicate `:root`/`.dark` token blocks in both CSS files 💤
-`app/assets/css/main.css` and `tailwind.css` both define all tokens.
-`main.css:126-169` has dead `--color-color-*` double-prefix variables (migration artifacts).
-Fix: pick `tailwind.css` as the single source of truth; strip duplicates from `main.css` or remove it if it's fully superseded.
-
----
-
 ### 4.3 ICS export missing `VTIMEZONE` block 💤
 The `.ics` file declares `X-WR-TIMEZONE:Europe/Kyiv` but has no `VTIMEZONE` component.
 Outlook Desktop and some older clients require an explicit `VTIMEZONE` to interpret the timezone correctly.

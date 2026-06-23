@@ -45,7 +45,7 @@ export default defineNuxtConfig({
 		"@yuta-inoue-ph/nuxt-vcalendar",
 		"vue-sonner/nuxt",
 	],
-	css: ["~/assets/css/main.css", "~/assets/css/tailwind.css"],
+	css: ["~/assets/css/tailwind.css"],
 	vite: {
 		plugins: [tailwindcss()],
 	},

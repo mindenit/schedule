@@ -33,18 +33,6 @@ export const useEventFormatting = () => {
 		return EVENT_TYPE_LABELS[type as TEventType] || type
 	}
 
-	const capitalize = (str: string): string => {
-		if (!str) return ""
-		return str.charAt(0).toUpperCase() + str.slice(1)
-	}
-
-	const getFirstLetters = (str: string): string => {
-		if (!str) return ""
-		const words = str.split(" ")
-		if (words.length === 1 && words[0]) return words[0].charAt(0).toUpperCase()
-		return `${words[0]?.charAt(0).toUpperCase() ?? ""}${words[1]?.charAt(0).toUpperCase() ?? ""}`
-	}
-
 	const formatDateTime = (
 		date: Date | string | number,
 		formatString: string = "d MMMM yyyy, HH:mm"
@@ -66,8 +54,6 @@ export const useEventFormatting = () => {
 		formatDateTime,
 		getEventTypeColor,
 		getEventTypeLabel,
-		capitalize,
-		getFirstLetters,
 		toISOString,
 	}
 }

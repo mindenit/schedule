@@ -1,6 +1,7 @@
 import { defineStore, skipHydrate } from "pinia"
 import { useStorage } from "@vueuse/core"
 import type { Subject } from "nurekit"
+import { STORAGE_KEYS } from "~/constants/storage"
 import { downloadFile } from "~/utils/download"
 
 export interface Link {
@@ -18,7 +19,7 @@ type LinksStore = Record<
 >
 
 export const useLinksStore = defineStore("links", () => {
-	const links = skipHydrate(useStorage<LinksStore>("schedule-links", {}))
+	const links = skipHydrate(useStorage<LinksStore>(STORAGE_KEYS.links, {}))
 
 	function getLinks(subjectId: number, eventType: string): Link[] {
 		return links.value[subjectId]?.events[eventType] || []

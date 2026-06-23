@@ -9,7 +9,7 @@ const scheduleStore = useScheduleStore()
 const calendarStore = useCalendarStore()
 const { selectedSchedule } = storeToRefs(scheduleStore)
 const { allEvents } = storeToRefs(calendarStore)
-const { formatTime, formatDate, capitalize } = useEventFormatting()
+const { formatTime, formatDate } = useEventFormatting()
 const { effectiveTimezone } = useTimezone()
 
 // Dev-only date override — lets you navigate days to test sidebar event rendering.

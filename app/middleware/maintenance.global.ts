@@ -1,13 +1,4 @@
-function parseCookies(cookieHeader: string) {
-	const cookies: Record<string, string> = {}
-	cookieHeader.split(";").forEach((cookie) => {
-		const [name, ...rest] = cookie.split("=")
-		if (name && rest.length) {
-			cookies[name.trim()] = rest.join("=").trim()
-		}
-	})
-	return cookies
-}
+import { STORAGE_KEYS } from "~/constants/storage"
 
 export default defineNuxtRouteMiddleware((to) => {
 	const config = useRuntimeConfig()
@@ -20,21 +11,12 @@ export default defineNuxtRouteMiddleware((to) => {
 		return
 	}
 
-	let devAccess = 0
+	// `useCookie` reads from the request headers on the server and from
+	// document.cookie on the client — no manual parsing or localStorage
+	// fallback required.
+	const devAccess = useCookie<number>(STORAGE_KEYS.devAccess, { default: () => 0 })
 
-	if (import.meta.server) {
-		const event = useRequestEvent()
-		const cookies = parseCookies(event?.node.req.headers.cookie || "")
-		devAccess = parseInt(cookies.devAccess || "0")
-	} else {
-		const devAccessStorage = useLocalStorage("devAccess", 0)
-		devAccess = devAccessStorage.value
-
-		const devAccessCookie = useCookie("devAccess", { default: () => 0 })
-		devAccessCookie.value = devAccess
-	}
-
-	if (devAccess === 1) {
+	if (Number(devAccess.value) === 1) {
 		return
 	}
 

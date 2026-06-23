@@ -1,10 +1,11 @@
 import { useLocalStorage } from "@vueuse/core"
 import type { DialogConfig } from "~/constants/dialogs"
 import { DIALOGS_CONFIG } from "~/constants/dialogs"
+import { STORAGE_KEYS } from "~/constants/storage"
 
 export const useDialogManager = () => {
 	const shownDialogs = useLocalStorage<Record<string, { version: number; lastShown: string }>>(
-		"shown-dialogs",
+		STORAGE_KEYS.dialogsShown,
 		{}
 	)
 

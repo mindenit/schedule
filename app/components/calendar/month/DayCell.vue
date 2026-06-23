@@ -14,7 +14,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const calendarStore = useCalendarStore()
-const { groupEventsBySameTime } = useEventGrouping()
+
 const { trackEvent } = useAnalytics()
 
 // Only mount the desktop popover block on lg+ screens. Mobile never mounts any

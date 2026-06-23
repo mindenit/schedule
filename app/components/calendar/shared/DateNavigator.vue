@@ -8,7 +8,7 @@ const calendarStore = useCalendarStore()
 const { selectedDate, view } = storeToRefs(calendarStore)
 const { trackEvent } = useAnalytics()
 
-const { capitalize } = useEventFormatting()
+// `capitalize` is auto-imported from `~/utils/strings`.
 
 const title = computed(() => {
 	const config = VIEW_CONFIGS[view.value as string] ?? VIEW_CONFIGS.default
