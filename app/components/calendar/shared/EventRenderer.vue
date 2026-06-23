@@ -13,55 +13,48 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), { interactive: true })
 
 /**
- * Cache the overlap set by groupedEvents array identity.
- * When the same panel snapshot is passed on every animation frame (no data
- * change mid-flight), the O(G²) pre-pass runs exactly once per panel build
- * instead of once per rendered frame. Keyed by the array reference so stale
- * entries are GC'd automatically when the snapshot is replaced.
+ * Returns the indices of all groups that have at least one event overlapping
+ * the given event's time interval.
+ *
+ * This gives each event its LOCAL concurrent-column count (how many columns
+ * are actually in use AT THIS EVENT'S TIME SLOT), rather than the global
+ * groups.length which includes columns that only overlap at other time slots.
+ *
+ * Example: 5 events — A(07:45-09:20), B(09:30-11:05), C(11:15-12:50),
+ * D(13:10-14:45), then E/F/G all at (14:55-16:30).
+ * groupEvents() produces 3 groups: [A,C,E], [B,D,F], [G].
+ * With global groups.length=3, A would incorrectly get width=33%.
+ * With this function, A only overlaps group 0 → localGroupCount=1 → width=100%.
+ * E overlaps groups 0,1,2 → localGroupCount=3 → width=33%. ✓
  */
-const overlapCache = new WeakMap<Schedule[][], Set<number>>()
-
-function computeOverlappingGroups(groups: Schedule[][]): Set<number> {
-	const cached = overlapCache.get(groups)
-	if (cached) return cached
-
-	const overlappingGroups = new Set<number>()
-	for (let i = 0; i < groups.length; i++) {
-		if (overlappingGroups.has(i)) continue
-		for (let j = i + 1; j < groups.length; j++) {
-			const iGroup = groups[i]!
-			const jGroup = groups[j]!
-			const overlaps = iGroup.some((a) =>
-				jGroup.some((b) =>
-					areIntervalsOverlapping(
-						{ start: a.startedAt * 1000, end: a.endedAt * 1000 },
-						{ start: b.startedAt * 1000, end: b.endedAt * 1000 }
-					)
-				)
-			)
-			if (overlaps) {
-				overlappingGroups.add(i)
-				overlappingGroups.add(j)
-			}
-		}
+function getConcurrentGroupIndices(event: Schedule, groups: Schedule[][]): number[] {
+	const eventInterval = { start: event.startedAt * 1000, end: event.endedAt * 1000 }
+	const concurrent: number[] = []
+	for (let j = 0; j < groups.length; j++) {
+		const overlapsGroup = groups[j]!.some((other) =>
+			areIntervalsOverlapping(eventInterval, {
+				start: other.startedAt * 1000,
+				end: other.endedAt * 1000,
+			})
+		)
+		if (overlapsGroup) concurrent.push(j)
 	}
-
-	overlapCache.set(groups, overlappingGroups)
-	return overlappingGroups
+	return concurrent
 }
 
 const renderEvents = computed(() => {
 	const dayDate = parseDate(props.day)
 	const groups = props.groupedEvents
-	const overlappingGroups = computeOverlappingGroups(groups)
 
 	return groups.flatMap((group, groupIndex) =>
 		group.map((event) => {
-			const style = getEventBlockStyle(event, dayDate, groupIndex, groups.length, props.tz)
-			const hasOverlap = overlappingGroups.has(groupIndex)
+			const concurrent = getConcurrentGroupIndices(event, groups)
+			const localGroupCount = concurrent.length
+			const localGroupIndex = concurrent.indexOf(groupIndex)
+			const style = getEventBlockStyle(event, dayDate, localGroupIndex, localGroupCount, props.tz)
 			return {
 				event,
-				style: hasOverlap ? style : { ...style, width: "100%", left: "0%" },
+				style,
 				key: `${event.id}-${groupIndex}`,
 			}
 		})

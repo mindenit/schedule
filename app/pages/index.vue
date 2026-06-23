@@ -74,9 +74,18 @@ watch(scheduleKey, () => {
 	calendarStore.setEvents([])
 })
 
-watch(scheduleData, (data) => {
-	if (data) calendarStore.setEvents(data)
-})
+// immediate: true ensures the watcher fires with the current value on setup.
+// Without it, if TanStack Query restores data from IndexedDB before this
+// watcher is registered (cache hit, staleTime not yet exceeded), scheduleData
+// is already populated but the watcher never fires — allEvents stays [] and
+// no events render until the next query refetch or server restart.
+watch(
+	scheduleData,
+	(data) => {
+		if (data) calendarStore.setEvents(data)
+	},
+	{ immediate: true }
+)
 </script>
 
 <template>
