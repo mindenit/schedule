@@ -55,6 +55,13 @@ const { currentPanel, incomingPanel, currentX, incomingX } = useSwipeNavigator<W
 const hasEvents = computed(() =>
 	currentPanel.value.groupedEventsByDay.some((dayGroups) => dayGroups.some((g) => g.length > 0))
 )
+
+// Avoid hydration mismatch: new Date() diverges between SSR and client.
+// null on server → no "today" highlight; real Date after mount.
+const clientToday = ref<Date | null>(null)
+onMounted(() => {
+	clientToday.value = new Date()
+})
 </script>
 
 <template>
@@ -83,7 +90,7 @@ const hasEvents = computed(() =>
 								</span>
 								<span
 									class="text-md flex size-5 items-center justify-center rounded-full font-semibold"
-									:class="{ 'bg-primary text-foreground': isSameDay(day, new Date()) }"
+									:class="{ 'bg-primary text-foreground': clientToday && isSameDay(day, clientToday) }"
 								>
 									{{ format(day, "d") }}
 								</span>
@@ -161,7 +168,7 @@ const hasEvents = computed(() =>
 								</span>
 								<span
 									class="text-md flex size-5 items-center justify-center rounded-full font-semibold"
-									:class="{ 'bg-primary text-foreground': isSameDay(day, new Date()) }"
+									:class="{ 'bg-primary text-foreground': clientToday && isSameDay(day, clientToday) }"
 								>
 									{{ format(day, "d") }}
 								</span>

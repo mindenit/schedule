@@ -40,36 +40,41 @@ const hasEvents = computed(() => todayEvents.value.length > 0)
 
 <template>
 	<div class="flex min-h-0 flex-1 flex-col gap-4">
-		<div class="flex items-center gap-1">
-			<span class="flex-1 text-base font-semibold">{{ formattedDate }}</span>
-			<template v-if="isDev">
-				<UiButton
-					size="icon"
-					variant="ghost"
-					class="size-6"
-					@click="previewDate = subDays(previewDate, 1)"
-				>
-					<Icon name="lucide:chevron-left" class="size-3" />
-				</UiButton>
-				<UiButton
-					v-if="!isPreviewToday"
-					size="icon"
-					variant="ghost"
-					class="size-6"
-					@click="previewDate = new Date()"
-				>
-					<Icon name="lucide:rotate-ccw" class="size-3" />
-				</UiButton>
-				<UiButton
-					size="icon"
-					variant="ghost"
-					class="size-6"
-					@click="previewDate = addDays(previewDate, 1)"
-				>
-					<Icon name="lucide:chevron-right" class="size-3" />
-				</UiButton>
+		<ClientOnly>
+			<div class="flex items-center gap-1">
+				<span class="flex-1 text-base font-semibold">{{ formattedDate }}</span>
+				<template v-if="isDev">
+					<UiButton
+						size="icon"
+						variant="ghost"
+						class="size-6"
+						@click="previewDate = subDays(previewDate, 1)"
+					>
+						<Icon name="lucide:chevron-left" class="size-3" />
+					</UiButton>
+					<UiButton
+						v-if="!isPreviewToday"
+						size="icon"
+						variant="ghost"
+						class="size-6"
+						@click="previewDate = new Date()"
+					>
+						<Icon name="lucide:rotate-ccw" class="size-3" />
+					</UiButton>
+					<UiButton
+						size="icon"
+						variant="ghost"
+						class="size-6"
+						@click="previewDate = addDays(previewDate, 1)"
+					>
+						<Icon name="lucide:chevron-right" class="size-3" />
+					</UiButton>
+				</template>
+			</div>
+			<template #fallback>
+				<UiSkeleton class="h-6 w-40 rounded" />
 			</template>
-		</div>
+		</ClientOnly>
 
 		<ClientOnly>
 			<template #fallback>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { isToday, startOfDay } from "date-fns"
-import { useMediaQuery } from "@vueuse/core"
 import type { Schedule } from "nurekit"
 import { MAX_VISIBLE_EVENTS_PER_DAY } from "~/constants/calendar"
 import type { ICalendarCell, TCalendarView } from "~/types/calendar"
@@ -16,11 +15,6 @@ const props = defineProps<Props>()
 const calendarStore = useCalendarStore()
 
 const { trackEvent } = useAnalytics()
-
-// Only mount the desktop popover block on lg+ screens. Mobile never mounts any
-// Reka UI popover instances — tapping a cell navigates to day view instead.
-// SSR default: true (desktop-first, avoids hydration flash on most users).
-const isDesktop = useMediaQuery("(min-width: 1024px)", { ssrWidth: 1280 })
 
 // Group same-time events — input is already filtered to this day.
 const groupedCellEvents = computed(() => groupEventsBySameTime(props.dayEvents))
@@ -123,7 +117,7 @@ function handleMobileClick() {
 			</div>
 
 			<!-- Desktop: per-event badges with a single shared popover per cell -->
-			<template v-if="isDesktop">
+			<ClientOnly>
 				<div class="hidden lg:flex lg:h-full lg:flex-col lg:gap-1 lg:overflow-hidden">
 					<div
 						v-for="(group, groupIndex) in cellDisplay.displayGroups"
@@ -180,7 +174,7 @@ function handleMobileClick() {
 						/>
 					</UiPopoverContent>
 				</UiPopover>
-			</template>
+			</ClientOnly>
 		</div>
 	</div>
 </template>

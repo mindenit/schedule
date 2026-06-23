@@ -17,7 +17,15 @@ const { selectedDate } = storeToRefs(calendarStore)
 const { formatHour } = useEventFormatting()
 const { effectiveTimezone } = useTimezone()
 
-const isToday = computed(() => isSameDay(selectedDate.value, new Date()))
+// Avoid hydration mismatch: new Date() diverges between SSR and client.
+// Start false (server never knows "today"), flip to the real value after mount.
+const isToday = ref(false)
+onMounted(() => {
+	isToday.value = isSameDay(selectedDate.value, new Date())
+	watch(selectedDate, (d) => {
+		isToday.value = isSameDay(d, new Date())
+	})
+})
 
 const hours = CALENDAR_HOURS
 

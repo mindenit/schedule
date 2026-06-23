@@ -44,10 +44,18 @@ export default defineNuxtConfig({
 		"@nuxtjs/seo",
 		"@yuta-inoue-ph/nuxt-vcalendar",
 		"vue-sonner/nuxt",
+		"@nuxt/hints",
 	],
 	css: ["~/assets/css/tailwind.css"],
 	vite: {
 		plugins: [tailwindcss()],
+		// Pre-bundle motion-v so Vite doesn't invalidate the chunk mid-session
+		// when dep-optimisation re-runs. Without this, navigating to a page that
+		// imports motion-v after a hot-reload causes a "error loading dynamically
+		// imported module" 500 in dev because the old ?v= hash is gone.
+		optimizeDeps: {
+			include: ["motion-v"],
+		},
 	},
 	icon: {
 		provider: "iconify",
