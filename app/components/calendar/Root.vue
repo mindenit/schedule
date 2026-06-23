@@ -14,11 +14,23 @@ const props = defineProps<Props>()
 const calendarStore = useCalendarStore()
 const { view } = storeToRefs(calendarStore)
 
+// SSR renders the calendar with no localStorage access, so hasActiveSchedule is
+// always false on the server. This causes a hydration mismatch on blur-sm and the
+// overlay content. Fix: treat every render as "loading" until onMounted fires —
+// SSR, client hydration, and the first client frame all agree on the same state
+// (blurred grid + spinner). After mount the real prop values take over.
+const isHydrating = ref(true)
+onMounted(() => {
+	isHydrating.value = false
+})
+
 const showOverlay = computed(() => {
+	if (isHydrating.value) return true
 	return !props.hasActiveSchedule || props.isLoading || !!props.error
 })
 
 const overlayContent = computed(() => {
+	if (isHydrating.value) return "loading"
 	if (!props.hasActiveSchedule) return "no-schedule"
 	if (props.isLoading) return "loading"
 	if (props.error) return "error"
@@ -64,40 +76,38 @@ const overlayContent = computed(() => {
 			</NuxtErrorBoundary>
 		</div>
 
-		<ClientOnly>
-			<Transition
-				enter-active-class="transition-opacity duration-300 ease-out"
-				enter-from-class="opacity-0"
-				enter-to-class="opacity-100"
-				leave-active-class="transition-opacity duration-200 ease-in"
-				leave-from-class="opacity-100"
-				leave-to-class="opacity-0"
+		<Transition
+			enter-active-class="transition-opacity duration-300 ease-out"
+			enter-from-class="opacity-0"
+			enter-to-class="opacity-100"
+			leave-active-class="transition-opacity duration-200 ease-in"
+			leave-from-class="opacity-100"
+			leave-to-class="opacity-0"
+		>
+			<div
+				v-if="showOverlay"
+				class="bg-background/70 pointer-events-none absolute inset-0 flex items-center
+					justify-center backdrop-blur-sm"
 			>
-				<div
-					v-if="showOverlay"
-					class="bg-background/70 pointer-events-none absolute inset-0 flex items-center
-						justify-center backdrop-blur-sm"
-				>
-					<AppEmptyState
-						v-if="overlayContent === 'no-schedule'"
-						variant="card"
-						icon="lucide:alert-circle"
-						title="Розклад не обрано"
-						description="Оберіть або додайте розклад"
-						class="pointer-events-auto"
-					/>
+				<AppEmptyState
+					v-if="overlayContent === 'no-schedule'"
+					variant="card"
+					icon="lucide:alert-circle"
+					title="Розклад не обрано"
+					description="Оберіть або додайте розклад"
+					class="pointer-events-auto"
+				/>
 
-					<TheLoader v-else-if="overlayContent === 'loading'" size="lg" class="pointer-events-auto" />
+				<TheLoader v-else-if="overlayContent === 'loading'" size="lg" class="pointer-events-auto" />
 
-					<UiAlert v-else-if="overlayContent === 'error'" variant="destructive" class="pointer-events-auto mx-2 w-sm">
-						<UiAlertTitle>Помилка</UiAlertTitle>
-						<UiAlertDescription>
-							<p v-if="error">Не вдалося завантажити розклад: {{ error.message }}</p>
-							<p v-else>Виникла невідома помилка при завантаженні розкладу.</p>
-						</UiAlertDescription>
-					</UiAlert>
-				</div>
-			</Transition>
-		</ClientOnly>
+				<UiAlert v-else-if="overlayContent === 'error'" variant="destructive" class="pointer-events-auto mx-2 w-sm">
+					<UiAlertTitle>Помилка</UiAlertTitle>
+					<UiAlertDescription>
+						<p v-if="error">Не вдалося завантажити розклад: {{ error.message }}</p>
+						<p v-else>Виникла невідома помилка при завантаженні розкладу.</p>
+					</UiAlertDescription>
+				</UiAlert>
+			</div>
+		</Transition>
 	</div>
 </template>
