@@ -8,25 +8,6 @@ import type { Group, Teacher, Auditorium } from "nurekit"
 import { ITEMS_PER_PAGE } from "~/constants/schedule"
 import type { ScheduleTabType, GenericScheduleItem } from "~/types/schedule"
 
-const {
-	data: groups,
-	isLoading: isGroupsLoading,
-	isError: isGroupsError,
-	error: groupsError,
-} = useQuery(groupsOptions())
-const {
-	data: teachers,
-	isLoading: isTeachersLoading,
-	isError: isTeachersError,
-	error: teachersError,
-} = useQuery(teachersOptions())
-const {
-	data: auditoriums,
-	isLoading: isAuditoriumsLoading,
-	isError: isAuditoriumsError,
-	error: auditoriumsError,
-} = useQuery(auditoriumsOptions())
-
 const scheduleStore = useScheduleStore()
 const { trackEvent } = useAnalytics()
 
@@ -34,6 +15,25 @@ const searchQuery = ref("")
 const activeTab = ref<ScheduleTabType>("group")
 
 const isDialogOpen = ref(false)
+
+const {
+	data: groups,
+	isLoading: isGroupsLoading,
+	isError: isGroupsError,
+	error: groupsError,
+} = useQuery({ ...groupsOptions(), enabled: isDialogOpen })
+const {
+	data: teachers,
+	isLoading: isTeachersLoading,
+	isError: isTeachersError,
+	error: teachersError,
+} = useQuery({ ...teachersOptions(), enabled: isDialogOpen })
+const {
+	data: auditoriums,
+	isLoading: isAuditoriumsLoading,
+	isError: isAuditoriumsError,
+	error: auditoriumsError,
+} = useQuery({ ...auditoriumsOptions(), enabled: isDialogOpen })
 
 interface TabConfig<T> {
 	data: Ref<T[] | undefined>

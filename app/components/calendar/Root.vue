@@ -32,7 +32,7 @@ const overlayContent = computed(() => {
 			max-md:rounded-t-none"
 	>
 		<div
-			class="min-h-0 flex-1 transition-all duration-300 ease-in-out"
+			class="min-h-0 flex-1 transition-[opacity,filter] duration-300 ease-in-out"
 			:class="{ 'blur-sm': showOverlay }"
 		>
 			<NuxtErrorBoundary @error="(err) => console.error('[Calendar] render error:', err)">
@@ -66,10 +66,10 @@ const overlayContent = computed(() => {
 
 		<ClientOnly>
 			<Transition
-				enter-active-class="transition-all duration-300 ease-out"
+				enter-active-class="transition-opacity duration-300 ease-out"
 				enter-from-class="opacity-0"
 				enter-to-class="opacity-100"
-				leave-active-class="transition-all duration-200 ease-in"
+				leave-active-class="transition-opacity duration-200 ease-in"
 				leave-from-class="opacity-100"
 				leave-to-class="opacity-0"
 			>

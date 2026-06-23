@@ -73,7 +73,7 @@ const hasEvents = computed(() => currentPanel.value.groupedEvents.length > 0)
 			<motion.div
 				v-if="incomingPanel"
 				class="absolute inset-0 flex flex-col"
-				:style="{ x: incomingX }"
+				:style="{ x: incomingX, willChange: 'transform', contain: 'layout paint' }"
 			>
 				<div class="flex min-h-0 flex-1 gap-1">
 					<div class="relative flex w-18 flex-shrink-0 flex-col">
@@ -106,7 +106,7 @@ const hasEvents = computed(() => currentPanel.value.groupedEvents.length > 0)
 			<motion.div
 				class="absolute inset-0 flex flex-col"
 				:class="{ 'blur-sm': !hasEvents }"
-				:style="{ x: currentX }"
+				:style="{ x: currentX, willChange: 'transform', contain: 'layout paint' }"
 				drag="x"
 				:drag-constraints="{ left: 0, right: 0 }"
 				:drag-elastic="0.1"

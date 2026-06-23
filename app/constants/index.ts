@@ -46,15 +46,21 @@ export const SWIPE_ANIMATION_CONFIG = {
 } as const
 
 /**
- * Spring transition that mimics native mobile feel.
- * stiffness + damping tuned to match iOS scroll-view deceleration.
+ * Tween transition for swipe/keyboard/button navigation.
+ * 280ms with standard iOS ease-out cubic — fast enough to feel snappy,
+ * long enough that the motion reads as navigation and not a jump.
+ * Chosen over a spring because the spring's overshoot adds ~300ms of
+ * visible wobble on every nav and taxes the compositor with 504-cell
+ * year-view panels.
  */
-export const SWIPE_SPRING_TRANSITION = {
-	type: "spring",
-	stiffness: 300,
-	damping: 30,
-	mass: 0.8,
+export const SWIPE_TWEEN_TRANSITION = {
+	type: "tween",
+	duration: 0.28,
+	ease: [0.32, 0.72, 0, 1],
 } as const
+
+/** @deprecated Use SWIPE_TWEEN_TRANSITION. Kept for any external callers during migration. */
+export const SWIPE_SPRING_TRANSITION = SWIPE_TWEEN_TRANSITION
 
 /**
  * Drag-to-commit thresholds shared by every swipe-enabled calendar view.

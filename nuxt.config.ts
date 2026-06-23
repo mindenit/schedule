@@ -44,7 +44,9 @@ export default defineNuxtConfig({
 		"@nuxtjs/seo",
 		"@yuta-inoue-ph/nuxt-vcalendar",
 		"vue-sonner/nuxt",
-		"@nuxt/hints",
+		// @nuxt/hints installs PerformanceObservers and an overlay in the browser.
+		// Limit to dev so production builds do not carry the runtime overhead.
+		...(process.env.NODE_ENV !== "production" ? ["@nuxt/hints" as const] : []),
 	],
 	css: ["~/assets/css/tailwind.css"],
 	vite: {

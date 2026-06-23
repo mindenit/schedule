@@ -7,12 +7,23 @@ export const TIMEZONE_LOCAL = "local" as const
 /**
  * Returns the resolved IANA timezone name for a stored value.
  * When stored === TIMEZONE_LOCAL, returns the browser's current timezone.
+ *
+ * Single-entry memo: `Intl.DateTimeFormat().resolvedOptions().timeZone` is an
+ * expensive call (~1-3 ms) and the result only changes if the stored key changes.
+ * Caching avoids repeated Intl allocations when multiple computeds (calendar
+ * store, useTimezone composable, useSwipeNavigator rebuilds) call this in the
+ * same reactive flush.
  */
+let _resolveCache: { key: string; value: string } | null = null
+
 export function resolveTimezone(stored: string): string {
-	if (stored === TIMEZONE_LOCAL) {
-		return Intl.DateTimeFormat().resolvedOptions().timeZone
-	}
-	return stored
+	if (_resolveCache?.key === stored) return _resolveCache.value
+	const value =
+		stored === TIMEZONE_LOCAL
+			? Intl.DateTimeFormat().resolvedOptions().timeZone
+			: stored
+	_resolveCache = { key: stored, value }
+	return value
 }
 
 /**

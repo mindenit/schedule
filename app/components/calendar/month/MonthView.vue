@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import type { Schedule } from "nurekit"
 import { motion } from "motion-v"
-import { isSameMonth } from "date-fns"
+import { isToday, isSameMonth } from "date-fns"
 import type { ICalendarCell } from "~/types/calendar"
+import { getEventTimeRange } from "~/utils/event-cache"
 
 interface Props {
 	events: Schedule[]
@@ -21,15 +22,99 @@ const { getCalendarCells, getWeekDays } = useCalendarCells()
 const hasEvents = computed(() => props.events.length > 0)
 const weekDays = computed(() => getWeekDays(selectedDate.value))
 
+/**
+ * Pre-baked badge data: computed once at buildPanel time, not on every badge mount.
+ * colorClass + timeRange are the two most expensive fields (useEventFormatting lookup +
+ * getEventTimeRange with WeakMap + timezone). Pre-baking them means MonthEventBadge
+ * renders as a near-zero-cost "dumb" component — no composable calls, no computeds.
+ */
+interface BadgeData {
+	/** Unique key for v-for — event id is stable across renders. */
+	key: number | string
+	event: Schedule
+	colorClass: string
+	timeRange: string
+}
+
+interface MonthCellSnapshot {
+	cell: ICalendarCell
+	/** Whether the cell date is today — pre-baked so isToday() is not called per render. */
+	isDateToday: boolean
+	/**
+	 * All display-related derived values baked at buildPanel time.
+	 * DayCell no longer runs groupEventsBySameTime() per render.
+	 */
+	displayGroups: Schedule[][]
+	badges: BadgeData[]
+	hiddenEvents: Schedule[]
+	hasMoreEvents: boolean
+	remainingEventsCount: number
+	totalEventsCount: number
+}
+
 interface MonthPanel {
 	date: Date
-	cells: ICalendarCell[]
+	cellSnapshots: MonthCellSnapshot[]
 	weeksCount: number
 }
 
+const FALLBACK_COLOR = "bg-muted text-muted-foreground"
+
+/**
+ * Build a fully frozen panel snapshot for the given month.
+ *
+ * ALL per-cell and per-badge computation happens here, once, at navigation time.
+ * Nothing in the rendering pipeline (DayCell / MonthEventBadge) does expensive
+ * work after this point.
+ *
+ * - groupEventsBySameTime: eliminates 84 grouping passes (42 cells × 2 panels) per nav
+ * - isToday: eliminates 84 date-fns isToday() calls (allocates Date + startOfDay each)
+ * - colorClass: eliminates ~300 EVENT_TYPE_COLORS lookups per nav (one per badge)
+ * - timeRange: already WeakMap-cached in event-cache.ts; calling it here is O(1) per badge
+ */
 function buildPanel(date: Date): MonthPanel {
 	const cells = getCalendarCells(date)
-	return { date, cells, weeksCount: Math.ceil(cells.length / 7) }
+	const evMap = eventsByDayKey.value
+	const tz = effectiveTimezone.value
+
+	const cellSnapshots: MonthCellSnapshot[] = cells.map((cell) => {
+		const dayEvents = evMap.get(cell.date.getTime()) ?? []
+		const groups = groupEventsBySameTime(dayEvents)
+		const total = groups.length
+
+		const hiddenCount =
+			total > MAX_VISIBLE_EVENTS_PER_DAY
+				? groups.slice(MAX_VISIBLE_EVENTS_PER_DAY).reduce((n, g) => n + g.length, 0)
+				: 0
+		const onlyOneHidden = hiddenCount === 1
+		const hasMoreEvents = total > MAX_VISIBLE_EVENTS_PER_DAY && !onlyOneHidden
+		const maxVisible = onlyOneHidden ? MAX_VISIBLE_EVENTS_PER_DAY + 1 : MAX_VISIBLE_EVENTS_PER_DAY
+
+		const displayGroups = groups.slice(0, maxVisible)
+
+		// Pre-bake badge data for each visible group's events.
+		const badges: BadgeData[] = displayGroups.flatMap((group) =>
+			group.map((event) => ({
+				key: event.id,
+				event,
+				colorClass: EVENT_TYPE_COLORS[event.type as keyof typeof EVENT_TYPE_COLORS] ?? FALLBACK_COLOR,
+				timeRange: getEventTimeRange(event, tz),
+			}))
+		)
+
+		return {
+			cell,
+			isDateToday: isToday(cell.date),
+			displayGroups,
+			badges,
+			hiddenEvents: groups.slice(MAX_VISIBLE_EVENTS_PER_DAY).flat(),
+			hasMoreEvents,
+			remainingEventsCount: hasMoreEvents ? hiddenCount : 0,
+			totalEventsCount: groups.reduce((n, g) => n + g.length, 0),
+		}
+	})
+
+	return { date, cellSnapshots, weeksCount: Math.ceil(cells.length / 7) }
 }
 
 const monthRootEl = useTemplateRef("monthRoot")
@@ -77,15 +162,23 @@ const {
 				:style="{
 					gridTemplateRows: `repeat(${incomingPanel.weeksCount}, 1fr)`,
 					x: incomingX,
+					willChange: 'transform',
+					contain: 'layout paint',
 				}"
 			>
-				<BigCalendarDayCell
-					v-for="(cell, index) in incomingPanel.cells"
-					:key="index"
-					:cell="cell"
-					:day-events="eventsByDayKey.get(cell.date.getTime()) ?? []"
-					class="min-h-0"
-				/>
+			<BigCalendarDayCell
+				v-for="(snapshot, index) in incomingPanel.cellSnapshots"
+				:key="index"
+				:cell="snapshot.cell"
+				:is-date-today="snapshot.isDateToday"
+				:display-groups="snapshot.displayGroups"
+				:badges="snapshot.badges"
+				:hidden-events="snapshot.hiddenEvents"
+				:has-more-events="snapshot.hasMoreEvents"
+				:remaining-events-count="snapshot.remainingEventsCount"
+				:total-events-count="snapshot.totalEventsCount"
+				class="min-h-0"
+			/>
 			</motion.div>
 
 			<!-- Current panel — always rendered, draggable -->
@@ -94,6 +187,8 @@ const {
 				:style="{
 					gridTemplateRows: `repeat(${currentPanel.weeksCount}, 1fr)`,
 					x: currentX,
+					willChange: 'transform',
+					contain: 'layout paint',
 				}"
 				drag="x"
 				:drag-constraints="{ left: 0, right: 0 }"
@@ -103,13 +198,19 @@ const {
 				@drag="onDrag"
 				@drag-end="onDragEnd"
 			>
-				<BigCalendarDayCell
-					v-for="(cell, index) in currentPanel.cells"
-					:key="index"
-					:cell="cell"
-					:day-events="eventsByDayKey.get(cell.date.getTime()) ?? []"
-					class="min-h-0"
-				/>
+			<BigCalendarDayCell
+				v-for="(snapshot, index) in currentPanel.cellSnapshots"
+				:key="index"
+				:cell="snapshot.cell"
+				:is-date-today="snapshot.isDateToday"
+				:display-groups="snapshot.displayGroups"
+				:badges="snapshot.badges"
+				:hidden-events="snapshot.hiddenEvents"
+				:has-more-events="snapshot.hasMoreEvents"
+				:remaining-events-count="snapshot.remainingEventsCount"
+				:total-events-count="snapshot.totalEventsCount"
+				class="min-h-0"
+			/>
 			</motion.div>
 		</div>
 

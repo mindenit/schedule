@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Schedule } from "nurekit"
 import { motion } from "motion-v"
-import { format, isSameYear } from "date-fns"
+import { format, isSameYear, isToday, isThisMonth } from "date-fns"
 import { uk } from "date-fns/locale"
 
 interface Props {
@@ -16,36 +16,34 @@ const { getCalendarCells } = useCalendarCells()
 
 const hasEvents = computed(() => props.events.length > 0)
 
-interface MonthMini {
+/**
+ * Richer cell shape — pre-baked at buildPanel time so MonthMini.vue doesn't
+ * call isToday() or colorByDayKey.get() per render.
+ *
+ * - isToday: eliminates ~420 date-fns isToday() calls per Year panel (12 months × ~35 cells)
+ * - colorClass: eliminates reactive Map.get() per cell (was tracking as a dep)
+ */
+interface MonthMiniCell {
+	date: Date
+	currentMonth: boolean
+	isToday: boolean
+	/** Dominant event-type bg class for this day, or undefined if no events. */
+	colorClass: string | undefined
+}
+
+interface MonthMiniData {
 	label: string
 	date: Date
-	cells: { date: Date; currentMonth: boolean }[]
+	/** Pre-baked for the wrapper/header — avoids calling isThisMonth(date) twice per render. */
+	isThisMonth: boolean
+	cells: MonthMiniCell[]
 }
 
 interface YearPanel {
 	/** January 1st of the year — required by SwipeablePanel. */
 	date: Date
 	year: number
-	months: MonthMini[]
-}
-
-function buildMonthMini(year: number, monthIndex: number): MonthMini {
-	const date = new Date(year, monthIndex, 1)
-	const cells = getCalendarCells(date).map((c) => ({ date: c.date, currentMonth: c.currentMonth }))
-	return {
-		label: format(date, "LLLL", { locale: uk }),
-		date,
-		cells,
-	}
-}
-
-function buildPanel(seedDate: Date): YearPanel {
-	const year = seedDate.getFullYear()
-	return {
-		date: new Date(year, 0, 1),
-		year,
-		months: Array.from({ length: 12 }, (_, i) => buildMonthMini(year, i)),
-	}
+	months: MonthMiniData[]
 }
 
 // Pre-compute dominant event-type color for every day in the visible year.
@@ -66,14 +64,48 @@ function getDominantColor(events: Schedule[]): string {
 	return EVENT_TYPE_COLORS[dominant as keyof typeof EVENT_TYPE_COLORS] ?? ""
 }
 
-const colorByDayKey = computed<Map<number, string>>(() => {
-	const result = new Map<number, string>()
+/**
+ * Build a fully frozen MonthMini for the given month.
+ * All per-cell derived values (isToday, colorClass) are pre-baked here
+ * so MonthMini.vue never calls date-fns or does Map lookups at render time.
+ */
+function buildMonthMini(
+	year: number,
+	monthIndex: number,
+	colorByDayKey: Map<number, string>
+): MonthMiniData {
+	const date = new Date(year, monthIndex, 1)
+	const thisMonth = isThisMonth(date)
+	const cells: MonthMiniCell[] = getCalendarCells(date).map((c) => ({
+		date: c.date,
+		currentMonth: c.currentMonth,
+		isToday: isToday(c.date),
+		colorClass: colorByDayKey.get(c.date.getTime()) || undefined,
+	}))
+	return {
+		label: format(date, "LLLL", { locale: uk }),
+		date,
+		isThisMonth: thisMonth,
+		cells,
+	}
+}
+
+function buildPanel(seedDate: Date): YearPanel {
+	const year = seedDate.getFullYear()
+
+	// Compute color map once for the whole year — used per cell in buildMonthMini.
+	const colorByDayKey = new Map<number, string>()
 	for (const [key, events] of eventsByDayKey.value) {
 		const color = getDominantColor(events)
-		if (color) result.set(key, color)
+		if (color) colorByDayKey.set(key, color)
 	}
-	return result
-})
+
+	return {
+		date: new Date(year, 0, 1),
+		year,
+		months: Array.from({ length: 12 }, (_, i) => buildMonthMini(year, i, colorByDayKey)),
+	}
+}
 
 const yearRootEl = useTemplateRef("yearRoot")
 
@@ -122,7 +154,6 @@ function onMonthClick(date: Date) {
 					v-for="month in currentPanel.months"
 					:key="month.date.getTime()"
 					:month="month"
-					:color-by-day-key="colorByDayKey"
 					@day-click="onDayClick"
 					@month-click="onMonthClick"
 				/>
@@ -140,13 +171,12 @@ function onMonthClick(date: Date) {
 			<motion.div
 				v-if="incomingPanel"
 				class="absolute inset-0 grid grid-cols-4 gap-2 p-1"
-				:style="{ x: incomingX }"
+				:style="{ x: incomingX, willChange: 'transform', contain: 'layout paint' }"
 			>
 				<BigCalendarMonthMini
 					v-for="month in incomingPanel.months"
 					:key="month.date.getTime()"
 					:month="month"
-					:color-by-day-key="colorByDayKey"
 					@day-click="onDayClick"
 					@month-click="onMonthClick"
 				/>
@@ -155,7 +185,7 @@ function onMonthClick(date: Date) {
 			<!-- Current panel — draggable -->
 			<motion.div
 				class="absolute inset-0 grid grid-cols-4 gap-2 p-1"
-				:style="{ x: currentX }"
+				:style="{ x: currentX, willChange: 'transform', contain: 'layout paint' }"
 				drag="x"
 				:drag-constraints="{ left: 0, right: 0 }"
 				:drag-elastic="0.1"
@@ -168,7 +198,6 @@ function onMonthClick(date: Date) {
 					v-for="month in currentPanel.months"
 					:key="month.date.getTime()"
 					:month="month"
-					:color-by-day-key="colorByDayKey"
 					@day-click="onDayClick"
 					@month-click="onMonthClick"
 				/>

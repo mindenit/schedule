@@ -71,7 +71,7 @@ onMounted(() => {
 			<motion.div
 				v-if="incomingPanel"
 				class="absolute inset-0 flex flex-col overflow-x-auto"
-				:style="{ x: incomingX }"
+				:style="{ x: incomingX, willChange: 'transform', contain: 'layout paint' }"
 			>
 				<div class="flex min-w-[800px] flex-1 flex-col">
 					<div class="bg-muted/50 relative z-20 mb-1 grid grid-cols-[72px_1fr] gap-1 md:rounded-t-lg">
@@ -149,7 +149,7 @@ onMounted(() => {
 			<motion.div
 				class="absolute inset-0 flex flex-col overflow-x-auto"
 				:class="{ 'blur-sm': !hasEvents }"
-				:style="{ x: currentX }"
+				:style="{ x: currentX, willChange: 'transform', contain: 'layout paint' }"
 			>
 				<div class="flex min-w-[800px] flex-1 flex-col">
 					<div class="bg-muted/50 relative z-20 mb-1 grid grid-cols-[72px_1fr] gap-1 md:rounded-t-lg">
@@ -158,7 +158,7 @@ onMounted(() => {
 								v-for="(day, index) in currentPanel.weekDays"
 								:key="index"
 								class="text-muted-foreground flex min-w-[100px] flex-col items-center gap-1 py-2
-									text-center text-xs font-medium transition-all duration-200"
+									text-center text-xs font-medium transition-colors duration-200"
 							>
 								<span class="hidden sm:block">
 									{{ capitalize(format(day, "EEEE", { locale: uk })) }}

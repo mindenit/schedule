@@ -1,19 +1,34 @@
 <script setup lang="ts">
-import { isToday, isThisMonth } from "date-fns"
+/**
+ * MonthMini — a compact month calendar used in the Year view.
+ *
+ * All per-cell derived values (isToday, colorClass, isThisMonth) are
+ * pre-baked by YearView.buildMonthMini so this component does zero
+ * date-fns or Map calls at render time.
+ */
+
+interface MonthMiniCell {
+	date: Date
+	currentMonth: boolean
+	/** Pre-baked by buildMonthMini — avoids date-fns isToday() per cell. */
+	isToday: boolean
+	/** Pre-baked dominant event-type color class, or undefined when no events. */
+	colorClass: string | undefined
+}
 
 interface MonthMiniData {
 	label: string
 	date: Date
-	cells: { date: Date; currentMonth: boolean }[]
+	/** Pre-baked by buildMonthMini — avoids isThisMonth(date) ×2 per render. */
+	isThisMonth: boolean
+	cells: MonthMiniCell[]
 }
 
 interface Props {
 	month: MonthMiniData
-	/** Pre-computed map: day timestamp → dominant event-type bg class. Only days with events are present. */
-	colorByDayKey: Map<number, string>
 }
 
-const props = defineProps<Props>()
+defineProps<Props>()
 
 const emit = defineEmits<{
 	dayClick: [date: Date]
@@ -25,26 +40,26 @@ const WEEK_INITIALS = ["М", "П", "С", "Ч", "П", "С", "Н"]
 </script>
 
 <template>
+	<!--
+		transition-colors removed (D): colors never change during a swipe animation —
+		they were pre-baked — so the CSS transition only added mount overhead with zero
+		visible benefit during navigation.
+	-->
 	<div
-		class="flex flex-col rounded-lg p-1.5 transition-colors lg:min-h-0 lg:p-2"
-		:class="[
-			isThisMonth(props.month.date)
-				? 'bg-primary/8 ring-primary/30 ring-1'
-				: 'bg-muted/30',
-		]"
+		class="flex flex-col rounded-lg p-1.5 lg:min-h-0 lg:p-2"
+		:class="[month.isThisMonth ? 'bg-primary/8 ring-primary/30 ring-1' : 'bg-muted/30']"
 	>
 		<!-- Month header — click to navigate to month view -->
 		<button
-			class="mb-1 cursor-pointer text-left font-semibold capitalize transition-colors
-				text-[10px] leading-tight lg:text-xs"
+			class="mb-1 cursor-pointer text-left font-semibold capitalize text-[10px] leading-tight lg:text-xs"
 			:class="[
-				isThisMonth(props.month.date)
+				month.isThisMonth
 					? 'text-primary hover:text-primary/80'
 					: 'text-foreground hover:text-primary',
 			]"
-			@click="emit('monthClick', props.month.date)"
+			@click="emit('monthClick', month.date)"
 		>
-			{{ props.month.label }}
+			{{ month.label }}
 		</button>
 
 		<!-- Week day initials header — hidden on mobile, visible on lg+ -->
@@ -61,7 +76,7 @@ const WEEK_INITIALS = ["М", "П", "С", "Ч", "П", "С", "Н"]
 		<!-- Day cells grid -->
 		<div class="grid grid-cols-7 gap-[2px] lg:min-h-0 lg:flex-1">
 			<button
-				v-for="(cell, i) in props.month.cells"
+				v-for="(cell, i) in month.cells"
 				:key="i"
 				class="group flex items-center justify-center"
 				:class="[cell.currentMonth ? 'cursor-pointer' : 'pointer-events-none opacity-0']"
@@ -69,19 +84,19 @@ const WEEK_INITIALS = ["М", "П", "С", "Ч", "П", "С", "Н"]
 				@click="cell.currentMonth && emit('dayClick', cell.date)"
 			>
 				<!--
-					Mobile: 14px dot with day number visible. No hover ring to keep it clean.
+					Mobile: 14px dot with day number visible.
 					lg+: 18px dot with full hover interactions.
 				-->
 				<span
-					class="flex aspect-square items-center justify-center rounded-full transition-colors
+					class="flex aspect-square items-center justify-center rounded-full
 						w-[14px] text-[7px] font-medium
 						lg:w-full lg:max-w-[18px] lg:rounded-sm lg:text-[9px]
 						lg:group-hover:ring-1 lg:group-hover:ring-offset-0"
 					:class="[
-						isToday(cell.date)
+						cell.isToday
 							? 'bg-primary text-primary-foreground lg:group-hover:ring-primary/40'
-							: colorByDayKey.get(cell.date.getTime())
-								? [colorByDayKey.get(cell.date.getTime()), 'text-white lg:group-hover:ring-white/30']
+							: cell.colorClass
+								? [cell.colorClass, 'text-white lg:group-hover:ring-white/30']
 								: 'text-muted-foreground lg:group-hover:bg-muted lg:group-hover:ring-border',
 					]"
 				>

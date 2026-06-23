@@ -10,19 +10,22 @@ interface Props {
 
 const props = defineProps<Props>()
 
+/**
+ * Cache the overlap set by groupedEvents array identity.
+ * When the same panel snapshot is passed on every animation frame (no data
+ * change mid-flight), the O(G²) pre-pass runs exactly once per panel build
+ * instead of once per rendered frame. Keyed by the array reference so stale
+ * entries are GC'd automatically when the snapshot is replaced.
+ */
+const overlapCache = new WeakMap<Schedule[][], Set<number>>()
 
+function computeOverlappingGroups(groups: Schedule[][]): Set<number> {
+	const cached = overlapCache.get(groups)
+	if (cached) return cached
 
-const renderEvents = computed(() => {
-	const dayDate = parseDate(props.day)
-	const groups = props.groupedEvents
-
-	// Determine which groups overlap with at least one other group.
-	// Done once as a pre-pass (O(G²) where G is group count, typically 1–5)
-	// rather than inside the flatMap where it would run per-event (O(N²)).
-	// Uses Unix ms directly to avoid parseDate allocations inside the loop.
 	const overlappingGroups = new Set<number>()
 	for (let i = 0; i < groups.length; i++) {
-		if (overlappingGroups.has(i)) continue // already marked, no need to re-check
+		if (overlappingGroups.has(i)) continue
 		for (let j = i + 1; j < groups.length; j++) {
 			const iGroup = groups[i]!
 			const jGroup = groups[j]!
@@ -40,6 +43,15 @@ const renderEvents = computed(() => {
 			}
 		}
 	}
+
+	overlapCache.set(groups, overlappingGroups)
+	return overlappingGroups
+}
+
+const renderEvents = computed(() => {
+	const dayDate = parseDate(props.day)
+	const groups = props.groupedEvents
+	const overlappingGroups = computeOverlappingGroups(groups)
 
 	return groups.flatMap((group, groupIndex) =>
 		group.map((event) => {

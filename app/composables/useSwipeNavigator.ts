@@ -1,9 +1,23 @@
-import { ref, watch, type Ref } from "vue"
+import { ref, watch, onMounted, onBeforeUnmount, type Ref } from "vue"
 import { animate, useMotionValue, type AnimationPlaybackControls } from "motion-v"
 import { storeToRefs } from "pinia"
 import type { Schedule } from "nurekit"
 import type { TCalendarView } from "~/types/calendar"
-import { SWIPE_SPRING_TRANSITION } from "~/constants"
+import { SWIPE_TWEEN_TRANSITION } from "~/constants"
+
+/**
+ * Returns the effective swipe transition config.
+ * When the user has requested reduced motion (OS-level setting), the duration
+ * is set to 0 so panels swap instantly — no slide animation is shown.
+ * This improves accessibility and also avoids composite-layer cost on
+ * low-end devices whose users often enable reduced motion for battery.
+ */
+function getSwipeTransition() {
+	if (import.meta.client && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+		return { ...SWIPE_TWEEN_TRANSITION, duration: 0 }
+	}
+	return SWIPE_TWEEN_TRANSITION
+}
 
 /**
  * Panel shape required by all swipe-navigated views.
@@ -50,26 +64,43 @@ export interface UseSwipeNavigatorOptions<TPanel extends SwipeablePanel> {
 
 /**
  * Encapsulates the swipe-to-navigate + animated-panel state machine shared by
- * DayView, WeekView, MonthView, and YearView. Each view used to duplicate
- * ~150 LOC of motion-value plumbing, drag handlers, in-flight cancellation,
- * peek-panel pre-build, and selectedDate watching. Now they only provide:
+ * DayView, WeekView, MonthView, and YearView.
  *
- *   - a `buildPanel(date)` snapshot factory,
- *   - a `samePeriod(a, b)` short-circuit predicate,
- *   - their view name (for analytics + navigateDate step).
+ * Key invariants and fixes vs. prior implementation:
  *
- * The composable returns refs + handlers ready to bind in the template.
+ * RACE / CORRECTNESS
+ *   - Every navigateTo call gets a unique Symbol token. After `await`, the call
+ *     checks its own token against `currentToken`. If they differ, another nav
+ *     won already — bail immediately. This replaces the brittle inflightControls
+ *     reference comparison and handles any number of in-flight cancellations.
+ *   - cancelInflight() now also snaps currentX→0 and incomingX→0 synchronously
+ *     before the next animation starts. Previously, currentX was frozen at its
+ *     mid-animation position, causing the new animation to slide from the wrong
+ *     origin (visible as a glitch or jump on rapid presses).
+ *   - Rapid external navigation is coalesced: when the selectedDate watcher fires
+ *     while an animation is already running, it records the target date in
+ *     `pendingDate` instead of launching another animation. When the in-flight
+ *     animation settles it picks up pendingDate and runs one final animation to
+ *     the correct destination. This eliminates the "events disappear" symptom from
+ *     mashing arrow keys.
+ *   - `latestTargetDate` tracks the logical navigation target independently of
+ *     `currentPanel.value.date`, which only updates AFTER animation settles.
+ *     The selectedDate watcher now compares against `latestTargetDate` so that
+ *     rapid key presses cannot get stuck in "same-period" early-return while a
+ *     stale panel is still on screen. Without this, sidebar-calendar click could
+ *     disagree with the panel's anchor date causing missed navigations.
+ *   - Post-settle panel promotion: instead of `buildPanel(newDate)` after animation
+ *     ends (which drops any mid-flight event updates), we PROMOTE `incomingPanel`
+ *     directly to `currentPanel`. The incoming panel is rebuilt mid-flight if
+ *     events/timezone change, so it always holds the freshest snapshot.
+ *   - Mid-flight incomingPanel rebuild: when props.events changes during a running
+ *     animation, both currentPanel AND incomingPanel are rebuilt with the new data
+ *     so the content is fresh before promotion occurs.
  *
- * Invariants preserved from the original implementations:
- *   - In-flight animations are cancelled (not awaited) when a new destination
- *     arrives. We compare the stored controls array against the local one to
- *     detect cancellation after `await Promise.all(controls)`.
- *   - `selectedDate` is updated BEFORE the animation runs (so the rest of the
- *     app sees the new date immediately).
- *   - The watcher skips its own setSelectedDate call by checking the in-flight
- *     incoming panel's date against the newly-seen date.
- *   - `events` prop changes only rebuild the current panel when no animation
- *     is in flight (avoid clobbering the visible exiting panel).
+ * PERFORMANCE
+ *   - Peek panels are built LAZILY: only on first onDragStart.
+ *   - incomingPanel ref writes in onDrag are guarded against no-op writes to
+ *     avoid unnecessary Vue vdom patches on every pointer-move event.
  */
 export function useSwipeNavigator<TPanel extends SwipeablePanel>(
 	options: UseSwipeNavigatorOptions<TPanel>
@@ -97,58 +128,94 @@ export function useSwipeNavigator<TPanel extends SwipeablePanel>(
 
 	const isNavigating = ref(false)
 	const isDragging = ref(false)
-	let inflightControls: AnimationPlaybackControls[] = []
+
+	// Unique token per animation run. After await, compare to detect supersession.
+	let currentToken: symbol | null = null
+	// Active motion-v animation controls (one per running animation).
+	let activeControls: AnimationPlaybackControls[] = []
+	// When a new navigation arrives while one is in flight, stash the target here.
+	// The settling animation picks it up and runs one final hop.
+	let pendingDate: Date | null = null
+	// Tracks the logical navigation target independently of currentPanel.value.date,
+	// which only updates AFTER animation settles. The selectedDate watcher uses this
+	// to avoid false "same-period" short-circuits on stale panel state.
+	let latestTargetDate: Date = currentPanel.value.date
 
 	const peekLeft = ref<TPanel | null>(null) as Ref<TPanel | null>
 	const peekRight = ref<TPanel | null>(null) as Ref<TPanel | null>
+	let peekBuilt = false
 
 	function getWidth(): number {
 		return containerRef.value?.clientWidth ?? fallbackWidth
 	}
 
-	function cancelInflight() {
-		inflightControls.forEach((c) => c.stop())
-		inflightControls = []
+	/**
+	 * Stop running animations and immediately snap both motion values to 0.
+	 * Must be called synchronously before starting a new animation so the new
+	 * one always starts from a known-good origin (0 = panel filling the viewport).
+	 */
+	function cancelAndReset() {
+		activeControls.forEach((c) => c.stop())
+		activeControls = []
+		currentX.set(0)
+		incomingX.set(0)
 	}
 
 	async function navigateTo(dir: "left" | "right", newDate: Date, source: string) {
-		cancelInflight()
+		cancelAndReset()
 		isNavigating.value = true
+		// Update logical target immediately — watcher must see this before any await.
+		latestTargetDate = newDate
 
-		const incoming = buildPanel(newDate)
-		incomingPanel.value = incoming
+		const token = Symbol()
+		currentToken = token
 
 		const w = getWidth()
+		const incoming = buildPanel(newDate)
+		incomingPanel.value = incoming
 		incomingX.set(dir === "left" ? w : -w)
 
 		calendarStore.setSelectedDate(newDate)
 
+		const transition = getSwipeTransition()
 		const exitX = dir === "left" ? -w : w
 		const controls = [
-			animate(currentX, exitX, SWIPE_SPRING_TRANSITION),
-			animate(incomingX, 0, SWIPE_SPRING_TRANSITION),
+			animate(currentX, exitX, transition),
+			animate(incomingX, 0, transition),
 		]
-		inflightControls = controls
+		activeControls = controls
 		await Promise.all(controls)
 
-		// Cancelled mid-flight — bail out so we don't clobber state from the newer call.
-		if (inflightControls !== controls) return
+		// Another navigation superseded us — bail out entirely.
+		if (currentToken !== token) return
 
 		isNavigating.value = false
-		// Re-snapshot using the current events/tz so any data that arrived while
-		// the animation was in-flight is reflected immediately (avoids the "empty day"
-		// race where events populated during navigation but the rebuild watcher was
-		// skipped because isNavigating was true at the time).
-		currentPanel.value = buildPanel(newDate)
+
+		// Promote the incoming panel snapshot rather than re-building.
+		// incomingPanel may have been refreshed mid-flight by the events watcher,
+		// so it already holds the latest data — no extra buildPanel call needed.
+		currentPanel.value = (incomingPanel.value ?? incoming) as TPanel
 		incomingPanel.value = null
 		currentX.set(0)
 		incomingX.set(0)
+		activeControls = []
 
 		trackEvent("date_navigated", {
 			direction: dir === "left" ? "next" : "prev",
 			view,
 			source,
 		})
+
+		// If a navigation was queued while we were running, execute it now.
+		if (pendingDate !== null) {
+			const target = pendingDate
+			pendingDate = null
+			const pendingDir: "left" | "right" = target >= latestTargetDate ? "left" : "right"
+			navigateTo(pendingDir, target, source)
+		} else {
+			// Rebuild peek panels for the next drag (non-blocking).
+			if (dragEnabled && peekBuilt) rebuildPeekPanels()
+		}
 	}
 
 	function rebuildPeekPanels() {
@@ -157,18 +224,18 @@ export function useSwipeNavigator<TPanel extends SwipeablePanel>(
 		const prevDate = navigateDate(currentPanel.value.date, view, "previous")
 		peekLeft.value = buildPanel(nextDate)
 		peekRight.value = buildPanel(prevDate)
+		peekBuilt = true
 	}
 
-	watch(
-		currentPanel,
-		() => {
-			if (!isNavigating.value) rebuildPeekPanels()
-		},
-		{ immediate: true }
-	)
+	// Rebuild peek panels when currentPanel changes (after a completed navigation).
+	// immediate:false — skip at mount, first drag handles the initial build.
+	watch(currentPanel, () => {
+		if (!isNavigating.value && dragEnabled) rebuildPeekPanels()
+	})
 
 	function onDragStart() {
 		if (!dragEnabled || isNavigating.value) return
+		if (!peekBuilt) rebuildPeekPanels()
 		isDragging.value = true
 	}
 
@@ -179,10 +246,14 @@ export function useSwipeNavigator<TPanel extends SwipeablePanel>(
 
 		const w = getWidth()
 		if (offset < 0) {
-			incomingPanel.value = peekLeft.value
+			if (incomingPanel.value !== peekLeft.value) {
+				incomingPanel.value = peekLeft.value
+			}
 			incomingX.set(w + offset)
 		} else {
-			incomingPanel.value = peekRight.value
+			if (incomingPanel.value !== peekRight.value) {
+				incomingPanel.value = peekRight.value
+			}
 			incomingX.set(-w + offset)
 		}
 	}
@@ -204,61 +275,121 @@ export function useSwipeNavigator<TPanel extends SwipeablePanel>(
 			const dir: "left" | "right" = info.offset.x < 0 ? "left" : "right"
 			const exitX = dir === "left" ? -width : width
 
+			const token = Symbol()
+			currentToken = token
+
 			const committed = incomingPanel.value
+			latestTargetDate = committed.date
 			calendarStore.setSelectedDate(committed.date)
 
+			const transition = getSwipeTransition()
 			const controls = [
-				animate(currentX, exitX, SWIPE_SPRING_TRANSITION),
-				animate(incomingX, 0, SWIPE_SPRING_TRANSITION),
+				animate(currentX, exitX, transition),
+				animate(incomingX, 0, transition),
 			]
-			inflightControls = controls
+			activeControls = controls
 			await Promise.all(controls)
-		if (inflightControls !== controls) return
 
-		isNavigating.value = false
-		// Re-snapshot so events that arrived during the swipe animation are shown.
-		currentPanel.value = buildPanel(committed.date)
-		incomingPanel.value = null
-		currentX.set(0)
-		incomingX.set(0)
+			if (currentToken !== token) return
 
-		trackEvent("date_navigated", {
-			direction: dir === "left" ? "next" : "prev",
-			view,
-			source: "swipe",
-		})
+			isNavigating.value = false
+			// Promote snapshot (may have been refreshed mid-flight by events watcher).
+			currentPanel.value = (incomingPanel.value ?? committed) as TPanel
+			incomingPanel.value = null
+			currentX.set(0)
+			incomingX.set(0)
+			activeControls = []
+
+			trackEvent("date_navigated", {
+				direction: dir === "left" ? "next" : "prev",
+				view,
+				source: "swipe",
+			})
+
+			if (pendingDate !== null) {
+				const target = pendingDate
+				pendingDate = null
+				const pendingDir: "left" | "right" = target >= latestTargetDate ? "left" : "right"
+				navigateTo(pendingDir, target, "external")
+			} else if (peekBuilt) {
+				rebuildPeekPanels()
+			}
 		} else {
 			incomingPanel.value = null
-			animate(currentX, 0, SWIPE_SPRING_TRANSITION)
+			animate(currentX, 0, getSwipeTransition())
 			incomingX.set(0)
 		}
 	}
 
-	// React to external date changes (DateNavigator buttons, keyboard, today button, mini-calendar).
+	// React to external date changes (DateNavigator buttons, keyboard, today button).
 	watch(selectedDate, (newDate) => {
 		if (isDragging.value) return
-		// Skip if the change came from our own setSelectedDate call.
-		if (isNavigating.value && incomingPanel.value?.date.getTime() === newDate.getTime()) return
-		// Same period — nothing to animate.
-		if (samePeriod(newDate, currentPanel.value.date)) return
-		const dir: "left" | "right" = newDate >= currentPanel.value.date ? "left" : "right"
+		// Skip if it's a date our own navigateTo already set (same target, not just same panel).
+		if (
+			isNavigating.value &&
+			(latestTargetDate.getTime() === newDate.getTime() ||
+				pendingDate?.getTime() === newDate.getTime())
+		)
+			return
+		// Same period relative to latest logical target (not stale panel date).
+		if (samePeriod(newDate, latestTargetDate)) return
+
+		if (isNavigating.value) {
+			// Coalesce: stash as pending, the in-flight animation will pick it up.
+			pendingDate = newDate
+			return
+		}
+
+		const dir: "left" | "right" = newDate >= latestTargetDate ? "left" : "right"
 		navigateTo(dir, newDate, "external")
 	})
 
-	// Rebuild current panel when events change (filters/schedule swap) OR timezone
-	// changes (day-bucketing depends on tz). Skip during an in-flight animation
-	// so we don't clobber the exiting panel.
-	// flush:"post" ensures the rebuild runs after the DOM update batch, so any
-	// selectedDate change that arrives in the same tick is already committed.
+	// Rebuild panels when events or timezone changes.
+	// During navigation: rebuild BOTH current and incoming so the content is
+	// fresh for post-settle promotion. Outside navigation: just update currentPanel.
 	watch(
 		() => [events(), timezone?.() ?? null] as const,
 		() => {
-			if (!isNavigating.value) {
+			if (isNavigating.value) {
+				// Refresh incoming so promotion lands with up-to-date events.
+				if (incomingPanel.value) {
+					incomingPanel.value = buildPanel(incomingPanel.value.date) as TPanel
+				}
+			} else {
 				currentPanel.value = buildPanel(selectedDate.value)
 			}
 		},
 		{ flush: "post" }
 	)
+
+	// Midnight staleness fix:
+	// Pre-baked cell snapshots include `isToday` and `isThisMonth` flags computed
+	// at buildPanel time. Without this timer, those flags would be stale after
+	// midnight (yesterday's cell would still appear as "today"). The timer rebuilds
+	// the current panel at 00:00:01 each day so all date-relative decorations reset.
+	let midnightTimer: ReturnType<typeof setTimeout> | null = null
+
+	function scheduleMidnightRebuild() {
+		const now = new Date()
+		// Next 00:00:01 — one second past midnight to be safely in the new day.
+		const nextMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 1)
+		const delay = nextMidnight.getTime() - now.getTime()
+		midnightTimer = setTimeout(() => {
+			if (!isNavigating.value) {
+				currentPanel.value = buildPanel(currentPanel.value.date)
+			}
+			// Schedule the next rebuild (handles multi-day sessions).
+			scheduleMidnightRebuild()
+		}, delay)
+	}
+
+	onMounted(() => {
+		scheduleMidnightRebuild()
+	})
+
+	onBeforeUnmount(() => {
+		if (midnightTimer !== null) clearTimeout(midnightTimer)
+	})
 
 	return {
 		currentPanel,

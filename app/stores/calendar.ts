@@ -25,8 +25,18 @@ export const useCalendarStore = defineStore("calendar", () => {
 		"calendar:selectedDate",
 		() => new Date().toISOString()
 	)
+	// Cache the last parsed Date so repeated reads of selectedDate.value return
+	// the same object reference, eliminating per-read allocations and preventing
+	// referential inequality in watchers that compare dates by identity.
+	let _dateCache: { str: string; date: Date } | null = null
 	const selectedDate = computed({
-		get: () => new Date(_selectedDateStr.value),
+		get: () => {
+			const str = _selectedDateStr.value
+			if (!_dateCache || _dateCache.str !== str) {
+				_dateCache = { str, date: new Date(str) }
+			}
+			return _dateCache.date
+		},
 		set: (d: Date) => {
 			_selectedDateStr.value = d.toISOString()
 		},
