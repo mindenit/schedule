@@ -15,6 +15,7 @@
 		"format": "pnpm prettier:fix && pnpm lint:fix"
 	},
 	"dependencies": {
+		"@nuxt/a11y": "1.0.0-alpha.1",
 		"@nuxt/eslint": "^1.16.0",
 		"@nuxt/fonts": "0.14.0",
 		"@nuxt/hints": "1.1.3",

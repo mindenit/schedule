@@ -14,7 +14,7 @@ function handleClick() {
 </script>
 
 <template>
-	<UiButton variant="outline" size="icon" class="md:hidden" @click="handleClick">
+	<UiButton variant="outline" size="icon" class="md:hidden" aria-label="Сьогодні" @click="handleClick">
 		<AppIcon name="lucide:calendar-days" />
 	</UiButton>
 

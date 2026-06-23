@@ -1,7 +1,7 @@
 <template>
 	<UiDialog>
 		<UiDialogTrigger as-child>
-			<UiButton size="icon" variant="ghost">
+			<UiButton size="icon" variant="ghost" aria-label="Налаштування">
 				<AppIcon name="lucide:settings" />
 			</UiButton>
 		</UiDialogTrigger>

@@ -21,7 +21,7 @@ function updateView(newView: unknown) {
 
 <template>
 	<UiSelect :model-value="view" @update:model-value="updateView">
-		<UiSelectTrigger class="w-auto max-md:w-full">
+		<UiSelectTrigger class="w-auto max-md:w-full" aria-label="Вид календаря">
 			<UiSelectValue>{{ viewLabel }}</UiSelectValue>
 		</UiSelectTrigger>
 		<UiSelectContent>

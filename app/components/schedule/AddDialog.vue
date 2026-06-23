@@ -193,6 +193,7 @@ const handleCardClick = (item: GenericScheduleItem) => {
 			<UiButton
 				class="size-12 rounded-full shadow-lg transition-all duration-200 hover:shadow-xl md:hidden"
 				size="icon"
+				aria-label="Додати розклад"
 			>
 				<AppIcon name="lucide:plus" size="lg" />
 			</UiButton>
@@ -229,9 +230,12 @@ const handleCardClick = (item: GenericScheduleItem) => {
 									scrollRefs[tabType].value = el as HTMLElement | undefined
 								}
 							"
-							class="custom-scrollbar h-[400px] overflow-y-auto"
-							style="scrollbar-width: thin; scrollbar-color: var(--border) transparent"
-						>
+						class="custom-scrollbar h-[400px] overflow-y-auto"
+						style="scrollbar-width: thin; scrollbar-color: var(--border) transparent"
+						tabindex="0"
+						role="region"
+						:aria-label="`Список ${tabType === 'group' ? 'груп' : tabType === 'teacher' ? 'викладачів' : 'аудиторій'}`"
+					>
 							<template v-if="getDisplayedItems(tabType).length > 0">
 								<ScheduleDialogCard
 									v-for="item in getDisplayedItems(tabType)"

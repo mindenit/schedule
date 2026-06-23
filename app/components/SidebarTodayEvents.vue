@@ -48,6 +48,7 @@ const hasEvents = computed(() => todayEvents.value.length > 0)
 						size="icon"
 						variant="ghost"
 						class="size-6"
+						aria-label="Попередній день"
 						@click="previewDate = subDays(previewDate, 1)"
 					>
 						<Icon name="lucide:chevron-left" class="size-3" />
@@ -57,6 +58,7 @@ const hasEvents = computed(() => todayEvents.value.length > 0)
 						size="icon"
 						variant="ghost"
 						class="size-6"
+						aria-label="Сьогодні"
 						@click="previewDate = new Date()"
 					>
 						<Icon name="lucide:rotate-ccw" class="size-3" />
@@ -65,6 +67,7 @@ const hasEvents = computed(() => todayEvents.value.length > 0)
 						size="icon"
 						variant="ghost"
 						class="size-6"
+						aria-label="Наступний день"
 						@click="previewDate = addDays(previewDate, 1)"
 					>
 						<Icon name="lucide:chevron-right" class="size-3" />

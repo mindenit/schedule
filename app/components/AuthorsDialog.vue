@@ -37,11 +37,16 @@ import { AUTHORS } from "~/constants"
 						<p class="font-medium">{{ author.name }}</p>
 						<p class="text-muted-foreground text-sm">{{ author.role }}</p>
 					</div>
-					<UiButton variant="ghost" size="icon" as-child class="ml-auto">
-						<NuxtLink :to="author.linkedin" external target="_blank">
-							<AppIcon name="brandico:linkedin-rect" />
-						</NuxtLink>
-					</UiButton>
+			<NuxtLink
+				:to="author.linkedin"
+				external
+				target="_blank"
+				rel="noopener noreferrer"
+				:aria-label="`Профіль ${author.name} в LinkedIn`"
+				class="ml-auto inline-flex size-9 shrink-0 items-center justify-center rounded-md transition-colors hover:bg-accent dark:hover:bg-accent/50"
+			>
+				<AppIcon name="brandico:linkedin-rect" />
+			</NuxtLink>
 				</div>
 
 				<div class="text-muted-foreground text-center text-base">

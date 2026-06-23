@@ -43,13 +43,13 @@ function handleNext() {
 		<span class="text-base font-semibold whitespace-nowrap md:text-lg"> {{ title }} </span>
 
 		<div class="flex items-center gap-1">
-			<UiButton variant="outline" size="icon" @click="handlePrevious">
+			<UiButton variant="outline" size="icon" aria-label="Попередній" @click="handlePrevious">
 				<AppIcon name="lucide:chevron-left" />
 			</UiButton>
 
 			<BigCalendarTodayButton />
 
-			<UiButton variant="outline" size="icon" @click="handleNext">
+			<UiButton variant="outline" size="icon" aria-label="Наступний" @click="handleNext">
 				<AppIcon name="lucide:chevron-right" />
 			</UiButton>
 		</div>

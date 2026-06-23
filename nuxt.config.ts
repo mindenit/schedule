@@ -47,6 +47,7 @@ export default defineNuxtConfig({
 		// @nuxt/hints installs PerformanceObservers and an overlay in the browser.
 		// Limit to dev so production builds do not carry the runtime overhead.
 		...(process.env.NODE_ENV !== "production" ? ["@nuxt/hints" as const] : []),
+		...(process.env.NODE_ENV !== "production" ? ["@nuxt/a11y" as const] : []),
 	],
 	css: ["~/assets/css/tailwind.css"],
 	vite: {
@@ -56,7 +57,19 @@ export default defineNuxtConfig({
 		// imports motion-v after a hot-reload causes a "error loading dynamically
 		// imported module" 500 in dev because the old ?v= hash is gone.
 		optimizeDeps: {
-			include: ["motion-v"],
+			include: [
+				"@tanstack/query-persist-client-core",
+				"@tanstack/vue-query",
+				"@unhead/schema-org/vue",
+				"date-fns",
+				"date-fns-tz",
+				"date-fns/locale",
+				"idb-keyval",
+				"motion-v",
+				"nurekit",
+				"reka-ui",
+				"tailwind-variants",
+			],
 		},
 	},
 	icon: {

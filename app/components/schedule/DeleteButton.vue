@@ -26,7 +26,7 @@ const removeActiveSchedule = () => {
 <template>
 	<UiAlertDialog v-model:open="showDialog">
 		<UiAlertDialogTrigger as-child>
-			<UiButton size="icon" variant="destructive" :disabled="!hasActiveSchedule">
+			<UiButton size="icon" variant="destructive" :disabled="!hasActiveSchedule" aria-label="Видалити розклад">
 				<AppIcon name="lucide:trash" />
 			</UiButton>
 		</UiAlertDialogTrigger>

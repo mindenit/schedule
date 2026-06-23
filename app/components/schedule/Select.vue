@@ -25,7 +25,7 @@ const selectedValue = computed({
 
 <template>
 	<UiSelect v-model="selectedValue" :disabled="!scheduleStore.isInitialized">
-		<UiSelectTrigger class="w-full">
+		<UiSelectTrigger class="w-full" aria-label="Вибір розкладу">
 			<UiSelectValue>
 				<template v-if="!scheduleStore.isInitialized">
 					<div class="flex items-center gap-2">

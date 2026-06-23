@@ -271,6 +271,7 @@ const EVENT_TYPE_BG: Record<string, string> = {
 									size="icon-sm"
 									variant="ghost"
 									class="size-7"
+									:aria-label="`Редагувати посилання ${item.value.name}`"
 									@click.stop="
 										props.onEditLink?.(
 											{ id: item.value.id, name: item.value.name, url: item.value.url },
@@ -287,6 +288,7 @@ const EVENT_TYPE_BG: Record<string, string> = {
 									size="icon-sm"
 									variant="ghost"
 									class="text-destructive hover:text-destructive size-7"
+									:aria-label="`Видалити посилання ${item.value.name}`"
 									@click.stop="
 										props.onDeleteLink?.(item.value.id, item.value.subjectId, item.value.eventType)
 									"

@@ -90,6 +90,7 @@ const handleClose = () => {
 							size="icon"
 							variant="outline"
 							:class="{ 'bg-green-100': copied }"
+							:aria-label="copied ? 'Скопійовано' : 'Копіювати посилання'"
 							@click="copyToClipboard"
 						>
 							<AppIcon :name="copied ? 'lucide:check' : 'lucide:copy'" />
