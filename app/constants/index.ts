@@ -21,30 +21,6 @@ export const AUTHORS = [
 	},
 ] as const
 
-export const SWIPE_ANIMATION_CONFIG = {
-	/** Animation variants for Motion */
-	variants: {
-		enter: (custom: unknown) => {
-			const direction = custom as "left" | "right"
-			return {
-				x: direction === "left" ? "100%" : "-100%",
-				opacity: 1,
-			}
-		},
-		center: {
-			x: "0%",
-			opacity: 1,
-		},
-		exit: (custom: unknown) => {
-			const direction = custom as "left" | "right"
-			return {
-				x: direction === "left" ? "-100%" : "100%",
-				opacity: 1,
-			}
-		},
-	},
-} as const
-
 /**
  * Tween transition for swipe/keyboard/button navigation.
  * 280ms with standard iOS ease-out cubic — fast enough to feel snappy,
@@ -58,9 +34,6 @@ export const SWIPE_TWEEN_TRANSITION = {
 	duration: 0.28,
 	ease: [0.32, 0.72, 0, 1],
 } as const
-
-/** @deprecated Use SWIPE_TWEEN_TRANSITION. Kept for any external callers during migration. */
-export const SWIPE_SPRING_TRANSITION = SWIPE_TWEEN_TRANSITION
 
 /**
  * Drag-to-commit thresholds shared by every swipe-enabled calendar view.

@@ -140,15 +140,17 @@ const {
 <template>
 	<div ref="monthRoot" class="relative flex h-full flex-col">
 		<!-- Week day header — outside the animated panels, always visible -->
-		<div class="mb-1 grid flex-shrink-0 grid-cols-7 gap-1">
-			<div
-				v-for="day in weekDays"
-				:key="day"
-				class="bg-muted/50 text-muted-foreground flex items-center justify-center py-2 text-xs
-					font-medium md:first:rounded-tl-2xl md:last:rounded-tr-2xl"
-			>
-				{{ day }}
-			</div>
+		<div role="row" class="mb-1 grid flex-shrink-0 grid-cols-7 gap-1">
+		<div
+			v-for="day in weekDays"
+			:key="day"
+			role="columnheader"
+			:aria-label="day"
+			class="bg-muted/50 text-muted-foreground flex items-center justify-center py-2 text-xs
+				font-medium md:first:rounded-tl-2xl md:last:rounded-tr-2xl"
+		>
+			{{ day }}
+		</div>
 		</div>
 
 		<div
@@ -165,6 +167,8 @@ const {
 		-->
 		<motion.div
 			v-if="incomingPanel"
+			role="grid"
+			aria-hidden="true"
 			class="absolute inset-0 grid grid-cols-7 gap-1 overflow-hidden"
 			:style="{
 				gridTemplateRows: `repeat(${incomingPanel.weeksCount}, 1fr)`,
@@ -191,6 +195,8 @@ const {
 
 			<!-- Current panel — always rendered, interactive, draggable -->
 			<motion.div
+				role="grid"
+				:aria-label="`Місяць: ${currentPanel.date.toLocaleDateString('uk-UA', { month: 'long', year: 'numeric' })}`"
 				class="absolute inset-0 grid grid-cols-7 gap-1 overflow-hidden"
 				:style="{
 					gridTemplateRows: `repeat(${currentPanel.weeksCount}, 1fr)`,

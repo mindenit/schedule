@@ -69,6 +69,20 @@ async function resolveEntityName(
 	return ""
 }
 
+/**
+ * useUrlState — two-way binding between calendar/schedule stores and the URL.
+ *
+ * READ  (URL → stores): applyUrlToStores, applyHistoryState
+ *   Called on mount + whenever route.query changes (Back/Forward navigation).
+ *   Parses view, date, schedule, and type from query params or history state,
+ *   then writes the validated values to the appropriate stores.
+ *
+ * WRITE (stores → URL): syncToUrl, syncToHistoryState
+ *   Called on every store change. Keeps the URL or history state consistent
+ *   with the in-memory navigation state. Does not trigger further reads.
+ *
+ * The composable is a no-op on the server (import.meta.client guard).
+ */
 export function useUrlState() {
 	if (!import.meta.client) return
 
@@ -244,9 +258,15 @@ export function useUrlState() {
 			VALID_TYPES.includes(state.scheduleType as ScheduleTabType)
 		) {
 			const scheduleType = state.scheduleType as ScheduleTabType
-			if (!scheduleStore.isInitialized) await nextTick()
-			const name = await resolveEntityName(scheduleType, state.scheduleId, queryClient, $nurekit)
-			scheduleStore.selectScheduleFromUrl({ id: state.scheduleId, name, type: scheduleType })
+			try {
+				if (!scheduleStore.isInitialized) await nextTick()
+				const name = await resolveEntityName(scheduleType, state.scheduleId, queryClient, $nurekit)
+				scheduleStore.selectScheduleFromUrl({ id: state.scheduleId, name, type: scheduleType })
+			} catch (err) {
+				// Non-fatal: the schedule name failed to resolve from the history state.
+				// The UI will stay on the current schedule rather than crashing.
+				console.warn("[useUrlState] applyHistoryState: resolveEntityName failed:", err)
+			}
 		}
 	}
 

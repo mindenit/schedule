@@ -93,6 +93,9 @@ const badgeMap = computed(() => {
 
 <template>
 	<div
+		role="gridcell"
+		:aria-label="cell.date.toLocaleDateString('uk-UA', { weekday: 'long', day: 'numeric', month: 'long' }) + (totalEventsCount > 0 ? `, ${totalEventsCount} ${pluralUk(totalEventsCount, 'заняття', 'заняття', 'занять')}` : '')"
+		:aria-selected="isDateToday"
 		class="bg-card flex h-full flex-col overflow-hidden p-2.5"
 		:class="containerClasses"
 	>

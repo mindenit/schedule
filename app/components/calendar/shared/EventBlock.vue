@@ -36,6 +36,7 @@ const formattedTimeRange = computed(() => formatTimeRange(props.event))
 			<div
 				role="button"
 				tabindex="0"
+				:aria-label="`${event.subject.title}, ${formattedTimeRange}`"
 				:class="blockClasses"
 				@click="trackEvent('event_opened', { lesson_type: event.type })"
 				@keydown.enter.prevent="trackEvent('event_opened', { lesson_type: event.type })"
@@ -53,7 +54,7 @@ const formattedTimeRange = computed(() => formatTimeRange(props.event))
 	</UiPopover>
 
 	<!-- Static (non-interactive) render — same markup, no Popover overhead. -->
-	<div v-else :class="blockClasses">
+	<div v-else :class="blockClasses" aria-hidden="true">
 		<p class="w-full truncate text-center font-semibold">{{ event.subject.brief }}</p>
 		<p class="w-full truncate text-center">{{ formattedTimeRange }}</p>
 	</div>

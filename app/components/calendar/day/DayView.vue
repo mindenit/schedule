@@ -3,7 +3,6 @@ import type { Schedule } from "nurekit"
 import { isSameDay } from "date-fns"
 import { motion } from "motion-v"
 import { CalendarAnimationUtils } from "~/constants"
-import { CALENDAR_HOURS } from "~/constants/calendar"
 
 interface Props {
 	events: Schedule[]
@@ -14,7 +13,6 @@ const props = defineProps<Props>()
 const calendarStore = useCalendarStore()
 const { selectedDate } = storeToRefs(calendarStore)
 
-const { formatHour } = useEventFormatting()
 const { effectiveTimezone } = useTimezone()
 
 // Avoid hydration mismatch: new Date() diverges between SSR and client.
@@ -26,8 +24,6 @@ onMounted(() => {
 		isToday.value = isSameDay(d, new Date())
 	})
 })
-
-const hours = CALENDAR_HOURS
 
 interface DayPanel {
 	date: Date
@@ -75,33 +71,13 @@ const hasEvents = computed(() => currentPanel.value.groupedEvents.length > 0)
 				class="absolute inset-0 flex flex-col"
 				:style="{ x: incomingX, willChange: 'transform', contain: 'layout paint' }"
 			>
-				<div class="flex min-h-0 flex-1 gap-1">
-					<div class="relative flex w-18 flex-shrink-0 flex-col">
-						<div
-							v-for="(hour, index) in hours"
-							:key="hour"
-							class="bg-muted/50 relative flex flex-1 items-start justify-end pr-2"
-						>
-							<span v-if="index !== 0" class="text-muted-foreground text-xs">
-								{{ formatHour(hour) }}
-							</span>
-						</div>
-					</div>
-					<div class="relative flex-1">
-						<div class="flex h-full flex-col gap-1">
-							<div v-for="hour in hours" :key="hour" class="bg-card relative flex-1"></div>
-						</div>
-					<div class="absolute inset-0">
-						<BigCalendarEventRenderer
-							:key="incomingPanel.key"
-							:grouped-events="incomingPanel.groupedEvents"
-							:day="incomingPanel.date"
-							:tz="effectiveTimezone"
-							:interactive="false"
-						/>
-					</div>
-					</div>
-				</div>
+				<BigCalendarTimegridPanel
+					:grouped-events="incomingPanel.groupedEvents"
+					:day="incomingPanel.date"
+					:tz="effectiveTimezone"
+					:interactive="false"
+					:renderer-key="incomingPanel.key"
+				/>
 			</motion.div>
 
 			<!-- Current panel — always rendered, draggable -->
@@ -117,33 +93,13 @@ const hasEvents = computed(() => currentPanel.value.groupedEvents.length > 0)
 				@drag="onDrag"
 				@drag-end="onDragEnd"
 			>
-				<div class="flex min-h-0 flex-1 gap-1">
-					<div class="relative flex w-18 flex-shrink-0 flex-col">
-						<div
-							v-for="(hour, index) in hours"
-							:key="hour"
-							class="bg-muted/50 relative flex flex-1 items-start justify-end pr-2"
-						>
-							<span v-if="index !== 0" class="text-muted-foreground text-xs">
-								{{ formatHour(hour) }}
-							</span>
-						</div>
-					</div>
-					<div class="relative flex-1">
-						<div class="flex h-full flex-col gap-1">
-							<div v-for="hour in hours" :key="hour" class="bg-card relative flex-1"></div>
-						</div>
-						<div class="absolute inset-0">
-							<BigCalendarEventRenderer
-								:key="currentPanel.key"
-								:grouped-events="currentPanel.groupedEvents"
-								:day="currentPanel.date"
-								:tz="effectiveTimezone"
-							/>
-						</div>
-						<BigCalendarTimeline v-if="isToday" />
-					</div>
-				</div>
+				<BigCalendarTimegridPanel
+					:grouped-events="currentPanel.groupedEvents"
+					:day="currentPanel.date"
+					:tz="effectiveTimezone"
+					:show-timeline="isToday"
+					:renderer-key="currentPanel.key"
+				/>
 			</motion.div>
 		</div>
 

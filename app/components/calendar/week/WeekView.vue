@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { format, isSameDay, isSameWeek } from "date-fns"
-import { uk } from "date-fns/locale"
+import { isSameWeek } from "date-fns"
 import type { Schedule } from "nurekit"
 import { motion } from "motion-v"
-import { CALENDAR_HOURS, WEEK_OPTIONS } from "~/constants/calendar"
+import { WEEK_OPTIONS } from "~/constants/calendar"
 
 interface Props {
 	events: Schedule[]
@@ -12,11 +11,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const { getWeekDaysDetailed } = useCalendarCells()
-
-const { formatHour } = useEventFormatting()
 const { effectiveTimezone } = useTimezone()
-
-const hours = CALENDAR_HOURS
 
 interface WeekPanel {
 	/** Same as weekStart — kept under this name for SwipeablePanel compatibility. */
@@ -41,16 +36,19 @@ function buildPanel(seedDate: Date): WeekPanel {
 
 const weekRootEl = useTemplateRef("weekRoot")
 
-const { currentPanel, incomingPanel, currentX, incomingX } = useSwipeNavigator<WeekPanel>({
-	view: "week",
-	containerRef: weekRootEl,
-	buildPanel,
-	samePeriod: (a, b) => isSameWeek(a, b, WEEK_OPTIONS),
-	events: () => props.events,
-	timezone: () => effectiveTimezone.value,
-	fallbackWidth: 800,
-	dragEnabled: false,
-})
+const { currentPanel, incomingPanel, currentX, incomingX, onDragStart, onDrag, onDragEnd } =
+	useSwipeNavigator<WeekPanel>({
+		view: "week",
+		containerRef: weekRootEl,
+		buildPanel,
+		samePeriod: (a, b) => isSameWeek(a, b, WEEK_OPTIONS),
+		events: () => props.events,
+		timezone: () => effectiveTimezone.value,
+		fallbackWidth: 800,
+		// Drag is enabled for desktop (lg+) where the 800px grid fits without
+		// horizontal scroll. The template renders two separate layouts:
+		// mobile uses a plain scrollable grid; desktop uses the motion.div panels.
+	})
 
 const hasEvents = computed(() =>
 	currentPanel.value.groupedEventsByDay.some((dayGroups) => dayGroups.some((g) => g.length > 0))
@@ -66,165 +64,67 @@ onMounted(() => {
 
 <template>
 	<div ref="weekRoot" class="relative flex h-full flex-col">
-		<div class="relative flex flex-1 overflow-hidden">
-			<!-- Incoming panel -->
+		<!-- ----------------------------------------------------------------
+			 Mobile layout (< lg): single scrollable grid, no slide animation.
+			 Horizontal day-scroll + DateNavigator buttons handle navigation.
+			 ---------------------------------------------------------------- -->
+		<div
+			class="relative flex flex-1 overflow-x-auto overflow-y-hidden lg:hidden"
+			:class="{ 'blur-sm': !hasEvents }"
+		>
+			<BigCalendarWeekGrid
+				:week-days="currentPanel.weekDays"
+				:grouped-events-by-day="currentPanel.groupedEventsByDay"
+				:tz="effectiveTimezone"
+				:panel-time="currentPanel.date.getTime()"
+				:client-today="clientToday"
+				:show-timeline="true"
+			/>
+		</div>
+
+		<!-- ----------------------------------------------------------------
+			 Desktop layout (lg+): absolute two-panel slide + drag-to-swipe.
+			 At lg+ the 800px grid fits inside the calendar area so horizontal
+			 scroll does not compete with the swipe gesture.
+			 ---------------------------------------------------------------- -->
+		<div class="relative hidden flex-1 overflow-hidden lg:flex lg:flex-col">
+			<!-- Incoming panel (non-interactive during animation) -->
 			<motion.div
 				v-if="incomingPanel"
 				class="absolute inset-0 flex flex-col overflow-x-auto"
 				:style="{ x: incomingX, willChange: 'transform', contain: 'layout paint' }"
 			>
-				<div class="flex min-w-[800px] flex-1 flex-col">
-					<div class="bg-muted/50 relative z-20 mb-1 grid grid-cols-[72px_1fr] gap-1 md:rounded-t-lg">
-						<div class="col-start-2 grid grid-cols-7 gap-1">
-							<span
-								v-for="(day, index) in incomingPanel.weekDays"
-								:key="index"
-								class="text-muted-foreground flex min-w-[100px] flex-col items-center gap-1 py-2
-									text-center text-xs font-medium"
-							>
-								<span class="hidden sm:block">
-									{{ capitalize(format(day, "EEEE", { locale: uk })) }}
-								</span>
-								<span class="block sm:hidden">
-									{{ capitalize(format(day, "EEE", { locale: uk })) }}
-								</span>
-								<span
-									class="text-md flex size-5 items-center justify-center rounded-full font-semibold"
-									:class="{ 'bg-primary text-foreground': clientToday && isSameDay(day, clientToday) }"
-								>
-									{{ format(day, "d") }}
-								</span>
-							</span>
-						</div>
-					</div>
-
-					<div class="grid min-h-0 flex-1 grid-cols-[72px_1fr] gap-1">
-						<div class="relative flex flex-col">
-							<div
-								v-for="(hour, index) in hours"
-								:key="hour"
-								class="bg-muted/50 relative flex-1"
-								:class="{ 'rounded-bl-lg': index === hours.length - 1 }"
-							>
-								<div class="absolute -top-3 right-2 flex h-6 items-center">
-									<span v-if="index !== 0" class="text-muted-foreground text-xs whitespace-nowrap">
-										{{ formatHour(hour) }}
-									</span>
-								</div>
-							</div>
-						</div>
-
-						<div class="relative min-h-0 flex-1">
-							<div class="grid h-full grid-cols-7 gap-1">
-								<div
-									v-for="(day, dayIndex) in incomingPanel.weekDays"
-									:key="day.getTime()"
-									class="relative min-w-[100px]"
-								>
-									<div class="flex h-full flex-col gap-1">
-										<div
-											v-for="(hour, hourIndex) in hours"
-											:key="hour"
-											class="bg-card relative flex-1"
-											:class="{
-												'rounded-br-lg':
-													dayIndex === incomingPanel.weekDays.length - 1 &&
-													hourIndex === hours.length - 1,
-											}"
-										></div>
-									</div>
-							<BigCalendarEventRenderer
-								:key="`${incomingPanel.date.getTime()}-${dayIndex}`"
-								:grouped-events="incomingPanel.groupedEventsByDay[dayIndex]"
-								:day="day"
-								:tz="effectiveTimezone"
-								:interactive="false"
-							/>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
+				<BigCalendarWeekGrid
+					:week-days="incomingPanel.weekDays"
+					:grouped-events-by-day="incomingPanel.groupedEventsByDay"
+					:tz="effectiveTimezone"
+					:panel-time="incomingPanel.date.getTime()"
+					:interactive="false"
+					:client-today="clientToday"
+				/>
 			</motion.div>
 
-			<!-- Current panel (swipe disabled for week view) -->
+			<!-- Current panel — draggable -->
 			<motion.div
 				class="absolute inset-0 flex flex-col overflow-x-auto"
 				:class="{ 'blur-sm': !hasEvents }"
 				:style="{ x: currentX, willChange: 'transform', contain: 'layout paint' }"
+				drag="x"
+				:drag-constraints="{ left: 0, right: 0 }"
+				:drag-elastic="0.1"
+				:drag-momentum="false"
+				@drag-start="onDragStart"
+				@drag="onDrag"
+				@drag-end="onDragEnd"
 			>
-				<div class="flex min-w-[800px] flex-1 flex-col">
-					<div class="bg-muted/50 relative z-20 mb-1 grid grid-cols-[72px_1fr] gap-1 md:rounded-t-lg">
-						<div class="col-start-2 grid grid-cols-7 gap-1">
-							<span
-								v-for="(day, index) in currentPanel.weekDays"
-								:key="index"
-								class="text-muted-foreground flex min-w-[100px] flex-col items-center gap-1 py-2
-									text-center text-xs font-medium transition-colors duration-200"
-							>
-								<span class="hidden sm:block">
-									{{ capitalize(format(day, "EEEE", { locale: uk })) }}
-								</span>
-								<span class="block sm:hidden">
-									{{ capitalize(format(day, "EEE", { locale: uk })) }}
-								</span>
-								<span
-									class="text-md flex size-5 items-center justify-center rounded-full font-semibold"
-									:class="{ 'bg-primary text-foreground': clientToday && isSameDay(day, clientToday) }"
-								>
-									{{ format(day, "d") }}
-								</span>
-							</span>
-						</div>
-					</div>
-
-					<div class="grid min-h-0 flex-1 grid-cols-[72px_1fr] gap-1">
-						<div class="relative flex flex-col">
-							<div
-								v-for="(hour, index) in hours"
-								:key="hour"
-								class="bg-muted/50 relative flex-1"
-								:class="{ 'rounded-bl-lg': index === hours.length - 1 }"
-							>
-								<div class="absolute -top-3 right-2 flex h-6 items-center">
-									<span v-if="index !== 0" class="text-muted-foreground text-xs whitespace-nowrap">
-										{{ formatHour(hour) }}
-									</span>
-								</div>
-							</div>
-						</div>
-
-						<div class="relative min-h-0 flex-1">
-							<div class="grid h-full grid-cols-7 gap-1">
-								<div
-									v-for="(day, dayIndex) in currentPanel.weekDays"
-									:key="day.getTime()"
-									class="relative min-w-[100px]"
-								>
-									<div class="flex h-full flex-col gap-1">
-										<div
-											v-for="(hour, hourIndex) in hours"
-											:key="hour"
-											class="bg-card relative flex-1"
-											:class="{
-												'rounded-br-lg':
-													dayIndex === currentPanel.weekDays.length - 1 &&
-													hourIndex === hours.length - 1,
-											}"
-										></div>
-									</div>
-								<BigCalendarEventRenderer
-									:key="`${currentPanel.date.getTime()}-${dayIndex}`"
-									:grouped-events="currentPanel.groupedEventsByDay[dayIndex]"
-									:day="day"
-									:tz="effectiveTimezone"
-								/>
-								</div>
-							</div>
-							<BigCalendarTimeline :week-days="currentPanel.weekDays" />
-						</div>
-					</div>
-				</div>
+				<BigCalendarWeekGrid
+					:week-days="currentPanel.weekDays"
+					:grouped-events-by-day="currentPanel.groupedEventsByDay"
+					:tz="effectiveTimezone"
+					:panel-time="currentPanel.date.getTime()"
+					:client-today="clientToday"
+					:show-timeline="true"
+				/>
 			</motion.div>
 		</div>
 

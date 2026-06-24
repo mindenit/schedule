@@ -25,6 +25,14 @@ import { WEEK_OPTIONS } from "~/constants/calendar"
 
 const FORMAT_STRING = "MMM d, yyyy"
 
+/**
+ * Parse a date value into a Date object.
+ *
+ * WARNING — number inputs are treated as Unix **seconds** (×1000 internally).
+ * Do NOT pass `event.startedAt * 1000` here — that would double-multiply.
+ * Pass `event.startedAt` directly, or construct `new Date(event.startedAt * 1000)` yourself
+ * when you need milliseconds and will not pass through this function.
+ */
 export const parseDate = (date: Date | string | number | null | undefined): Date => {
 	if (!date) return new Date()
 
@@ -120,7 +128,9 @@ export function getEventsCount(
 	let count = 0
 	for (let i = 0; i < events.length; i++) {
 		try {
-			const eventDate = parseDate(events[i]!.startedAt)
+			// startedAt is Unix seconds — multiply by 1000 to get ms before passing to
+			// the Date constructor. Do NOT pass through parseDate() which also multiplies.
+			const eventDate = new Date(events[i]!.startedAt * 1000)
 			if (compareFn(eventDate)) count++
 		} catch {
 			console.warn(`Invalid date in event ${events[i]!.id}:`, events[i]!.startedAt)

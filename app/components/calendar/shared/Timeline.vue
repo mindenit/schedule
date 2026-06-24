@@ -9,7 +9,6 @@ interface Props {
 const props = defineProps<Props>()
 
 const currentTime = ref(new Date())
-let timer: number | null = null
 
 const getCurrentTimePosition = computed(() => {
 	const hour = currentTime.value.getHours()
@@ -83,16 +82,9 @@ function updateTime() {
 	currentTime.value = new Date()
 }
 
-onMounted(() => {
-	updateTime()
-	timer = window.setInterval(updateTime, 60 * 1000)
-})
-
-onUnmounted(() => {
-	if (timer) {
-		clearInterval(timer)
-	}
-})
+// useIntervalFn handles mount/unmount lifecycle automatically.
+// Align to the next minute boundary so updates fire just after :00 seconds.
+useIntervalFn(updateTime, 60 * 1000, { immediateCallback: true })
 </script>
 
 <template>
