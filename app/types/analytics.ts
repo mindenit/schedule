@@ -69,7 +69,7 @@ export interface AnalyticsEvents {
 		teachers: number
 		auditoriums: number
 		subjects: number
-		groups: number
+		groups_count: number
 	}
 	/** User clicks the reset button in the filters dialog. */
 	filters_reset: never

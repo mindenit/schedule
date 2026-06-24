@@ -100,13 +100,13 @@ watch(isOpen, (open) => {
 		}
 	}
 	if (!open && filtersStore.hasActive) {
-		const { lessonTypes, teachers, auditoriums, subjects, groups } = filtersStore.activeFilters
+		const active = filtersStore.activeFilters
 		trackEvent("filters_applied", {
-			lesson_types: lessonTypes.length,
-			teachers: teachers.length,
-			auditoriums: auditoriums.length,
-			subjects: subjects.length,
-			groups: groups.length,
+			lesson_types: active.lessonTypes.length,
+			teachers: active.teachers.length,
+			auditoriums: active.auditoriums.length,
+			subjects: active.subjects.length,
+			groups_count: active.groups.length,
 		})
 	}
 })

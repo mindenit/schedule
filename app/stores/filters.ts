@@ -25,6 +25,8 @@ export const useFiltersStore = defineStore("filters", () => {
 
 	let currentStorageKey = ""
 
+	const ensureArray = <T>(v: unknown): T[] => (Array.isArray(v) ? (v as T[]) : [])
+
 	const loadFilters = (scheduleId: string | number, scheduleType: string) => {
 		const key = STORAGE_KEYS.filters(scheduleType, scheduleId)
 		if (key === currentStorageKey) return
@@ -41,11 +43,11 @@ export const useFiltersStore = defineStore("filters", () => {
 		try {
 			const parsed = JSON.parse(saved) as Partial<FilterState>
 			state.value = {
-				lessonTypes: parsed.lessonTypes ?? [],
-				teachers: parsed.teachers ?? [],
-				auditoriums: parsed.auditoriums ?? [],
-				subjects: parsed.subjects ?? [],
-				groups: parsed.groups ?? [],
+				lessonTypes: ensureArray<string>(parsed.lessonTypes),
+				teachers: ensureArray<number>(parsed.teachers),
+				auditoriums: ensureArray<number>(parsed.auditoriums),
+				subjects: ensureArray<number>(parsed.subjects),
+				groups: ensureArray<number>(parsed.groups),
 			}
 		} catch {
 			state.value = emptyState()
