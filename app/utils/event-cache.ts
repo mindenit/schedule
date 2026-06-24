@@ -63,6 +63,20 @@ export function getEventDayKey(event: Schedule, tz: string): number {
 	return key
 }
 
+/**
+ * Compute the same day-key for an arbitrary Date that `getEventDayKey` produces
+ * for events — Unix ms of that date's midnight in the given timezone (local JS
+ * time, not UTC). Use this to look up events in the `eventsByDayKey` store map.
+ */
+export function getDayKey(date: Date, tz: string): number {
+	const zonedDate = toZonedTime(date, tz)
+	return new Date(
+		zonedDate.getFullYear(),
+		zonedDate.getMonth(),
+		zonedDate.getDate()
+	).getTime()
+}
+
 // ---------------------------------------------------------------------------
 // Formatted time range: "HH:mm - HH:mm"
 // ---------------------------------------------------------------------------

@@ -150,7 +150,6 @@ function onMonthClick(date: Date) {
 			 ---------------------------------------------------------------- -->
 		<div
 			class="min-h-0 flex-1 overflow-y-auto lg:hidden"
-			:class="{ 'blur-sm': !hasEvents }"
 		>
 			<div class="grid grid-cols-2 gap-2 p-2">
 				<BigCalendarMonthMini
@@ -168,7 +167,6 @@ function onMonthClick(date: Date) {
 			 ---------------------------------------------------------------- -->
 		<div
 			class="relative hidden min-h-0 flex-1 overflow-hidden lg:block"
-			:class="{ 'blur-sm': !hasEvents }"
 		>
 		<!-- Incoming panel — non-interactive during slide animation -->
 		<motion.div

@@ -19,7 +19,7 @@ export function useAnalytics() {
 	// Generate a random UUID on first visit and persist it in localStorage so
 	// OpenPanel can build per-user profiles and session histories without any PII.
 	if (import.meta.client) {
-		const profileId = useLocalStorage("op-anon-id", () => crypto.randomUUID())
+		const profileId = useLocalStorage("op-anon-id", () => randomUUID())
 
 		op.identify({ profileId: profileId.value })
 	}

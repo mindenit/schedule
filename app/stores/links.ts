@@ -48,7 +48,7 @@ export const useLinksStore = defineStore("links", () => {
 
 		const newLink: Link = {
 			...link,
-			id: crypto.randomUUID(),
+			id: randomUUID(),
 			name: link.name || getLinkName(link.url),
 		}
 

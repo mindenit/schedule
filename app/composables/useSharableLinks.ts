@@ -15,7 +15,7 @@ export const useSharableLinks = () => {
 		const cookieName = "schedule-client-id"
 		const cookie = useCookie(cookieName, { maxAge: 60 * 60 * 24 * 365 })
 		if (!cookie.value) {
-			cookie.value = crypto.randomUUID()
+			cookie.value = randomUUID()
 		}
 	}
 

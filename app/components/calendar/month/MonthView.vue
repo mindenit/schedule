@@ -41,14 +41,12 @@ interface MonthCellSnapshot {
 	/** Whether the cell date is today — pre-baked so isToday() is not called per render. */
 	isDateToday: boolean
 	/**
-	 * All display-related derived values baked at buildPanel time.
-	 * DayCell no longer runs groupEventsBySameTime() per render.
+	 * All time-slot groups for this day — DayCell slices this based on measured height.
+	 * Replaces the old pre-sliced displayGroups so the visible count can be dynamic.
 	 */
-	displayGroups: Schedule[][]
-	badges: BadgeData[]
-	hiddenEvents: Schedule[]
-	hasMoreEvents: boolean
-	remainingEventsCount: number
+	allGroups: Schedule[][]
+	/** Pre-baked badge data for every event across all groups (keyed by event id). */
+	allBadges: BadgeData[]
 	totalEventsCount: number
 }
 
@@ -80,20 +78,9 @@ function buildPanel(date: Date): MonthPanel {
 	const cellSnapshots: MonthCellSnapshot[] = cells.map((cell) => {
 		const dayEvents = evMap.get(cell.date.getTime()) ?? []
 		const groups = groupEventsBySameTime(dayEvents)
-		const total = groups.length
 
-		const hiddenCount =
-			total > MAX_VISIBLE_EVENTS_PER_DAY
-				? groups.slice(MAX_VISIBLE_EVENTS_PER_DAY).reduce((n, g) => n + g.length, 0)
-				: 0
-		const onlyOneHidden = hiddenCount === 1
-		const hasMoreEvents = total > MAX_VISIBLE_EVENTS_PER_DAY && !onlyOneHidden
-		const maxVisible = onlyOneHidden ? MAX_VISIBLE_EVENTS_PER_DAY + 1 : MAX_VISIBLE_EVENTS_PER_DAY
-
-		const displayGroups = groups.slice(0, maxVisible)
-
-		// Pre-bake badge data for each visible group's events.
-		const badges: BadgeData[] = displayGroups.flatMap((group) =>
+		// Pre-bake badge data for ALL groups — DayCell will slice to what fits.
+		const allBadges: BadgeData[] = groups.flatMap((group) =>
 			group.map((event) => ({
 				key: event.id,
 				event,
@@ -105,11 +92,8 @@ function buildPanel(date: Date): MonthPanel {
 		return {
 			cell,
 			isDateToday: isToday(cell.date),
-			displayGroups,
-			badges,
-			hiddenEvents: groups.slice(MAX_VISIBLE_EVENTS_PER_DAY).flat(),
-			hasMoreEvents,
-			remainingEventsCount: hasMoreEvents ? hiddenCount : 0,
+			allGroups: groups,
+			allBadges,
 			totalEventsCount: groups.reduce((n, g) => n + g.length, 0),
 		}
 	})
@@ -155,7 +139,6 @@ const {
 
 		<div
 			class="relative min-h-0 flex-1 overflow-hidden rounded-b-2xl"
-			:class="{ 'blur-sm': !hasEvents }"
 		>
 		<!--
 			Incoming panel — rendered as a non-interactive grid during animation.
@@ -182,11 +165,8 @@ const {
 				:key="index"
 				:cell="snapshot.cell"
 				:is-date-today="snapshot.isDateToday"
-				:display-groups="snapshot.displayGroups"
-				:badges="snapshot.badges"
-				:hidden-events="snapshot.hiddenEvents"
-				:has-more-events="snapshot.hasMoreEvents"
-				:remaining-events-count="snapshot.remainingEventsCount"
+				:all-groups="snapshot.allGroups"
+				:all-badges="snapshot.allBadges"
 				:total-events-count="snapshot.totalEventsCount"
 				:interactive="false"
 				class="min-h-0"
@@ -217,11 +197,8 @@ const {
 					:key="index"
 					:cell="snapshot.cell"
 					:is-date-today="snapshot.isDateToday"
-					:display-groups="snapshot.displayGroups"
-					:badges="snapshot.badges"
-					:hidden-events="snapshot.hiddenEvents"
-					:has-more-events="snapshot.hasMoreEvents"
-					:remaining-events-count="snapshot.remainingEventsCount"
+					:all-groups="snapshot.allGroups"
+					:all-badges="snapshot.allBadges"
 					:total-events-count="snapshot.totalEventsCount"
 					class="min-h-0"
 				/>

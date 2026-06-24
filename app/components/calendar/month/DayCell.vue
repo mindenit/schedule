@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { startOfDay } from "date-fns"
+import { useResizeObserver } from "@vueuse/core"
 import type { Schedule } from "nurekit"
 import type { ICalendarCell, TCalendarView } from "~/types/calendar"
 
@@ -14,14 +15,13 @@ interface Props {
 	cell: ICalendarCell
 	/** Whether the cell date is today — pre-baked by MonthView.buildPanel. */
 	isDateToday: boolean
-	/** Visible event groups — pre-baked by MonthView.buildPanel. */
-	displayGroups: Schedule[][]
-	/** Badge display data pre-baked at buildPanel time. */
-	badges: BadgeData[]
-	/** Hidden overflow events (shown in the "+N" popover). */
-	hiddenEvents: Schedule[]
-	hasMoreEvents: boolean
-	remainingEventsCount: number
+	/**
+	 * All time-slot groups for this day — DayCell slices this based on measured
+	 * event-area height so the visible count adapts to the actual cell size.
+	 */
+	allGroups: Schedule[][]
+	/** Pre-baked badge data for every event across all groups (keyed by event id). */
+	allBadges: BadgeData[]
 	totalEventsCount: number
 	/**
 	 * When false (incoming panel during slide animation), all interactive
@@ -50,6 +50,61 @@ const containerClasses = computed(() => ({
 	"opacity-80": !props.cell.currentMonth,
 }))
 
+// ── Dynamic slot calculation ─────────────────────────────────────────────────
+// Each badge row is h-6 (24px) with gap-1 (4px) between rows.
+// We measure the event-area container and derive how many rows fit, reserving
+// one slot for the "ще N занять" overflow badge when needed.
+const ROW_HEIGHT_PX = 24 // h-6
+const ROW_GAP_PX = 4 // gap-1
+
+const eventAreaEl = useTemplateRef("eventArea")
+const eventAreaHeight = ref(0)
+
+useResizeObserver(eventAreaEl, ([entry]) => {
+	eventAreaHeight.value = entry.contentRect.height
+})
+
+/**
+ * How many badge rows fit in the currently measured event area.
+ * Falls back to MAX_VISIBLE_EVENTS_PER_DAY until the ResizeObserver fires.
+ */
+const slotsAvailable = computed(() => {
+	if (eventAreaHeight.value === 0) return MAX_VISIBLE_EVENTS_PER_DAY
+	// Each row takes ROW_HEIGHT_PX; gaps sit between rows so the nth row adds
+	// ROW_GAP_PX only from the second row onward.
+	// Solve: ROW_HEIGHT_PX + (n-1) * (ROW_HEIGHT_PX + ROW_GAP_PX) ≤ h
+	//   → n ≤ (h - ROW_HEIGHT_PX) / (ROW_HEIGHT_PX + ROW_GAP_PX) + 1
+	return Math.max(
+		1,
+		Math.floor(
+			(eventAreaHeight.value - ROW_HEIGHT_PX) / (ROW_HEIGHT_PX + ROW_GAP_PX) + 1
+		)
+	)
+})
+
+const displayGroups = computed(() => {
+	const total = props.allGroups.length
+	if (total <= slotsAvailable.value) return props.allGroups
+
+	// Reserve 1 slot for the overflow badge — unless doing so would hide exactly
+	// 1 event, in which case we just show it directly (no badge needed).
+	const slots = slotsAvailable.value
+	const wouldHide = total - (slots - 1)
+	if (wouldHide === 1) {
+		// Show all: the "one hidden" heuristic — display the extra event directly.
+		return props.allGroups.slice(0, slots)
+	}
+	return props.allGroups.slice(0, slots - 1)
+})
+
+const hiddenEvents = computed(() =>
+	props.allGroups.slice(displayGroups.value.length).flat()
+)
+
+const hasMoreEvents = computed(() => hiddenEvents.value.length > 0)
+
+const remainingEventsCount = computed(() => hiddenEvents.value.length)
+
 // Single shared popover per cell — one UiPopover instance instead of one per event.
 // The anchor is set to the clicked badge element so Reka UI positions correctly.
 const popoverOpen = ref(false)
@@ -67,10 +122,10 @@ function openEventPopover(event: Schedule, triggerEl: HTMLElement) {
 	trackEvent("event_opened", { lesson_type: event.type })
 }
 
-function openOverflowPopover(hiddenEvents: Schedule[], triggerEl: HTMLElement) {
+function openOverflowPopover(events: Schedule[], triggerEl: HTMLElement) {
 	anchorEl.value = triggerEl
 	activeEvent.value = null
-	activeHiddenEvents.value = hiddenEvents
+	activeHiddenEvents.value = events
 	popoverMode.value = "overflow"
 	popoverOpen.value = true
 	trackEvent("more_events_opened")
@@ -87,7 +142,7 @@ function handleMobileClick() {
 // data provides the pre-baked colorClass and timeRange.
 const badgeMap = computed(() => {
 	const m = new Map<number | string, BadgeData>()
-	for (const b of props.badges) m.set(b.key, b)
+	for (const b of props.allBadges) m.set(b.key, b)
 	return m
 })
 </script>
@@ -110,6 +165,7 @@ const badgeMap = computed(() => {
 		</div>
 
 		<div
+			ref="eventArea"
 			class="flex flex-1 gap-1 overflow-hidden lg:flex-col lg:gap-1"
 			:class="{ 'opacity-50': !cell.currentMonth }"
 		>

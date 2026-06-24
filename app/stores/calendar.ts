@@ -85,14 +85,14 @@ export const useCalendarStore = defineStore("calendar", () => {
 	const filteredEvents = computed(() => {
 		if (view.value === "month") {
 			return getEventsForMonthView(allEvents.value)
-		} else if (view.value === "week") {
-			return getEventsForWeekView(allEvents.value)
-		} else if (view.value === "day") {
-			return getEventsForDayView(allEvents.value)
 		} else if (view.value === "year") {
 			return getEventsForYearView(allEvents.value)
 		}
 
+		// Day and week views receive the full allEvents array.
+		// Their buildPanel functions call getEventsForDate/getEventsForDateRange
+		// internally, which correctly filters per-panel. Pre-filtering here would
+		// clip peek panels for adjacent days/weeks to an empty array.
 		return allEvents.value
 	})
 
@@ -101,41 +101,6 @@ export const useCalendarStore = defineStore("calendar", () => {
 		const monthEnd = endOfMonth(selectedDate.value)
 		const rangeStart = startOfWeek(monthStart, WEEK_OPTIONS).getTime()
 		const rangeEnd = endOfWeek(monthEnd, WEEK_OPTIONS).getTime()
-
-		return events.filter((event) => {
-			return event.startedAt * 1000 <= rangeEnd && event.endedAt * 1000 >= rangeStart
-		})
-	}
-
-	function getEventsForWeekView(events: Schedule[]): Schedule[] {
-		const rangeStart = startOfWeek(selectedDate.value, WEEK_OPTIONS).getTime()
-		const rangeEnd = endOfWeek(selectedDate.value, WEEK_OPTIONS).getTime()
-
-		return events.filter((event) => {
-			return event.startedAt * 1000 <= rangeEnd && event.endedAt * 1000 >= rangeStart
-		})
-	}
-
-	function getEventsForDayView(events: Schedule[]): Schedule[] {
-		const day = selectedDate.value
-		const rangeStart = new Date(
-			day.getFullYear(),
-			day.getMonth(),
-			day.getDate(),
-			0,
-			0,
-			0,
-			0
-		).getTime()
-		const rangeEnd = new Date(
-			day.getFullYear(),
-			day.getMonth(),
-			day.getDate(),
-			23,
-			59,
-			59,
-			999
-		).getTime()
 
 		return events.filter((event) => {
 			return event.startedAt * 1000 <= rangeEnd && event.endedAt * 1000 >= rangeStart

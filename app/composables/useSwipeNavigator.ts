@@ -361,6 +361,11 @@ export function useSwipeNavigator<TPanel extends SwipeablePanel>(
 				}
 			} else {
 				currentPanel.value = buildPanel(selectedDate.value)
+				// Keep peek snapshots in sync with the latest events.
+				// Without this, peeks captured during an early onDragStart hold a
+				// stale (possibly empty) props.events array, so the next drag shows an
+				// empty time-grid until the finger is released.
+				if (dragEnabled && peekBuilt) rebuildPeekPanels()
 			}
 		},
 		{ flush: "post" }

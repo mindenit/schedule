@@ -11,7 +11,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const calendarStore = useCalendarStore()
-const { selectedDate } = storeToRefs(calendarStore)
+const { selectedDate, eventsByDayKey } = storeToRefs(calendarStore)
 
 const { effectiveTimezone } = useTimezone()
 
@@ -32,7 +32,8 @@ interface DayPanel {
 }
 
 function buildPanel(date: Date): DayPanel {
-	const events = getEventsForDate(props.events, date, effectiveTimezone.value)
+	const key = getDayKey(date, effectiveTimezone.value)
+	const events = eventsByDayKey.value.get(key) ?? []
 	return {
 		date,
 		groupedEvents: groupEvents(events),
@@ -83,7 +84,6 @@ const hasEvents = computed(() => currentPanel.value.groupedEvents.length > 0)
 			<!-- Current panel — always rendered, draggable -->
 			<motion.div
 				class="absolute inset-0 flex flex-col"
-				:class="{ 'blur-sm': !hasEvents }"
 				:style="{ x: currentX, willChange: 'transform', contain: 'layout paint' }"
 				drag="x"
 				:drag-constraints="{ left: 0, right: 0 }"

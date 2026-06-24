@@ -12,6 +12,7 @@ const props = defineProps<Props>()
 
 const { getWeekDaysDetailed } = useCalendarCells()
 const { effectiveTimezone } = useTimezone()
+const { eventsByDayKey } = storeToRefs(useCalendarStore())
 
 interface WeekPanel {
 	/** Same as weekStart — kept under this name for SwipeablePanel compatibility. */
@@ -28,9 +29,10 @@ function buildPanel(seedDate: Date): WeekPanel {
 		date: weekStart,
 		weekStart,
 		weekDays,
-		groupedEventsByDay: weekDays.map((day) =>
-			groupEvents(getEventsForDate(props.events, day, effectiveTimezone.value))
-		),
+		groupedEventsByDay: weekDays.map((day) => {
+			const key = getDayKey(day, effectiveTimezone.value)
+			return groupEvents(eventsByDayKey.value.get(key) ?? [])
+		}),
 	}
 }
 
@@ -70,7 +72,6 @@ onMounted(() => {
 			 ---------------------------------------------------------------- -->
 		<div
 			class="relative flex flex-1 overflow-x-auto overflow-y-hidden lg:hidden"
-			:class="{ 'blur-sm': !hasEvents }"
 		>
 			<BigCalendarWeekGrid
 				:week-days="currentPanel.weekDays"
@@ -107,7 +108,6 @@ onMounted(() => {
 			<!-- Current panel — draggable -->
 			<motion.div
 				class="absolute inset-0 flex flex-col overflow-x-auto"
-				:class="{ 'blur-sm': !hasEvents }"
 				:style="{ x: currentX, willChange: 'transform', contain: 'layout paint' }"
 				drag="x"
 				:drag-constraints="{ left: 0, right: 0 }"

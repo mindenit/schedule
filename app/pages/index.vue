@@ -78,10 +78,13 @@ const scheduleKey = computed(() =>
 	selectedSchedule.value ? `${selectedSchedule.value.type}-${selectedSchedule.value.id}` : null
 )
 
-// Clear events immediately when the selected schedule changes,
-// then fill with fresh data once the query resolves.
-watch(scheduleKey, () => {
-	calendarStore.setEvents([])
+// Clear events when the active schedule switches to a different one.
+// Guard: only fire on genuine key transitions (not the initial undefined → key
+// hydration step) so the data watcher's immediate:true fill is never clobbered.
+watch(scheduleKey, (newKey, oldKey) => {
+	if (oldKey && newKey !== oldKey) {
+		calendarStore.setEvents([])
+	}
 })
 
 // immediate: true ensures the watcher fires with the current value on setup.
