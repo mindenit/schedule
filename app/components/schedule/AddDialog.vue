@@ -9,7 +9,7 @@ import { ITEMS_PER_PAGE } from "~/constants/schedule"
 import type { ScheduleTabType, GenericScheduleItem } from "~/types/schedule"
 
 const scheduleStore = useScheduleStore()
-const { trackEvent } = useAnalytics()
+const { trackEvent, incrementProfile } = useAnalytics()
 
 const searchQuery = ref("")
 const activeTab = ref<ScheduleTabType>("group")
@@ -156,12 +156,21 @@ Object.keys(tabConfig).forEach((tabType) => {
 	resetFunctions[tab] = reset
 })
 
-watch(searchQuery, () => {
+// Debounced: fires schedule_search_used once the user pauses typing (300ms).
+// Only tracks non-empty queries to avoid noise on clear/reset.
+const debouncedSearchTracked = useDebounceFn((query: string) => {
+	if (!query.trim()) return
+	const hasResults = getFilteredItems(activeTab.value).length > 0
+	trackEvent("schedule_search_used", { has_results: hasResults })
+}, 300)
+
+watch(searchQuery, (q) => {
 	Object.keys(displayCounts).forEach((tab) => {
 		const key = tab as ScheduleTabType
 		displayCounts[key] = ITEMS_PER_PAGE
 		resetFunctions[key]?.()
 	})
+	debouncedSearchTracked(q)
 })
 
 const handleTabChange = (newTab: string | number) => {
@@ -172,11 +181,13 @@ const handleTabChange = (newTab: string | number) => {
 		displayCounts[key] = ITEMS_PER_PAGE
 		resetFunctions[key]?.()
 	})
+	trackEvent("add_dialog_tab_changed", { tab: activeTab.value as "group" | "teacher" | "auditorium" })
 }
 
 const handleCardClick = (item: GenericScheduleItem) => {
 	scheduleStore.addSchedule(item)
 	trackEvent("schedule_added", { type: item.type })
+	incrementProfile("schedules_added_total")
 	isDialogOpen.value = false
 }
 </script>

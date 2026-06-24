@@ -13,6 +13,7 @@ const props = defineProps<Props>()
 const calendarStore = useCalendarStore()
 const { eventsByDayKey } = storeToRefs(calendarStore)
 const { getCalendarCells } = useCalendarCells()
+const { trackEvent } = useAnalytics()
 
 const hasEvents = computed(() => props.events.length > 0)
 
@@ -130,12 +131,14 @@ function onDayClick(date: Date) {
 	calendarStore.setNavigationDirection(null)
 	calendarStore.setSelectedDate(date)
 	calendarStore.setView("day")
+	trackEvent("view_changed", { view: "day", source: "year_view" })
 }
 
 function onMonthClick(date: Date) {
 	calendarStore.setNavigationDirection(null)
 	calendarStore.setSelectedDate(date)
 	calendarStore.setView("month")
+	trackEvent("view_changed", { view: "month", source: "year_view" })
 }
 </script>
 

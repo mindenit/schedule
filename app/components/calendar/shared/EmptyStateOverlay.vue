@@ -13,6 +13,7 @@ withDefaults(defineProps<Props>(), {
 })
 
 const filtersStore = useFiltersStore()
+const { trackEvent } = useAnalytics()
 </script>
 
 <template>
@@ -37,7 +38,11 @@ const filtersStore = useFiltersStore()
 					</div>
 				</div>
 				<div v-if="filtersStore.hasActive" class="mt-4 flex justify-end">
-					<UiButton size="sm" variant="outline" @click="filtersStore.clearAll()">
+					<UiButton
+					size="sm"
+					variant="outline"
+					@click="filtersStore.clearAll(); trackEvent('empty_state_filters_reset')"
+				>
 						<AppIcon name="lucide:rotate-ccw" />
 						Скинути фільтри
 					</UiButton>

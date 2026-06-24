@@ -4,8 +4,18 @@ import { useScheduleQuery } from "~/composables/useScheduleQuery"
 
 const calendarStore = useCalendarStore()
 const scheduleStore = useScheduleStore()
+const { trackEvent } = useAnalytics()
 
 useUrlState()
+
+// Fire once on the very first visit when no schedules are configured.
+const hasSeenFirstVisit = useLocalStorage("op-first-visit-seen", false)
+onMounted(() => {
+	if (!hasSeenFirstVisit.value && scheduleStore.allSchedules.length === 0) {
+		hasSeenFirstVisit.value = true
+		trackEvent("first_visit")
+	}
+})
 
 const { filteredEvents, selectedDate } = storeToRefs(calendarStore)
 const { selectedSchedule } = storeToRefs(scheduleStore)

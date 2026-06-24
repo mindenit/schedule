@@ -73,6 +73,7 @@ function openOverflowPopover(hiddenEvents: Schedule[], triggerEl: HTMLElement) {
 	activeHiddenEvents.value = hiddenEvents
 	popoverMode.value = "overflow"
 	popoverOpen.value = true
+	trackEvent("more_events_opened")
 }
 
 function handleMobileClick() {

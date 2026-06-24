@@ -93,8 +93,11 @@ const { data: groups } = useQuery(
 )
 
 watch(isOpen, (open) => {
-	if (open && selectedSchedule.value) {
-		filtersStore.loadFilters(selectedSchedule.value.id, selectedSchedule.value.type)
+	if (open) {
+		trackEvent("filters_opened")
+		if (selectedSchedule.value) {
+			filtersStore.loadFilters(selectedSchedule.value.id, selectedSchedule.value.type)
+		}
 	}
 	if (!open && filtersStore.hasActive) {
 		const { lessonTypes, teachers, auditoriums, subjects, groups } = filtersStore.activeFilters

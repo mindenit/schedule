@@ -30,9 +30,27 @@ export default defineNuxtConfig({
 			maintenance: false,
 			// Bumped on every build — used to bust the IndexedDB query cache on deploy
 			buildId: String(Date.now()),
+			// OpenPanel analytics — override via NUXT_PUBLIC_OPENPANEL_CLIENT_ID / NUXT_PUBLIC_OPENPANEL_API_URL
+			openpanelClientId: "",
+			openpanelApiUrl: "",
 		},
 	},
+	openpanel: {
+		// clientId and apiUrl are read from runtimeConfig at runtime via env vars:
+		//   NUXT_PUBLIC_OPENPANEL_CLIENT_ID
+		//   NUXT_PUBLIC_OPENPANEL_API_URL  (your self-hosted instance, e.g. https://op.mindenit.org)
+		clientId: process.env.NUXT_PUBLIC_OPENPANEL_CLIENT_ID ?? "",
+		apiUrl: process.env.NUXT_PUBLIC_OPENPANEL_API_URL ?? "",
+		trackScreenViews: true,
+		trackOutgoingLinks: true,
+		trackAttributes: true,
+		// proxy:true is hardcoded to OpenPanel cloud (api.openpanel.dev) and cannot target a
+		// self-hosted instance — it causes "Invalid cors or secret". Keep false so the browser
+		// SDK calls apiUrl (analytics.mindenit.org/api) directly; CORS allowlist handles origins.
+		proxy: false,
+	},
 	modules: [
+		"@openpanel/nuxt",
 		"@nuxt/eslint",
 		"@nuxt/icon",
 		"@nuxt/scripts",

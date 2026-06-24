@@ -79,6 +79,7 @@ export function useKeyboardShortcuts() {
 				break
 			}
 			case "?": {
+				if (!isShortcutsOpen.value) trackEvent("shortcuts_dialog_opened")
 				isShortcutsOpen.value = !isShortcutsOpen.value
 				break
 			}

@@ -1,5 +1,9 @@
+<script setup lang="ts">
+const { trackEvent } = useAnalytics()
+</script>
+
 <template>
-	<UiDialog>
+	<UiDialog @update:open="(open) => open && trackEvent('settings_opened')">
 		<UiDialogTrigger as-child>
 			<UiButton size="icon" variant="ghost" aria-label="Налаштування">
 				<AppIcon name="lucide:settings" />

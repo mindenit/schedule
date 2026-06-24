@@ -13,6 +13,7 @@ interface Props {
 const props = defineProps<Props>()
 const calendarStore = useCalendarStore()
 const { view } = storeToRefs(calendarStore)
+const { trackEvent } = useAnalytics()
 
 // SSR renders the calendar with no localStorage access, so hasActiveSchedule is
 // always false on the server. This causes a hydration mismatch on blur-sm and the
@@ -47,7 +48,14 @@ const overlayContent = computed(() => {
 			class="min-h-0 flex-1 transition-[opacity,filter] duration-300 ease-in-out"
 			:class="{ 'blur-sm': showOverlay }"
 		>
-			<NuxtErrorBoundary @error="(err) => console.error('[Calendar] render error:', err)">
+			<NuxtErrorBoundary
+				@error="
+					(err) => {
+						console.error('[Calendar] render error:', err)
+						trackEvent('app_error', { status: 0, source: 'calendar' })
+					}
+				"
+			>
 				<BigCalendarYearView v-if="view === 'year'" :events="props.events" class="h-full" />
 			<BigCalendarMonthView
 				v-else-if="view === 'month'"

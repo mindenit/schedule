@@ -35,6 +35,15 @@ useSeo({
 	noindex: true,
 })
 
+const { trackEvent } = useAnalytics()
+
+onMounted(() => {
+	trackEvent("app_error", {
+		status: props.error?.statusCode ?? 500,
+		source: "page",
+	})
+})
+
 function handleClearError() {
 	clearError({ redirect: "/" })
 }

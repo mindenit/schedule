@@ -20,7 +20,7 @@ const isOpen = computed({
 })
 
 const { createSharableLink, isLoading } = useSharableLinks()
-const { trackEvent } = useAnalytics()
+const { trackEvent, incrementProfile } = useAnalytics()
 const sharableUrl = ref<string | null>(null)
 const copied = ref(false)
 
@@ -29,6 +29,7 @@ const handleCreateLink = async () => {
 	if (url) {
 		sharableUrl.value = url
 		trackEvent("links_shared", { count: props.selectedLinkIds.length })
+		incrementProfile("links_shared_total")
 	}
 }
 
@@ -37,6 +38,7 @@ const copyToClipboard = async () => {
 	try {
 		await navigator.clipboard.writeText(sharableUrl.value)
 		copied.value = true
+		trackEvent("links_share_url_copied")
 		setTimeout(() => {
 			copied.value = false
 		}, 2000)

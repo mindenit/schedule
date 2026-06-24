@@ -102,6 +102,7 @@ const copyAllSchedulesToClipboard = async () => {
 
 	try {
 		await navigator.clipboard.writeText(lines.join("\n"))
+		trackEvent("diagnostics_copied")
 		useSonner.success("Інформацію скопійовано", {
 			description: "Дані про розклад та часові мітки скопійовано у буфер обміну",
 		})
@@ -130,7 +131,11 @@ const handleIcsExportAcademicYear = async () => {
 
 <template>
 	<div class="flex min-h-0 flex-1 flex-col gap-4 py-4">
-		<UiTabs default-value="schedule" class="flex min-h-0 flex-1 flex-col">
+		<UiTabs
+			default-value="schedule"
+			class="flex min-h-0 flex-1 flex-col"
+			@update:model-value="trackEvent('settings_tab_changed', { tab: $event as 'schedule' | 'links' | 'bug' })"
+		>
 			<UiTabsList class="grid w-full shrink-0 grid-cols-3">
 				<UiTabsTrigger value="schedule">Загальні</UiTabsTrigger>
 				<UiTabsTrigger value="links">Посилання</UiTabsTrigger>
@@ -161,7 +166,10 @@ const handleIcsExportAcademicYear = async () => {
 							Зберігати вигляд, дату та розклад у адресному рядку для обміну посиланнями
 						</div>
 					</div>
-					<UiSwitch v-model="isUrlSyncEnabled" />
+					<UiSwitch
+					v-model="isUrlSyncEnabled"
+					@update:model-value="trackEvent('settings_changed', { setting: 'url_sync', value: $event })"
+				/>
 				</div>
 
 				<div class="mt-3 flex flex-col gap-2 rounded-lg border p-4">
@@ -171,7 +179,10 @@ const handleIcsExportAcademicYear = async () => {
 							Відображення часу подій та експорт .ics у вибраному часовому поясі
 						</div>
 					</div>
-				<UiSelect v-model="timezone">
+				<UiSelect
+				v-model="timezone"
+				@update:model-value="trackEvent('settings_changed', { setting: 'timezone', value: $event })"
+			>
 					<UiSelectTrigger>
 						<UiSelectValue placeholder="Оберіть часовий пояс..." />
 					</UiSelectTrigger>
@@ -209,7 +220,10 @@ const handleIcsExportAcademicYear = async () => {
 							<div class="text-sm font-medium">Снігопад</div>
 							<div class="text-muted-foreground text-xs">Зимовий ефект падаючого снігу</div>
 						</div>
-						<UiSwitch v-model="isSnowEnabled" />
+						<UiSwitch
+					v-model="isSnowEnabled"
+					@update:model-value="trackEvent('settings_changed', { setting: 'snow', value: $event })"
+				/>
 					</div>
 				</div>
 			</UiTabsContent>
