@@ -27,7 +27,8 @@ withDefaults(defineProps<Props>(), {
 	>
 		<div
 			v-if="variant === 'overlay'"
-			class="bg-background/70 absolute inset-0 flex items-center justify-center backdrop-blur-sm"
+			class="bg-background/70 absolute inset-0 flex items-center justify-center
+				backdrop-blur-sm"
 		>
 			<div class="border-border bg-card mx-4 rounded-lg border p-6 shadow-lg">
 				<div class="flex items-center gap-4">
@@ -42,7 +43,10 @@ withDefaults(defineProps<Props>(), {
 	</Transition>
 
 	<!-- Bordered card without backdrop -->
-	<div v-else-if="variant === 'card'" class="border-border bg-card rounded-lg border p-6 shadow-lg">
+	<div
+		v-else-if="variant === 'card'"
+		class="border-border bg-card rounded-lg border p-6 shadow-lg"
+	>
 		<div class="flex items-center gap-4">
 			<AppIcon v-if="icon" :name="icon" class="shrink-0" />
 			<div>
@@ -58,7 +62,8 @@ withDefaults(defineProps<Props>(), {
 	<!-- Centered column with large faded icon — for sidebars -->
 	<div
 		v-else-if="variant === 'sidebar'"
-		class="text-muted-foreground flex flex-col items-center justify-center gap-2 p-6 text-center"
+		class="text-muted-foreground flex flex-col items-center justify-center gap-2 p-6
+			text-center"
 	>
 		<AppIcon v-if="icon" :name="icon" size="xl" class="opacity-50" />
 		<p v-if="title || description" class="text-sm">

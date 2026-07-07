@@ -63,9 +63,11 @@ const hours = CALENDAR_HOURS
 						{{ capitalize(format(day, "EEE", { locale: uk })) }}
 					</span>
 					<span
-						class="text-md flex size-5 items-center justify-center rounded-full font-semibold"
+						class="text-md flex size-5 items-center justify-center rounded-full
+							font-semibold"
 						:class="{
-							'bg-primary text-foreground': clientToday && isSameDay(day, clientToday),
+							'bg-primary text-foreground':
+								clientToday && isSameDay(day, clientToday),
 						}"
 					>
 						{{ format(day, "d") }}
@@ -85,7 +87,10 @@ const hours = CALENDAR_HOURS
 					:class="{ 'rounded-bl-lg': index === hours.length - 1 }"
 				>
 					<div class="absolute -top-3 right-2 flex h-6 items-center">
-						<span v-if="index !== 0" class="text-muted-foreground text-xs whitespace-nowrap">
+						<span
+							v-if="index !== 0"
+							class="text-muted-foreground text-xs whitespace-nowrap"
+						>
 							{{ formatHour(hour) }}
 						</span>
 					</div>

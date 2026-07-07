@@ -283,7 +283,10 @@ export function useSwipeNavigator<TPanel extends SwipeablePanel>(
 			calendarStore.setSelectedDate(committed.date)
 
 			const transition = getSwipeTransition()
-			const controls = [animate(currentX, exitX, transition), animate(incomingX, 0, transition)]
+			const controls = [
+				animate(currentX, exitX, transition),
+				animate(incomingX, 0, transition),
+			]
 			activeControls = controls
 			await Promise.all(controls)
 

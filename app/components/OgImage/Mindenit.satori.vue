@@ -52,7 +52,12 @@ const displayDescription = computed(() => truncate(props.description, 160))
 					color-interpolation-filters="sRGB"
 				>
 					<feFlood flood-opacity="0" result="BackgroundImageFix" />
-					<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+					<feBlend
+						mode="normal"
+						in="SourceGraphic"
+						in2="BackgroundImageFix"
+						result="shape"
+					/>
 					<feGaussianBlur stdDeviation="110" result="effect1_foregroundBlur" />
 				</filter>
 			</defs>
@@ -72,7 +77,10 @@ const displayDescription = computed(() => truncate(props.description, 160))
 			>
 				{{ displayTitle }}
 			</h1>
-			<p class="m-0 text-[28px] leading-snug text-[#a1a1aa]" style="font-family: Inter, sans-serif">
+			<p
+				class="m-0 text-[28px] leading-snug text-[#a1a1aa]"
+				style="font-family: Inter, sans-serif"
+			>
 				{{ displayDescription }}
 			</p>
 		</div>

@@ -18,8 +18,9 @@
 		<slot name="iconLeft">
 			<div
 				v-if="icon && iconPlacement == 'left'"
-				class="flex w-0 translate-x-[0%] pr-0 opacity-0 transition-all duration-200 group-hover:w-5
-					group-hover:translate-x-[0%] group-hover:pr-2 group-hover:opacity-100"
+				class="flex w-0 translate-x-[0%] pr-0 opacity-0 transition-all duration-200
+					group-hover:w-5 group-hover:translate-x-[0%] group-hover:pr-2
+					group-hover:opacity-100"
 			>
 				<Icon :name="icon" class="size-4" />
 			</div>
@@ -33,8 +34,9 @@
 		<slot name="iconRight">
 			<div
 				v-if="icon && iconPlacement == 'right'"
-				class="flex w-0 translate-x-full pl-0 opacity-0 transition-all duration-200 group-hover:w-5
-					group-hover:translate-x-0 group-hover:pl-2 group-hover:opacity-100"
+				class="flex w-0 translate-x-full pl-0 opacity-0 transition-all duration-200
+					group-hover:w-5 group-hover:translate-x-0 group-hover:pl-2
+					group-hover:opacity-100"
 			>
 				<Icon :name="icon" class="size-4" />
 			</div>
@@ -69,8 +71,7 @@ export const buttonStyles = tv({
 		effect: {
 			expandIcon: "group relative gap-0",
 			ringHover: "hover:ring-ring/50 transition-all duration-300 hover:ring-3",
-			shine:
-				"before:animate-shine relative overflow-hidden bg-position-[0s_ease] before:absolute before:inset-0 before:rounded-[inherit] before:bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.5)_50%,transparent_75%,transparent_100%)] before:bg-size-[250%_250%,100%_100%] before:bg-no-repeat",
+			shine: "before:animate-shine relative overflow-hidden bg-position-[0s_ease] before:absolute before:inset-0 before:rounded-[inherit] before:bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.5)_50%,transparent_75%,transparent_100%)] before:bg-size-[250%_250%,100%_100%] before:bg-no-repeat",
 			shineHover:
 				"relative overflow-hidden before:absolute before:inset-0 before:rounded-[inherit] before:bg-[linear-gradient(45deg,transparent_25%,rgba(255,255,255,0.5)_50%,transparent_75%,transparent_100%)] before:bg-size-[250%_250%,100%_100%] before:bg-position-[200%_0,0_0] before:bg-no-repeat before:transition-[background-position_0s_ease] before:duration-1000 hover:before:bg-position-[-100%_0,0_0]",
 			gooeyRight:

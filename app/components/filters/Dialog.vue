@@ -130,9 +130,9 @@ watch(isOpen, (open) => {
 			>
 				<span
 					v-if="filtersStore.activeCount > 0"
-					class="bg-warning text-warning-foreground ring-background absolute -top-1.5 -right-1.5
-						flex h-4 min-w-4 items-center justify-center rounded-full p-0.5 text-[10px] font-medium
-						ring-2"
+					class="bg-warning text-warning-foreground ring-background absolute -top-1.5
+						-right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full p-0.5
+						text-[10px] font-medium ring-2"
 				>
 					{{ filtersStore.activeCount }}
 				</span>
@@ -145,15 +145,22 @@ watch(isOpen, (open) => {
 					<AppIcon name="lucide:filter" />
 					Фільтри
 				</UiDialogTitle>
-				<UiDialogDescription> Налаштуйте фільтри для відображення розкладу. </UiDialogDescription>
+				<UiDialogDescription>
+					Налаштуйте фільтри для відображення розкладу.
+				</UiDialogDescription>
 			</UiDialogHeader>
 
-			<AppEmptyState v-if="!selectedSchedule" title="Оберіть розклад для налаштування фільтрів" />
+			<AppEmptyState
+				v-if="!selectedSchedule"
+				title="Оберіть розклад для налаштування фільтрів"
+			/>
 
 			<div v-else class="max-h-96 overflow-x-hidden overflow-y-auto">
 				<UiAccordion type="multiple" class="space-y-2">
 					<UiAccordionItem value="lesson-types">
-						<UiAccordionTrigger class="text-sm font-semibold">Типи занять</UiAccordionTrigger>
+						<UiAccordionTrigger class="text-sm font-semibold"
+							>Типи занять</UiAccordionTrigger
+						>
 						<UiAccordionContent>
 							<div class="flex flex-wrap gap-2 pt-2">
 								<FiltersCheckButton
@@ -171,7 +178,8 @@ watch(isOpen, (open) => {
 						v-if="
 							groups &&
 							groups.length > 0 &&
-							(selectedSchedule.type === 'teacher' || selectedSchedule.type === 'auditorium')
+							(selectedSchedule.type === 'teacher' ||
+								selectedSchedule.type === 'auditorium')
 						"
 						value="groups"
 					>
@@ -193,11 +201,14 @@ watch(isOpen, (open) => {
 						v-if="
 							teachers &&
 							teachers.length > 0 &&
-							(selectedSchedule.type === 'group' || selectedSchedule.type === 'auditorium')
+							(selectedSchedule.type === 'group' ||
+								selectedSchedule.type === 'auditorium')
 						"
 						value="teachers"
 					>
-						<UiAccordionTrigger class="text-sm font-semibold">Викладачі</UiAccordionTrigger>
+						<UiAccordionTrigger class="text-sm font-semibold"
+							>Викладачі</UiAccordionTrigger
+						>
 						<UiAccordionContent>
 							<div class="flex flex-wrap gap-2 pt-2">
 								<FiltersCheckButton
@@ -215,11 +226,14 @@ watch(isOpen, (open) => {
 						v-if="
 							auditoriums &&
 							auditoriums.length > 0 &&
-							(selectedSchedule.type === 'group' || selectedSchedule.type === 'teacher')
+							(selectedSchedule.type === 'group' ||
+								selectedSchedule.type === 'teacher')
 						"
 						value="auditoriums"
 					>
-						<UiAccordionTrigger class="text-sm font-semibold">Аудиторії</UiAccordionTrigger>
+						<UiAccordionTrigger class="text-sm font-semibold"
+							>Аудиторії</UiAccordionTrigger
+						>
 						<UiAccordionContent>
 							<div class="flex flex-wrap gap-2 pt-2">
 								<FiltersCheckButton
@@ -234,7 +248,9 @@ watch(isOpen, (open) => {
 					</UiAccordionItem>
 
 					<UiAccordionItem v-if="subjects && subjects.length > 0" value="subjects">
-						<UiAccordionTrigger class="text-sm font-semibold">Предмети</UiAccordionTrigger>
+						<UiAccordionTrigger class="text-sm font-semibold"
+							>Предмети</UiAccordionTrigger
+						>
 						<UiAccordionContent>
 							<div class="flex flex-wrap gap-2 pt-2">
 								<FiltersCheckButton
@@ -252,7 +268,8 @@ watch(isOpen, (open) => {
 
 			<UiDialogFooter
 				v-if="
-					selectedSchedule && ['group', 'teacher', 'auditorium'].includes(selectedSchedule.type)
+					selectedSchedule &&
+					['group', 'teacher', 'auditorium'].includes(selectedSchedule.type)
 				"
 				class="flex gap-2"
 			>

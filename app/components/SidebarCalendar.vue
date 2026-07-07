@@ -28,8 +28,10 @@ const calendarEl = useTemplateRef<HTMLElement>("calendarEl")
 function labelVCalendarNavButtons(root: HTMLElement) {
 	const prev = root.querySelector<HTMLElement>(".vc-prev")
 	const next = root.querySelector<HTMLElement>(".vc-next")
-	if (prev && !prev.getAttribute("aria-label")) prev.setAttribute("aria-label", "Попередній місяць")
-	if (next && !next.getAttribute("aria-label")) next.setAttribute("aria-label", "Наступний місяць")
+	if (prev && !prev.getAttribute("aria-label"))
+		prev.setAttribute("aria-label", "Попередній місяць")
+	if (next && !next.getAttribute("aria-label"))
+		next.setAttribute("aria-label", "Наступний місяць")
 }
 
 onMounted(() => {
@@ -48,14 +50,14 @@ onMounted(() => {
 <template>
 	<ClientOnly>
 		<div ref="calendarEl">
-		<UiCalendar
-			expanded
-			locale="uk"
-			class="sidebar-calendar bg-card rounded-md"
-			:attributes="selectedAttributes"
-			:initial-page="initialPage"
-			@dayclick="onDayClick"
-		/>
+			<UiCalendar
+				expanded
+				locale="uk"
+				class="sidebar-calendar bg-card rounded-md"
+				:attributes="selectedAttributes"
+				:initial-page="initialPage"
+				@dayclick="onDayClick"
+			/>
 		</div>
 		<template #fallback>
 			<UiSkeleton class="h-[286px] w-[280px] rounded-md" />

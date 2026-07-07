@@ -74,7 +74,9 @@ export const useLinksStore = defineStore("links", () => {
 		const subjectEntry = links.value[subjectKey]
 		if (!subjectEntry?.events[eventType]) return
 
-		subjectEntry.events[eventType] = subjectEntry.events[eventType].filter((l) => l.id !== linkId)
+		subjectEntry.events[eventType] = subjectEntry.events[eventType].filter(
+			(l) => l.id !== linkId
+		)
 
 		// Prune empty eventType bucket
 		if (subjectEntry.events[eventType].length === 0) {

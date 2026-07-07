@@ -3,7 +3,12 @@
 		data-slot="alert-dialog-cancel"
 		v-bind="forwarded"
 		:class="
-			buttonStyles({ variant, size, disabled, class: normalizeClass(props.class) || undefined })
+			buttonStyles({
+				variant,
+				size,
+				disabled,
+				class: normalizeClass(props.class) || undefined,
+			})
 		"
 	>
 		<slot>{{ text }}</slot>

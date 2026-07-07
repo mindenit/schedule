@@ -1,5 +1,9 @@
 {
-	"plugins": ["prettier-plugin-classnames", "prettier-plugin-tailwindcss", "prettier-plugin-merge"],
+	"plugins": [
+		"prettier-plugin-classnames",
+		"prettier-plugin-tailwindcss",
+		"prettier-plugin-merge"
+	],
 	"tailwindFunctions": ["clsx", "cn", "tv"],
 	"printWidth": 100,
 	"useTabs": true,

@@ -70,9 +70,7 @@ onMounted(() => {
 			 Mobile layout (< lg): single scrollable grid, no slide animation.
 			 Horizontal day-scroll + DateNavigator buttons handle navigation.
 			 ---------------------------------------------------------------- -->
-		<div
-			class="relative flex flex-1 overflow-x-auto overflow-y-hidden lg:hidden"
-		>
+		<div class="relative flex flex-1 overflow-x-auto overflow-y-hidden lg:hidden">
 			<BigCalendarWeekGrid
 				:week-days="currentPanel.weekDays"
 				:grouped-events-by-day="currentPanel.groupedEventsByDay"

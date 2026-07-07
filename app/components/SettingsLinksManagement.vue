@@ -125,7 +125,10 @@ const handleMainImport = (event: Event) => {
 					() => {
 						if (selectedLinkIds.length > 0) {
 							linksStore.exportSelectedLinks(selectedLinkIds)
-							trackEvent('links_exported', { scope: 'selected', count: selectedLinkIds.length })
+							trackEvent('links_exported', {
+								scope: 'selected',
+								count: selectedLinkIds.length,
+							})
 						} else {
 							linksStore.exportLinks()
 							trackEvent('links_exported', { scope: 'all', count: totalLinkCount })
@@ -163,6 +166,12 @@ const handleMainImport = (event: Event) => {
 			:selected-link-ids="selectedLinkIds"
 		/>
 
-		<input ref="fileInput" type="file" accept=".json" class="hidden" @change="handleMainImport" />
+		<input
+			ref="fileInput"
+			type="file"
+			accept=".json"
+			class="hidden"
+			@change="handleMainImport"
+		/>
 	</div>
 </template>

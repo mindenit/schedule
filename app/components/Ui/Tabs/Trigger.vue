@@ -33,8 +33,7 @@ const styles = tv({
 	variants: {
 		pill: {
 			true: "",
-			false:
-				"hover:text-foreground focus-visible:border-none focus-visible:ring-1 data-[state=active]:shadow-none",
+			false: "hover:text-foreground focus-visible:border-none focus-visible:ring-1 data-[state=active]:shadow-none",
 		},
 	},
 })

@@ -59,12 +59,16 @@ const WEEK_INITIALS = ["М", "П", "С", "Ч", "П", "С", "Н"]
 		<!-- Month header — click to navigate to month view (interactive only) -->
 		<component
 			:is="interactive ? 'button' : 'span'"
-			class="mb-1 text-left font-semibold capitalize text-[10px] leading-tight lg:text-xs"
+			class="mb-1 text-left text-[10px] leading-tight font-semibold capitalize lg:text-xs"
 			:class="[
 				interactive ? 'cursor-pointer' : '',
 				month.isThisMonth
-					? interactive ? 'text-primary hover:text-primary/80' : 'text-primary'
-					: interactive ? 'text-foreground hover:text-primary' : 'text-foreground',
+					? interactive
+						? 'text-primary hover:text-primary/80'
+						: 'text-primary'
+					: interactive
+						? 'text-foreground hover:text-primary'
+						: 'text-foreground',
 			]"
 			@click="interactive && emit('monthClick', month.date)"
 		>
@@ -76,7 +80,8 @@ const WEEK_INITIALS = ["М", "П", "С", "Ч", "П", "С", "Н"]
 			<span
 				v-for="initial in WEEK_INITIALS"
 				:key="initial"
-				class="text-muted-foreground flex items-center justify-center text-[9px] font-medium leading-none"
+				class="text-muted-foreground flex items-center justify-center text-[9px]
+					leading-none font-medium"
 			>
 				{{ initial }}
 			</span>
@@ -100,9 +105,9 @@ const WEEK_INITIALS = ["М", "П", "С", "Ч", "П", "С", "Н"]
 				@click="interactive && cell.currentMonth && emit('dayClick', cell.date)"
 			>
 				<span
-					class="flex aspect-square items-center justify-center rounded-full
-						w-[14px] text-[7px] font-medium
-						lg:w-full lg:max-w-[18px] lg:rounded-sm lg:text-[9px]"
+					class="flex aspect-square w-[14px] items-center justify-center rounded-full
+						text-[7px] font-medium lg:w-full lg:max-w-[18px] lg:rounded-sm
+						lg:text-[9px]"
 					:class="[
 						interactive ? 'lg:group-hover:ring-1 lg:group-hover:ring-offset-0' : '',
 						cell.isToday
@@ -118,7 +123,9 @@ const WEEK_INITIALS = ["М", "П", "С", "Ч", "П", "С", "Н"]
 									]
 								: [
 										'text-muted-foreground',
-										interactive ? 'lg:group-hover:bg-muted lg:group-hover:ring-border' : '',
+										interactive
+											? 'lg:group-hover:bg-muted lg:group-hover:ring-border'
+											: '',
 									],
 					]"
 				>

@@ -37,7 +37,8 @@ function collapseEvent() {
 	<div v-if="expandedEvent" class="space-y-3">
 		<button
 			type="button"
-			class="text-muted-foreground hover:text-foreground flex items-center gap-1 text-xs transition-colors"
+			class="text-muted-foreground hover:text-foreground flex items-center gap-1 text-xs
+				transition-colors"
 			@click="collapseEvent"
 		>
 			<AppIcon name="lucide:chevron-left" size="3.5" />
@@ -59,8 +60,8 @@ function collapseEvent() {
 				v-for="event in events"
 				:key="event.id"
 				type="button"
-				class="hover:bg-muted/50 flex w-full cursor-pointer items-center gap-3 rounded-md p-2
-					text-left transition-colors"
+				class="hover:bg-muted/50 flex w-full cursor-pointer items-center gap-3 rounded-md
+					p-2 text-left transition-colors"
 				@click="selectEvent(event)"
 			>
 				<div
@@ -73,7 +74,11 @@ function collapseEvent() {
 						{{ getEventTimeRange(event) }}
 					</p>
 				</div>
-				<AppIcon name="lucide:chevron-right" size="3.5" class="text-muted-foreground shrink-0" />
+				<AppIcon
+					name="lucide:chevron-right"
+					size="3.5"
+					class="text-muted-foreground shrink-0"
+				/>
 			</button>
 		</div>
 	</div>

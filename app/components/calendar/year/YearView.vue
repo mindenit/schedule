@@ -110,22 +110,15 @@ function buildPanel(seedDate: Date): YearPanel {
 
 const yearRootEl = useTemplateRef("yearRoot")
 
-const {
-	currentPanel,
-	incomingPanel,
-	currentX,
-	incomingX,
-	onDragStart,
-	onDrag,
-	onDragEnd,
-} = useSwipeNavigator<YearPanel>({
-	view: "year",
-	containerRef: yearRootEl,
-	buildPanel,
-	samePeriod: isSameYear,
-	events: () => props.events,
-	fallbackWidth: 1200,
-})
+const { currentPanel, incomingPanel, currentX, incomingX, onDragStart, onDrag, onDragEnd } =
+	useSwipeNavigator<YearPanel>({
+		view: "year",
+		containerRef: yearRootEl,
+		buildPanel,
+		samePeriod: isSameYear,
+		events: () => props.events,
+		fallbackWidth: 1200,
+	})
 
 function onDayClick(date: Date) {
 	calendarStore.setNavigationDirection(null)
@@ -148,9 +141,7 @@ function onMonthClick(date: Date) {
 			 Mobile layout (< lg): natural-height scrollable 2-column grid.
 			 No slide animation — year changes are an instant swap.
 			 ---------------------------------------------------------------- -->
-		<div
-			class="min-h-0 flex-1 overflow-y-auto lg:hidden"
-		>
+		<div class="min-h-0 flex-1 overflow-y-auto lg:hidden">
 			<div class="grid grid-cols-2 gap-2 p-2">
 				<BigCalendarMonthMini
 					v-for="month in currentPanel.months"
@@ -165,22 +156,20 @@ function onMonthClick(date: Date) {
 		<!-- ----------------------------------------------------------------
 			 Desktop layout (lg+): absolute two-panel slide animation.
 			 ---------------------------------------------------------------- -->
-		<div
-			class="relative hidden min-h-0 flex-1 overflow-hidden lg:block"
-		>
-		<!-- Incoming panel — non-interactive during slide animation -->
-		<motion.div
-			v-if="incomingPanel"
-			class="absolute inset-0 grid grid-cols-4 gap-2 p-1"
-			:style="{ x: incomingX, willChange: 'transform', contain: 'layout paint' }"
-		>
-			<BigCalendarMonthMini
-				v-for="month in incomingPanel.months"
-				:key="month.date.getTime()"
-				:month="month"
-				:interactive="false"
-			/>
-		</motion.div>
+		<div class="relative hidden min-h-0 flex-1 overflow-hidden lg:block">
+			<!-- Incoming panel — non-interactive during slide animation -->
+			<motion.div
+				v-if="incomingPanel"
+				class="absolute inset-0 grid grid-cols-4 gap-2 p-1"
+				:style="{ x: incomingX, willChange: 'transform', contain: 'layout paint' }"
+			>
+				<BigCalendarMonthMini
+					v-for="month in incomingPanel.months"
+					:key="month.date.getTime()"
+					:month="month"
+					:interactive="false"
+				/>
+			</motion.div>
 
 			<!-- Current panel — draggable -->
 			<motion.div

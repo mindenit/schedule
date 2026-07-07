@@ -14,7 +14,10 @@
 								<UiAlertDialogTitle v-if="title" :title="title" />
 							</slot>
 							<slot name="description">
-								<UiAlertDialogDescription v-if="description" :description="description" />
+								<UiAlertDialogDescription
+									v-if="description"
+									:description="description"
+								/>
 							</slot>
 						</UiAlertDialogHeader>
 					</slot>

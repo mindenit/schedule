@@ -275,8 +275,17 @@ export function useUrlState() {
 			const scheduleType = state.scheduleType as ScheduleTabType
 			try {
 				if (!scheduleStore.isInitialized) await nextTick()
-				const name = await resolveEntityName(scheduleType, state.scheduleId, queryClient, $nurekit)
-				scheduleStore.selectScheduleFromUrl({ id: state.scheduleId, name, type: scheduleType })
+				const name = await resolveEntityName(
+					scheduleType,
+					state.scheduleId,
+					queryClient,
+					$nurekit
+				)
+				scheduleStore.selectScheduleFromUrl({
+					id: state.scheduleId,
+					name,
+					type: scheduleType,
+				})
 			} catch (err) {
 				// Non-fatal: the schedule name failed to resolve from the history state.
 				// The UI will stay on the current schedule rather than crashing.

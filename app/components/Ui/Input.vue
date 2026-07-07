@@ -4,7 +4,9 @@
 		v-bind="props"
 		ref="input"
 		data-slot="input"
-		:class="styles({ class: normalizeClass(props.class) || undefined, type: props.type as any })"
+		:class="
+			styles({ class: normalizeClass(props.class) || undefined, type: props.type as any })
+		"
 		:value="modelValue"
 		@input="handleInput"
 	/>
@@ -81,8 +83,7 @@ const styles = tv({
 	],
 	variants: {
 		type: {
-			search:
-				"[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none [&::-webkit-search-results-button]:appearance-none [&::-webkit-search-results-decoration]:appearance-none",
+			search: "[&::-webkit-search-cancel-button]:appearance-none [&::-webkit-search-decoration]:appearance-none [&::-webkit-search-results-button]:appearance-none [&::-webkit-search-results-decoration]:appearance-none",
 			file: "text-muted-foreground/70 file:border-input file:text-foreground p-0 pr-3 italic file:me-3 file:h-full file:border-0 file:border-r file:border-solid file:bg-transparent file:px-3 file:text-sm file:font-medium file:not-italic",
 		},
 	},

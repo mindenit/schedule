@@ -51,7 +51,13 @@ const renderEvents = computed(() => {
 			const concurrent = getConcurrentGroupIndices(event, groups)
 			const localGroupCount = concurrent.length
 			const localGroupIndex = concurrent.indexOf(groupIndex)
-			const style = getEventBlockStyle(event, dayDate, localGroupIndex, localGroupCount, props.tz)
+			const style = getEventBlockStyle(
+				event,
+				dayDate,
+				localGroupIndex,
+				localGroupCount,
+				props.tz
+			)
 			return {
 				event,
 				style,

@@ -7,9 +7,7 @@ const sameSchedule = (a: GenericScheduleItem, b: GenericScheduleItem) =>
 	String(a.id) === String(b.id) && a.type === b.type
 
 export const useScheduleStore = defineStore("schedule", () => {
-	const allSchedules = skipHydrate(
-		useStorage<GenericScheduleItem[]>(STORAGE_KEYS.schedules, [])
-	)
+	const allSchedules = skipHydrate(useStorage<GenericScheduleItem[]>(STORAGE_KEYS.schedules, []))
 	const selectedSchedule = skipHydrate(
 		useStorage<GenericScheduleItem | null>(STORAGE_KEYS.selectedSchedule, null, undefined, {
 			// Allow `null` to round-trip through localStorage.

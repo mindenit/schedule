@@ -30,7 +30,9 @@ export function useLinkCrud() {
 				subject
 			)
 			trackEvent("link_added")
-			useSonner.success("Посилання додано", { description: "Нове посилання успішно створено" })
+			useSonner.success("Посилання додано", {
+				description: "Нове посилання успішно створено",
+			})
 		}
 	}
 

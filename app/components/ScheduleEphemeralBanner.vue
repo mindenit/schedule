@@ -73,7 +73,11 @@ function dismiss() {
 			class="bg-muted border-border flex items-center gap-3 border-b px-4 py-2 text-sm"
 			role="status"
 		>
-			<Icon name="lucide:link" class="text-muted-foreground size-4 shrink-0" aria-hidden="true" />
+			<Icon
+				name="lucide:link"
+				class="text-muted-foreground size-4 shrink-0"
+				aria-hidden="true"
+			/>
 			<span class="min-w-0 flex-1 leading-tight">
 				<strong class="text-foreground block truncate">{{ selectedSchedule?.name }}</strong>
 				<span class="text-muted-foreground text-xs">не збережено до списку</span>

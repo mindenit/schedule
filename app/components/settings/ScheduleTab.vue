@@ -65,7 +65,9 @@ const handleIcsExportAcademicYear = async () => {
 			</div>
 			<UiSwitch
 				v-model="isUrlSyncEnabled"
-				@update:model-value="trackEvent('settings_changed', { setting: 'url_sync', value: $event })"
+				@update:model-value="
+					trackEvent('settings_changed', { setting: 'url_sync', value: $event })
+				"
 			/>
 		</div>
 
@@ -78,7 +80,9 @@ const handleIcsExportAcademicYear = async () => {
 			</div>
 			<UiSelect
 				v-model="timezone"
-				@update:model-value="trackEvent('settings_changed', { setting: 'timezone', value: $event })"
+				@update:model-value="
+					trackEvent('settings_changed', { setting: 'timezone', value: $event })
+				"
 			>
 				<UiSelectTrigger>
 					<UiSelectValue placeholder="Оберіть часовий пояс..." />
@@ -89,7 +93,11 @@ const handleIcsExportAcademicYear = async () => {
 					<template v-for="group in CURATED_TIMEZONES" :key="group.group">
 						<UiSelectGroup>
 							<UiSelectLabel>{{ group.group }}</UiSelectLabel>
-							<UiSelectItem v-for="zone in group.zones" :key="zone.iana" :value="zone.iana">
+							<UiSelectItem
+								v-for="zone in group.zones"
+								:key="zone.iana"
+								:value="zone.iana"
+							>
 								<span class="flex w-full items-center justify-between gap-4">
 									<span>{{ zone.label }}</span>
 									<span class="text-muted-foreground text-xs tabular-nums">
@@ -115,7 +123,9 @@ const handleIcsExportAcademicYear = async () => {
 			</div>
 			<UiSwitch
 				v-model="isSnowEnabled"
-				@update:model-value="trackEvent('settings_changed', { setting: 'snow', value: $event })"
+				@update:model-value="
+					trackEvent('settings_changed', { setting: 'snow', value: $event })
+				"
 			/>
 		</div>
 
@@ -123,7 +133,9 @@ const handleIcsExportAcademicYear = async () => {
 		<div class="flex items-center justify-between rounded-lg border p-4">
 			<div class="flex flex-col gap-1">
 				<div class="text-sm font-medium">Гарячі клавіші</div>
-				<div class="text-muted-foreground text-xs">Швидка навігація по календарю без миші</div>
+				<div class="text-muted-foreground text-xs">
+					Швидка навігація по календарю без миші
+				</div>
 			</div>
 			<UiButton size="sm" variant="outline" @click="openShortcuts">
 				<AppIcon name="lucide:keyboard" />

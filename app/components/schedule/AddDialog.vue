@@ -220,7 +220,8 @@ const handleCardClick = (item: GenericScheduleItem) => {
 
 		<UiDialogTrigger as-child>
 			<UiButton
-				class="size-12 rounded-full shadow-lg transition-all duration-200 hover:shadow-xl md:hidden"
+				class="size-12 rounded-full shadow-lg transition-all duration-200 hover:shadow-xl
+					md:hidden"
 				size="icon"
 				aria-label="Додати розклад"
 			>
@@ -243,13 +244,19 @@ const handleCardClick = (item: GenericScheduleItem) => {
 					<UiTabsTrigger value="auditorium"> Аудиторії </UiTabsTrigger>
 				</UiTabsList>
 
-				<UiTabsContent v-for="(config, tabType) in tabConfig" :key="tabType" :value="tabType">
+				<UiTabsContent
+					v-for="(config, tabType) in tabConfig"
+					:key="tabType"
+					:value="tabType"
+				>
 					<div v-if="config.isLoading.value" class="flex justify-center p-4">
 						<TheLoader />
 					</div>
 					<UiAlert v-else-if="config.isError.value" variant="destructive">
 						<UiAlertTitle>Сталася помилка</UiAlertTitle>
-						<UiAlertDescription> Деталі: {{ config.error.value?.message }}</UiAlertDescription>
+						<UiAlertDescription>
+							Деталі: {{ config.error.value?.message }}</UiAlertDescription
+						>
 					</UiAlert>
 					<template v-else-if="config.data.value && config.data.value.length > 0">
 						<SearchField v-model="searchQuery" class="mb-2 w-full" />
@@ -260,7 +267,10 @@ const handleCardClick = (item: GenericScheduleItem) => {
 								}
 							"
 							class="custom-scrollbar h-[400px] overflow-y-auto"
-							style="scrollbar-width: thin; scrollbar-color: var(--border) transparent"
+							style="
+								scrollbar-width: thin;
+								scrollbar-color: var(--border) transparent;
+							"
 							tabindex="0"
 							role="region"
 							:aria-label="`Список ${tabType === 'group' ? 'груп' : tabType === 'teacher' ? 'викладачів' : 'аудиторій'}`"
@@ -287,7 +297,9 @@ const handleCardClick = (item: GenericScheduleItem) => {
 							</template>
 							<AppEmptyState
 								v-else
-								:title="searchQuery ? config.searchEmptyMessage : config.emptyMessage"
+								:title="
+									searchQuery ? config.searchEmptyMessage : config.emptyMessage
+								"
 							/>
 						</div>
 					</template>

@@ -55,7 +55,8 @@ export function getEventsForDate(
 ): Schedule[] {
 	const targetKey = formatInTimeZone(parseDate(date), tz, "yyyy-MM-dd")
 	return events.filter(
-		(event) => formatInTimeZone(new Date(event.startedAt * 1000), tz, "yyyy-MM-dd") === targetKey
+		(event) =>
+			formatInTimeZone(new Date(event.startedAt * 1000), tz, "yyyy-MM-dd") === targetKey
 	)
 }
 

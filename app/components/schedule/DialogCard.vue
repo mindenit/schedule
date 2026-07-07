@@ -21,7 +21,10 @@ const icon = computed(() => {
 			transition-colors last:mb-0"
 	>
 		<div class="flex items-center gap-3">
-			<div class="bg-primary/10 text-primary flex size-10 items-center justify-center rounded-lg">
+			<div
+				class="bg-primary/10 text-primary flex size-10 items-center justify-center
+					rounded-lg"
+			>
 				<AppIcon :name="icon!" />
 			</div>
 

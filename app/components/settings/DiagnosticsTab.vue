@@ -155,8 +155,8 @@ const copyAllSchedulesToClipboard = async () => {
 								String(selectedSchedule.id) === String(schedule.id) &&
 								selectedSchedule.type === schedule.type
 							"
-							class="bg-primary/10 text-primary rounded px-1.5 py-0.5 font-mono text-[10px]
-								font-medium tracking-wide"
+							class="bg-primary/10 text-primary rounded px-1.5 py-0.5 font-mono
+								text-[10px] font-medium tracking-wide"
 						>
 							active
 						</span>
@@ -172,14 +172,18 @@ const copyAllSchedulesToClipboard = async () => {
 				<div class="bg-muted space-y-1 rounded-lg px-3 py-2 text-xs">
 					<div class="flex items-center justify-between gap-2">
 						<span class="text-muted-foreground shrink-0">Початок</span>
-						<span class="font-mono font-medium tabular-nums">{{ fmt(viewRange.start) }}</span>
+						<span class="font-mono font-medium tabular-nums">{{
+							fmt(viewRange.start)
+						}}</span>
 						<span class="text-muted-foreground font-mono tabular-nums">
 							{{ toUnix(viewRange.start) }}
 						</span>
 					</div>
 					<div class="flex items-center justify-between gap-2">
 						<span class="text-muted-foreground shrink-0">Кінець</span>
-						<span class="font-mono font-medium tabular-nums">{{ fmt(viewRange.end) }}</span>
+						<span class="font-mono font-medium tabular-nums">{{
+							fmt(viewRange.end)
+						}}</span>
 						<span class="text-muted-foreground font-mono tabular-nums">
 							{{ toUnix(viewRange.end) }}
 						</span>

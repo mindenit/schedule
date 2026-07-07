@@ -71,13 +71,18 @@ const deleteLink = (linkId: string) => {
 <template>
 	<div class="space-y-3">
 		<div class="flex items-start gap-2.5">
-			<div class="mt-1 h-3 w-3 flex-shrink-0 rounded-full shadow-sm" :class="eventTypeColor" />
+			<div
+				class="mt-1 h-3 w-3 flex-shrink-0 rounded-full shadow-sm"
+				:class="eventTypeColor"
+			/>
 			<div class="min-w-0 flex-1">
 				<h3 class="text-sm leading-tight font-semibold tracking-tight">
 					{{ event.subject.title }}
 				</h3>
 				<div class="mt-1 flex items-center gap-1.5">
-					<span class="text-muted-foreground text-xs font-medium">{{ event.subject.brief }}</span>
+					<span class="text-muted-foreground text-xs font-medium">{{
+						event.subject.brief
+					}}</span>
 					<span class="text-muted-foreground">·</span>
 					<span class="text-muted-foreground text-xs">{{ eventTypeLabel }}</span>
 				</div>
@@ -86,14 +91,22 @@ const deleteLink = (linkId: string) => {
 
 		<div class="bg-muted/50 space-y-1.5 rounded-lg p-2.5 text-xs">
 			<div class="flex items-center gap-2">
-				<AppIcon name="lucide:clock" size="3.5" class="text-muted-foreground flex-shrink-0" />
+				<AppIcon
+					name="lucide:clock"
+					size="3.5"
+					class="text-muted-foreground flex-shrink-0"
+				/>
 				<span class="font-medium">{{ formattedTimeRange }}</span>
 				<span class="text-muted-foreground">·</span>
 				<span class="text-muted-foreground">{{ pairNumber }}</span>
 			</div>
 
 			<div class="flex items-center gap-2">
-				<AppIcon name="lucide:calendar" size="3.5" class="text-muted-foreground flex-shrink-0" />
+				<AppIcon
+					name="lucide:calendar"
+					size="3.5"
+					class="text-muted-foreground flex-shrink-0"
+				/>
 				<span>{{ formattedDate }}</span>
 				<span class="text-muted-foreground">·</span>
 				<span class="text-muted-foreground">{{ pairIndexText }}</span>
@@ -165,8 +178,8 @@ const deleteLink = (linkId: string) => {
 				<div
 					v-for="link in eventLinks"
 					:key="link.id"
-					class="bg-muted/30 hover:bg-muted/50 group flex items-center justify-between gap-2
-						rounded-md px-2 py-1.5 transition-colors"
+					class="bg-muted/30 hover:bg-muted/50 group flex items-center justify-between
+						gap-2 rounded-md px-2 py-1.5 transition-colors"
 				>
 					<a
 						:href="link.url"

@@ -42,7 +42,12 @@ export const useScheduleQuery = (
 			case "group":
 				return groupScheduleOptions(sid, start, end, filtersStore.filtersForType("group"))
 			case "teacher":
-				return teacherScheduleOptions(sid, start, end, filtersStore.filtersForType("teacher"))
+				return teacherScheduleOptions(
+					sid,
+					start,
+					end,
+					filtersStore.filtersForType("teacher")
+				)
 			case "auditorium":
 				return auditoriumScheduleOptions(
 					sid,

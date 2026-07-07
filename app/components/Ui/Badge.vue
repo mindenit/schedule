@@ -2,7 +2,12 @@
 	<component
 		:is="elementType"
 		:class="
-			badgeVariants({ disabled, size, variant, class: normalizeClass(props.class) || undefined })
+			badgeVariants({
+				disabled,
+				size,
+				variant,
+				class: normalizeClass(props.class) || undefined,
+			})
 		"
 		v-bind="forwarded"
 		@click="onClick"
@@ -25,7 +30,8 @@ const badgeVariants = tv({
 	base: "focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden rounded-md border whitespace-nowrap transition-[color,box-shadow] focus-visible:ring-[3px] [&>svg]:pointer-events-none [&>svg]:size-3",
 	variants: {
 		variant: {
-			default: "bg-primary text-primary-foreground [a&]:hover:bg-primary/90 border-transparent",
+			default:
+				"bg-primary text-primary-foreground [a&]:hover:bg-primary/90 border-transparent",
 			secondary:
 				"bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90 border-transparent",
 			destructive:
@@ -37,8 +43,7 @@ const badgeVariants = tv({
 				"border-transparent bg-yellow-500 text-white focus-visible:ring-yellow-500/20 dark:bg-yellow-500/60 dark:focus-visible:ring-yellow-500/40 [a&]:hover:bg-yellow-600",
 			info: "border-transparent bg-blue-500 text-white focus-visible:ring-blue-500/20 dark:bg-blue-500/60 dark:focus-visible:ring-blue-500/40 [a&]:hover:bg-blue-600",
 			ghost: "text-foreground [a&]:hover:bg-accent/50 border-transparent bg-transparent",
-			error:
-				"border-transparent bg-red-500 text-white focus-visible:ring-red-500/20 dark:bg-red-500/60 dark:focus-visible:ring-red-500/40 [a&]:hover:bg-red-600",
+			error: "border-transparent bg-red-500 text-white focus-visible:ring-red-500/20 dark:bg-red-500/60 dark:focus-visible:ring-red-500/40 [a&]:hover:bg-red-600",
 		},
 		disabled: {
 			true: "cursor-not-allowed opacity-50",

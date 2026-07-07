@@ -6,7 +6,11 @@
 	>
 		<slot />
 		<slot name="hint">
-			<span v-if="hint" data-slot="label-hint" class="text-muted-foreground text-xs font-normal">
+			<span
+				v-if="hint"
+				data-slot="label-hint"
+				class="text-muted-foreground text-xs font-normal"
+			>
 				{{ hint }}
 			</span>
 		</slot>

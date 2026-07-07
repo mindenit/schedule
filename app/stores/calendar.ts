@@ -21,7 +21,9 @@ export const useCalendarStore = defineStore("calendar", () => {
 	// Nuxt serialises useState as JSON, so Date → ISO string in the payload.
 	// We store a string internally and expose a computed Date so consumers
 	// are unchanged, and the serialised form is unambiguously a primitive.
-	const _selectedDateStr = useState<string>("calendar:selectedDate", () => new Date().toISOString())
+	const _selectedDateStr = useState<string>("calendar:selectedDate", () =>
+		new Date().toISOString()
+	)
 	// Cache the last parsed Date so repeated reads of selectedDate.value return
 	// the same object reference, eliminating per-read allocations and preventing
 	// referential inequality in watchers that compare dates by identity.

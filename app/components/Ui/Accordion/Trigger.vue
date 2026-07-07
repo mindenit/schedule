@@ -13,8 +13,8 @@
 				data-slot="accordion-trigger-icon"
 				mode="svg"
 				:name="icon"
-				class="text-muted-foreground pointer-events-none size-4 shrink-0 transition-transform
-					duration-200"
+				class="text-muted-foreground pointer-events-none size-4 shrink-0
+					transition-transform duration-200"
 			/>
 		</slot>
 	</AccordionTrigger>

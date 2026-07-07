@@ -53,11 +53,7 @@ export function getEventDayKey(event: Schedule, tz: string): number {
 	if (key === undefined) {
 		// Convert the UTC timestamp to a zoned Date, then take its local midnight
 		const zonedDate = toZonedTime(new Date(event.startedAt * 1000), tz)
-		key = new Date(
-			zonedDate.getFullYear(),
-			zonedDate.getMonth(),
-			zonedDate.getDate()
-		).getTime()
+		key = new Date(zonedDate.getFullYear(), zonedDate.getMonth(), zonedDate.getDate()).getTime()
 		wm.set(event, key)
 	}
 	return key
@@ -70,11 +66,7 @@ export function getEventDayKey(event: Schedule, tz: string): number {
  */
 export function getDayKey(date: Date, tz: string): number {
 	const zonedDate = toZonedTime(date, tz)
-	return new Date(
-		zonedDate.getFullYear(),
-		zonedDate.getMonth(),
-		zonedDate.getDate()
-	).getTime()
+	return new Date(zonedDate.getFullYear(), zonedDate.getMonth(), zonedDate.getDate()).getTime()
 }
 
 // ---------------------------------------------------------------------------

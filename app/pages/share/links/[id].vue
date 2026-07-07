@@ -47,8 +47,8 @@ const handleAccept = async () => {
 
 <template>
 	<div
-		class="from-background to-muted flex min-h-screen items-center justify-center bg-gradient-to-br
-			p-4"
+		class="from-background to-muted flex min-h-screen items-center justify-center
+			bg-gradient-to-br p-4"
 	>
 		<div class="w-full max-w-2xl">
 			<div v-if="loadingData" class="text-center">
@@ -60,15 +60,19 @@ const handleAccept = async () => {
 				v-else-if="error"
 				class="bg-destructive/10 border-destructive rounded-lg border p-8 text-center"
 			>
-				<AppIcon name="lucide:alert-circle" class="text-destructive mx-auto mb-2" size="lg" />
+				<AppIcon
+					name="lucide:alert-circle"
+					class="text-destructive mx-auto mb-2"
+					size="lg"
+				/>
 				<h2 class="text-destructive text-lg font-semibold">Помилка</h2>
 				<p class="text-muted-foreground mt-2">{{ error }}</p>
 			</div>
 
 			<div
 				v-else-if="accepted"
-				class="rounded-lg border border-green-200 bg-green-50 p-8 text-center dark:border-green-800
-					dark:bg-green-950"
+				class="rounded-lg border border-green-200 bg-green-50 p-8 text-center
+					dark:border-green-800 dark:bg-green-950"
 			>
 				<AppIcon
 					name="lucide:check-circle-2"
@@ -92,7 +96,14 @@ const handleAccept = async () => {
 					<h1 class="text-3xl font-bold">Поділена колекція посилань</h1>
 					<p class="text-muted-foreground">
 						Вам запропоновано імпортувати {{ sharableData.links.length }}
-						{{ pluralUk(sharableData.links.length, "посилання", "посилання", "посилань") }}
+						{{
+							pluralUk(
+								sharableData.links.length,
+								"посилання",
+								"посилання",
+								"посилань"
+							)
+						}}
 					</p>
 				</div>
 
@@ -105,13 +116,20 @@ const handleAccept = async () => {
 						<div class="flex items-start justify-between gap-4">
 							<div class="min-w-0 flex-1">
 								<p class="line-clamp-1 font-medium">{{ link.label }}</p>
-								<p class="text-muted-foreground line-clamp-2 text-sm">{{ link.url }}</p>
+								<p class="text-muted-foreground line-clamp-2 text-sm">
+									{{ link.url }}
+								</p>
 								<div class="mt-2 flex items-center gap-2">
 									<UiBadge variant="outline">{{ link.type }}</UiBadge>
 									<UiBadge variant="secondary">ID: {{ link.subjectId }}</UiBadge>
 								</div>
 							</div>
-							<a :href="link.url" target="_blank" rel="noopener noreferrer" class="flex-shrink-0">
+							<a
+								:href="link.url"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="flex-shrink-0"
+							>
 								<UiButton size="sm" variant="ghost">
 									<AppIcon name="lucide:external-link" />
 								</UiButton>
@@ -124,7 +142,14 @@ const handleAccept = async () => {
 					<UiButton class="flex-1" size="lg" :disabled="isLoading" @click="handleAccept">
 						<AppIcon name="lucide:download" class="mr-2" />
 						Імпортувати {{ sharableData.links.length }}
-						{{ pluralUk(sharableData.links.length, "посилання", "посилання", "посилань") }}
+						{{
+							pluralUk(
+								sharableData.links.length,
+								"посилання",
+								"посилання",
+								"посилань"
+							)
+						}}
 					</UiButton>
 					<NuxtLink to="/">
 						<UiButton variant="outline" size="lg">

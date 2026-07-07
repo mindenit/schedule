@@ -96,8 +96,16 @@ const overlayContent = computed(() => {
 					:events="props.events"
 					class="h-full overflow-y-hidden"
 				/>
-				<BigCalendarWeekView v-else-if="view === 'week'" :events="props.events" class="h-full" />
-				<BigCalendarDayView v-else-if="view === 'day'" :events="props.events" class="h-full" />
+				<BigCalendarWeekView
+					v-else-if="view === 'week'"
+					:events="props.events"
+					class="h-full"
+				/>
+				<BigCalendarDayView
+					v-else-if="view === 'day'"
+					:events="props.events"
+					class="h-full"
+				/>
 
 				<template #error="{ error: renderError, clearError }">
 					<div class="flex h-full items-center justify-center p-4">
@@ -149,7 +157,11 @@ const overlayContent = computed(() => {
 					</template>
 				</AppEmptyState>
 
-				<TheLoader v-else-if="overlayContent === 'loading'" size="lg" class="pointer-events-auto" />
+				<TheLoader
+					v-else-if="overlayContent === 'loading'"
+					size="lg"
+					class="pointer-events-auto"
+				/>
 
 				<UiAlert
 					v-else-if="overlayContent === 'error'"

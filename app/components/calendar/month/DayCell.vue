@@ -154,7 +154,11 @@ const badgeMap = computed(() => {
 	<div
 		role="gridcell"
 		:aria-label="
-			cell.date.toLocaleDateString('uk-UA', { weekday: 'long', day: 'numeric', month: 'long' }) +
+			cell.date.toLocaleDateString('uk-UA', {
+				weekday: 'long',
+				day: 'numeric',
+				month: 'long',
+			}) +
 			(totalEventsCount > 0
 				? `, ${totalEventsCount} ${pluralUk(totalEventsCount, 'заняття', 'заняття', 'занять')}`
 				: '')
@@ -214,7 +218,10 @@ const badgeMap = computed(() => {
 							:cell-date="startOfDay(cell.date)"
 							:interactive="interactive"
 							class="hide-time min-w-0 flex-1"
-							@click="interactive && openEventPopover(event, $event.currentTarget as HTMLElement)"
+							@click="
+								interactive &&
+								openEventPopover(event, $event.currentTarget as HTMLElement)
+							"
 						/>
 					</template>
 
@@ -227,7 +234,8 @@ const badgeMap = computed(() => {
 							:interactive="interactive"
 							class="w-full"
 							@click="
-								interactive && openEventPopover(group[0], $event.currentTarget as HTMLElement)
+								interactive &&
+								openEventPopover(group[0], $event.currentTarget as HTMLElement)
 							"
 						/>
 					</template>
@@ -237,7 +245,8 @@ const badgeMap = computed(() => {
 					<BigCalendarMonthEventBadge
 						:interactive="interactive"
 						@click="
-							interactive && openOverflowPopover(hiddenEvents, $event.currentTarget as HTMLElement)
+							interactive &&
+							openOverflowPopover(hiddenEvents, $event.currentTarget as HTMLElement)
 						"
 					>
 						<span class="flex-1 shrink-0 truncate">

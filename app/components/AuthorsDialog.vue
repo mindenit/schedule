@@ -16,7 +16,9 @@ import { AUTHORS } from "~/constants"
 					<AppIcon name="lucide:users" />
 					Про авторів
 				</UiDialogTitle>
-				<UiDialogDescription> Інформація про розробників цього застосунку </UiDialogDescription>
+				<UiDialogDescription>
+					Інформація про розробників цього застосунку
+				</UiDialogDescription>
 			</UiDialogHeader>
 
 			<div class="space-y-4">
@@ -43,8 +45,8 @@ import { AUTHORS } from "~/constants"
 						target="_blank"
 						rel="noopener noreferrer"
 						:aria-label="`Профіль ${author.name} в LinkedIn`"
-						class="hover:bg-accent dark:hover:bg-accent/50 ml-auto inline-flex size-9 shrink-0
-							items-center justify-center rounded-md transition-colors"
+						class="hover:bg-accent dark:hover:bg-accent/50 ml-auto inline-flex size-9
+							shrink-0 items-center justify-center rounded-md transition-colors"
 					>
 						<AppIcon name="brandico:linkedin-rect" />
 					</NuxtLink>
@@ -54,9 +56,10 @@ import { AUTHORS } from "~/constants"
 					<p>Застосунок розроблено за підтримки</p>
 					<p>Харківського національного університету радіоелектроніки</p>
 					<p class="mt-2 text-[0.65rem] leading-relaxed">
-						Mindenit Schedule не є офіційним джерелом розкладу занять ХНУРЕ. Адміністрація сайту не
-						несе відповідальності за актуальність та достовірність інформації щодо розкладу. Для
-						отримання офіційної інформації рекомендуємо звертатися до офіційних джерел університету.
+						Mindenit Schedule не є офіційним джерелом розкладу занять ХНУРЕ.
+						Адміністрація сайту не несе відповідальності за актуальність та
+						достовірність інформації щодо розкладу. Для отримання офіційної інформації
+						рекомендуємо звертатися до офіційних джерел університету.
 					</p>
 				</div>
 			</div>

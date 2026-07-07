@@ -54,7 +54,9 @@ export default defineEventHandler(async (event) => {
 		const responseHeaders: Record<string, string> = {}
 		response.headers.forEach((value, key) => {
 			if (
-				!["content-encoding", "content-length", "transfer-encoding"].includes(key.toLowerCase())
+				!["content-encoding", "content-length", "transfer-encoding"].includes(
+					key.toLowerCase()
+				)
 			) {
 				responseHeaders[key] = value
 			}

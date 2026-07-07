@@ -206,13 +206,15 @@ const EVENT_TYPE_BG: Record<string, string> = {
 					<!-- Subject row ─────────────────────────────────────────────── -->
 					<template v-if="item.value.kind === 'subject'">
 						<div
-							class="hover:bg-muted/50 flex w-full items-center gap-2 rounded-md py-2 pr-2 pl-2
-								transition-colors"
+							class="hover:bg-muted/50 flex w-full items-center gap-2 rounded-md py-2
+								pr-2 pl-2 transition-colors"
 						>
 							<!-- checkbox zone: select only -->
 							<div class="shrink-0 cursor-pointer" @click.stop="handleSelect()">
 								<UiCheckbox
-									:model-value="isSelected || (isIndeterminate ? 'indeterminate' : false)"
+									:model-value="
+										isSelected || (isIndeterminate ? 'indeterminate' : false)
+									"
 									class="pointer-events-none"
 								/>
 							</div>
@@ -229,13 +231,15 @@ const EVENT_TYPE_BG: Record<string, string> = {
 					<!-- Event type row ───────────────────────────────────────────── -->
 					<template v-else-if="item.value.kind === 'eventType'">
 						<div
-							class="hover:bg-muted/50 flex w-full items-center gap-2 rounded-md py-1.5 pr-2 pl-6
-								transition-colors"
+							class="hover:bg-muted/50 flex w-full items-center gap-2 rounded-md
+								py-1.5 pr-2 pl-6 transition-colors"
 						>
 							<!-- checkbox zone: select only -->
 							<div class="shrink-0 cursor-pointer" @click.stop="handleSelect()">
 								<UiCheckbox
-									:model-value="isSelected || (isIndeterminate ? 'indeterminate' : false)"
+									:model-value="
+										isSelected || (isIndeterminate ? 'indeterminate' : false)
+									"
 									class="pointer-events-none"
 								/>
 							</div>
@@ -257,8 +261,8 @@ const EVENT_TYPE_BG: Record<string, string> = {
 					<!-- Link leaf row ────────────────────────────────────────────── -->
 					<template v-else-if="item.value.kind === 'link'">
 						<div
-							class="hover:bg-muted/50 flex w-full items-center gap-2 rounded-md py-1.5 pr-2 pl-10
-								transition-colors"
+							class="hover:bg-muted/50 flex w-full items-center gap-2 rounded-md
+								py-1.5 pr-2 pl-10 transition-colors"
 						>
 							<!-- checkbox + label zone: select only (leaves don't expand) -->
 							<div class="shrink-0 cursor-pointer" @click.stop="handleSelect()">
@@ -270,8 +274,8 @@ const EVENT_TYPE_BG: Record<string, string> = {
 									:href="item.value.url"
 									target="_blank"
 									rel="noopener noreferrer"
-									class="text-muted-foreground hover:text-foreground truncate text-xs
-										transition-colors"
+									class="text-muted-foreground hover:text-foreground truncate
+										text-xs transition-colors"
 									@click.stop="trackEvent('link_opened')"
 								>
 									{{ item.value.url }}
@@ -286,7 +290,11 @@ const EVENT_TYPE_BG: Record<string, string> = {
 									:aria-label="`Редагувати посилання ${item.value.name}`"
 									@click.stop="
 										props.onEditLink?.(
-											{ id: item.value.id, name: item.value.name, url: item.value.url },
+											{
+												id: item.value.id,
+												name: item.value.name,
+												url: item.value.url,
+											},
 											item.value.subjectId,
 											item.value.eventType,
 											item.value.subject
@@ -302,7 +310,11 @@ const EVENT_TYPE_BG: Record<string, string> = {
 									class="text-destructive hover:text-destructive size-7"
 									:aria-label="`Видалити посилання ${item.value.name}`"
 									@click.stop="
-										props.onDeleteLink?.(item.value.id, item.value.subjectId, item.value.eventType)
+										props.onDeleteLink?.(
+											item.value.id,
+											item.value.subjectId,
+											item.value.eventType
+										)
 									"
 								>
 									<AppIcon name="lucide:trash" />

@@ -19,9 +19,7 @@ let _resolveCache: { key: string; value: string } | null = null
 export function resolveTimezone(stored: string): string {
 	if (_resolveCache?.key === stored) return _resolveCache.value
 	const value =
-		stored === TIMEZONE_LOCAL
-			? Intl.DateTimeFormat().resolvedOptions().timeZone
-			: stored
+		stored === TIMEZONE_LOCAL ? Intl.DateTimeFormat().resolvedOptions().timeZone : stored
 	_resolveCache = { key: stored, value }
 	return value
 }

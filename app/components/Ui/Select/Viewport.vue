@@ -26,8 +26,7 @@ const styles = tv({
 	base: "p-1",
 	variants: {
 		position: {
-			popper:
-				"h-(--reka-select-trigger-height) w-full min-w-(--reka-select-trigger-width) scroll-my-1",
+			popper: "h-(--reka-select-trigger-height) w-full min-w-(--reka-select-trigger-width) scroll-my-1",
 			"item-aligned": "",
 		},
 	},

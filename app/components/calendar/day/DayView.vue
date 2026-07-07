@@ -43,22 +43,15 @@ function buildPanel(date: Date): DayPanel {
 
 const dayViewEl = useTemplateRef("dayView")
 
-const {
-	currentPanel,
-	incomingPanel,
-	currentX,
-	incomingX,
-	onDragStart,
-	onDrag,
-	onDragEnd,
-} = useSwipeNavigator<DayPanel>({
-	view: "day",
-	containerRef: dayViewEl,
-	buildPanel,
-	samePeriod: isSameDay,
-	events: () => props.events,
-	timezone: () => effectiveTimezone.value,
-})
+const { currentPanel, incomingPanel, currentX, incomingX, onDragStart, onDrag, onDragEnd } =
+	useSwipeNavigator<DayPanel>({
+		view: "day",
+		containerRef: dayViewEl,
+		buildPanel,
+		samePeriod: isSameDay,
+		events: () => props.events,
+		timezone: () => effectiveTimezone.value,
+	})
 
 const hasEvents = computed(() => currentPanel.value.groupedEvents.length > 0)
 </script>

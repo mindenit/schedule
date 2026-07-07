@@ -38,21 +38,33 @@ export function useKeyboardShortcuts() {
 				e.preventDefault()
 				const prev = navigateDate(selectedDate.value, view.value, "previous")
 				calendarStore.setSelectedDate(prev)
-				trackEvent("date_navigated", { direction: "prev", view: view.value, source: "keyboard" })
+				trackEvent("date_navigated", {
+					direction: "prev",
+					view: view.value,
+					source: "keyboard",
+				})
 				break
 			}
 			case "ArrowRight": {
 				e.preventDefault()
 				const next = navigateDate(selectedDate.value, view.value, "next")
 				calendarStore.setSelectedDate(next)
-				trackEvent("date_navigated", { direction: "next", view: view.value, source: "keyboard" })
+				trackEvent("date_navigated", {
+					direction: "next",
+					view: view.value,
+					source: "keyboard",
+				})
 				break
 			}
 			case "t":
 			case "T": {
 				// Compute today fresh on each keypress (avoids stale date if tab is left open overnight)
 				calendarStore.setSelectedDate(new Date())
-				trackEvent("date_navigated", { direction: "today", view: view.value, source: "keyboard" })
+				trackEvent("date_navigated", {
+					direction: "today",
+					view: view.value,
+					source: "keyboard",
+				})
 				break
 			}
 			case "d":
