@@ -21,10 +21,7 @@ export const useCalendarStore = defineStore("calendar", () => {
 	// Nuxt serialises useState as JSON, so Date → ISO string in the payload.
 	// We store a string internally and expose a computed Date so consumers
 	// are unchanged, and the serialised form is unambiguously a primitive.
-	const _selectedDateStr = useState<string>(
-		"calendar:selectedDate",
-		() => new Date().toISOString()
-	)
+	const _selectedDateStr = useState<string>("calendar:selectedDate", () => new Date().toISOString())
 	// Cache the last parsed Date so repeated reads of selectedDate.value return
 	// the same object reference, eliminating per-read allocations and preventing
 	// referential inequality in watchers that compare dates by identity.
@@ -67,19 +64,47 @@ export const useCalendarStore = defineStore("calendar", () => {
 	// Pre-indexed by day-start Unix ms. Rebuilds when allEvents or the timezone
 	// changes. MonthView reads from this map directly so month switching never
 	// rebuilds the index — it's just 42 Map.get() calls regardless of event count.
+	//
+	// Two-slot TZ cache: if the user bounces between two timezones (e.g. local ↔
+	// Europe/Kyiv) without a schedule change in between, the second switch reuses
+	// the already-built index instead of scanning all events again.
+	// The cache is keyed by both the events array reference AND the timezone string
+	// so stale entries are never returned after a schedule switch.
+	let _tzCacheEvents: Schedule[] | null = null
+	const _tzCache = new Map<string, Map<number, Schedule[]>>()
+
 	const eventsByDayKey = computed(() => {
 		const tz = effectiveTimezone.value
-		const map = new Map<number, Schedule[]>()
-		for (const event of allEvents.value) {
-			const key = getEventDayKey(event, tz)
-			let bucket = map.get(key)
-			if (!bucket) {
-				bucket = []
-				map.set(key, bucket)
-			}
-			bucket.push(event)
+		const events = allEvents.value
+
+		// Invalidate the per-TZ cache whenever the events array reference changes
+		// (i.e. setEvents() was called with a new schedule response).
+		if (events !== _tzCacheEvents) {
+			_tzCache.clear()
+			_tzCacheEvents = events
 		}
-		return map
+
+		if (!_tzCache.has(tz)) {
+			// Evict the oldest entry when cache exceeds two slots to cap memory.
+			if (_tzCache.size >= 2) {
+				const firstKey = _tzCache.keys().next().value
+				if (firstKey !== undefined) _tzCache.delete(firstKey)
+			}
+
+			const map = new Map<number, Schedule[]>()
+			for (const event of events) {
+				const key = getEventDayKey(event, tz)
+				let bucket = map.get(key)
+				if (!bucket) {
+					bucket = []
+					map.set(key, bucket)
+				}
+				bucket.push(event)
+			}
+			_tzCache.set(tz, map)
+		}
+
+		return _tzCache.get(tz)!
 	})
 
 	const filteredEvents = computed(() => {

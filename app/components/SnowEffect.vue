@@ -32,6 +32,9 @@ const CELL_SIZE = 4
 let cols = 0
 let rows = 0
 let grid: Uint8Array = new Uint8Array(0)
+// Tracks which grid cell indices are currently occupied (avoids full grid scan each frame).
+// Updated in sync with every grid[idx] write throughout update() and removeSnowAt().
+let activeCells: Set<number> = new Set()
 // Image data buffer for rendering grid
 let gridImageData: ImageData | null = null
 let gridBuffer: Uint32Array | null = null
@@ -72,6 +75,7 @@ const init = () => {
 	cols = Math.ceil(w / CELL_SIZE)
 	rows = Math.ceil(h / CELL_SIZE)
 	grid = new Uint8Array(cols * rows).fill(0)
+	activeCells = new Set()
 	gridImageData = new ImageData(w, h)
 	gridBuffer = new Uint32Array(gridImageData.data.buffer)
 
@@ -104,33 +108,25 @@ const draw = () => {
 	// Clear buffer (set to 0)
 	gridBuffer.fill(0)
 
-	// Render grid to buffer
-	// We iterate grid cells and fill corresponding pixels in gridBuffer
-	// This is the heavy part. Optimization: only draw active cells.
-	// Since grid is 1/4 resolution, each cell is 4x4 pixels.
-	// 4x4 = 16 pixels.
-	// gridBuffer is w * h.
-
-	// Color: white with some alpha? 0xAARRGGBB (little endian -> BBGGRRAA)
-	// White 1.0 alpha -> 255, 255, 255, 255 -> 0xFFFFFFFF
+	// Render only active grid cells to the pixel buffer.
+	// activeCells tracks occupied indices so we skip the full cols×rows scan
+	// (~130k iterations at 1080p) and only touch the occupied minority.
+	// Color: 0xFFFFFFFF = white, full alpha (little-endian BBGGRRAA → ARGB).
 	const color = 0xffffffff
 
-	for (let y = 0; y < rows; y++) {
-		for (let x = 0; x < cols; x++) {
-			if (grid[y * cols + x]) {
-				// Fill 4x4 block
-				const startX = x * CELL_SIZE
-				const startY = y * CELL_SIZE
-				// Boundary check
-				const endX = Math.min(startX + CELL_SIZE, w)
-				const endY = Math.min(startY + CELL_SIZE, h)
+	for (const idx of activeCells) {
+		const cx = idx % cols
+		const cy = (idx - cx) / cols
+		// Fill the CELL_SIZE×CELL_SIZE pixel block for this cell
+		const startX = cx * CELL_SIZE
+		const startY = cy * CELL_SIZE
+		const endX = Math.min(startX + CELL_SIZE, w)
+		const endY = Math.min(startY + CELL_SIZE, h)
 
-				for (let py = startY; py < endY; py++) {
-					const rowOffset = py * w
-					for (let px = startX; px < endX; px++) {
-						gridBuffer[rowOffset + px] = color
-					}
-				}
+		for (let py = startY; py < endY; py++) {
+			const rowOffset = py * w
+			for (let px = startX; px < endX; px++) {
+				gridBuffer[rowOffset + px] = color
 			}
 		}
 	}
@@ -208,7 +204,9 @@ const update = () => {
 				// Try to move down
 				if (grid[belowIdx] === 0) {
 					grid[belowIdx] = 1
+					activeCells.add(belowIdx)
 					grid[idx] = 0
+					activeCells.delete(idx)
 				} else {
 					// Try to move diagonal
 					const leftIdx = (y + 1) * cols + (x - 1)
@@ -219,17 +217,25 @@ const update = () => {
 					if (canLeft && canRight) {
 						if (Math.random() > 0.5) {
 							grid[leftIdx] = 1
+							activeCells.add(leftIdx)
 							grid[idx] = 0
+							activeCells.delete(idx)
 						} else {
 							grid[rightIdx] = 1
+							activeCells.add(rightIdx)
 							grid[idx] = 0
+							activeCells.delete(idx)
 						}
 					} else if (canLeft) {
 						grid[leftIdx] = 1
+						activeCells.add(leftIdx)
 						grid[idx] = 0
+						activeCells.delete(idx)
 					} else if (canRight) {
 						grid[rightIdx] = 1
+						activeCells.add(rightIdx)
 						grid[idx] = 0
+						activeCells.delete(idx)
 					}
 				}
 			}
@@ -283,16 +289,20 @@ const update = () => {
 				if (canLeft && canRight) {
 					if (Math.random() > 0.5) {
 						grid[leftIdx] = 1
+						activeCells.add(leftIdx)
 						placed = true
 					} else {
 						grid[rightIdx] = 1
+						activeCells.add(rightIdx)
 						placed = true
 					}
 				} else if (canLeft) {
 					grid[leftIdx] = 1
+					activeCells.add(leftIdx)
 					placed = true
 				} else if (canRight) {
 					grid[rightIdx] = 1
+					activeCells.add(rightIdx)
 					placed = true
 				}
 
@@ -301,6 +311,7 @@ const update = () => {
 					const aboveIdx = Math.max(0, gy - 1) * cols + gx
 					if (grid[aboveIdx] === 0) {
 						grid[aboveIdx] = 1
+						activeCells.add(aboveIdx)
 						placed = true
 					}
 				}
@@ -325,6 +336,7 @@ const update = () => {
 				let placed = false
 				if (grid[idx] === 0) {
 					grid[idx] = 1
+					activeCells.add(idx)
 					placed = true
 				} else {
 					// Try to slide to neighbors at bottom first
@@ -336,16 +348,20 @@ const update = () => {
 					if (canLeft && canRight) {
 						if (Math.random() > 0.5) {
 							grid[leftIdx] = 1
+							activeCells.add(leftIdx)
 							placed = true
 						} else {
 							grid[rightIdx] = 1
+							activeCells.add(rightIdx)
 							placed = true
 						}
 					} else if (canLeft) {
 						grid[leftIdx] = 1
+						activeCells.add(leftIdx)
 						placed = true
 					} else if (canRight) {
 						grid[rightIdx] = 1
+						activeCells.add(rightIdx)
 						placed = true
 					} else {
 						// Try to stack
@@ -354,7 +370,9 @@ const update = () => {
 							stackY--
 						}
 						if (stackY >= 0) {
-							grid[stackY * cols + floorGx] = 1
+							const stackIdx = stackY * cols + floorGx
+							grid[stackIdx] = 1
+							activeCells.add(stackIdx)
 							placed = true
 						}
 					}
@@ -400,11 +418,14 @@ const update = () => {
 				const aboveIdx = Math.max(0, pgy - 1) * cols + pgx
 				if (grid[aboveIdx] === 0) {
 					grid[aboveIdx] = 1
+					activeCells.add(aboveIdx)
 					particles.splice(i, 1)
 				}
 			} else if (pgy === rows - 1) {
 				// Hit floor
-				grid[pgy * cols + pgx] = 1
+				const floorIdx = pgy * cols + pgx
+				grid[floorIdx] = 1
+				activeCells.add(floorIdx)
 				particles.splice(i, 1)
 			}
 		}
@@ -428,6 +449,7 @@ const removeSnowAt = (mx: number, my: number, vx: number = 0, vy: number = 0) =>
 				const idx = y * cols + x
 				if (grid[idx]) {
 					grid[idx] = 0
+					activeCells.delete(idx)
 					// Spawn particle
 					if (Math.random() > 0.8) {
 						particles.push({
