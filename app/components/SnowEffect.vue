@@ -2,6 +2,8 @@
 import { onMounted, onUnmounted, ref, watch } from "vue"
 import { useRafFn, useWindowSize } from "@vueuse/core"
 
+const { isReduced } = useMotionSafe()
+
 const props = withDefaults(
 	defineProps<{
 		count?: number
@@ -465,6 +467,11 @@ const onTouchMove = (e: TouchEvent) => {
 }
 
 onMounted(() => {
+	// Skip the entire effect when the user has requested reduced motion.
+	// The component itself is conditionally rendered from app.vue (v-if isSnowEnabled),
+	// but we add a second guard here so the canvas never runs at all if reduced-motion
+	// is enabled — even if someone enables snow manually.
+	if (isReduced.value) return
 	init()
 	// draw() - handled by useRafFn
 	window.addEventListener("mousemove", onMouseMove)
@@ -486,6 +493,11 @@ watch(
 
 watch([winWidth, winHeight], () => {
 	init()
+})
+
+// If the user toggles reduced-motion at runtime, pause the loop immediately.
+watch(isReduced, (reduced) => {
+	if (reduced) pause()
 })
 </script>
 

@@ -63,6 +63,11 @@ const formattedTime = computed(() => {
 	<div
 		:role="interactive ? 'button' : undefined"
 		:tabindex="interactive ? 0 : undefined"
+		:aria-label="
+			interactive && event
+				? `${event.subject.title}${formattedTime ? ', ' + formattedTime : ''}`
+				: undefined
+		"
 		:class="badgeClasses"
 		@keydown.enter.prevent="interactive && ($event.currentTarget as HTMLElement).click()"
 		@keydown.space.prevent="interactive && ($event.currentTarget as HTMLElement).click()"

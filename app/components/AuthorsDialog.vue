@@ -25,7 +25,7 @@ import { AUTHORS } from "~/constants"
 					:key="author.name"
 					class="bg-muted flex items-center gap-3 rounded-lg p-3"
 				>
-					<NuxtImg
+					<img
 						:src="author.avatar"
 						:alt="author.name"
 						width="40"
@@ -37,16 +37,16 @@ import { AUTHORS } from "~/constants"
 						<p class="font-medium">{{ author.name }}</p>
 						<p class="text-muted-foreground text-sm">{{ author.role }}</p>
 					</div>
-			<NuxtLink
-				:to="author.linkedin"
-				external
-				target="_blank"
-				rel="noopener noreferrer"
-				:aria-label="`Профіль ${author.name} в LinkedIn`"
-				class="ml-auto inline-flex size-9 shrink-0 items-center justify-center rounded-md transition-colors hover:bg-accent dark:hover:bg-accent/50"
-			>
-				<AppIcon name="brandico:linkedin-rect" />
-			</NuxtLink>
+					<NuxtLink
+						:to="author.linkedin"
+						external
+						target="_blank"
+						rel="noopener noreferrer"
+						:aria-label="`Профіль ${author.name} в LinkedIn`"
+						class="hover:bg-accent dark:hover:bg-accent/50 ml-auto inline-flex size-9 shrink-0 items-center justify-center rounded-md transition-colors"
+					>
+						<AppIcon name="brandico:linkedin-rect" />
+					</NuxtLink>
 				</div>
 
 				<div class="text-muted-foreground text-center text-base">
