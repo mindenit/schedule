@@ -18,7 +18,7 @@ const { trackEvent } = useAnalytics()
 			</UiTabsList>
 
 			<UiTabsContent value="schedule" class="min-h-0 flex-1">
-				<SettingsScheduleTab />
+				<ScheduleTab />
 			</UiTabsContent>
 
 			<UiTabsContent value="links" class="min-h-0 flex-1">
@@ -28,7 +28,7 @@ const { trackEvent } = useAnalytics()
 			</UiTabsContent>
 
 			<UiTabsContent value="bug" class="min-h-0 flex-1">
-				<SettingsDiagnosticsTab />
+				<DiagnosticsTab />
 			</UiTabsContent>
 		</UiTabs>
 	</div>
