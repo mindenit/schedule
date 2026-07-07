@@ -64,6 +64,7 @@ const eventAreaHeight = ref(0)
 // sub-pixel jitter from browser layout rounding and scrollbar apparition.
 let _lastEventAreaHeight = 0
 useResizeObserver(eventAreaEl, ([entry]) => {
+	if (!entry) return
 	const h = entry.contentRect.height
 	if (Math.abs(h - _lastEventAreaHeight) > 4) {
 		_lastEventAreaHeight = h
@@ -227,15 +228,15 @@ const badgeMap = computed(() => {
 
 					<template v-else-if="group[0]">
 						<BigCalendarMonthEventBadge
-							:event="group[0]"
-							:color-class="badgeMap.get(group[0].id)?.colorClass"
-							:time-range="badgeMap.get(group[0].id)?.timeRange"
+							:event="group[0]!"
+							:color-class="badgeMap.get(group[0]!.id)?.colorClass"
+							:time-range="badgeMap.get(group[0]!.id)?.timeRange"
 							:cell-date="startOfDay(cell.date)"
 							:interactive="interactive"
 							class="w-full"
 							@click="
 								interactive &&
-								openEventPopover(group[0], $event.currentTarget as HTMLElement)
+								openEventPopover(group[0]!, $event.currentTarget as HTMLElement)
 							"
 						/>
 					</template>

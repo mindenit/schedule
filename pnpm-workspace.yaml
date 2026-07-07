@@ -38,6 +38,7 @@ blockExoticSubdeps: true
 # https://pnpm.io/settings#allowbuilds
 allowBuilds:
   "@parcel/watcher": true
+  core-js: set this to true or false
   esbuild: true
   sharp: true
   simple-git-hooks: true

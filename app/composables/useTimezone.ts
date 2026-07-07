@@ -1,5 +1,6 @@
 import { formatInTimeZone } from "date-fns-tz"
 import { uk } from "date-fns/locale"
+import type { Locale } from "date-fns"
 import { storeToRefs } from "pinia"
 import { resolveTimezone } from "~/constants/timezones"
 import { useSettingsStore } from "~/stores/settings"

@@ -1,5 +1,11 @@
 <script setup lang="ts">
-import type { CalendarDay } from "v-calendar/dist/types/src/utils/page"
+// CalendarDay is the payload type from v-calendar's @dayclick event.
+// We define a local interface instead of importing from v-calendar internals
+// (the package's dist/types path is not guaranteed stable).
+interface CalendarDay {
+	date: Date
+	[key: string]: unknown
+}
 
 const calendarStore = useCalendarStore()
 const { trackEvent } = useAnalytics()
@@ -10,13 +16,18 @@ const onDayClick = (day: CalendarDay) => {
 	trackEvent("view_changed", { view: "day", source: "sidebar_calendar" })
 }
 
-const selectedAttributes = computed(() => [
-	{
-		key: "selected",
-		highlight: { color: "purple", fillMode: "solid" },
-		dates: calendarStore.selectedDate,
-	},
-])
+// v-calendar's AttributeConfig type doesn't exactly match our runtime API shape;
+// cast to object[] to satisfy the :attributes binding without using `any`.
+const selectedAttributes = computed(
+	() =>
+		[
+			{
+				key: "selected",
+				highlight: { color: "purple", fillMode: "solid" },
+				dates: calendarStore.selectedDate,
+			},
+		] as object[]
+)
 
 const initialPage = computed(() => ({
 	month: calendarStore.selectedDate.getMonth() + 1,

@@ -11,6 +11,7 @@ const props = defineProps<Props>()
 const { formatTimeRange, formatDate, getEventTypeColor, getEventTypeLabel } = useEventFormatting()
 const linksStore = useLinksStore()
 const { saveLink: saveLinkCrud, deleteLink: deleteLinkCrud } = useLinkCrud()
+const { trackEvent } = useAnalytics()
 
 const eventLinks = computed(() => linksStore.getLinks(props.event.subject.id, props.event.type))
 

@@ -1,3 +1,5 @@
+import type { TCalendarView } from "./calendar"
+
 /**
  * Registry of all custom analytics events for Mindenit Schedule.
  *
@@ -28,7 +30,7 @@ export interface AnalyticsEvents {
 	/** User navigates to a different date period. */
 	date_navigated: {
 		direction: "prev" | "next" | "today"
-		view: "day" | "week" | "month"
+		view: TCalendarView
 		source: "button" | "swipe" | "keyboard"
 	}
 

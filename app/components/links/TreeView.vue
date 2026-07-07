@@ -93,11 +93,18 @@ const isEmpty = computed(() => treeItems.value.length === 0)
 // ─── Tree config ──────────────────────────────────────────────────────────────
 
 const getKey = (node: TreeNode) => node.id
+// Cast needed: TreeRootProps expects (val: Record<string, any>) => string, but our
+// TreeNode union is narrower. Runtime behaviour is identical — node.id always exists.
+const getKeyFn = getKey as (val: Record<string, unknown>) => string
 
 const getChildren = (node: TreeNode): TreeNode[] | undefined => {
 	if (node.kind === "link") return undefined
 	return node.children.length > 0 ? node.children : undefined
 }
+// Cast needed: TreeRootProps expects (val: Record<string, any>) => Record<string, any>[] | undefined
+// but our TreeNode union is narrower. Runtime behaviour is identical.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const getChildrenFn = getChildren as (val: Record<string, any>) => Record<string, any>[] | undefined
 
 // All subject + eventType node IDs expanded by default
 const defaultExpanded = computed(() =>
@@ -185,8 +192,8 @@ const EVENT_TYPE_BG: Record<string, string> = {
 		v-else
 		v-model="selected"
 		:items="treeItems"
-		:get-key="getKey"
-		:get-children="getChildren"
+		:get-key="getKeyFn"
+		:get-children="getChildrenFn"
 		:default-expanded="defaultExpanded"
 		multiple
 		propagate-select

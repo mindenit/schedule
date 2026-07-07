@@ -1,5 +1,11 @@
 import { Nurekit } from "nurekit"
 
+declare module "#app" {
+	interface NuxtApp {
+		$nurekit: Nurekit
+	}
+}
+
 export default defineNuxtPlugin(() => {
 	let nurekit: Nurekit
 

@@ -162,9 +162,9 @@ export const useLinksStore = defineStore("links", () => {
 			}
 
 			if (isOldFormat(data)) {
-				links.value = convertFromOldFormat(data)
+				links.value = convertFromOldFormat(data as Record<string, Record<string, Link[]>>)
 			} else {
-				links.value = data
+				links.value = data as LinksStore
 			}
 
 			return { success: true }

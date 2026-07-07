@@ -161,7 +161,11 @@ export function useSwipeNavigator<TPanel extends SwipeablePanel>(
 		incomingX.set(0)
 	}
 
-	async function navigateTo(dir: "left" | "right", newDate: Date, source: string) {
+	async function navigateTo(
+		dir: "left" | "right",
+		newDate: Date,
+		source: "button" | "keyboard" | "swipe" | "external"
+	) {
 		cancelAndReset()
 		isNavigating.value = true
 		// Update logical target immediately — watcher must see this before any await.
@@ -200,11 +204,13 @@ export function useSwipeNavigator<TPanel extends SwipeablePanel>(
 		incomingX.set(0)
 		activeControls = []
 
-		trackEvent("date_navigated", {
-			direction: dir === "left" ? "next" : "prev",
-			view,
-			source,
-		})
+		if (source !== "external") {
+			trackEvent("date_navigated", {
+				direction: dir === "left" ? "next" : "prev",
+				view,
+				source,
+			})
+		}
 
 		// If a navigation was queued while we were running, execute it now.
 		if (pendingDate !== null) {

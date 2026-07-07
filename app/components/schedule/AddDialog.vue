@@ -23,19 +23,28 @@ const {
 	isLoading: isGroupsLoading,
 	isError: isGroupsError,
 	error: groupsError,
-} = useQuery({ ...groupsOptions(), enabled: isDialogOpen })
+} = useQuery<Group[]>(
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	computed((): any => ({ ...groupsOptions(), enabled: isDialogOpen.value }))
+)
 const {
 	data: teachers,
 	isLoading: isTeachersLoading,
 	isError: isTeachersError,
 	error: teachersError,
-} = useQuery({ ...teachersOptions(), enabled: isDialogOpen })
+} = useQuery<Teacher[]>(
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	computed((): any => ({ ...teachersOptions(), enabled: isDialogOpen.value }))
+)
 const {
 	data: auditoriums,
 	isLoading: isAuditoriumsLoading,
 	isError: isAuditoriumsError,
 	error: auditoriumsError,
-} = useQuery({ ...auditoriumsOptions(), enabled: isDialogOpen })
+} = useQuery<Auditorium[]>(
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	computed((): any => ({ ...auditoriumsOptions(), enabled: isDialogOpen.value }))
+)
 
 interface TabConfig<T> {
 	data: Ref<T[] | undefined>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia"
-import { formatDate } from "date-fns"
+import { format } from "date-fns"
 import { uk } from "date-fns/locale"
 import { VIEW_CONFIGS } from "~/constants/calendar"
 
@@ -17,7 +17,7 @@ const title = computed(() => {
 	const dateToFormat =
 		selectedDate.value instanceof Date ? selectedDate.value : new Date(selectedDate.value)
 
-	const formatted = formatDate(dateToFormat, config.format, { locale: uk })
+	const formatted = format(dateToFormat, config.format, { locale: uk })
 	return config.capitalize ? capitalize(formatted) : formatted
 })
 

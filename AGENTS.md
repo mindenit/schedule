@@ -72,6 +72,7 @@ Beyond Nuxt's defaults, `nuxt.config` adds:
 
 - UI Thing components live in `app/components/Ui/` and are registered with **`prefix: "Ui"`** (path-based, not flat). Sub-components inherit the directory as part of their name: `Ui/Dialog/Content.vue` → `<UiDialogContent>`.
 - **Never edit `app/components/Ui/` files for lint compliance** — they are ESLint-ignored. Re-scaffold via `npx ui-thing@latest add <name>` (config: `ui-thing.config.ts`, pnpm, `app/components/Ui`).
+- **Exception — `Ui/Tree/Item.vue`**: After any re-scaffold of the `tree` component, remove the `data-slot="tree-item"` attribute from the `<TreeItem>` element in `Item.vue`. This attribute causes a Volar/reka-ui@2.9.x generic-constraint type error (upstream bug). The attribute is unused in our CSS — removing it is safe and required for `pnpm typecheck` to pass.
 - Add new UI components: `npx ui-thing@latest add button dialog select ...`
 - Styling inside `Ui/` uses **`tv()` from `tailwind-variants`**, not `cn()`/CVA. `cn()` is for everything outside `Ui/`.
 - For components used inside `h()` render functions, use `resolveComponent("UiButton")` — Nuxt auto-import cannot resolve through `h()`.

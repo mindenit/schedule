@@ -128,7 +128,7 @@ export function useUrlState() {
 		const { view, date, schedule, type } = query
 
 		// view
-		if (typeof view === "string" && VALID_VIEWS.includes(view)) {
+		if (typeof view === "string" && VALID_VIEWS.includes(view as TCalendarView)) {
 			// Keep lastCommittedView in sync so that the subsequent syncToUrl
 			// (triggered by the store change below) does not treat this URL-driven
 			// change as a user-initiated view switch and issue a second router.push.
@@ -257,7 +257,7 @@ export function useUrlState() {
 
 	// Restore stores from a history state object (called from the popstate handler).
 	const applyHistoryState = async (state: HistoryState) => {
-		if (VALID_VIEWS.includes(state.view)) {
+		if (VALID_VIEWS.includes(state.view as TCalendarView)) {
 			lastCommittedView = state.view
 			calendarStore.setView(state.view as TCalendarView)
 		}

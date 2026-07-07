@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useQuery } from "@tanstack/vue-query"
+import type { Group, Teacher, Auditorium, Subject } from "nurekit"
 import { FILTERS_LESSON_TYPES } from "~/constants/filters"
 import {
 	groupTeachersOptions,
@@ -27,8 +28,9 @@ const isOpen = ref(false)
 
 const selectedSchedule = computed(() => scheduleStore.selectedSchedule)
 
-const { data: teachers } = useQuery(
-	computed(() => {
+const { data: teachers } = useQuery<Teacher[]>(
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	computed((): any => {
 		if (selectedSchedule.value?.type === "group" && selectedSchedule.value?.id) {
 			return groupTeachersOptions(selectedSchedule.value.id)
 		}
@@ -37,28 +39,30 @@ const { data: teachers } = useQuery(
 		}
 		return {
 			queryKey: ["disabled-teachers"],
-			queryFn: () => Promise.resolve([]),
+			queryFn: (): Promise<Teacher[]> => Promise.resolve([]),
 			enabled: false,
 		}
 	})
 )
 
-const { data: auditoriums } = useQuery(
-	computed(() =>
+const { data: auditoriums } = useQuery<Auditorium[]>(
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	computed((): any =>
 		selectedSchedule.value?.type === "group" && selectedSchedule.value?.id
 			? groupAuditoriumsOptions(selectedSchedule.value.id)
 			: selectedSchedule.value?.type === "teacher" && selectedSchedule.value?.id
 				? teacherAuditoriumsOptions(selectedSchedule.value.id)
 				: {
 						queryKey: ["disabled-auditoriums"],
-						queryFn: () => Promise.resolve([]),
+						queryFn: (): Promise<Auditorium[]> => Promise.resolve([]),
 						enabled: false,
 					}
 	)
 )
 
-const { data: subjects } = useQuery(
-	computed(() => {
+const { data: subjects } = useQuery<Subject[]>(
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	computed((): any => {
 		if (selectedSchedule.value?.type === "group" && selectedSchedule.value?.id) {
 			return groupSubjectsOptions(selectedSchedule.value.id)
 		}
@@ -70,14 +74,15 @@ const { data: subjects } = useQuery(
 		}
 		return {
 			queryKey: ["disabled-subjects"],
-			queryFn: () => Promise.resolve([]),
+			queryFn: (): Promise<Subject[]> => Promise.resolve([]),
 			enabled: false,
 		}
 	})
 )
 
-const { data: groups } = useQuery(
-	computed(() => {
+const { data: groups } = useQuery<Group[]>(
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	computed((): any => {
 		if (selectedSchedule.value?.type === "teacher" && selectedSchedule.value?.id) {
 			return teacherGroupsOptions(selectedSchedule.value.id)
 		}
@@ -86,7 +91,7 @@ const { data: groups } = useQuery(
 		}
 		return {
 			queryKey: ["disabled-groups"],
-			queryFn: () => Promise.resolve([]),
+			queryFn: (): Promise<Group[]> => Promise.resolve([]),
 			enabled: false,
 		}
 	})
