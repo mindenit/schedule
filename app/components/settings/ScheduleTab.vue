@@ -40,7 +40,7 @@ const handleIcsExportAcademicYear = async () => {
 </script>
 
 <template>
-	<div class="overflow-y-auto">
+	<div class="overflow-y-auto pb-4">
 		<h3 class="text-muted-foreground mb-2 text-sm font-medium">Експорт розкладу</h3>
 		<div class="flex items-center justify-between rounded-lg border p-4">
 			<div class="flex flex-col gap-1">

@@ -109,7 +109,7 @@ const copyAllSchedulesToClipboard = async () => {
 </script>
 
 <template>
-	<div class="overflow-y-auto">
+	<div class="overflow-y-auto pb-4">
 		<div class="space-y-4">
 			<!-- View info -->
 			<div class="bg-muted flex items-center justify-between rounded-lg px-3 py-2 text-xs">

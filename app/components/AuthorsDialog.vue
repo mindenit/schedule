@@ -10,7 +10,7 @@ import { AUTHORS } from "~/constants"
 				Про авторів
 			</UiButton>
 		</UiDialogTrigger>
-		<UiDialogContent class="max-w-md">
+		<UiDialogContent class="sm:max-w-md">
 			<UiDialogHeader>
 				<UiDialogTitle class="flex items-center gap-2">
 					<AppIcon name="lucide:users" />
@@ -43,7 +43,8 @@ import { AUTHORS } from "~/constants"
 						target="_blank"
 						rel="noopener noreferrer"
 						:aria-label="`Профіль ${author.name} в LinkedIn`"
-						class="hover:bg-accent dark:hover:bg-accent/50 ml-auto inline-flex size-9 shrink-0 items-center justify-center rounded-md transition-colors"
+						class="hover:bg-accent dark:hover:bg-accent/50 ml-auto inline-flex size-9 shrink-0
+							items-center justify-center rounded-md transition-colors"
 					>
 						<AppIcon name="brandico:linkedin-rect" />
 					</NuxtLink>
