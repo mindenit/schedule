@@ -4,6 +4,7 @@
 	"private": true,
 	"type": "module",
 	"scripts": {
+		"preinstall": "npx only-allow pnpm",
 		"build": "nuxt build",
 		"dev": "nuxt dev",
 		"generate": "nuxt generate",
@@ -13,7 +14,9 @@
 		"lint:fix": "eslint . --fix",
 		"prettier": "prettier --check .",
 		"prettier:fix": "prettier --write .",
-		"format": "pnpm prettier:fix && pnpm lint:fix"
+		"format": "pnpm prettier:fix && pnpm lint:fix",
+		"deps:check": "taze -r",
+		"deps:upgrade": "taze major -r -w && pnpm install"
 	},
 	"dependencies": {
 		"@nuxt/a11y": "1.0.0-alpha.1",
@@ -64,10 +67,5 @@
 		"prettier-plugin-tailwindcss": "^0.8.0",
 		"typescript": "^5.8.3"
 	},
-	"packageManager": "pnpm@10.8.1+sha512.c50088ba998c67b8ca8c99df8a5e02fd2ae2e2b29aaf238feaa9e124248d3f48f9fb6db2424949ff901cffbb5e0f0cc1ad6aedb602cd29450751d11c35023677",
-	"pnpm": {
-		"overrides": {
-			"@eslint/js": "9.28.0"
-		}
-	}
+	"packageManager": "pnpm@11.10.0+sha512.C3+LmAYAMZBMAX46QesYehbUDuuCm5XE+MsDaBdh/Eq1PdIZEVubRH9NzhoFohR2RGHn03AzkqnzL5URzoyGyA=="
 }
