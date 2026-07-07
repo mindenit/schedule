@@ -5,6 +5,7 @@
 	"type": "module",
 	"scripts": {
 		"preinstall": "npx only-allow pnpm",
+		"prepare": "simple-git-hooks",
 		"build": "nuxt build",
 		"dev": "nuxt dev",
 		"generate": "nuxt generate",
@@ -17,6 +18,19 @@
 		"format": "pnpm prettier:fix && pnpm lint:fix",
 		"deps:check": "taze -r",
 		"deps:upgrade": "taze major -r -w && pnpm install"
+	},
+	"simple-git-hooks": {
+		"pre-commit": "pnpm lint-staged",
+		"commit-msg": "pnpm commitlint --edit $1"
+	},
+	"lint-staged": {
+		"*.{js,ts,vue,mjs,mts}": [
+			"prettier --write",
+			"eslint --fix"
+		],
+		"*.{json,yml,yaml,css,md}": [
+			"prettier --write"
+		]
 	},
 	"dependencies": {
 		"@nuxt/a11y": "1.0.0-alpha.1",
@@ -58,13 +72,17 @@
 		"vue-sonner": "^2.0.9"
 	},
 	"devDependencies": {
+		"@commitlint/cli": "^21.2.0",
+		"@commitlint/config-conventional": "^21.0.0",
 		"@yuta-inoue-ph/nuxt-vcalendar": "^1.1.4",
 		"eslint-config-prettier": "^10.1.8",
 		"eslint-plugin-prettier": "^5.5.6",
+		"lint-staged": "^17.0.8",
 		"prettier": "^3.8.4",
 		"prettier-plugin-classnames": "^0.10.2",
 		"prettier-plugin-merge": "^0.10.1",
 		"prettier-plugin-tailwindcss": "^0.8.0",
+		"simple-git-hooks": "^2.11.1",
 		"typescript": "^5.8.3"
 	},
 	"packageManager": "pnpm@11.10.0+sha512.C3+LmAYAMZBMAX46QesYehbUDuuCm5XE+MsDaBdh/Eq1PdIZEVubRH9NzhoFohR2RGHn03AzkqnzL5URzoyGyA=="

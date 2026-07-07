@@ -29,8 +29,17 @@ jobs:
           node-version-file: .node-version
           cache: pnpm
 
+      - name: Restore .nuxt cache
+        uses: actions/cache@v4
+        with:
+          path: .nuxt
+          key: nuxt-${{ hashFiles('nuxt.config.ts', 'pnpm-lock.yaml') }}
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Check formatting
+        run: pnpm prettier
 
       - name: Lint
         run: pnpm lint
@@ -40,3 +49,5 @@ jobs:
         env:
           # Silence the Nuxt telemetry prompt in CI
           NUXT_TELEMETRY_DISABLED: "1"
+          # Satisfy the prod env-var check in nuxt.config.ts
+          NUXT_OG_IMAGE_SECRET: "ci-placeholder-not-a-real-secret"

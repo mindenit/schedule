@@ -21,8 +21,17 @@ export default withNuxt(
 		files: ["**/**/*.{js,ts,vue,mjs,mts}"],
 		rules: {
 			"vue/multi-word-component-names": "off",
-			"vue/require-default-prop": "off",
 		},
 		...prettier,
+	}
+).append(
+	// Appended AFTER all @nuxt/eslint internal configs so this wins the precedence race.
+	// vue/require-default-prop is a false positive for TS-typed optional props —
+	// undefined is intentionally the default and withDefaults() handles required ones.
+	{
+		files: ["**/*.vue"],
+		rules: {
+			"vue/require-default-prop": "off",
+		},
 	}
 )

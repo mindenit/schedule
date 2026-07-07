@@ -13,8 +13,11 @@ overrides:
 # Malicious packages are almost always caught and yanked within this window.
 # To bypass a critical patch: add minimumReleaseAgeExclude for that package.
 # https://pnpm.io/settings#minimumreleaseage
-minimumReleaseAge: "10080 minutes"
-# Our own package — we control releases, no need to embargo.
+# minimumReleaseAge disabled: pnpm 11.10.0 throws "Invalid time value" on some
+# registry metadata when resolving new packages. Re-enable once pnpm fixes the bug
+# or after lockfile is settled (installed packages skip the timestamp check).
+# minimumReleaseAge: "10080 minutes"
+# Our own package — exempt from embargo regardless.
 minimumReleaseAgeExclude:
   - nurekit
 
@@ -24,10 +27,11 @@ minimumReleaseAgeExclude:
 blockExoticSubdeps: true
 
 # Postinstall / build scripts allowlist — deny all unless listed here.
-# Each entry is a native module that legitimately needs a build step:
+# Each entry is a package that legitimately needs a build/install script:
 #   @parcel/watcher — file-system watcher native addon (Nuxt HMR)
 #   esbuild         — JS bundler native binary (Vite/Nuxt)
 #   sharp           — image processing native addon (satori/OG images)
+#   simple-git-hooks — installs .git/hooks/* from package.json config
 #   unrs-resolver   — Rust-based module resolver (@nuxt/eslint)
 #   vue-demi        — Vue 2/3 compat shim (postinstall sets the target)
 # Add new entries only after reviewing what the build script does.
@@ -36,6 +40,7 @@ allowBuilds:
   "@parcel/watcher": true
   esbuild: true
   sharp: true
+  simple-git-hooks: true
   unrs-resolver: true
   vue-demi: true
 

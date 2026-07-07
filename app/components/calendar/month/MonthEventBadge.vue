@@ -2,7 +2,6 @@
 import type { Schedule } from "nurekit"
 import { getEventTimeRange } from "~/utils/event-cache"
 
-/* eslint-disable vue/require-default-prop -- optional props with no default are valid in TS defineProps; undefined IS the intended default */
 interface Props {
 	event?: Schedule
 	class?: string
@@ -26,7 +25,6 @@ interface Props {
 	 */
 	interactive?: boolean
 }
-/* eslint-enable vue/require-default-prop */
 
 const props = withDefaults(defineProps<Props>(), { interactive: true })
 
