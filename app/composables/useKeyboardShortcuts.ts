@@ -12,7 +12,8 @@ export function useKeyboardShortcuts() {
 	const { selectedDate, view } = storeToRefs(calendarStore)
 	const { trackEvent } = useAnalytics()
 
-	const isShortcutsOpen = ref(false)
+	// useState keeps one shared ref across all composable call-sites (app.vue + settings).
+	const isShortcutsOpen = useState("shortcuts:open", () => false)
 
 	function isInInteractiveContext(e: KeyboardEvent): boolean {
 		const target = e.target as HTMLElement
@@ -66,8 +67,8 @@ export function useKeyboardShortcuts() {
 				trackEvent("view_changed", { view: "week", source: "keyboard" })
 				break
 			}
-		case "m":
-		case "M": {
+			case "m":
+			case "M": {
 				calendarStore.setView("month")
 				trackEvent("view_changed", { view: "month", source: "keyboard" })
 				break

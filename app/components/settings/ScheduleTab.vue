@@ -11,6 +11,9 @@ const { effectiveTimezone } = useTimezone()
 const { selectedSchedule } = storeToRefs(scheduleStore)
 const { exportAcademicYearSchedule, isLoading } = useScheduleIcsExport()
 
+// Shared state — useState key keeps one ref across all call-sites.
+const isShortcutsOpen = useState("shortcuts:open", () => false)
+
 const handleIcsExportAcademicYear = async () => {
 	if (!selectedSchedule.value) {
 		useSonner.warning("Оберіть розклад", {
@@ -105,6 +108,18 @@ const handleIcsExportAcademicYear = async () => {
 				v-model="isSnowEnabled"
 				@update:model-value="trackEvent('settings_changed', { setting: 'snow', value: $event })"
 			/>
+		</div>
+
+		<h3 class="text-muted-foreground mt-6 mb-2 text-sm font-medium">Довідка</h3>
+		<div class="flex items-center justify-between rounded-lg border p-4">
+			<div class="flex flex-col gap-1">
+				<div class="text-sm font-medium">Гарячі клавіші</div>
+				<div class="text-muted-foreground text-xs">Швидка навігація по календарю без миші</div>
+			</div>
+			<UiButton size="sm" variant="outline" @click="isShortcutsOpen = true">
+				<AppIcon name="lucide:keyboard" />
+				Переглянути
+			</UiButton>
 		</div>
 	</div>
 </template>

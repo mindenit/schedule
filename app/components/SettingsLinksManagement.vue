@@ -2,6 +2,7 @@
 import { useLinksStore, type Link } from "~/stores/links"
 import ShareLinksDialog from "~/components/links/ShareLinksDialog.vue"
 import type { Subject } from "nurekit"
+import { SHARE_LINKS } from "~/constants/features"
 
 const linksStore = useLinksStore()
 const { trackEvent } = useAnalytics()
@@ -136,7 +137,7 @@ const handleMainImport = (event: Event) => {
 				{{ allSelected ? "Скасувати вибір" : "Вибрати все" }}
 			</UiButton>
 			<UiButton
-				v-if="selectedLinkIds.length > 0"
+				v-if="SHARE_LINKS && selectedLinkIds.length > 0"
 				size="sm"
 				variant="outline"
 				@click="showShareDialog = true"
@@ -184,7 +185,11 @@ const handleMainImport = (event: Event) => {
 
 		<LinksAddDialog v-model="showLinkDialog" :link="editingLink" @save="saveLink" />
 
-		<ShareLinksDialog v-model="showShareDialog" :selected-link-ids="selectedLinkIds" />
+		<ShareLinksDialog
+			v-if="SHARE_LINKS"
+			v-model="showShareDialog"
+			:selected-link-ids="selectedLinkIds"
+		/>
 
 		<input ref="fileInput" type="file" accept=".json" class="hidden" @change="handleMainImport" />
 	</div>
