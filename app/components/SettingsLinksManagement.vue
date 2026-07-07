@@ -6,6 +6,7 @@ import { SHARE_LINKS } from "~/constants/features"
 
 const linksStore = useLinksStore()
 const { trackEvent } = useAnalytics()
+const { saveLink: saveLinkCrud, deleteLink: deleteLinkCrud } = useLinkCrud()
 
 const showLinkDialog = ref(false)
 const showShareDialog = ref(false)
@@ -46,41 +47,12 @@ const editLink = (link: Link, subjectId: string, eventType: string, subject: Sub
 
 const saveLink = (linkData: Partial<Link>) => {
 	if (!editingContext.value) return
-
 	const { subjectId, eventType, subject } = editingContext.value
-
-	if (editingLink.value) {
-		linksStore.updateLink(parseInt(subjectId), eventType, {
-			...editingLink.value,
-			...linkData,
-		})
-		trackEvent("link_edited")
-		useSonner.success("Посилання оновлено", {
-			description: "Зміни успішно збережено",
-		})
-	} else {
-		linksStore.addLink(
-			parseInt(subjectId),
-			eventType,
-			{
-				url: linkData.url || "",
-				name: linkData.name || "",
-			},
-			subject
-		)
-		trackEvent("link_added")
-		useSonner.success("Посилання додано", {
-			description: "Нове посилання успішно створено",
-		})
-	}
+	saveLinkCrud(parseInt(subjectId), eventType, linkData, subject, editingLink.value)
 }
 
 const deleteLink = (linkId: string, subjectId: string, eventType: string) => {
-	linksStore.deleteLink(parseInt(subjectId), eventType, linkId)
-	trackEvent("link_deleted")
-	useSonner.success("Посилання видалено", {
-		description: "Посилання успішно видалено",
-	})
+	deleteLinkCrud(parseInt(subjectId), eventType, linkId)
 }
 
 const handleImportLinks = (file: File) => {

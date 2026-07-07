@@ -26,18 +26,23 @@ export const useScheduleIcsExport = () => {
 			customFilename?: string
 		}
 	) => {
+		const loadingToastId = "ics-loading"
 		try {
 			isLoading.value = true
 
 			const { startTimestamp, endTimestamp } = getAcademicYearTimestamps()
 
-			useSonner.info("Завантаження розкладу", {
+			useSonner.loading("Завантаження розкладу", {
+				id: loadingToastId,
 				description: "Отримання даних за навчальний рік...",
 			})
 
 			const buildOptions = scheduleOptionsByType[scheduleType]
 			if (!buildOptions) {
-				useSonner.error("Помилка експорту", { description: "Невідомий тип розкладу" })
+				useSonner.error("Помилка експорту", {
+					id: loadingToastId,
+					description: "Невідомий тип розкладу",
+				})
 				return
 			}
 
@@ -47,6 +52,7 @@ export const useScheduleIcsExport = () => {
 
 			if (!events || events.length === 0) {
 				useSonner.warning("Немає даних", {
+					id: loadingToastId,
 					description: "Розклад на цей навчальний рік не знайдено",
 				})
 				return
@@ -64,10 +70,12 @@ export const useScheduleIcsExport = () => {
 			})
 
 			useSonner.success("Експорт завершено", {
+				id: loadingToastId,
 				description: `Завантажено ${events.length} подій у форматі ICS`,
 			})
 		} catch {
 			useSonner.error("Помилка експорту", {
+				id: loadingToastId,
 				description: "Не вдалося експортувати розклад",
 			})
 		} finally {

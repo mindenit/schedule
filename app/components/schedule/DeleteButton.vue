@@ -18,6 +18,10 @@ const removeActiveSchedule = () => {
 			type: removed.type,
 			total_remaining: allSchedules.value.length,
 		})
+		useSonner("Розклад видалено", {
+			description: `«${removed.name}» більше не відстежується`,
+			duration: 3000,
+		})
 	}
 	showDialog.value = false
 }
@@ -26,7 +30,12 @@ const removeActiveSchedule = () => {
 <template>
 	<UiAlertDialog v-model:open="showDialog">
 		<UiAlertDialogTrigger as-child>
-			<UiButton size="icon" variant="destructive" :disabled="!hasActiveSchedule" aria-label="Видалити розклад">
+			<UiButton
+				size="icon"
+				variant="destructive"
+				:disabled="!hasActiveSchedule"
+				aria-label="Видалити розклад"
+			>
 				<AppIcon name="lucide:trash" />
 			</UiButton>
 		</UiAlertDialogTrigger>

@@ -262,6 +262,7 @@ watch(isOpen, (open) => {
 						() => {
 							filtersStore.clearAll()
 							trackEvent('filters_reset')
+							useSonner('Фільтри скинуто', { duration: 2000 })
 						}
 					"
 				>

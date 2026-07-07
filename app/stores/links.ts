@@ -113,9 +113,14 @@ export const useLinksStore = defineStore("links", () => {
 	}
 
 	function importLinks(jsonString: string): { success: boolean; error?: string } {
+		let data: unknown
 		try {
-			const data = JSON.parse(jsonString)
+			data = JSON.parse(jsonString)
+		} catch {
+			return { success: false, error: "Файл пошкоджений або не є коректним JSON" }
+		}
 
+		try {
 			if (Array.isArray(data)) {
 				data.forEach((item) => {
 					if (item.subjectId && item.subject && item.eventType && item.link) {
@@ -151,11 +156,8 @@ export const useLinksStore = defineStore("links", () => {
 			}
 
 			return { success: true }
-		} catch (e) {
-			if (e instanceof Error) {
-				return { success: false, error: e.message }
-			}
-			return { success: false, error: "An unknown error occurred during import." }
+		} catch {
+			return { success: false, error: "Формат файлу не підтримується або дані пошкоджені" }
 		}
 	}
 

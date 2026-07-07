@@ -14,6 +14,7 @@ const props = defineProps<Props>()
 const calendarStore = useCalendarStore()
 const { view } = storeToRefs(calendarStore)
 const { trackEvent } = useAnalytics()
+const isAddDialogOpen = useState("schedule:add-dialog:open", () => false)
 
 // SSR renders the calendar with no localStorage access, so hasActiveSchedule is
 // always false on the server. This causes a hydration mismatch on blur-sm and the
@@ -83,6 +84,9 @@ const overlayContent = computed(() => {
 					(err) => {
 						console.error('[Calendar] render error:', err)
 						trackEvent('app_error', { status: 0, source: 'calendar' })
+						useSonner.error('Помилка відображення', {
+							description: err?.message || 'Не вдалося відрендерити календар',
+						})
 					}
 				"
 			>
@@ -136,7 +140,14 @@ const overlayContent = computed(() => {
 					title="Розклад не обрано"
 					description="Оберіть або додайте розклад"
 					class="pointer-events-auto"
-				/>
+				>
+					<template #actions>
+						<UiButton size="sm" @click="isAddDialogOpen = true">
+							<AppIcon name="lucide:plus" />
+							Додати розклад
+						</UiButton>
+					</template>
+				</AppEmptyState>
 
 				<TheLoader v-else-if="overlayContent === 'loading'" size="lg" class="pointer-events-auto" />
 

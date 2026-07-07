@@ -83,6 +83,9 @@ async function resolveEntityName(
  *
  * The composable is a no-op on the server (import.meta.client guard).
  */
+/** True while applyUrlToStores is resolving a shared-URL entity (group/teacher/auditorium). */
+export const isResolvingUrl = ref(false)
+
 export function useUrlState() {
 	if (!import.meta.client) return
 
@@ -153,9 +156,13 @@ export function useUrlState() {
 					await nextTick()
 				}
 
-				const name = await resolveEntityName(scheduleType, id, queryClient, $nurekit)
-
-				scheduleStore.selectScheduleFromUrl({ id, name, type: scheduleType })
+				isResolvingUrl.value = true
+				try {
+					const name = await resolveEntityName(scheduleType, id, queryClient, $nurekit)
+					scheduleStore.selectScheduleFromUrl({ id, name, type: scheduleType })
+				} finally {
+					isResolvingUrl.value = false
+				}
 			}
 		}
 	}

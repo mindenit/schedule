@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { getScheduleIcon, getScheduleTypeLabel } from "~/constants/schedule"
+import { isResolvingUrl } from "~/composables/useUrlState"
 
 const scheduleStore = useScheduleStore()
 const { trackEvent } = useAnalytics()
@@ -24,10 +25,10 @@ const selectedValue = computed({
 </script>
 
 <template>
-	<UiSelect v-model="selectedValue" :disabled="!scheduleStore.isInitialized">
+	<UiSelect v-model="selectedValue" :disabled="!scheduleStore.isInitialized || isResolvingUrl">
 		<UiSelectTrigger class="w-full" aria-label="Вибір розкладу">
 			<UiSelectValue>
-				<template v-if="!scheduleStore.isInitialized">
+				<template v-if="!scheduleStore.isInitialized || isResolvingUrl">
 					<div class="flex items-center gap-2">
 						<AppIcon name="lucide:loader-2" class="animate-spin" />
 						<span class="text-muted-foreground">Завантаження...</span>

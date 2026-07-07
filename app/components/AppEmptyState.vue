@@ -48,6 +48,9 @@ withDefaults(defineProps<Props>(), {
 			<div>
 				<h3 v-if="title" class="text-lg font-semibold">{{ title }}</h3>
 				<p v-if="description" class="text-sm">{{ description }}</p>
+				<div v-if="$slots.actions" class="mt-3">
+					<slot name="actions" />
+				</div>
 			</div>
 		</div>
 	</div>

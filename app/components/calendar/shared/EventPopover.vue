@@ -10,7 +10,7 @@ const props = defineProps<Props>()
 
 const { formatTimeRange, formatDate, getEventTypeColor, getEventTypeLabel } = useEventFormatting()
 const linksStore = useLinksStore()
-const { trackEvent } = useAnalytics()
+const { saveLink: saveLinkCrud, deleteLink: deleteLinkCrud } = useLinkCrud()
 
 const eventLinks = computed(() => linksStore.getLinks(props.event.subject.id, props.event.type))
 
@@ -60,30 +60,11 @@ const saveLink = (linkData: Partial<Link>) => {
 		title: props.event.subject.title,
 		brief: props.event.subject.brief,
 	}
-
-	if (editingLink.value) {
-		linksStore.updateLink(props.event.subject.id, props.event.type, {
-			...editingLink.value,
-			...linkData,
-		})
-		trackEvent("link_edited")
-	} else {
-		linksStore.addLink(
-			props.event.subject.id,
-			props.event.type,
-			{
-				url: linkData.url || "",
-				name: linkData.name || "",
-			},
-			subjectInfo
-		)
-		trackEvent("link_added")
-	}
+	saveLinkCrud(props.event.subject.id, props.event.type, linkData, subjectInfo, editingLink.value)
 }
 
 const deleteLink = (linkId: string) => {
-	linksStore.deleteLink(props.event.subject.id, props.event.type, linkId)
-	trackEvent("link_deleted")
+	deleteLinkCrud(props.event.subject.id, props.event.type, linkId)
 }
 </script>
 

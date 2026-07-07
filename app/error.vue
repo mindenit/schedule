@@ -36,6 +36,7 @@ useSeo({
 })
 
 const { trackEvent } = useAnalytics()
+const isOnline = useOnline()
 
 onMounted(() => {
 	trackEvent("app_error", {
@@ -45,6 +46,7 @@ onMounted(() => {
 })
 
 function handleClearError() {
+	if (!isOnline.value) return
 	clearError({ redirect: "/" })
 }
 
@@ -77,9 +79,15 @@ const stackTrace = computed(() => {
 					Повернутися на головну
 				</UiButton>
 			</NuxtLink>
-			<UiButton v-if="!is404" size="lg" variant="outline" @click="handleClearError">
-				<AppIcon name="lucide:refresh-cw" />
-				Спробувати ще раз
+			<UiButton
+				v-if="!is404"
+				size="lg"
+				variant="outline"
+				:disabled="!isOnline"
+				@click="handleClearError"
+			>
+				<AppIcon :name="isOnline ? 'lucide:refresh-cw' : 'lucide:wifi-off'" />
+				{{ isOnline ? "Спробувати ще раз" : "Немає з'єднання" }}
 			</UiButton>
 		</div>
 
@@ -91,8 +99,7 @@ const stackTrace = computed(() => {
 				<pre
 					class="bg-muted border-border max-h-96 overflow-auto rounded-md border p-4 font-mono
 						text-xs leading-relaxed"
-					>{{ stackTrace }}</pre
-				>
+					>{{ stackTrace }}</pre>
 			</div>
 		</IsDevelopment>
 	</div>

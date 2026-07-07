@@ -14,7 +14,9 @@ const { trackEvent, incrementProfile } = useAnalytics()
 const searchQuery = ref("")
 const activeTab = ref<ScheduleTabType>("group")
 
-const isDialogOpen = ref(false)
+// useState makes the open state globally accessible — e.g. Root.vue's
+// "no schedule" CTA can open this dialog without prop drilling.
+const isDialogOpen = useState("schedule:add-dialog:open", () => false)
 
 const {
 	data: groups,
@@ -181,13 +183,29 @@ const handleTabChange = (newTab: string | number) => {
 		displayCounts[key] = ITEMS_PER_PAGE
 		resetFunctions[key]?.()
 	})
-	trackEvent("add_dialog_tab_changed", { tab: activeTab.value as "group" | "teacher" | "auditorium" })
+	trackEvent("add_dialog_tab_changed", {
+		tab: activeTab.value as "group" | "teacher" | "auditorium",
+	})
 }
 
 const handleCardClick = (item: GenericScheduleItem) => {
+	const alreadyExists = scheduleStore.allSchedules.some(
+		(s) => String(s.id) === String(item.id) && s.type === item.type
+	)
 	scheduleStore.addSchedule(item)
 	trackEvent("schedule_added", { type: item.type })
 	incrementProfile("schedules_added_total")
+	if (alreadyExists) {
+		useSonner("Розклад вже збережено", {
+			description: `«${item.name}» вже є у вашому списку — переключено на нього`,
+			duration: 3000,
+		})
+	} else {
+		useSonner.success("Розклад додано", {
+			description: `«${item.name}» збережено`,
+			duration: 3000,
+		})
+	}
 	isDialogOpen.value = false
 }
 </script>
@@ -241,12 +259,12 @@ const handleCardClick = (item: GenericScheduleItem) => {
 									scrollRefs[tabType].value = el as HTMLElement | undefined
 								}
 							"
-						class="custom-scrollbar h-[400px] overflow-y-auto"
-						style="scrollbar-width: thin; scrollbar-color: var(--border) transparent"
-						tabindex="0"
-						role="region"
-						:aria-label="`Список ${tabType === 'group' ? 'груп' : tabType === 'teacher' ? 'викладачів' : 'аудиторій'}`"
-					>
+							class="custom-scrollbar h-[400px] overflow-y-auto"
+							style="scrollbar-width: thin; scrollbar-color: var(--border) transparent"
+							tabindex="0"
+							role="region"
+							:aria-label="`Список ${tabType === 'group' ? 'груп' : tabType === 'teacher' ? 'викладачів' : 'аудиторій'}`"
+						>
 							<template v-if="getDisplayedItems(tabType).length > 0">
 								<ScheduleDialogCard
 									v-for="item in getDisplayedItems(tabType)"

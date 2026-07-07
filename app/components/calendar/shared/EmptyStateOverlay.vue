@@ -14,6 +14,12 @@ withDefaults(defineProps<Props>(), {
 
 const filtersStore = useFiltersStore()
 const { trackEvent } = useAnalytics()
+
+function resetFilters() {
+	filtersStore.clearAll()
+	trackEvent("empty_state_filters_reset")
+	useSonner("Фільтри скинуто", { duration: 2000 })
+}
 </script>
 
 <template>
@@ -27,7 +33,8 @@ const { trackEvent } = useAnalytics()
 	>
 		<div
 			v-if="show"
-			class="bg-background/70 pointer-events-none absolute inset-0 flex items-center justify-center backdrop-blur-sm"
+			class="bg-background/70 pointer-events-none absolute inset-0 flex items-center justify-center
+				backdrop-blur-sm"
 		>
 			<div class="border-border bg-card pointer-events-auto mx-4 rounded-lg border p-6 shadow-lg">
 				<div class="flex items-center gap-4">
@@ -38,11 +45,7 @@ const { trackEvent } = useAnalytics()
 					</div>
 				</div>
 				<div v-if="filtersStore.hasActive" class="mt-4 flex justify-end">
-					<UiButton
-					size="sm"
-					variant="outline"
-					@click="filtersStore.clearAll(); trackEvent('empty_state_filters_reset')"
-				>
+					<UiButton size="sm" variant="outline" @click="resetFilters">
 						<AppIcon name="lucide:rotate-ccw" />
 						Скинути фільтри
 					</UiButton>
