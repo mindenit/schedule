@@ -1,9 +1,16 @@
 <script setup lang="ts">
 const { trackEvent } = useAnalytics()
+
+const isOpen = useState("settings:open", () => false)
+
+function onOpenChange(open: boolean) {
+	isOpen.value = open
+	if (open) trackEvent("settings_opened")
+}
 </script>
 
 <template>
-	<UiDialog @update:open="(open) => open && trackEvent('settings_opened')">
+	<UiDialog :open="isOpen" @update:open="onOpenChange">
 		<UiDialogTrigger as-child>
 			<UiButton size="icon" variant="ghost" aria-label="Налаштування">
 				<AppIcon name="lucide:settings" />

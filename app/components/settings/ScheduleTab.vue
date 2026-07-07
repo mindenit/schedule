@@ -11,8 +11,17 @@ const { effectiveTimezone } = useTimezone()
 const { selectedSchedule } = storeToRefs(scheduleStore)
 const { exportAcademicYearSchedule, isLoading } = useScheduleIcsExport()
 
-// Shared state — useState key keeps one ref across all call-sites.
+// Shared state — useState keys keep one ref across all call-sites.
 const isShortcutsOpen = useState("shortcuts:open", () => false)
+const isSettingsOpen = useState("settings:open", () => false)
+
+async function openShortcuts() {
+	// Close settings first; wait a tick so Reka tears down its overlay before
+	// the shortcuts dialog mounts — prevents z-index stacking and Escape conflicts.
+	isSettingsOpen.value = false
+	await nextTick()
+	isShortcutsOpen.value = true
+}
 
 const handleIcsExportAcademicYear = async () => {
 	if (!selectedSchedule.value) {
@@ -116,7 +125,7 @@ const handleIcsExportAcademicYear = async () => {
 				<div class="text-sm font-medium">Гарячі клавіші</div>
 				<div class="text-muted-foreground text-xs">Швидка навігація по календарю без миші</div>
 			</div>
-			<UiButton size="sm" variant="outline" @click="isShortcutsOpen = true">
+			<UiButton size="sm" variant="outline" @click="openShortcuts">
 				<AppIcon name="lucide:keyboard" />
 				Переглянути
 			</UiButton>
