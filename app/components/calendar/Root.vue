@@ -25,6 +25,30 @@ onMounted(() => {
 	isHydrating.value = false
 })
 
+// Aria-live announcement for screen readers: announces schedule load result.
+// Debounced so rapid filter toggles (which cycle isLoading) don't spam.
+const announcement = ref("")
+let _announceTimer: ReturnType<typeof setTimeout> | null = null
+
+watch(
+	[() => props.isLoading, () => props.error, () => props.events.length],
+	([loading, err, count], [wasLoading]) => {
+		if (isHydrating.value) return
+		// Only announce when a loading cycle completes (wasLoading → not loading).
+		if (!wasLoading) return
+		if (loading) return
+
+		if (_announceTimer) clearTimeout(_announceTimer)
+		_announceTimer = setTimeout(() => {
+			if (err) {
+				announcement.value = "Не вдалося оновити розклад"
+			} else if (props.hasActiveSchedule) {
+				announcement.value = `Розклад оновлено, ${count} ${pluralUk(count, "подія", "події", "подій")}`
+			}
+		}, 500)
+	}
+)
+
 const showOverlay = computed(() => {
 	if (isHydrating.value) return true
 	return !props.hasActiveSchedule || props.isLoading || !!props.error
@@ -40,6 +64,12 @@ const overlayContent = computed(() => {
 </script>
 
 <template>
+	<!-- Aria-live region: announces schedule load results to screen readers. -->
+	<!-- sr-only keeps it invisible; role=status + aria-live=polite avoids interrupting speech. -->
+	<div role="status" aria-live="polite" aria-atomic="true" class="sr-only">
+		{{ announcement }}
+	</div>
+
 	<div
 		class="hide-scrollbar relative flex h-full flex-col overflow-x-hidden rounded-lg
 			max-md:rounded-t-none"
@@ -57,11 +87,11 @@ const overlayContent = computed(() => {
 				"
 			>
 				<BigCalendarYearView v-if="view === 'year'" :events="props.events" class="h-full" />
-			<BigCalendarMonthView
-				v-else-if="view === 'month'"
-				:events="props.events"
-				class="h-full overflow-y-hidden"
-			/>
+				<BigCalendarMonthView
+					v-else-if="view === 'month'"
+					:events="props.events"
+					class="h-full overflow-y-hidden"
+				/>
 				<BigCalendarWeekView v-else-if="view === 'week'" :events="props.events" class="h-full" />
 				<BigCalendarDayView v-else-if="view === 'day'" :events="props.events" class="h-full" />
 
@@ -76,7 +106,9 @@ const overlayContent = computed(() => {
 										"Виникла непередбачена помилка при рендерингу календаря."
 									}}
 								</p>
-								<UiButton size="sm" variant="outline" @click="clearError">Спробувати знову</UiButton>
+								<UiButton size="sm" variant="outline" @click="clearError"
+									>Спробувати знову</UiButton
+								>
 							</UiAlertDescription>
 						</UiAlert>
 					</div>
@@ -108,7 +140,11 @@ const overlayContent = computed(() => {
 
 				<TheLoader v-else-if="overlayContent === 'loading'" size="lg" class="pointer-events-auto" />
 
-				<UiAlert v-else-if="overlayContent === 'error'" variant="destructive" class="pointer-events-auto mx-2 w-sm">
+				<UiAlert
+					v-else-if="overlayContent === 'error'"
+					variant="destructive"
+					class="pointer-events-auto mx-2 w-sm"
+				>
 					<UiAlertTitle>Помилка</UiAlertTitle>
 					<UiAlertDescription>
 						<p v-if="error">Не вдалося завантажити розклад: {{ error.message }}</p>
