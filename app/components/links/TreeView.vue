@@ -122,8 +122,20 @@ const allSelected = computed(
 )
 
 function selectAll() {
-	// Select at subject level — propagateSelect cascades to all descendants
-	selected.value = [...treeItems.value]
+	// Must include all nodes at every level: setting only subjects externally does not
+	// trigger the tree's internal propagate-select cascade, so checkboxes at
+	// eventType and link levels would stay unchecked visually.
+	const all: TreeNode[] = []
+	for (const subject of treeItems.value) {
+		all.push(subject)
+		for (const eventType of subject.children) {
+			all.push(eventType)
+			for (const link of eventType.children) {
+				all.push(link)
+			}
+		}
+	}
+	selected.value = all
 }
 
 function clearSelection() {

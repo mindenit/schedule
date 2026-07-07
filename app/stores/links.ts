@@ -71,11 +71,21 @@ export const useLinksStore = defineStore("links", () => {
 
 	function deleteLink(subjectId: number, eventType: string, linkId: string) {
 		const subjectKey = subjectId.toString()
-		const eventLinks = links.value[subjectKey]?.events[eventType]
-		if (!eventLinks) return
+		const subjectEntry = links.value[subjectKey]
+		if (!subjectEntry?.events[eventType]) return
 
-		if (links.value[subjectKey] && links.value[subjectKey].events[eventType]) {
-			links.value[subjectKey].events[eventType] = eventLinks.filter((l) => l.id !== linkId)
+		subjectEntry.events[eventType] = subjectEntry.events[eventType].filter((l) => l.id !== linkId)
+
+		// Prune empty eventType bucket
+		if (subjectEntry.events[eventType].length === 0) {
+			const { [eventType]: _removed, ...rest } = subjectEntry.events
+			subjectEntry.events = rest
+		}
+
+		// Prune subject when all event types are gone
+		if (Object.keys(subjectEntry.events).length === 0) {
+			const { [subjectKey]: _removed, ...rest } = links.value
+			links.value = rest
 		}
 	}
 
