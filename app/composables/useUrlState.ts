@@ -161,22 +161,30 @@ export function useUrlState() {
 	}
 
 	// Run once on mount (initial page load / direct URL entry).
-	onMounted(() => applyUrlToStores(route.query).catch((err) => {
-		console.warn("[useUrlState] applyUrlToStores failed:", err)
-	}))
+	onMounted(() =>
+		applyUrlToStores(route.query).catch((err) => {
+			console.warn("[useUrlState] applyUrlToStores failed:", err)
+		})
+	)
 
-	// Re-run whenever the URL query changes — this handles browser Back/Forward
-	// when URL sync is enabled. When sync is OFF the source resolves to a
-	// constant `null`, so Vue stops tracking `route.query` entirely and we
-	// avoid the deep-watcher cost on every navigation.
+	// Re-run whenever the relevant URL query fields change — this handles browser
+	// Back/Forward when URL sync is enabled. Watching individual fields is cheaper
+	// than { deep: true } on the entire route.query object (avoids deep-diffing
+	// all query params on every navigation). When sync is OFF each getter returns
+	// null, so Vue stops tracking route.query entirely.
 	watch(
-		() => (settingsStore.isUrlSyncEnabled ? route.query : null),
-		(next) => {
-			if (next) applyUrlToStores(next).catch((err) => {
+		[
+			() => (settingsStore.isUrlSyncEnabled ? route.query.view : null),
+			() => (settingsStore.isUrlSyncEnabled ? route.query.date : null),
+			() => (settingsStore.isUrlSyncEnabled ? route.query.schedule : null),
+			() => (settingsStore.isUrlSyncEnabled ? route.query.type : null),
+		],
+		() => {
+			if (!settingsStore.isUrlSyncEnabled) return
+			applyUrlToStores(route.query).catch((err) => {
 				console.warn("[useUrlState] applyUrlToStores failed:", err)
 			})
-		},
-		{ deep: true }
+		}
 	)
 
 	// ── Sync stores → URL (sync enabled) ──

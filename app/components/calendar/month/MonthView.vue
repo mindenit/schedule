@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Schedule } from "nurekit"
 import { motion } from "motion-v"
-import { isToday, isSameMonth } from "date-fns"
+import { isSameDay, isSameMonth } from "date-fns"
 import type { ICalendarCell } from "~/types/calendar"
 import { getEventTimeRange } from "~/utils/event-cache"
 
@@ -18,6 +18,12 @@ const { selectedDate, eventsByDayKey } = storeToRefs(calendarStore)
 const { effectiveTimezone } = useTimezone()
 
 const { getCalendarCells, getWeekDays } = useCalendarCells()
+
+// Reactive "today" — updates every minute so the today-highlight stays correct
+// if the tab is left open across midnight. Avoids baking isToday into snapshots
+// (which would go stale until the user navigates).
+const now = useNow({ interval: 60_000 })
+const today = computed(() => now.value)
 
 const hasEvents = computed(() => props.events.length > 0)
 const weekDays = computed(() => getWeekDays(selectedDate.value))
@@ -38,8 +44,6 @@ interface BadgeData {
 
 interface MonthCellSnapshot {
 	cell: ICalendarCell
-	/** Whether the cell date is today — pre-baked so isToday() is not called per render. */
-	isDateToday: boolean
 	/**
 	 * All time-slot groups for this day — DayCell slices this based on measured height.
 	 * Replaces the old pre-sliced displayGroups so the visible count can be dynamic.
@@ -66,9 +70,12 @@ const FALLBACK_COLOR = "bg-muted text-muted-foreground"
  * work after this point.
  *
  * - groupEventsBySameTime: eliminates 84 grouping passes (42 cells × 2 panels) per nav
- * - isToday: eliminates 84 date-fns isToday() calls (allocates Date + startOfDay each)
  * - colorClass: eliminates ~300 EVENT_TYPE_COLORS lookups per nav (one per badge)
  * - timeRange: already WeakMap-cached in event-cache.ts; calling it here is O(1) per badge
+ *
+ * NOTE: isDateToday is NOT baked here. It is computed reactively at bind time using the
+ * `today` ref (updated every minute), so the highlight stays correct if the tab is
+ * left open past midnight without user navigation.
  */
 function buildPanel(date: Date): MonthPanel {
 	const cells = getCalendarCells(date)
@@ -84,14 +91,14 @@ function buildPanel(date: Date): MonthPanel {
 			group.map((event) => ({
 				key: event.id,
 				event,
-				colorClass: EVENT_TYPE_COLORS[event.type as keyof typeof EVENT_TYPE_COLORS] ?? FALLBACK_COLOR,
+				colorClass:
+					EVENT_TYPE_COLORS[event.type as keyof typeof EVENT_TYPE_COLORS] ?? FALLBACK_COLOR,
 				timeRange: getEventTimeRange(event, tz),
 			}))
 		)
 
 		return {
 			cell,
-			isDateToday: isToday(cell.date),
 			allGroups: groups,
 			allBadges,
 			totalEventsCount: groups.reduce((n, g) => n + g.length, 0),
@@ -103,44 +110,35 @@ function buildPanel(date: Date): MonthPanel {
 
 const monthRootEl = useTemplateRef("monthRoot")
 
-const {
-	currentPanel,
-	incomingPanel,
-	currentX,
-	incomingX,
-	onDragStart,
-	onDrag,
-	onDragEnd,
-} = useSwipeNavigator<MonthPanel>({
-	view: "month",
-	containerRef: monthRootEl,
-	buildPanel,
-	samePeriod: isSameMonth,
-	events: () => props.events,
-	timezone: () => effectiveTimezone.value,
-})
+const { currentPanel, incomingPanel, currentX, incomingX, onDragStart, onDrag, onDragEnd } =
+	useSwipeNavigator<MonthPanel>({
+		view: "month",
+		containerRef: monthRootEl,
+		buildPanel,
+		samePeriod: isSameMonth,
+		events: () => props.events,
+		timezone: () => effectiveTimezone.value,
+	})
 </script>
 
 <template>
 	<div ref="monthRoot" class="relative flex h-full flex-col">
 		<!-- Week day header — outside the animated panels, always visible -->
 		<div role="row" class="mb-1 grid flex-shrink-0 grid-cols-7 gap-1">
-		<div
-			v-for="day in weekDays"
-			:key="day"
-			role="columnheader"
-			:aria-label="day"
-			class="bg-muted/50 text-muted-foreground flex items-center justify-center py-2 text-xs
-				font-medium md:first:rounded-tl-2xl md:last:rounded-tr-2xl"
-		>
-			{{ day }}
-		</div>
+			<div
+				v-for="day in weekDays"
+				:key="day"
+				role="columnheader"
+				:aria-label="day"
+				class="bg-muted/50 text-muted-foreground flex items-center justify-center py-2 text-xs
+					font-medium md:first:rounded-tl-2xl md:last:rounded-tr-2xl"
+			>
+				{{ day }}
+			</div>
 		</div>
 
-		<div
-			class="relative min-h-0 flex-1 overflow-hidden rounded-b-2xl"
-		>
-		<!--
+		<div class="relative min-h-0 flex-1 overflow-hidden rounded-b-2xl">
+			<!--
 			Incoming panel — rendered as a non-interactive grid during animation.
 			:interactive="false" on each DayCell skips UiPopover + click handlers +
 			hover/cursor/transition on badges, eliminating the per-cell component
@@ -148,30 +146,30 @@ const {
 			Markup and sizing are pixel-identical to the live panel, so there is no
 			visible pop when currentPanel is promoted on settle.
 		-->
-		<motion.div
-			v-if="incomingPanel"
-			role="grid"
-			aria-hidden="true"
-			class="absolute inset-0 grid grid-cols-7 gap-1 overflow-hidden"
-			:style="{
-				gridTemplateRows: `repeat(${incomingPanel.weeksCount}, 1fr)`,
-				x: incomingX,
-				willChange: 'transform',
-				contain: 'layout paint',
-			}"
-		>
-			<BigCalendarDayCell
-				v-for="(snapshot, index) in incomingPanel.cellSnapshots"
-				:key="index"
-				:cell="snapshot.cell"
-				:is-date-today="snapshot.isDateToday"
-				:all-groups="snapshot.allGroups"
-				:all-badges="snapshot.allBadges"
-				:total-events-count="snapshot.totalEventsCount"
-				:interactive="false"
-				class="min-h-0"
-			/>
-		</motion.div>
+			<motion.div
+				v-if="incomingPanel"
+				role="grid"
+				aria-hidden="true"
+				class="absolute inset-0 grid grid-cols-7 gap-1 overflow-hidden"
+				:style="{
+					gridTemplateRows: `repeat(${incomingPanel.weeksCount}, 1fr)`,
+					x: incomingX,
+					willChange: 'transform',
+					contain: 'layout paint',
+				}"
+			>
+				<BigCalendarDayCell
+					v-for="(snapshot, index) in incomingPanel.cellSnapshots"
+					:key="index"
+					:cell="snapshot.cell"
+					:is-date-today="isSameDay(snapshot.cell.date, today)"
+					:all-groups="snapshot.allGroups"
+					:all-badges="snapshot.allBadges"
+					:total-events-count="snapshot.totalEventsCount"
+					:interactive="false"
+					class="min-h-0"
+				/>
+			</motion.div>
 
 			<!-- Current panel — always rendered, interactive, draggable -->
 			<motion.div
@@ -196,7 +194,7 @@ const {
 					v-for="(snapshot, index) in currentPanel.cellSnapshots"
 					:key="index"
 					:cell="snapshot.cell"
-					:is-date-today="snapshot.isDateToday"
+					:is-date-today="isSameDay(snapshot.cell.date, today)"
 					:all-groups="snapshot.allGroups"
 					:all-badges="snapshot.allBadges"
 					:total-events-count="snapshot.totalEventsCount"

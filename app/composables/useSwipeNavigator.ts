@@ -179,10 +179,7 @@ export function useSwipeNavigator<TPanel extends SwipeablePanel>(
 
 		const transition = getSwipeTransition()
 		const exitX = dir === "left" ? -w : w
-		const controls = [
-			animate(currentX, exitX, transition),
-			animate(incomingX, 0, transition),
-		]
+		const controls = [animate(currentX, exitX, transition), animate(incomingX, 0, transition)]
 		activeControls = controls
 		await Promise.all(controls)
 
@@ -286,10 +283,7 @@ export function useSwipeNavigator<TPanel extends SwipeablePanel>(
 			calendarStore.setSelectedDate(committed.date)
 
 			const transition = getSwipeTransition()
-			const controls = [
-				animate(currentX, exitX, transition),
-				animate(incomingX, 0, transition),
-			]
+			const controls = [animate(currentX, exitX, transition), animate(incomingX, 0, transition)]
 			activeControls = controls
 			await Promise.all(controls)
 
@@ -365,7 +359,9 @@ export function useSwipeNavigator<TPanel extends SwipeablePanel>(
 				// Without this, peeks captured during an early onDragStart hold a
 				// stale (possibly empty) props.events array, so the next drag shows an
 				// empty time-grid until the finger is released.
-				if (dragEnabled && peekBuilt) rebuildPeekPanels()
+				// Guard: skip if the user is actively dragging — the in-progress gesture
+				// already has its panels committed; rebuilding mid-drag causes jitter.
+				if (dragEnabled && peekBuilt && !isDragging.value) rebuildPeekPanels()
 			}
 		},
 		{ flush: "post" }

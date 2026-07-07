@@ -13,7 +13,7 @@ interface BadgeData {
 
 interface Props {
 	cell: ICalendarCell
-	/** Whether the cell date is today — pre-baked by MonthView.buildPanel. */
+	/** Whether the cell date is today — computed reactively in MonthView from a useNow() ref. */
 	isDateToday: boolean
 	/**
 	 * All time-slot groups for this day — DayCell slices this based on measured
@@ -60,8 +60,15 @@ const ROW_GAP_PX = 4 // gap-1
 const eventAreaEl = useTemplateRef("eventArea")
 const eventAreaHeight = ref(0)
 
+// Delta gate: only update when height changes by more than 4px to suppress
+// sub-pixel jitter from browser layout rounding and scrollbar apparition.
+let _lastEventAreaHeight = 0
 useResizeObserver(eventAreaEl, ([entry]) => {
-	eventAreaHeight.value = entry.contentRect.height
+	const h = entry.contentRect.height
+	if (Math.abs(h - _lastEventAreaHeight) > 4) {
+		_lastEventAreaHeight = h
+		eventAreaHeight.value = h
+	}
 })
 
 /**
@@ -76,9 +83,7 @@ const slotsAvailable = computed(() => {
 	//   → n ≤ (h - ROW_HEIGHT_PX) / (ROW_HEIGHT_PX + ROW_GAP_PX) + 1
 	return Math.max(
 		1,
-		Math.floor(
-			(eventAreaHeight.value - ROW_HEIGHT_PX) / (ROW_HEIGHT_PX + ROW_GAP_PX) + 1
-		)
+		Math.floor((eventAreaHeight.value - ROW_HEIGHT_PX) / (ROW_HEIGHT_PX + ROW_GAP_PX) + 1)
 	)
 })
 
@@ -97,9 +102,7 @@ const displayGroups = computed(() => {
 	return props.allGroups.slice(0, slots - 1)
 })
 
-const hiddenEvents = computed(() =>
-	props.allGroups.slice(displayGroups.value.length).flat()
-)
+const hiddenEvents = computed(() => props.allGroups.slice(displayGroups.value.length).flat())
 
 const hasMoreEvents = computed(() => hiddenEvents.value.length > 0)
 
@@ -150,7 +153,12 @@ const badgeMap = computed(() => {
 <template>
 	<div
 		role="gridcell"
-		:aria-label="cell.date.toLocaleDateString('uk-UA', { weekday: 'long', day: 'numeric', month: 'long' }) + (totalEventsCount > 0 ? `, ${totalEventsCount} ${pluralUk(totalEventsCount, 'заняття', 'заняття', 'занять')}` : '')"
+		:aria-label="
+			cell.date.toLocaleDateString('uk-UA', { weekday: 'long', day: 'numeric', month: 'long' }) +
+			(totalEventsCount > 0
+				? `, ${totalEventsCount} ${pluralUk(totalEventsCount, 'заняття', 'заняття', 'занять')}`
+				: '')
+		"
 		:aria-selected="isDateToday"
 		class="bg-card flex h-full flex-col overflow-hidden p-2.5"
 		:class="containerClasses"
@@ -169,12 +177,12 @@ const badgeMap = computed(() => {
 			class="flex flex-1 gap-1 overflow-hidden lg:flex-col lg:gap-1"
 			:class="{ 'opacity-50': !cell.currentMonth }"
 		>
-		<!-- Mobile: tap whole cell → day view -->
-		<div
-			class="flex w-full flex-wrap justify-center gap-1 lg:hidden"
-			:class="{ 'cursor-pointer': interactive }"
-			@click="interactive && handleMobileClick()"
-		>
+			<!-- Mobile: tap whole cell → day view -->
+			<div
+				class="flex w-full flex-wrap justify-center gap-1 lg:hidden"
+				:class="{ 'cursor-pointer': interactive }"
+				@click="interactive && handleMobileClick()"
+			>
 				<span
 					v-if="totalEventsCount > 0"
 					:aria-label="`${totalEventsCount} ${pluralUk(totalEventsCount, 'заняття', 'заняття', 'занять')}`"
@@ -191,57 +199,59 @@ const badgeMap = computed(() => {
 			<!-- on mount), but the static HTML structure matches on both sides. -->
 			<div class="hidden lg:flex lg:h-full lg:flex-col lg:gap-1 lg:overflow-hidden">
 				<div
-					v-for="(group, groupIndex) in displayGroups"
-					:key="groupIndex"
+					v-for="group in displayGroups"
+					:key="group.map((e) => e.id).join('-')"
+					v-memo="[group.map((e) => e.id).join('-'), interactive]"
 					class="flex h-6 shrink-0 gap-1"
 				>
-				<template v-if="group.length > 1">
-					<BigCalendarMonthEventBadge
-						v-for="event in group"
-						:key="event.id"
-						:event="event"
-						:color-class="badgeMap.get(event.id)?.colorClass"
-						:time-range="badgeMap.get(event.id)?.timeRange"
-						:cell-date="startOfDay(cell.date)"
-						:interactive="interactive"
-						class="hide-time min-w-0 flex-1"
-						@click="interactive && openEventPopover(event, $event.currentTarget as HTMLElement)"
-					/>
-				</template>
+					<template v-if="group.length > 1">
+						<BigCalendarMonthEventBadge
+							v-for="event in group"
+							:key="event.id"
+							:event="event"
+							:color-class="badgeMap.get(event.id)?.colorClass"
+							:time-range="badgeMap.get(event.id)?.timeRange"
+							:cell-date="startOfDay(cell.date)"
+							:interactive="interactive"
+							class="hide-time min-w-0 flex-1"
+							@click="interactive && openEventPopover(event, $event.currentTarget as HTMLElement)"
+						/>
+					</template>
 
-				<template v-else-if="group[0]">
-					<BigCalendarMonthEventBadge
-						:event="group[0]"
-						:color-class="badgeMap.get(group[0].id)?.colorClass"
-						:time-range="badgeMap.get(group[0].id)?.timeRange"
-						:cell-date="startOfDay(cell.date)"
-						:interactive="interactive"
-						class="w-full"
-						@click="interactive && openEventPopover(group[0], $event.currentTarget as HTMLElement)"
-					/>
-				</template>
+					<template v-else-if="group[0]">
+						<BigCalendarMonthEventBadge
+							:event="group[0]"
+							:color-class="badgeMap.get(group[0].id)?.colorClass"
+							:time-range="badgeMap.get(group[0].id)?.timeRange"
+							:cell-date="startOfDay(cell.date)"
+							:interactive="interactive"
+							class="w-full"
+							@click="
+								interactive && openEventPopover(group[0], $event.currentTarget as HTMLElement)
+							"
+						/>
+					</template>
 				</div>
 
-			<div v-if="hasMoreEvents" class="flex h-6 shrink-0 gap-1">
-				<BigCalendarMonthEventBadge
-					:interactive="interactive"
-					@click="
-						interactive &&
-							openOverflowPopover(hiddenEvents, $event.currentTarget as HTMLElement)
-					"
-				>
-					<span class="flex-1 shrink-0 truncate">
-						ще {{ remainingEventsCount }}
-						{{ pluralUk(remainingEventsCount, "заняття", "заняття", "занять") }}
-					</span>
-				</BigCalendarMonthEventBadge>
-			</div>
+				<div v-if="hasMoreEvents" class="flex h-6 shrink-0 gap-1">
+					<BigCalendarMonthEventBadge
+						:interactive="interactive"
+						@click="
+							interactive && openOverflowPopover(hiddenEvents, $event.currentTarget as HTMLElement)
+						"
+					>
+						<span class="flex-1 shrink-0 truncate">
+							ще {{ remainingEventsCount }}
+							{{ pluralUk(remainingEventsCount, "заняття", "заняття", "занять") }}
+						</span>
+					</BigCalendarMonthEventBadge>
+				</div>
 			</div>
 
-		<!-- One shared popover per cell, anchored to the last-clicked badge element -->
-		<!-- v-if="interactive": skip mounting the Popover tree entirely on the incoming -->
-		<!-- (non-interactive) panel — this is the primary cost saving for animation lag. -->
-		<UiPopover v-if="interactive" v-model:open="popoverOpen">
+			<!-- One shared popover per cell, anchored to the last-clicked badge element -->
+			<!-- v-if="interactive": skip mounting the Popover tree entirely on the incoming -->
+			<!-- (non-interactive) panel — this is the primary cost saving for animation lag. -->
+			<UiPopover v-if="interactive" v-model:open="popoverOpen">
 				<UiPopoverAnchor :reference="anchorEl ?? undefined" />
 				<UiPopoverContent class="w-80">
 					<BigCalendarEventPopover
