@@ -36,8 +36,7 @@ export const useSharableLinks = () => {
 
 			const url = `${window.location.origin}/share/links/${result.id}`
 			return url
-		} catch (error) {
-			console.error("Error creating sharable link:", error)
+		} catch {
 			useSonner.error("Помилка", {
 				description: "Не вдалося створити посилання для поділу",
 			})
@@ -54,8 +53,7 @@ export const useSharableLinks = () => {
 			const result = await $nurekit.sharableLinks.getLink(linkId)
 
 			return result
-		} catch (error) {
-			console.error("Error getting sharable link:", error)
+		} catch {
 			useSonner.error("Помилка", {
 				description: "Не вдалося завантажити посилання",
 			})
@@ -75,8 +73,7 @@ export const useSharableLinks = () => {
 				description: "Посилання успішно імпортовані",
 			})
 			return true
-		} catch (error) {
-			console.error("Error accepting sharable link:", error)
+		} catch {
 			useSonner.error("Помилка", {
 				description: "Не вдалося імпортувати посилання",
 			})

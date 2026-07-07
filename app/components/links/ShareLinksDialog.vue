@@ -42,8 +42,10 @@ const copyToClipboard = async () => {
 		setTimeout(() => {
 			copied.value = false
 		}, 2000)
-	} catch (error) {
-		console.error("Failed to copy:", error)
+	} catch {
+		useSonner.error("Помилка", {
+			description: "Не вдалося скопіювати посилання у буфер обміну",
+		})
 	}
 }
 

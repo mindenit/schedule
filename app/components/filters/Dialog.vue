@@ -160,8 +160,8 @@ watch(isOpen, (open) => {
 									v-for="lessonType in FILTERS_LESSON_TYPES"
 									:key="lessonType.id"
 									:label="lessonType.name"
-									:is-active="filtersStore.isLessonTypeActive(lessonType.id)"
-									@toggle="filtersStore.toggleLessonTypeFilter(lessonType.id)"
+									:is-active="filtersStore.isActive('lessonTypes', lessonType.id)"
+									@toggle="filtersStore.toggle('lessonTypes', lessonType.id)"
 								/>
 							</div>
 						</UiAccordionContent>
@@ -182,8 +182,8 @@ watch(isOpen, (open) => {
 									v-for="group in groups"
 									:key="group.id"
 									:label="group.name"
-									:is-active="filtersStore.isGroupActive(group.id)"
-									@toggle="filtersStore.toggleGroupFilter(group.id)"
+									:is-active="filtersStore.isActive('groups', group.id)"
+									@toggle="filtersStore.toggle('groups', group.id)"
 								/>
 							</div>
 						</UiAccordionContent>
@@ -204,8 +204,8 @@ watch(isOpen, (open) => {
 									v-for="teacher in teachers"
 									:key="teacher.id"
 									:label="teacher.shortName"
-									:is-active="filtersStore.isTeacherActive(teacher.id)"
-									@toggle="filtersStore.toggleTeacherFilter(teacher.id)"
+									:is-active="filtersStore.isActive('teachers', teacher.id)"
+									@toggle="filtersStore.toggle('teachers', teacher.id)"
 								/>
 							</div>
 						</UiAccordionContent>
@@ -226,8 +226,8 @@ watch(isOpen, (open) => {
 									v-for="auditorium in auditoriums"
 									:key="auditorium.id"
 									:label="auditorium.name"
-									:is-active="filtersStore.isAuditoriumActive(auditorium.id)"
-									@toggle="filtersStore.toggleAuditoriumFilter(auditorium.id)"
+									:is-active="filtersStore.isActive('auditoriums', auditorium.id)"
+									@toggle="filtersStore.toggle('auditoriums', auditorium.id)"
 								/>
 							</div>
 						</UiAccordionContent>
@@ -241,8 +241,8 @@ watch(isOpen, (open) => {
 									v-for="subject in subjects"
 									:key="subject.id"
 									:label="subject.brief"
-									:is-active="filtersStore.isSubjectActive(subject.id)"
-									@toggle="filtersStore.toggleSubjectFilter(subject.id)"
+									:is-active="filtersStore.isActive('subjects', subject.id)"
+									@toggle="filtersStore.toggle('subjects', subject.id)"
 								/>
 							</div>
 						</UiAccordionContent>

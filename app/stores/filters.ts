@@ -76,26 +76,12 @@ export const useFiltersStore = defineStore("filters", () => {
 		saveFilters()
 	}
 
-	// Per-type refs (kept for backwards-compatible reactivity in templates / queries).
+	// Per-type computed refs for reactive reads in templates and queries.
 	const lessonTypesFilters = computed(() => state.value.lessonTypes)
 	const teachersFilters = computed(() => state.value.teachers)
 	const auditoriumsFilters = computed(() => state.value.auditoriums)
 	const subjectsFilters = computed(() => state.value.subjects)
 	const groupsFilters = computed(() => state.value.groups)
-
-	// Per-type toggles / isActive wrappers preserve the previous public API so call sites
-	// can opt into the generic `toggle(key, value)` form gradually.
-	const toggleLessonTypeFilter = (id: string) => toggle("lessonTypes", id)
-	const toggleTeacherFilter = (id: number) => toggle("teachers", id)
-	const toggleAuditoriumFilter = (id: number) => toggle("auditoriums", id)
-	const toggleSubjectFilter = (id: number) => toggle("subjects", id)
-	const toggleGroupFilter = (id: number) => toggle("groups", id)
-
-	const isLessonTypeActive = (id: string) => isActive("lessonTypes", id)
-	const isTeacherActive = (id: number) => isActive("teachers", id)
-	const isAuditoriumActive = (id: number) => isActive("auditoriums", id)
-	const isSubjectActive = (id: number) => isActive("subjects", id)
-	const isGroupActive = (id: number) => isActive("groups", id)
 
 	const hasActive = computed(
 		() =>
@@ -186,16 +172,6 @@ export const useFiltersStore = defineStore("filters", () => {
 		saveFilters,
 		toggle,
 		isActive,
-		toggleLessonTypeFilter,
-		toggleTeacherFilter,
-		toggleAuditoriumFilter,
-		toggleSubjectFilter,
-		toggleGroupFilter,
-		isLessonTypeActive,
-		isTeacherActive,
-		isAuditoriumActive,
-		isSubjectActive,
-		isGroupActive,
 		filtersForType,
 		clearAll,
 	}

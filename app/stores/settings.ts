@@ -4,6 +4,11 @@ import { STORAGE_KEYS } from "~/constants/storage"
 import { TIMEZONE_LOCAL } from "~/constants/timezones"
 
 export const useSettingsStore = defineStore("settings", () => {
+	// useStorage reads from localStorage which is only available on the client.
+	// skipHydrate prevents Pinia from serialising these refs into the SSR payload
+	// and overwriting the localStorage value on hydration — without it the server's
+	// default value (false / true) would clobber what the user had stored.
+	// These settings do not affect SSR rendering, so client-only is correct here.
 	const isSnowEnabled = skipHydrate(
 		useStorage(STORAGE_KEYS.snowEffect, false, undefined, {
 			serializer: StorageSerializers.boolean,

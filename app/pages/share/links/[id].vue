@@ -29,9 +29,8 @@ onMounted(async () => {
 		} else {
 			error.value = "Не вдалося завантажити посилання"
 		}
-	} catch (e) {
+	} catch {
 		error.value = "Сталась помилка при завантаженні посилань"
-		console.error(e)
 	} finally {
 		loadingData.value = false
 	}
