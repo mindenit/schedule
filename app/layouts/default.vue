@@ -20,7 +20,7 @@
 				<slot />
 			</main>
 			<div class="fixed right-8 bottom-10 z-50">
-				<ScheduleAddDialog />
+				<ScheduleAddDialogTrigger variant="fab" />
 			</div>
 			<div class="fixed bottom-10 left-8 z-50">
 				<PlayMarketButton />

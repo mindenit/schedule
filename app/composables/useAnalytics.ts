@@ -69,17 +69,26 @@ export function useAnalytics() {
 
 	function trackEvent(name: string, properties?: Record<string, unknown>) {
 		if (!import.meta.client) return
-		op.track(name, properties)
+		try {
+			op.track(name, properties)
+		} catch {
+			// Analytics errors must not affect app behaviour
+		}
 	}
 
 	// ── Profile counters ───────────────────────────────────────────────────────
 	// Increment a lifetime counter on the anonymous profile.
+	// Wrapped in try/catch so a network or SDK error never aborts the caller.
 	function incrementProfile(property: string, value = 1) {
 		if (!import.meta.client) return
-		const profileId = localStorage.getItem("op-anon-id")
-		if (!profileId) return
-		const id = JSON.parse(profileId) as string
-		op.increment({ profileId: id, property, value })
+		try {
+			const profileId = localStorage.getItem("op-anon-id")
+			if (!profileId) return
+			const id = JSON.parse(profileId) as string
+			op.increment({ profileId: id, property, value })
+		} catch {
+			// Analytics errors must not affect app behaviour
+		}
 	}
 
 	return { trackEvent, incrementProfile }

@@ -22,4 +22,5 @@ const { isSnowEnabled, isShortcutsOpen } = useAppShell()
 	</ClientOnly>
 	<UiSonner />
 	<AppShortcutsDialog v-model:open="isShortcutsOpen" />
+	<ScheduleAddDialog />
 </template>

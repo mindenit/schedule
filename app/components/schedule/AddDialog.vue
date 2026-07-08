@@ -221,23 +221,6 @@ const handleCardClick = (item: GenericScheduleItem) => {
 
 <template>
 	<UiDialog v-model:open="isDialogOpen">
-		<UiDialogTrigger as-child>
-			<UiButton class="min-w-0 flex-1 gap-1 max-md:hidden">
-				<AppIcon name="lucide:plus" /> Додати розклад
-			</UiButton>
-		</UiDialogTrigger>
-
-		<UiDialogTrigger as-child>
-			<UiButton
-				class="size-12 rounded-full shadow-lg transition-all duration-200 hover:shadow-xl
-					md:hidden"
-				size="icon"
-				aria-label="Додати розклад"
-			>
-				<AppIcon name="lucide:plus" size="lg" />
-			</UiButton>
-		</UiDialogTrigger>
-
 		<UiDialogContent>
 			<UiDialogHeader>
 				<UiDialogTitle class="flex items-center gap-2">

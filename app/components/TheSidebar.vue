@@ -9,7 +9,7 @@ defineProps<Props>()
 	<div class="flex h-full flex-col gap-2">
 		<div v-if="showAddDialog" class="flex flex-col gap-2">
 			<div class="flex items-center gap-2">
-				<ScheduleAddDialog />
+				<ScheduleAddDialogTrigger variant="sidebar" />
 				<FiltersDialog class="hidden md:flex" />
 			</div>
 			<div class="flex items-center gap-2">
