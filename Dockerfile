@@ -21,6 +21,10 @@ ENV NODE_ENV=production
 ENV PORT=3000
 ENV HOST=0.0.0.0
 
+RUN apt-get update && \
+    apt-get install -y curl && \
+    rm -rf /var/lib/apt/lists/*
+
 COPY --from=build /src/.output /src/.output
 
 EXPOSE 3000
