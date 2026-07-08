@@ -3,7 +3,10 @@
 	"extends": ["config:recommended", ":semanticCommits", ":dependencyDashboard"],
 	"baseBranches": ["dev"],
 	"minimumReleaseAge": "7 days",
-	"schedule": ["* 0-5 * * 1#1,1#3"],
+	"schedule": [
+		"before 5am on the 1st through 7th day of the month",
+		"before 5am on the 15th through 21st day of the month"
+	],
 	"rangeStrategy": "bump",
 	"labels": ["dependencies"],
 	"prConcurrentLimit": 3,
