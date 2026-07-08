@@ -1,6 +1,53 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
-  ]
+	"$schema": "https://docs.renovatebot.com/renovate-schema.json",
+	"extends": ["config:recommended", ":semanticCommits", ":dependencyDashboard"],
+	"baseBranches": ["dev"],
+	"minimumReleaseAge": "7 days",
+	"schedule": ["* 0-5 * * 1#1,1#3"],
+	"rangeStrategy": "bump",
+	"labels": ["dependencies"],
+	"prConcurrentLimit": 3,
+	"prHourlyLimit": 2,
+	"packageRules": [
+		{
+			"description": "Group all non-major devDependency updates",
+			"matchDepTypes": ["devDependencies"],
+			"matchUpdateTypes": ["minor", "patch"],
+			"groupName": "devDependencies (non-major)"
+		},
+		{
+			"description": "Nuxt ecosystem — keep in sync, upgrade together",
+			"matchPackageNames": ["nuxt", "/^@nuxt\\//", "/^@nuxtjs\\//"],
+			"groupName": "Nuxt ecosystem",
+			"minimumReleaseAge": "14 days"
+		},
+		{
+			"description": "TanStack — upgrade together",
+			"matchPackageNames": ["/^@tanstack\\//"],
+			"groupName": "TanStack"
+		},
+		{
+			"description": "UI / animation libs — test carefully before merging",
+			"matchPackageNames": ["reka-ui", "vaul-vue", "motion-v", "vue-sonner", "tailwind-variants"],
+			"groupName": "UI libs"
+		},
+		{
+			"description": "Tailwind ecosystem — CSS-first, keep in sync",
+			"matchPackageNames": ["tailwindcss", "/^@tailwindcss\\//", "tw-animate-css"],
+			"groupName": "Tailwind"
+		},
+		{
+			"description": "Vue core — delay longer; major versions need manual migration",
+			"matchPackageNames": [
+				"vue",
+				"vue-router",
+				"@vueuse/core",
+				"@vueuse/nuxt",
+				"pinia",
+				"@pinia/nuxt"
+			],
+			"groupName": "Vue core",
+			"minimumReleaseAge": "14 days"
+		}
+	]
 }
