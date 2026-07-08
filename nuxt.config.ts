@@ -1,4 +1,13 @@
 import tailwindcss from "@tailwindcss/vite"
+import pkg from "./package.json" with { type: "json" }
+
+// Generate a short random build ID (4 alphanumeric chars) stamped at build time.
+// Used in the health endpoint and diagnostics panel to distinguish deployments
+// without needing git or CI environment variables.
+function generateBuildId(): string {
+	const chars = "abcdefghijklmnopqrstuvwxyz0123456789"
+	return Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join("")
+}
 
 // Validate required environment variables at build time (production only).
 // Fails fast — catching a missing secret here is far cheaper than a broken deploy.
@@ -39,6 +48,10 @@ export default defineNuxtConfig({
 			maintenance: false,
 			// Bumped on every build — used to bust the IndexedDB query cache on deploy
 			buildId: String(Date.now()),
+			// App version + random build ID for diagnostics, health endpoint, and bug reports.
+			// buildId (below) is a timestamp; buildTag is a short human-readable stamp per deploy.
+			appVersion: pkg.version,
+			commitSha: generateBuildId(),
 			// OpenPanel analytics — override via NUXT_PUBLIC_OPENPANEL_CLIENT_ID / NUXT_PUBLIC_OPENPANEL_API_URL
 			openpanelClientId: "",
 			openpanelApiUrl: "",

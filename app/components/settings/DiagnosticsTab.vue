@@ -7,6 +7,7 @@ import { getScheduleIcon } from "~/constants/schedule"
 const scheduleStore = useScheduleStore()
 const calendarStore = useCalendarStore()
 const { trackEvent } = useAnalytics()
+const runtimeConfig = useRuntimeConfig()
 
 const { selectedSchedule, allSchedules } = storeToRefs(scheduleStore)
 const { selectedDate, view } = storeToRefs(calendarStore)
@@ -77,6 +78,7 @@ const copyAllSchedulesToClipboard = async () => {
 	const lines = [
 		"# Налагодження розкладу",
 		"",
+		`Версія: v${runtimeConfig.public.appVersion} · ${runtimeConfig.public.commitSha}`,
 		`Дата формування: ${fmt(now)}`,
 		`Активний вигляд: ${viewLabel.value}`,
 		`Обрана дата: ${fmtDate(selectedDate.value)}`,
@@ -111,6 +113,14 @@ const copyAllSchedulesToClipboard = async () => {
 <template>
 	<div class="overflow-y-auto pb-4">
 		<div class="space-y-4">
+			<!-- Version -->
+			<div class="bg-muted flex items-center justify-between rounded-lg px-3 py-2 text-xs">
+				<span class="text-muted-foreground">Версія</span>
+				<span class="font-mono font-medium">
+					v{{ $config.public.appVersion }} · {{ $config.public.commitSha }}
+				</span>
+			</div>
+
 			<!-- View info -->
 			<div class="bg-muted flex items-center justify-between rounded-lg px-3 py-2 text-xs">
 				<span class="text-muted-foreground">Вигляд</span>
