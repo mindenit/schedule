@@ -21,7 +21,7 @@ jobs:
 
       - uses: pnpm/action-setup@v4
         with:
-          # version is read from packageManager field in package.json
+          version: 11.10.0 # keep in sync with packageManager version in package.json
           run_install: false
 
       - uses: actions/setup-node@v4

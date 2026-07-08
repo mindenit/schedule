@@ -40,6 +40,20 @@
 			"groupName": "Tailwind"
 		},
 		{
+			"description": "pnpm — bump CI version: field alongside packageManager in package.json",
+			"matchPackageNames": ["pnpm"],
+			"matchManagers": ["npm"],
+			"groupName": "pnpm",
+			"additionalBranchPrefix": "",
+			"postUpgradeTasks": {
+				"commands": [
+					"sed -i 's/version: [0-9.]*/version: {{newVersion}}/' .github/workflows/ci.yml"
+				],
+				"fileFilters": [".github/workflows/ci.yml"],
+				"executionMode": "branch"
+			}
+		},
+		{
 			"description": "Vue core — delay longer; major versions need manual migration",
 			"matchPackageNames": [
 				"vue",
