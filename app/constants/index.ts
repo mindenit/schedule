@@ -2,6 +2,12 @@ export const SHOW_HIRING_BANNER = false
 
 export const AUTHORS = [
 	{
+		name: "Артем Дадаш'янц",
+		role: "CEO / DevOps",
+		avatar: "/authors/artem.jpg",
+		linkedin: "https://www.linkedin.com/in/artem-dadashjants/",
+	},
+	{
 		name: "Роман Трашутін",
 		role: "Frontend Developer",
 		avatar: "/authors/roman.png",
@@ -12,12 +18,6 @@ export const AUTHORS = [
 		role: "Backend Developer",
 		avatar: "/authors/kyrylo.jpg",
 		linkedin: "https://www.linkedin.com/in/kyrylo-savieliev",
-	},
-	{
-		name: "Артем Дадаш'янц",
-		role: "CEO / DevOps",
-		avatar: "/authors/artem.jpg",
-		linkedin: "https://www.linkedin.com/in/artem-dadashjants/",
 	},
 ] as const
 
