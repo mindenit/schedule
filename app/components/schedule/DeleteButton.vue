@@ -6,9 +6,16 @@ const scheduleStore = useScheduleStore()
 const { selectedSchedule, isInitialized, allSchedules } = storeToRefs(scheduleStore)
 const { trackEvent } = useAnalytics()
 const showDialog = ref(false)
+const actionBtnRef = ref<{ $el: HTMLElement }>()
 
 // Wait for the store to hydrate from localStorage before enabling the button.
 const hasActiveSchedule = computed(() => isInitialized.value && !!selectedSchedule.value)
+
+// Move focus to the Delete button when the dialog opens so Enter confirms deletion.
+const onOpenAutoFocus = (e: Event) => {
+	e.preventDefault()
+	actionBtnRef.value?.$el?.focus()
+}
 
 const removeActiveSchedule = () => {
 	if (selectedSchedule.value) {
@@ -39,7 +46,7 @@ const removeActiveSchedule = () => {
 				<AppIcon name="lucide:trash" />
 			</UiButton>
 		</UiAlertDialogTrigger>
-		<UiAlertDialogContent>
+		<UiAlertDialogContent @open-auto-focus="onOpenAutoFocus">
 			<UiAlertDialogHeader>
 				<UiAlertDialogTitle class="flex items-center gap-2">
 					<AppIcon name="lucide:alert-triangle" class="text-destructive" />
@@ -66,7 +73,11 @@ const removeActiveSchedule = () => {
 			</div>
 			<UiAlertDialogFooter>
 				<UiAlertDialogCancel>Скасувати</UiAlertDialogCancel>
-				<UiAlertDialogAction variant="destructive" @click="removeActiveSchedule">
+				<UiAlertDialogAction
+					ref="actionBtnRef"
+					variant="destructive"
+					@click="removeActiveSchedule"
+				>
 					<AppIcon name="lucide:trash" />
 					Видалити
 				</UiAlertDialogAction>
