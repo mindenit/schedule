@@ -47,11 +47,11 @@ importers:
         specifier: ^4.3.2
         version: 4.3.2(vite@7.3.5(@types/node@22.15.30)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.41.0)(yaml@2.9.0))
       "@tanstack/query-persist-client-core":
-        specifier: ^5.101.0
-        version: 5.101.0
+        specifier: ^5.101.2
+        version: 5.101.2
       "@tanstack/vue-query":
-        specifier: ^5.101.0
-        version: 5.101.0(vue@3.5.39(typescript@5.9.3))
+        specifier: ^5.101.2
+        version: 5.101.2(vue@3.5.39(typescript@5.9.3))
       "@tanstack/vue-table":
         specifier: ^8.21.3
         version: 8.21.3(vue@3.5.39(typescript@5.9.3))
@@ -4792,16 +4792,16 @@ packages:
       }
     engines: { node: ">=12" }
 
-  "@tanstack/query-core@5.101.0":
+  "@tanstack/query-core@5.101.2":
     resolution:
       {
-        integrity: sha512-cQetA74EB+seWySv1TTKr828TnP0u39m6LykwDXIo84SNortpDkp30TMEjkqtYCNP9c40uT/iwl6MLiufEt0Ow==,
+        integrity: sha512-hH5MLoJhF7KaIGd7q3xTXGXvslI+GYlM1Z/35aSHHWaCJWB7XvTSHYuV3eM7tw+aE0mT/xMro4M4Q9rCGHT0lw==,
       }
 
-  "@tanstack/query-persist-client-core@5.101.0":
+  "@tanstack/query-persist-client-core@5.101.2":
     resolution:
       {
-        integrity: sha512-LH99WepGVLwlLfuOcQcPK7f3Xg/Gf+xlMMIj9xWu/8oQ3egnDzjr+a4HvEmi6PGob5SmGXvmDKZaH5+In9dzjw==,
+        integrity: sha512-rgMsbvBVpSPDUsprC9FYxojdG0Q1LH6yq1i3DXz2aps4VEqv2l4Msj3YDqIifU3xkl/DrYe9YWntZAJLrM6xTg==,
       }
 
   "@tanstack/table-core@8.21.3":
@@ -4823,10 +4823,10 @@ packages:
         integrity: sha512-gOxY/hFkPh/XQYhnThBHzkbkX3Ed+z/iushyz+R+JAr213aXxUDgQoTgTdrDpBSRsjFM73P/KfUyWmaF9WHMkQ==,
       }
 
-  "@tanstack/vue-query@5.101.0":
+  "@tanstack/vue-query@5.101.2":
     resolution:
       {
-        integrity: sha512-sZeW0RvfEZ9QRiaXirE/HQZsFT5saMlPZVfeYvjPX6lqSBS9lkD7wfnCfzOBns6HD2f34Gx9cazkuU3Xj6hl/A==,
+        integrity: sha512-nFXKNK4dI/PnKNejyIkQmmobBsJWWXTPcpjPvkgFLkpFPz9DcmqIiKIAF2Pa7MZCipH62/+bt2sxEIA0wNEeOg==,
       }
     peerDependencies:
       "@vue/composition-api": ^1.1.2
@@ -15154,11 +15154,11 @@ snapshots:
     dependencies:
       remove-accents: 0.5.0
 
-  "@tanstack/query-core@5.101.0": {}
+  "@tanstack/query-core@5.101.2": {}
 
-  "@tanstack/query-persist-client-core@5.101.0":
+  "@tanstack/query-persist-client-core@5.101.2":
     dependencies:
-      "@tanstack/query-core": 5.101.0
+      "@tanstack/query-core": 5.101.2
 
   "@tanstack/table-core@8.21.3": {}
 
@@ -15166,10 +15166,10 @@ snapshots:
 
   "@tanstack/virtual-core@3.17.0": {}
 
-  "@tanstack/vue-query@5.101.0(vue@3.5.39(typescript@5.9.3))":
+  "@tanstack/vue-query@5.101.2(vue@3.5.39(typescript@5.9.3))":
     dependencies:
       "@tanstack/match-sorter-utils": 8.19.4
-      "@tanstack/query-core": 5.101.0
+      "@tanstack/query-core": 5.101.2
       "@vue/devtools-api": 6.6.4
       vue: 3.5.39(typescript@5.9.3)
       vue-demi: 0.14.10(vue@3.5.39(typescript@5.9.3))
