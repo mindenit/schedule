@@ -109,6 +109,8 @@ const hasMoreEvents = computed(() => hiddenEvents.value.length > 0)
 
 const remainingEventsCount = computed(() => hiddenEvents.value.length)
 
+const hasVisibleEvents = computed(() => displayGroups.value.length > 0)
+
 // Single shared popover per cell — one UiPopover instance instead of one per event.
 // The anchor is set to the clicked badge element so Reka UI positions correctly.
 const popoverOpen = ref(false)
@@ -251,7 +253,8 @@ const badgeMap = computed(() => {
 						"
 					>
 						<span class="flex-1 shrink-0 truncate">
-							ще {{ remainingEventsCount }}
+							<template v-if="hasVisibleEvents">ще </template
+							>{{ remainingEventsCount }}
 							{{ pluralUk(remainingEventsCount, "заняття", "заняття", "занять") }}
 						</span>
 					</BigCalendarMonthEventBadge>
