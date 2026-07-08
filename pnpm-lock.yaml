@@ -92,8 +92,8 @@ importers:
         specifier: ^3.0.4
         version: 3.0.4(typescript@5.9.3)(vue@3.5.39(typescript@5.9.3))
       reka-ui:
-        specifier: ^2.9.10
-        version: 2.9.10(vue@3.5.39(typescript@5.9.3))
+        specifier: ^2.10.1
+        version: 2.10.1(vue@3.5.39(typescript@5.9.3))
       satori:
         specifier: ^0.26.0
         version: 0.26.0
@@ -114,7 +114,7 @@ importers:
         version: 3.1.2(@popperjs/core@2.11.8)(vue@3.5.39(typescript@5.9.3))
       vaul-vue:
         specifier: ^0.4.1
-        version: 0.4.1(reka-ui@2.9.10(vue@3.5.39(typescript@5.9.3)))(vue@3.5.39(typescript@5.9.3))
+        version: 0.4.1(reka-ui@2.10.1(vue@3.5.39(typescript@5.9.3)))(vue@3.5.39(typescript@5.9.3))
       vue:
         specifier: ^3.5.39
         version: 3.5.39(typescript@5.9.3)
@@ -10752,10 +10752,10 @@ packages:
       }
     hasBin: true
 
-  reka-ui@2.9.10:
+  reka-ui@2.10.1:
     resolution:
       {
-        integrity: sha512-yuvZVTp4fWH2G3qk+ze/x6YYlyc2Xl1d+eMUlIYrKqzTowBKteoDoN17fitURmqSUck3mc7JbcYgp49DnGu2EQ==,
+        integrity: sha512-drcOQ4rQtDYAcGCsyQBqQg8QQ+H3B+zDaMJU0h8KPEPMa7g9BHu3zcOi4OB39XJSWizceFoNO0Z9tctSGLOXqg==,
       }
     peerDependencies:
       vue: ">= 3.4.0"
@@ -19718,7 +19718,7 @@ snapshots:
     dependencies:
       jsesc: 3.1.0
 
-  reka-ui@2.9.10(vue@3.5.39(typescript@5.9.3)):
+  reka-ui@2.10.1(vue@3.5.39(typescript@5.9.3)):
     dependencies:
       "@floating-ui/dom": 1.7.1
       "@floating-ui/vue": 1.1.6(vue@3.5.39(typescript@5.9.3))
@@ -20602,10 +20602,10 @@ snapshots:
     optionalDependencies:
       typescript: 5.9.3
 
-  vaul-vue@0.4.1(reka-ui@2.9.10(vue@3.5.39(typescript@5.9.3)))(vue@3.5.39(typescript@5.9.3)):
+  vaul-vue@0.4.1(reka-ui@2.10.1(vue@3.5.39(typescript@5.9.3)))(vue@3.5.39(typescript@5.9.3)):
     dependencies:
       "@vueuse/core": 10.11.1(vue@3.5.39(typescript@5.9.3))
-      reka-ui: 2.9.10(vue@3.5.39(typescript@5.9.3))
+      reka-ui: 2.10.1(vue@3.5.39(typescript@5.9.3))
       vue: 3.5.39(typescript@5.9.3)
     transitivePeerDependencies:
       - "@vue/composition-api"

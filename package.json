@@ -61,7 +61,7 @@
 		"nurekit": "^0.6.8",
 		"nuxt": "^4.4.8",
 		"pinia": "^3.0.4",
-		"reka-ui": "^2.9.10",
+		"reka-ui": "^2.10.1",
 		"satori": "^0.26.0",
 		"tailwind-merge": "^3.6.0",
 		"tailwind-variants": "^3.2.2",
