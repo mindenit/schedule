@@ -97,7 +97,22 @@ const copyAllSchedulesToClipboard = async () => {
 	]
 
 	try {
-		await navigator.clipboard.writeText(lines.join("\n"))
+		const text = lines.join("\n")
+		if (navigator.clipboard) {
+			await navigator.clipboard.writeText(text)
+		} else {
+			// Fallback for non-secure contexts (HTTP over LAN, etc.)
+			const textarea = document.createElement("textarea")
+			textarea.value = text
+			textarea.style.position = "fixed"
+			textarea.style.opacity = "0"
+			document.body.appendChild(textarea)
+			textarea.focus()
+			textarea.select()
+			const ok = document.execCommand("copy")
+			document.body.removeChild(textarea)
+			if (!ok) throw new Error("execCommand copy failed")
+		}
 		trackEvent("diagnostics_copied")
 		useSonner.success("Інформацію скопійовано", {
 			description: "Дані про розклад та часові мітки скопійовано у буфер обміну",
