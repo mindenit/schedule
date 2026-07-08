@@ -44,7 +44,7 @@ const hours = CALENDAR_HOURS
 	-->
 	<div class="flex min-h-0 flex-1 gap-1">
 		<!-- Hour gutter -->
-		<div class="relative flex w-18 flex-shrink-0 flex-col">
+		<div class="relative flex w-18 shrink-0 flex-col">
 			<div
 				v-for="(hour, index) in hours"
 				:key="hour"

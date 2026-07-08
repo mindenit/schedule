@@ -60,7 +60,7 @@ const removeActiveSchedule = () => {
 				<div class="flex items-center gap-3">
 					<AppIcon
 						:name="getScheduleIcon(selectedSchedule.type)"
-						class="text-muted-foreground flex-shrink-0"
+						class="text-muted-foreground shrink-0"
 					/>
 
 					<div>

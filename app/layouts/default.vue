@@ -4,7 +4,7 @@
 
 		<!-- Mobile layout -->
 		<div class="relative flex h-dvh flex-col overflow-hidden md:hidden">
-			<div class="flex-shrink-0">
+			<div class="shrink-0">
 				<HiringInfo />
 				<AppOfflineBanner />
 				<ClientOnly>
@@ -29,7 +29,7 @@
 
 		<!-- Desktop layout -->
 		<div class="hidden h-dvh flex-col overflow-hidden md:flex">
-			<div class="flex-shrink-0">
+			<div class="shrink-0">
 				<HiringInfo />
 				<AppOfflineBanner />
 			</div>

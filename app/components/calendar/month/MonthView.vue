@@ -125,7 +125,7 @@ const { currentPanel, incomingPanel, currentX, incomingX, onDragStart, onDrag, o
 <template>
 	<div ref="monthRoot" class="relative flex h-full flex-col">
 		<!-- Week day header — outside the animated panels, always visible -->
-		<div role="row" class="mb-1 grid flex-shrink-0 grid-cols-7 gap-1">
+		<div role="row" class="mb-1 grid shrink-0 grid-cols-7 gap-1">
 			<div
 				v-for="day in weekDays"
 				:key="day"

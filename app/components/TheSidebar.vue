@@ -49,7 +49,7 @@ defineProps<Props>()
 			<div class="min-w-0 flex-1">
 				<AuthorsDialog />
 			</div>
-			<div class="flex flex-shrink-0 items-center gap-2">
+			<div class="flex shrink-0 items-center gap-2">
 				<FiltersDialog class="md:hidden" />
 				<SettingsDialog />
 			</div>

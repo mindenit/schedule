@@ -72,10 +72,7 @@ const deleteLink = (linkId: string) => {
 <template>
 	<div class="space-y-3">
 		<div class="flex items-start gap-2.5">
-			<div
-				class="mt-1 h-3 w-3 flex-shrink-0 rounded-full shadow-sm"
-				:class="eventTypeColor"
-			/>
+			<div class="mt-1 h-3 w-3 shrink-0 rounded-full shadow-sm" :class="eventTypeColor" />
 			<div class="min-w-0 flex-1">
 				<h3 class="text-sm leading-tight font-semibold tracking-tight">
 					{{ event.subject.title }}
@@ -92,22 +89,14 @@ const deleteLink = (linkId: string) => {
 
 		<div class="bg-muted/50 space-y-1.5 rounded-lg p-2.5 text-xs">
 			<div class="flex items-center gap-2">
-				<AppIcon
-					name="lucide:clock"
-					size="3.5"
-					class="text-muted-foreground flex-shrink-0"
-				/>
+				<AppIcon name="lucide:clock" size="3.5" class="text-muted-foreground shrink-0" />
 				<span class="font-medium">{{ formattedTimeRange }}</span>
 				<span class="text-muted-foreground">·</span>
 				<span class="text-muted-foreground">{{ pairNumber }}</span>
 			</div>
 
 			<div class="flex items-center gap-2">
-				<AppIcon
-					name="lucide:calendar"
-					size="3.5"
-					class="text-muted-foreground flex-shrink-0"
-				/>
+				<AppIcon name="lucide:calendar" size="3.5" class="text-muted-foreground shrink-0" />
 				<span>{{ formattedDate }}</span>
 				<span class="text-muted-foreground">·</span>
 				<span class="text-muted-foreground">{{ pairIndexText }}</span>
@@ -120,7 +109,7 @@ const deleteLink = (linkId: string) => {
 					<AppIcon
 						name="lucide:map-pin"
 						size="3.5"
-						class="text-muted-foreground mt-0.5 flex-shrink-0"
+						class="text-muted-foreground mt-0.5 shrink-0"
 					/>
 					<div class="min-w-0 flex-1">
 						<div class="truncate font-medium">{{ auditoriumText }}</div>
@@ -132,7 +121,7 @@ const deleteLink = (linkId: string) => {
 					<AppIcon
 						name="lucide:user"
 						size="3.5"
-						class="text-muted-foreground mt-0.5 flex-shrink-0"
+						class="text-muted-foreground mt-0.5 shrink-0"
 					/>
 					<div class="min-w-0 flex-1">
 						<div class="truncate">{{ teachersText }}</div>
@@ -147,7 +136,7 @@ const deleteLink = (linkId: string) => {
 				<AppIcon
 					name="lucide:users"
 					size="3.5"
-					class="text-muted-foreground mt-0.5 flex-shrink-0"
+					class="text-muted-foreground mt-0.5 shrink-0"
 				/>
 				<div class="flex-1">
 					<div>{{ groupsText }}</div>

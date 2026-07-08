@@ -86,7 +86,7 @@ const displayDescription = computed(() => truncate(props.description, 160))
 		</div>
 
 		<!-- logo -->
-		<div class="relative flex-shrink-0">
+		<div class="relative shrink-0">
 			<img
 				src="/logo.svg"
 				alt="Mindenit logo"

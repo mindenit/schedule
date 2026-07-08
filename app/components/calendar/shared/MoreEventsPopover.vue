@@ -64,10 +64,7 @@ function collapseEvent() {
 					p-2 text-left transition-colors"
 				@click="selectEvent(event)"
 			>
-				<div
-					class="h-3 w-3 flex-shrink-0 rounded-full"
-					:class="getEventTypeColor(event.type)"
-				/>
+				<div class="h-3 w-3 shrink-0 rounded-full" :class="getEventTypeColor(event.type)" />
 				<div class="min-w-0 flex-1">
 					<p class="truncate text-sm font-medium">{{ event.subject.title }}</p>
 					<p class="text-muted-foreground text-xs">

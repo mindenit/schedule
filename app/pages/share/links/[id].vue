@@ -128,7 +128,7 @@ const handleAccept = async () => {
 								:href="link.url"
 								target="_blank"
 								rel="noopener noreferrer"
-								class="flex-shrink-0"
+								class="shrink-0"
 							>
 								<UiButton size="sm" variant="ghost">
 									<AppIcon name="lucide:external-link" />
