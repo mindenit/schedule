@@ -1,0 +1,52 @@
+# pnpm settings — single-package repo (no workspace packages)
+# https://pnpm.io/settings
+# https://pnpm.io/supply-chain-security
+
+# ─── Overrides ───────────────────────────────────────────────────────────────
+# (migrated from package.json "pnpm.overrides" — pnpm 11 ignores that field)
+overrides:
+  "@eslint/js": "9.28.0"
+
+# ─── Supply-chain hardening ───────────────────────────────────────────────────
+
+# Embargo newly published versions for 7 days before resolving them.
+# Malicious packages are almost always caught and yanked within this window.
+# To bypass a critical patch: add minimumReleaseAgeExclude for that package.
+# https://pnpm.io/settings#minimumreleaseage
+# minimumReleaseAge disabled: pnpm 11.10.0 throws "Invalid time value" on some
+# registry metadata when resolving new packages. Re-enable once pnpm fixes the bug
+# or after lockfile is settled (installed packages skip the timestamp check).
+# minimumReleaseAge: "10080 minutes"
+# Our own package — exempt from embargo regardless.
+minimumReleaseAgeExclude:
+  - nurekit
+
+# Block transitive dependencies from using git URLs or direct tarball links.
+# All deps must resolve from the registry.
+# https://pnpm.io/settings#blockexoticsubdeps
+blockExoticSubdeps: true
+
+# Postinstall / build scripts allowlist — deny all unless listed here.
+# Each entry is a package that legitimately needs a build/install script:
+#   @parcel/watcher — file-system watcher native addon (Nuxt HMR)
+#   esbuild         — JS bundler native binary (Vite/Nuxt)
+#   sharp           — image processing native addon (satori/OG images)
+#   simple-git-hooks — installs .git/hooks/* from package.json config
+#   unrs-resolver   — Rust-based module resolver (@nuxt/eslint)
+#   vue-demi        — Vue 2/3 compat shim (postinstall sets the target)
+# Add new entries only after reviewing what the build script does.
+# https://pnpm.io/settings#allowbuilds
+allowBuilds:
+  "@parcel/watcher": true
+  core-js: set this to true or false
+  esbuild: true
+  sharp: true
+  simple-git-hooks: true
+  unrs-resolver: true
+  vue-demi: true
+
+# ─── Integrity ────────────────────────────────────────────────────────────────
+
+# Fail if node_modules is outdated relative to the lockfile before any script.
+# https://pnpm.io/settings#verifydepsbeforerun
+verifyDepsBeforeRun: "install"

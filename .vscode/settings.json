@@ -1,0 +1,15 @@
+{
+	"editor.formatOnSave": true,
+	"editor.defaultFormatter": "esbenp.prettier-vscode",
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "explicit"
+	},
+	"eslint.validate": ["javascript", "typescript", "vue"],
+	"files.eol": "\n",
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"tailwindCSS.experimental.classRegex": [
+		["cn\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+		["tv\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+	],
+	"tailwindCSS.classAttributes": ["class", "className", ":class"]
+}

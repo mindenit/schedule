@@ -1,0 +1,113 @@
+<script setup lang="ts">
+import { computed, ref } from "vue"
+import { useSharableLinks } from "~/composables/useSharableLinks"
+
+interface Props {
+	modelValue: boolean
+	selectedLinkIds: string[]
+}
+
+interface Emits {
+	"update:modelValue": [value: boolean]
+}
+
+const props = defineProps<Props>()
+const emit = defineEmits<Emits>()
+
+const isOpen = computed({
+	get: () => props.modelValue,
+	set: (value) => emit("update:modelValue", value),
+})
+
+const { createSharableLink, isLoading } = useSharableLinks()
+const { trackEvent, incrementProfile } = useAnalytics()
+const sharableUrl = ref<string | null>(null)
+const copied = ref(false)
+
+const handleCreateLink = async () => {
+	const url = await createSharableLink(props.selectedLinkIds)
+	if (url) {
+		sharableUrl.value = url
+		trackEvent("links_shared", { count: props.selectedLinkIds.length })
+		incrementProfile("links_shared_total")
+	}
+}
+
+const copyToClipboard = async () => {
+	if (!sharableUrl.value) return
+	try {
+		await navigator.clipboard.writeText(sharableUrl.value)
+		copied.value = true
+		trackEvent("links_share_url_copied")
+		setTimeout(() => {
+			copied.value = false
+		}, 2000)
+	} catch {
+		useSonner.error("Помилка", {
+			description: "Не вдалося скопіювати посилання у буфер обміну",
+		})
+	}
+}
+
+const handleClose = () => {
+	sharableUrl.value = null
+	isOpen.value = false
+}
+</script>
+
+<template>
+	<UiDialog v-model:open="isOpen">
+		<UiDialogContent class="max-w-md">
+			<UiDialogHeader>
+				<UiDialogTitle class="flex items-center gap-2">
+					<AppIcon name="lucide:share-2" />
+					Поділіться посиланнями
+				</UiDialogTitle>
+				<UiDialogDescription
+					>Створіть посилання для передачі іншим користувачам</UiDialogDescription
+				>
+			</UiDialogHeader>
+
+			<div v-if="!sharableUrl" class="space-y-4">
+				<p class="text-muted-foreground text-sm">
+					Буде створено посилання для {{ selectedLinkIds.length }}
+					{{ pluralUk(selectedLinkIds.length, "посилання", "посилання", "посилань") }}
+				</p>
+				<UiButton
+					class="w-full"
+					:disabled="isLoading || selectedLinkIds.length === 0"
+					@click="handleCreateLink"
+				>
+					<AppIcon name="lucide:share-2" class="mr-2" />
+					Створити посилання для поділу
+				</UiButton>
+			</div>
+
+			<div v-else class="space-y-4">
+				<div class="bg-muted space-y-2 rounded-lg p-3">
+					<p class="text-muted-foreground text-xs">Ваше посилання:</p>
+					<div class="flex items-center gap-2">
+						<code class="bg-background flex-1 rounded p-2 text-xs break-all">
+							{{ sharableUrl }}
+						</code>
+						<UiButton
+							size="icon"
+							variant="outline"
+							:class="{ 'bg-green-100': copied }"
+							:aria-label="copied ? 'Скопійовано' : 'Копіювати посилання'"
+							@click="copyToClipboard"
+						>
+							<AppIcon :name="copied ? 'lucide:check' : 'lucide:copy'" />
+						</UiButton>
+					</div>
+				</div>
+
+				<p class="text-muted-foreground text-xs">
+					Відправте це посилання тій особі, яка хоче імпортувати ваші посилання
+				</p>
+
+				<UiButton variant="outline" class="w-full" @click="handleClose"> Готово </UiButton>
+			</div>
+		</UiDialogContent>
+	</UiDialog>
+</template>

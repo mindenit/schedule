@@ -1,0 +1,135 @@
+<script setup lang="ts">
+import { format, isSameDay } from "date-fns"
+import { uk } from "date-fns/locale"
+import type { Schedule } from "nurekit"
+import { CALENDAR_HOURS } from "~/constants/calendar"
+
+interface Props {
+	weekDays: Date[]
+	groupedEventsByDay: Schedule[][][]
+	tz: string
+	/**
+	 * Used to key EventRenderer instances so they remount on week changes.
+	 * Pass the panel's anchor date timestamp.
+	 */
+	panelTime: number
+	/**
+	 * When false (incoming animation panel), EventBlock popovers and click
+	 * handlers are suppressed. Markup stays pixel-identical to the live panel.
+	 */
+	interactive?: boolean
+	/**
+	 * Client-side "today" date to highlight the current day column header.
+	 * null on SSR to avoid hydration mismatch.
+	 */
+	clientToday?: Date | null
+	/**
+	 * When true the Timeline is rendered inside the event grid.
+	 * Only pass true on the current (interactive) panel.
+	 */
+	showTimeline?: boolean
+}
+
+withDefaults(defineProps<Props>(), {
+	interactive: true,
+	clientToday: null,
+	showTimeline: false,
+})
+
+const { formatHour } = useEventFormatting()
+const hours = CALENDAR_HOURS
+</script>
+
+<template>
+	<div class="flex min-w-[800px] flex-1 flex-col">
+		<!-- Day-name + date-number header -->
+		<div
+			role="row"
+			class="bg-muted/50 relative z-20 mb-1 grid grid-cols-[72px_1fr] gap-1 md:rounded-t-lg"
+		>
+			<div class="col-start-2 grid grid-cols-7 gap-1">
+				<div
+					v-for="(day, index) in weekDays"
+					:key="index"
+					role="columnheader"
+					:aria-label="capitalize(format(day, 'EEEE d MMMM', { locale: uk }))"
+					class="text-muted-foreground flex min-w-[100px] flex-col items-center gap-1 py-2
+						text-center text-xs font-medium transition-colors duration-200"
+				>
+					<span class="hidden sm:block">
+						{{ capitalize(format(day, "EEEE", { locale: uk })) }}
+					</span>
+					<span class="block sm:hidden">
+						{{ capitalize(format(day, "EEE", { locale: uk })) }}
+					</span>
+					<span
+						class="text-md flex size-5 items-center justify-center rounded-full
+							font-semibold"
+						:class="{
+							'bg-primary text-foreground':
+								clientToday && isSameDay(day, clientToday),
+						}"
+					>
+						{{ format(day, "d") }}
+					</span>
+				</div>
+			</div>
+		</div>
+
+		<!-- Hour gutter + event columns -->
+		<div class="grid min-h-0 flex-1 grid-cols-[72px_1fr] gap-1">
+			<!-- Hour gutter -->
+			<div class="relative flex flex-col" role="presentation">
+				<div
+					v-for="(hour, index) in hours"
+					:key="hour"
+					class="bg-muted/50 relative flex-1"
+					:class="{ 'rounded-bl-lg': index === hours.length - 1 }"
+				>
+					<div class="absolute -top-3 right-2 flex h-6 items-center">
+						<span
+							v-if="index !== 0"
+							class="text-muted-foreground text-xs whitespace-nowrap"
+						>
+							{{ formatHour(hour) }}
+						</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- 7 day columns -->
+			<div class="relative min-h-0 flex-1">
+				<div role="grid" class="grid h-full grid-cols-7 gap-1">
+					<div
+						v-for="(day, dayIndex) in weekDays"
+						:key="day.getTime()"
+						role="gridcell"
+						:aria-label="format(day, 'd MMMM', { locale: uk })"
+						class="relative min-w-[100px]"
+					>
+						<div class="flex h-full flex-col gap-1">
+							<div
+								v-for="(hour, hourIndex) in hours"
+								:key="hour"
+								class="bg-card relative flex-1"
+								:class="{
+									'rounded-br-lg':
+										dayIndex === weekDays.length - 1 &&
+										hourIndex === hours.length - 1,
+								}"
+							/>
+						</div>
+						<BigCalendarEventRenderer
+							:key="`${panelTime}-${dayIndex}`"
+							:grouped-events="groupedEventsByDay[dayIndex] ?? []"
+							:day="day"
+							:tz="tz"
+							:interactive="interactive"
+						/>
+					</div>
+				</div>
+				<BigCalendarTimeline v-if="showTimeline" :week-days="weekDays" />
+			</div>
+		</div>
+	</div>
+</template>

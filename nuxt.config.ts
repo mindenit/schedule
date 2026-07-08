@@ -1,46 +1,115 @@
 import tailwindcss from "@tailwindcss/vite"
+import pkg from "./package.json" with { type: "json" }
+
+// Generate a short random build ID (4 alphanumeric chars) stamped at build time.
+// Used in the health endpoint and diagnostics panel to distinguish deployments
+// without needing git or CI environment variables.
+function generateBuildId(): string {
+	const chars = "abcdefghijklmnopqrstuvwxyz0123456789"
+	return Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join("")
+}
+
+// Validate required environment variables at build time (production only).
+// Fails fast — catching a missing secret here is far cheaper than a broken deploy.
+if (process.env.NODE_ENV === "production" && !process.env.NUXT_OG_IMAGE_SECRET) {
+	throw new Error(
+		"[nuxt.config] NUXT_OG_IMAGE_SECRET is required in production. " +
+			"Set it in your .env file or deployment environment before building."
+	)
+}
 
 export default defineNuxtConfig({
 	compatibilityDate: "2024-11-01",
 	devtools: { enabled: true },
-	extends: ["./core", "./layers/site", "./layers/calendar/", "./layers/schedule/"],
+	// Component registration: Ui (UI Thing) comes first so Nuxt assigns the Ui prefix.
+	// Prefixed feature subdirs must come before the catch-all ~/components entry.
+	components: [
+		{ path: "~/components/Ui", prefix: "Ui" },
+		{ path: "~/components/calendar", prefix: "BigCalendar", pathPrefix: false },
+		{ path: "~/components/schedule", prefix: "Schedule", pathPrefix: false },
+		{ path: "~/components/filters", prefix: "Filters", pathPrefix: false },
+		{ path: "~/components/links", prefix: "Links", pathPrefix: false },
+		{ path: "~/components", pathPrefix: false, extensions: [".vue"] },
+	],
 	imports: {
-		dirs: [
-			"./core/types",
-			"./core/constants",
-			"./layers/**/types",
-			"./layers/**/queries",
-			"./layers/**/constants",
+		dirs: ["~/types", "~/constants", "~/queries"],
+		imports: [
+			{ from: "tailwind-variants", name: "tv" },
+			{ from: "tailwind-variants", name: "VariantProps", type: true },
+			{
+				from: "vue-sonner",
+				name: "toast",
+				as: "useSonner",
+			},
 		],
 	},
 	runtimeConfig: {
 		public: {
-			maintenance: process.env.MAINTENANCE === "true" ? true : false,
+			maintenance: false,
+			// Bumped on every build — used to bust the IndexedDB query cache on deploy
+			buildId: String(Date.now()),
+			// App version + random build ID for diagnostics, health endpoint, and bug reports.
+			// buildId (below) is a timestamp; buildTag is a short human-readable stamp per deploy.
+			appVersion: pkg.version,
+			commitSha: generateBuildId(),
+			// OpenPanel analytics — override via NUXT_PUBLIC_OPENPANEL_CLIENT_ID / NUXT_PUBLIC_OPENPANEL_API_URL
+			openpanelClientId: "",
+			openpanelApiUrl: "",
 		},
 	},
+	openpanel: {
+		// clientId and apiUrl are read from runtimeConfig at runtime via env vars:
+		//   NUXT_PUBLIC_OPENPANEL_CLIENT_ID
+		//   NUXT_PUBLIC_OPENPANEL_API_URL  (your self-hosted instance, e.g. https://op.mindenit.org)
+		clientId: process.env.NUXT_PUBLIC_OPENPANEL_CLIENT_ID ?? "",
+		apiUrl: process.env.NUXT_PUBLIC_OPENPANEL_API_URL ?? "",
+		trackScreenViews: true,
+		trackOutgoingLinks: true,
+		trackAttributes: true,
+		// proxy:true is hardcoded to OpenPanel cloud (api.openpanel.dev) and cannot target a
+		// self-hosted instance — it causes "Invalid cors or secret". Keep false so the browser
+		// SDK calls apiUrl (analytics.mindenit.org/api) directly; CORS allowlist handles origins.
+		proxy: false,
+	},
 	modules: [
+		"@openpanel/nuxt",
 		"@nuxt/eslint",
 		"@nuxt/icon",
+		"@nuxt/scripts",
 		"@nuxtjs/color-mode",
 		"@vueuse/nuxt",
-		"shadcn-nuxt",
 		"@pinia/nuxt",
-		"@nuxt/image",
+		"@nuxt/fonts",
 		"@nuxtjs/seo",
+		"@yuta-inoue-ph/nuxt-vcalendar",
+		"vue-sonner/nuxt",
+		// @nuxt/hints installs PerformanceObservers and an overlay in the browser.
+		// Limit to dev so production builds do not carry the runtime overhead.
+		...(process.env.NODE_ENV !== "production" ? ["@nuxt/hints" as const] : []),
+		...(process.env.NODE_ENV !== "production" ? ["@nuxt/a11y" as const] : []),
 	],
-	future: {
-		compatibilityVersion: 4,
-	},
-	css: ["~/core/assets/css/main.css"],
-	shadcn: {
-		prefix: "",
-		componentDir: "./core/components/ui",
-	},
+	css: ["~/assets/css/tailwind.css"],
 	vite: {
 		plugins: [tailwindcss()],
-	},
-	pinia: {
-		storesDirs: ["./**/stores/**"],
+		// Pre-bundle motion-v so Vite doesn't invalidate the chunk mid-session
+		// when dep-optimisation re-runs. Without this, navigating to a page that
+		// imports motion-v after a hot-reload causes a "error loading dynamically
+		// imported module" 500 in dev because the old ?v= hash is gone.
+		optimizeDeps: {
+			include: [
+				"@tanstack/query-persist-client-core",
+				"@tanstack/vue-query",
+				"@unhead/schema-org/vue",
+				"date-fns",
+				"date-fns-tz",
+				"date-fns/locale",
+				"idb-keyval",
+				"motion-v",
+				"nurekit",
+				"reka-ui",
+				"tailwind-variants",
+			],
+		},
 	},
 	icon: {
 		provider: "iconify",
@@ -54,44 +123,107 @@ export default defineNuxtConfig({
 		classSuffix: "",
 		storageKey: "nuxt-color-mode",
 	},
-
+	// Site identity — values mirrored in app/constants/seo.ts (auto-imported in app code)
 	site: {
 		url: "https://sh.mindenit.org",
 		name: "Mindenit Schedule",
 		description:
-			"Зручний перегляд розкладу занять для студентів та викладачів. Додавайте розклади груп, викладачів та аудиторій, переглядайте їх у зручному форматі по днях, тижнях або на місяць. Швидкий доступ до розкладу у будь-який час.",
+			"Зручний перегляд розкладу занять для студентів та викладачів. " +
+			"Додавайте розклади груп, викладачів та аудиторій, переглядайте їх у зручному форматі " +
+			"по днях, тижнях або на місяць. Швидкий доступ до розкладу у будь-який час.",
 		defaultLocale: "uk",
 		trailingSlash: false,
 		indexable: true,
-		debug: process.env.NODE_ENV === "development",
+		debug: import.meta.dev,
+	},
+	// routeRules-based robots/sitemap control (server-level, no per-page useSeoMeta needed)
+	routeRules: {
+		"/blocked": { robots: false, sitemap: false },
+		"/maintenance": { robots: false, sitemap: false },
+		"/share/**": { robots: false, sitemap: false },
 	},
 	robots: {
 		sitemap: "/sitemap.xml",
-		disallow: ["/faggots"],
 	},
 	sitemap: {
-		exclude: ["/faggots"],
+		exclude: ["/blocked", "/maintenance", "/share/**"],
 	},
 	seo: {
 		redirectToCanonicalSiteUrl: true,
 		fallbackTitle: true,
 		automaticDefaults: true,
-		metaDataFiles: true,
 		meta: {
+			titleTemplate: "%s | Mindenit Schedule",
+			description:
+				"Зручний перегляд розкладу занять для студентів та викладачів. " +
+				"Додавайте розклади груп, викладачів та аудиторій, переглядайте їх у зручному форматі " +
+				"по днях, тижнях або на місяць. Швидкий доступ до розкладу у будь-який час.",
 			ogType: "website",
-			twitterCard: "summary_large_image",
 			ogLocale: "uk_UA",
-		},
-	},
-	app: {
-		head: {
-			script: [
-				{
-					src: "https://analytics.mindenit.org/api/script.js",
-					"data-site-id": "c06ec8fba05b",
-					defer: true,
-				},
+			ogSiteName: "Mindenit Schedule",
+			twitterCard: "summary_large_image",
+			applicationName: "Mindenit Schedule",
+			themeColor: [
+				{ content: "#ffffff", media: "(prefers-color-scheme: light)" },
+				{ content: "#090f1f", media: "(prefers-color-scheme: dark)" },
 			],
 		},
+	},
+	fonts: {
+		families: [
+			{
+				name: "Inter",
+				provider: "google",
+				weights: [400, 600, 700],
+				subsets: ["latin", "cyrillic"],
+				global: true,
+			},
+			{
+				name: "Afacad",
+				provider: "google",
+				weights: [400, 700],
+				subsets: ["latin", "cyrillic"],
+				global: true,
+			},
+		],
+	},
+	// Schema.org identity — values mirrored in app/constants/seo.ts
+	// Note: org URL (mindenit.org) differs from site URL (sh.mindenit.org)
+	// Note: logo uses team logo (mindenit-logo.webp), NOT the schedule product logo (logo.svg)
+	schemaOrg: {
+		identity: {
+			type: "Organization",
+			name: "Mindenit",
+			slogan: "Інноваційні Програмні Рішення",
+			url: "https://mindenit.org",
+			logo: {
+				url: "/mindenit-logo.webp",
+				width: 320,
+				height: 320,
+			},
+			description:
+				"Цифрова студія повного циклу. Веб-розробка, мобільні застосунки та custom software " +
+				"для бізнесу з гарантією результату. Офіційний партнер НУРЕ.",
+			foundingDate: "2023",
+			email: "ketronix@gmail.com",
+			sameAs: [
+				"https://github.com/mindenit",
+				"https://t.me/mindenit",
+				"https://discord.gg/ahKR75hU9h",
+			],
+			contactPoint: {
+				contactType: "customer support",
+				url: "https://t.me/mindenit",
+				email: "ketronix@gmail.com",
+			},
+		},
+	},
+	ogImage: {
+		defaults: {
+			width: 1200,
+			height: 630,
+			cacheMaxAgeSeconds: 60 * 60 * 24 * 7,
+		},
+		fontSubsets: ["latin", "cyrillic"],
 	},
 })

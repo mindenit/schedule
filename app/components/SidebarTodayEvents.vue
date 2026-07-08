@@ -1,0 +1,161 @@
+<script lang="ts" setup>
+import { addDays, subDays, isToday } from "date-fns"
+import { formatInTimeZone } from "date-fns-tz"
+import { storeToRefs } from "pinia"
+import { motion, AnimatePresence } from "motion-v"
+import type { TEventType } from "~/types/calendar"
+
+const scheduleStore = useScheduleStore()
+const calendarStore = useCalendarStore()
+const { selectedSchedule } = storeToRefs(scheduleStore)
+const { allEvents } = storeToRefs(calendarStore)
+const { formatTime, formatDate } = useEventFormatting()
+const { effectiveTimezone } = useTimezone()
+
+// Dev-only date override — lets you navigate days to test sidebar event rendering.
+// Always starts at today; tree-shaken out in production builds.
+const previewDate = ref(new Date())
+const isDev = import.meta.dev
+const isPreviewToday = computed(() => isToday(previewDate.value))
+
+const formattedDate = computed(() => {
+	const day = capitalize(formatDate(previewDate.value, "EEEE"))
+	const date = formatDate(previewDate.value, "d MMMM")
+	return `${day}, ${date}`
+})
+
+// Filter the already-loaded full-year events to the preview date — no extra network request.
+// 3.3 fix: guard auditorium?.name — auditorium can be null for online lessons.
+const todayEvents = computed(() => {
+	const tz = effectiveTimezone.value
+	const targetKey = formatInTimeZone(previewDate.value, tz, "yyyy-MM-dd")
+	return allEvents.value.filter(
+		(e) => formatInTimeZone(new Date(e.startedAt * 1000), tz, "yyyy-MM-dd") === targetKey
+	)
+})
+
+const hasActiveSchedule = computed(() => !!selectedSchedule.value)
+const hasEvents = computed(() => todayEvents.value.length > 0)
+</script>
+
+<template>
+	<div class="flex min-h-0 flex-1 flex-col gap-4">
+		<ClientOnly>
+			<div class="flex items-center gap-1">
+				<span class="flex-1 text-base font-semibold">{{ formattedDate }}</span>
+				<template v-if="isDev">
+					<UiButton
+						size="icon"
+						variant="ghost"
+						class="size-6"
+						aria-label="Попередній день"
+						@click="previewDate = subDays(previewDate, 1)"
+					>
+						<Icon name="lucide:chevron-left" class="size-3" />
+					</UiButton>
+					<UiButton
+						v-if="!isPreviewToday"
+						size="icon"
+						variant="ghost"
+						class="size-6"
+						aria-label="Сьогодні"
+						@click="previewDate = new Date()"
+					>
+						<Icon name="lucide:rotate-ccw" class="size-3" />
+					</UiButton>
+					<UiButton
+						size="icon"
+						variant="ghost"
+						class="size-6"
+						aria-label="Наступний день"
+						@click="previewDate = addDays(previewDate, 1)"
+					>
+						<Icon name="lucide:chevron-right" class="size-3" />
+					</UiButton>
+				</template>
+			</div>
+			<template #fallback>
+				<UiSkeleton class="h-6 w-40 rounded" />
+			</template>
+		</ClientOnly>
+
+		<ClientOnly>
+			<template #fallback>
+				<div class="flex flex-col gap-3">
+					<UiSkeleton v-for="i in 3" :key="i" class="h-16 w-full rounded-md" />
+				</div>
+			</template>
+			<div class="flex min-h-0 flex-1 flex-col overflow-hidden">
+				<UiScrollArea class="min-h-0 flex-1">
+					<AnimatePresence mode="wait">
+						<!-- Event list state -->
+						<motion.div
+							v-if="hasActiveSchedule && hasEvents"
+							key="event-list"
+							:initial="{ opacity: 0, y: 6 }"
+							:animate="{ opacity: 1, y: 0 }"
+							:exit="{ opacity: 0, y: -6 }"
+							:transition="{ duration: 0.18 }"
+						>
+							<div class="flex flex-col gap-3">
+								<AnimatePresence>
+									<motion.div
+										v-for="(event, index) in todayEvents"
+										:key="event.id"
+										:initial="{ opacity: 0, y: 10 }"
+										:animate="{ opacity: 1, y: 0 }"
+										:exit="{ opacity: 0 }"
+										:transition="{
+											duration: 0.2,
+											delay: Math.min(index * 0.05, 0.2),
+										}"
+									>
+										<SidebarEvent
+											:start-time="formatTime(event.startedAt)"
+											:end-time="formatTime(event.endedAt)"
+											:auditorium="event.auditorium?.name ?? 'Не вказана'"
+											:type="event.type as TEventType"
+											:name="event.subject.title"
+										/>
+									</motion.div>
+								</AnimatePresence>
+							</div>
+						</motion.div>
+
+						<!-- No events state -->
+						<motion.div
+							v-else-if="hasActiveSchedule && !hasEvents"
+							key="no-events"
+							:initial="{ opacity: 0, y: 6 }"
+							:animate="{ opacity: 1, y: 0 }"
+							:exit="{ opacity: 0, y: -6 }"
+							:transition="{ duration: 0.18 }"
+						>
+							<AppEmptyState
+								variant="sidebar"
+								icon="lucide:smile"
+								title="Пар на сьогодні немає"
+							/>
+						</motion.div>
+
+						<!-- No schedule state -->
+						<motion.div
+							v-else
+							key="no-schedule"
+							:initial="{ opacity: 0, y: 6 }"
+							:animate="{ opacity: 1, y: 0 }"
+							:exit="{ opacity: 0, y: -6 }"
+							:transition="{ duration: 0.18 }"
+						>
+							<AppEmptyState
+								variant="sidebar"
+								icon="lucide:calendar-plus"
+								title="Оберіть розклад для перегляду пар"
+							/>
+						</motion.div>
+					</AnimatePresence>
+				</UiScrollArea>
+			</div>
+		</ClientOnly>
+	</div>
+</template>
