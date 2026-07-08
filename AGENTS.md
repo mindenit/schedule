@@ -216,6 +216,57 @@ const myRef = skipHydrate(useStorage(STORAGE_KEYS.myKey, defaultValue))
 
 ---
 
+## Release workflow
+
+### Branch responsibilities
+
+| Branch | Environment | Purpose |
+|--------|-------------|---------|
+| `dev` | Staging | Integration branch — all feature work lands here |
+| `main` | Production | Release ledger — only receives tagged releases |
+
+### Feature → `dev` (day-to-day)
+
+- Open a PR from your feature/fix branch into `dev`.
+- PR title must follow Conventional Commits: `feat(scope): description`, `fix(scope): description`, etc.
+- Merge method: **Squash and merge** only.
+- Result on `dev`: `feat(notifications): handle all 9 backend types (#179)`
+
+### `dev` → `main` (release)
+
+1. Open a PR from `dev` into `main`.
+2. **PR title** (becomes the merge commit title):
+   ```
+   chore(release): v<major>.<minor>.<patch>
+   ```
+3. **PR body** — use the release PR template (`.github/PULL_REQUEST_TEMPLATE/release.md`).
+   Fill in 3-6 highlight bullets from squashed commits since the last release and the compare URL.
+4. Get approval, ensure CI passes.
+5. Merge method: **Create a merge commit** only.
+6. After merging: create a GitHub Release targeting `main` → tag `v<major>.<minor>.<patch>` → paste the PR body as release notes (or click "Generate release notes").
+
+### Rulesets (configured in GitHub Settings → Rules → Rulesets)
+
+**`main`:**
+- Require PR before merging ✅ | Required approvals: 1
+- Allowed merge method: **Create a merge commit** only
+- Require linear history: ❌ (merge commits are two-parent — must be off)
+- Require status checks (CI, build, lint, typecheck) ✅
+- Block force pushes ✅ | Restrict deletions ✅
+
+**`dev`:**
+- Require PR before merging ✅ | Required approvals: 1
+- Allowed merge method: **Squash and merge** only
+- Require linear history ✅
+- Require status checks ✅
+- Block force pushes ✅ | Restrict deletions ✅
+
+**Required repo setting:** Settings → General → Pull Requests → enable
+**"Default to PR title and description for merge commit messages"** — makes the PR title/body
+auto-populate the merge commit message without extra manual steps.
+
+---
+
 ## Analytics
 
 OpenPanel via `@openpanel/nuxt`. Configured in the `openpanel` block of `nuxt.config`:
