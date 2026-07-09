@@ -351,6 +351,46 @@ export function useSwipeNavigator<TPanel extends SwipeablePanel>(
 		navigateTo(dir, newDate, "external")
 	})
 
+	// ---------------------------------------------------------------------------
+	// Idle-warm: after the current panel is (re)built due to an events/timezone
+	// change, pre-build the adjacent panels (prev + next period) while the main
+	// thread is idle. This seeds the per-view panel memo so the first swipe after
+	// a schedule load or filter toggle is instant instead of paying the buildPanel
+	// cost mid-animation.
+	//
+	// requestIdleCallback is used when available (Chromium/Firefox); otherwise a
+	// zero-delay setTimeout provides a minimal tick separation to avoid blocking
+	// the current frame.
+	// ---------------------------------------------------------------------------
+	let idleWarmHandle: ReturnType<typeof setTimeout> | number | null = null
+
+	function scheduleIdleWarm() {
+		if (!dragEnabled) return
+		if (idleWarmHandle !== null) {
+			if (typeof idleWarmHandle === "number" && "cancelIdleCallback" in globalThis) {
+				globalThis.cancelIdleCallback(idleWarmHandle as number)
+			} else {
+				clearTimeout(idleWarmHandle as ReturnType<typeof setTimeout>)
+			}
+			idleWarmHandle = null
+		}
+		const warm = () => {
+			// Don't interfere while the user is actively navigating or dragging.
+			if (isNavigating.value || isDragging.value) return
+			const nextDate = navigateDate(currentPanel.value.date, view, "next")
+			const prevDate = navigateDate(currentPanel.value.date, view, "previous")
+			// buildPanel calls the memo under the hood — these are effectively no-ops
+			// on a warm cache, and fill the memo on first call after events change.
+			buildPanel(nextDate)
+			buildPanel(prevDate)
+		}
+		if ("requestIdleCallback" in globalThis) {
+			idleWarmHandle = globalThis.requestIdleCallback(warm, { timeout: 500 })
+		} else {
+			idleWarmHandle = setTimeout(warm, 0)
+		}
+	}
+
 	// Rebuild panels when events or timezone changes.
 	// During navigation: rebuild BOTH current and incoming so the content is
 	// fresh for post-settle promotion. Outside navigation: just update currentPanel.
@@ -371,6 +411,7 @@ export function useSwipeNavigator<TPanel extends SwipeablePanel>(
 				// Guard: skip if the user is actively dragging — the in-progress gesture
 				// already has its panels committed; rebuilding mid-drag causes jitter.
 				if (dragEnabled && peekBuilt && !isDragging.value) rebuildPeekPanels()
+				scheduleIdleWarm()
 			}
 		},
 		{ flush: "post" }
@@ -403,6 +444,13 @@ export function useSwipeNavigator<TPanel extends SwipeablePanel>(
 
 	onBeforeUnmount(() => {
 		if (midnightTimer !== null) clearTimeout(midnightTimer)
+		if (idleWarmHandle !== null) {
+			if (typeof idleWarmHandle === "number" && "cancelIdleCallback" in globalThis) {
+				globalThis.cancelIdleCallback(idleWarmHandle as number)
+			} else {
+				clearTimeout(idleWarmHandle as ReturnType<typeof setTimeout>)
+			}
+		}
 	})
 
 	return {

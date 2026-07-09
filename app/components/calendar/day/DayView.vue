@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Schedule } from "nurekit"
-import { isSameDay } from "date-fns"
+import { isSameDay, format } from "date-fns"
 import { motion } from "motion-v"
 import { CalendarAnimationUtils } from "~/constants"
 
@@ -11,7 +11,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const calendarStore = useCalendarStore()
-const { selectedDate, eventsByDayKey } = storeToRefs(calendarStore)
+const { selectedDate, eventsByDayKey, allEvents } = storeToRefs(calendarStore)
 
 const { effectiveTimezone } = useTimezone()
 
@@ -31,7 +31,7 @@ interface DayPanel {
 	key: string
 }
 
-function buildPanel(date: Date): DayPanel {
+function buildPanelImpl(date: Date): DayPanel {
 	const key = getDayKey(date, effectiveTimezone.value)
 	const events = eventsByDayKey.value.get(key) ?? []
 	return {
@@ -39,6 +39,33 @@ function buildPanel(date: Date): DayPanel {
 		groupedEvents: groupEvents(events),
 		key: CalendarAnimationUtils.createDateKey(date),
 	}
+}
+
+// ---------------------------------------------------------------------------
+// Panel memo: key = "YYYY-MM-DD" + allEvents reference + timezone.
+// Day panels are cheap (single-day lookup), but rebuilding ALL days after a
+// filter change (current + 2 peeks = 3 buildPanel calls, sequentially) still
+// adds up. Cache busts on new events ref or tz change.
+// Capped at 10 entries (a few days of recent navigation history).
+// ---------------------------------------------------------------------------
+const MAX_PANEL_CACHE = 10
+interface DayPanelCacheEntry {
+	eventsRef: Schedule[]
+	tz: string
+	panel: DayPanel
+}
+const panelCache = new Map<string, DayPanelCacheEntry>()
+
+function buildPanel(date: Date): DayPanel {
+	const key = format(date, "yyyy-MM-dd")
+	const eventsRef = allEvents.value
+	const tz = effectiveTimezone.value
+	const entry = panelCache.get(key)
+	if (entry && entry.eventsRef === eventsRef && entry.tz === tz) return entry.panel
+	const panel = buildPanelImpl(date)
+	if (panelCache.size >= MAX_PANEL_CACHE) panelCache.delete(panelCache.keys().next().value!)
+	panelCache.set(key, { eventsRef, tz, panel })
+	return panel
 }
 
 const dayViewEl = useTemplateRef("dayView")

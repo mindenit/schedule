@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Schedule } from "nurekit"
 import { motion } from "motion-v"
-import { format, isSameYear, isToday, isThisMonth } from "date-fns"
+import { format, isSameYear, isThisMonth } from "date-fns"
 import { uk } from "date-fns/locale"
 
 interface Props {
@@ -11,7 +11,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const calendarStore = useCalendarStore()
-const { eventsByDayKey } = storeToRefs(calendarStore)
+const { eventsByDayKey, allEvents } = storeToRefs(calendarStore)
 const { getCalendarCells } = useCalendarCells()
 const { trackEvent } = useAnalytics()
 
@@ -69,18 +69,23 @@ function getDominantColor(events: Schedule[]): string {
  * Build a fully frozen MonthMini for the given month.
  * All per-cell derived values (isToday, colorClass) are pre-baked here
  * so MonthMini.vue never calls date-fns or does Map lookups at render time.
+ *
+ * todayKey: Unix ms of today's midnight in local JS time. Comparing
+ * c.date.getTime() === todayKey is O(1) and avoids ~420 isToday() calls
+ * per year panel (12 months × ~35 cells).
  */
 function buildMonthMini(
 	year: number,
 	monthIndex: number,
-	colorByDayKey: Map<number, string>
+	colorByDayKey: Map<number, string>,
+	todayKey: number
 ): MonthMiniData {
 	const date = new Date(year, monthIndex, 1)
 	const thisMonth = isThisMonth(date)
 	const cells: MonthMiniCell[] = getCalendarCells(date).map((c) => ({
 		date: c.date,
 		currentMonth: c.currentMonth,
-		isToday: isToday(c.date),
+		isToday: c.date.getTime() === todayKey,
 		colorClass: colorByDayKey.get(c.date.getTime()) || undefined,
 	}))
 	return {
@@ -91,7 +96,7 @@ function buildMonthMini(
 	}
 }
 
-function buildPanel(seedDate: Date): YearPanel {
+function buildPanelImpl(seedDate: Date): YearPanel {
 	const year = seedDate.getFullYear()
 
 	// Compute color map once for the whole year — used per cell in buildMonthMini.
@@ -101,11 +106,42 @@ function buildPanel(seedDate: Date): YearPanel {
 		if (color) colorByDayKey.set(key, color)
 	}
 
+	// Single today-midnight key replaces ~420 isToday() date-fns calls per panel.
+	const now = new Date()
+	const todayKey = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
+
 	return {
 		date: new Date(year, 0, 1),
 		year,
-		months: Array.from({ length: 12 }, (_, i) => buildMonthMini(year, i, colorByDayKey)),
+		months: Array.from({ length: 12 }, (_, i) =>
+			buildMonthMini(year, i, colorByDayKey, todayKey)
+		),
 	}
+}
+
+// ---------------------------------------------------------------------------
+// Panel memo: key = year + allEvents reference.
+// Same year revisited with the same events array returns the frozen snapshot
+// directly, avoiding the full 12-month × ~35-cell rebuild on peek/navigation.
+// Invalidates automatically when allEvents reference changes (new fetch/filter).
+// Capped at 3 entries (current year + prev + next).
+// ---------------------------------------------------------------------------
+const MAX_PANEL_CACHE = 3
+interface YearPanelCacheEntry {
+	eventsRef: Schedule[]
+	panel: YearPanel
+}
+const panelCache = new Map<number, YearPanelCacheEntry>()
+
+function buildPanel(seedDate: Date): YearPanel {
+	const year = seedDate.getFullYear()
+	const eventsRef = allEvents.value
+	const entry = panelCache.get(year)
+	if (entry && entry.eventsRef === eventsRef) return entry.panel
+	const panel = buildPanelImpl(seedDate)
+	if (panelCache.size >= MAX_PANEL_CACHE) panelCache.delete(panelCache.keys().next().value!)
+	panelCache.set(year, { eventsRef, panel })
+	return panel
 }
 
 const yearRootEl = useTemplateRef("yearRoot")

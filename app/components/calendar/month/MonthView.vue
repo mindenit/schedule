@@ -14,7 +14,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const calendarStore = useCalendarStore()
-const { selectedDate, eventsByDayKey } = storeToRefs(calendarStore)
+const { selectedDate, eventsByDayKey, allEvents } = storeToRefs(calendarStore)
 const { effectiveTimezone } = useTimezone()
 
 const { getCalendarCells, getWeekDays } = useCalendarCells()
@@ -62,6 +62,31 @@ interface MonthPanel {
 
 const FALLBACK_COLOR = "bg-muted text-muted-foreground"
 
+// ---------------------------------------------------------------------------
+// Panel memo: key = "YYYY-M" + allEvents reference.
+// Same month visited twice with the same events array returns the frozen
+// snapshot directly — no cell grouping, no badge pre-bake, no Map lookups.
+// Invalidates automatically when allEvents reference changes (new fetch/filter).
+// Capped at 13 entries (current month + 12 navigation history).
+// ---------------------------------------------------------------------------
+const MAX_PANEL_CACHE = 13
+interface PanelCacheEntry {
+	eventsRef: Schedule[]
+	panel: MonthPanel
+}
+const panelCache = new Map<string, PanelCacheEntry>()
+
+function cachedBuildPanel(date: Date): MonthPanel {
+	const key = `${date.getFullYear()}-${date.getMonth()}`
+	const eventsRef = allEvents.value
+	const entry = panelCache.get(key)
+	if (entry && entry.eventsRef === eventsRef) return entry.panel
+	const panel = buildPanelImpl(date)
+	if (panelCache.size >= MAX_PANEL_CACHE) panelCache.delete(panelCache.keys().next().value!)
+	panelCache.set(key, { eventsRef, panel })
+	return panel
+}
+
 /**
  * Build a fully frozen panel snapshot for the given month.
  *
@@ -77,7 +102,7 @@ const FALLBACK_COLOR = "bg-muted text-muted-foreground"
  * `today` ref (updated every minute), so the highlight stays correct if the tab is
  * left open past midnight without user navigation.
  */
-function buildPanel(date: Date): MonthPanel {
+function buildPanelImpl(date: Date): MonthPanel {
 	const cells = getCalendarCells(date)
 	const evMap = eventsByDayKey.value
 	const tz = effectiveTimezone.value
@@ -115,7 +140,7 @@ const { currentPanel, incomingPanel, currentX, incomingX, onDragStart, onDrag, o
 	useSwipeNavigator<MonthPanel>({
 		view: "month",
 		containerRef: monthRootEl,
-		buildPanel,
+		buildPanel: cachedBuildPanel,
 		samePeriod: isSameMonth,
 		events: () => props.events,
 		timezone: () => effectiveTimezone.value,

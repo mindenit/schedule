@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { isSameWeek } from "date-fns"
+import { isSameWeek, startOfWeek, getISOWeek, getYear } from "date-fns"
 import type { Schedule } from "nurekit"
 import { motion } from "motion-v"
 import { WEEK_OPTIONS } from "~/constants/calendar"
@@ -12,7 +12,8 @@ const props = defineProps<Props>()
 
 const { getWeekDaysDetailed } = useCalendarCells()
 const { effectiveTimezone } = useTimezone()
-const { eventsByDayKey } = storeToRefs(useCalendarStore())
+const calendarStore = useCalendarStore()
+const { eventsByDayKey, allEvents } = storeToRefs(calendarStore)
 
 interface WeekPanel {
 	/** Same as weekStart — kept under this name for SwipeablePanel compatibility. */
@@ -22,7 +23,7 @@ interface WeekPanel {
 	groupedEventsByDay: Schedule[][][]
 }
 
-function buildPanel(seedDate: Date): WeekPanel {
+function buildPanelImpl(seedDate: Date): WeekPanel {
 	const weekDays = getWeekDaysDetailed(seedDate)
 	const weekStart = weekDays[0]!
 	return {
@@ -34,6 +35,34 @@ function buildPanel(seedDate: Date): WeekPanel {
 			return groupEvents(eventsByDayKey.value.get(key) ?? [])
 		}),
 	}
+}
+
+// ---------------------------------------------------------------------------
+// Panel memo: key = "YYYY-Www" + allEvents reference + timezone.
+// Same week revisited with the same events/tz returns the frozen snapshot.
+// Invalidates when allEvents reference changes (new fetch/filter response).
+// Capped at 10 entries (enough for typical back-and-forth week navigation).
+// ---------------------------------------------------------------------------
+const MAX_PANEL_CACHE = 10
+interface WeekPanelCacheEntry {
+	eventsRef: Schedule[]
+	tz: string
+	panel: WeekPanel
+}
+const panelCache = new Map<string, WeekPanelCacheEntry>()
+
+function buildPanel(seedDate: Date): WeekPanel {
+	const ws = startOfWeek(seedDate, WEEK_OPTIONS)
+	// Key by ISO week year + week number to handle year-boundary weeks correctly.
+	const key = `${getYear(ws)}-W${getISOWeek(ws)}`
+	const eventsRef = allEvents.value
+	const tz = effectiveTimezone.value
+	const entry = panelCache.get(key)
+	if (entry && entry.eventsRef === eventsRef && entry.tz === tz) return entry.panel
+	const panel = buildPanelImpl(seedDate)
+	if (panelCache.size >= MAX_PANEL_CACHE) panelCache.delete(panelCache.keys().next().value!)
+	panelCache.set(key, { eventsRef, tz, panel })
+	return panel
 }
 
 const weekRootEl = useTemplateRef("weekRoot")
