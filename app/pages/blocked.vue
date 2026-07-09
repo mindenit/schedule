@@ -101,7 +101,7 @@ definePageMeta({
 							hover:-translate-y-1 hover:shadow-lg"
 					>
 						<div class="mb-3 text-4xl">🦊</div>
-						<p class="text-center text-sm leading-[14px] font-semibold dark:text-white">
+						<p class="text-center text-sm leading-3.5 font-semibold dark:text-white">
 							Mozilla Firefox
 						</p>
 					</a>
@@ -112,7 +112,7 @@ definePageMeta({
 							hover:-translate-y-1 hover:shadow-lg"
 					>
 						<div class="mb-3 text-4xl">🌐</div>
-						<p class="text-center text-sm leading-[14px] font-semibold dark:text-white">
+						<p class="text-center text-sm leading-3.5 font-semibold dark:text-white">
 							Google Chrome
 						</p>
 					</a>
@@ -123,7 +123,7 @@ definePageMeta({
 							hover:-translate-y-1 hover:shadow-lg"
 					>
 						<div class="mb-3 text-4xl">🛡️</div>
-						<p class="text-center text-sm leading-[14px] font-semibold dark:text-white">
+						<p class="text-center text-sm leading-3.5 font-semibold dark:text-white">
 							Brave Browser
 						</p>
 					</a>
@@ -134,7 +134,7 @@ definePageMeta({
 							hover:-translate-y-1 hover:shadow-lg"
 					>
 						<div class="mb-3 text-4xl">🔴</div>
-						<p class="text-center text-sm leading-[14px] font-semibold dark:text-white">
+						<p class="text-center text-sm leading-3.5 font-semibold dark:text-white">
 							Opera
 						</p>
 					</a>

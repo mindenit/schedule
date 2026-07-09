@@ -113,7 +113,7 @@ const deleteLink = (linkId: string) => {
 					/>
 					<div class="min-w-0 flex-1">
 						<div class="truncate font-medium">{{ auditoriumText }}</div>
-						<div class="text-muted-foreground text-[11px]">Аудиторія</div>
+						<div class="text-muted-foreground text-[0.688rem]">Аудиторія</div>
 					</div>
 				</div>
 
@@ -125,7 +125,7 @@ const deleteLink = (linkId: string) => {
 					/>
 					<div class="min-w-0 flex-1">
 						<div class="truncate">{{ teachersText }}</div>
-						<div class="text-muted-foreground text-[11px]">
+						<div class="text-muted-foreground text-[0.688rem]">
 							{{ event.teachers.length === 1 ? "Викладач" : "Викладачі" }}
 						</div>
 					</div>
@@ -140,7 +140,7 @@ const deleteLink = (linkId: string) => {
 				/>
 				<div class="flex-1">
 					<div>{{ groupsText }}</div>
-					<div class="text-muted-foreground text-[11px]">
+					<div class="text-muted-foreground text-[0.688rem]">
 						{{ event.groups.length === 1 ? "Група" : "Групи" }}
 					</div>
 				</div>
@@ -164,7 +164,7 @@ const deleteLink = (linkId: string) => {
 					<AppIcon name="lucide:plus" size="3.5" />
 				</UiButton>
 			</div>
-			<div v-if="eventLinks.length" class="max-h-[140px] space-y-1 overflow-auto">
+			<div v-if="eventLinks.length" class="max-h-35 space-y-1 overflow-auto">
 				<div
 					v-for="link in eventLinks"
 					:key="link.id"

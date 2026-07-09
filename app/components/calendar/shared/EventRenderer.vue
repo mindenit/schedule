@@ -145,7 +145,7 @@ const renderData = computed((): RenderData => {
 	<div
 		v-for="{ event, style, key, isStacked } in renderData.events"
 		:key="key"
-		class="absolute px-[2px]"
+		class="absolute px-0.5"
 		:class="!disableChips && isStacked ? 'hidden lg:block' : ''"
 		:style="style"
 	>
@@ -165,7 +165,7 @@ const renderData = computed((): RenderData => {
 	<div
 		v-for="{ events, style, key } in renderData.chips"
 		:key="key"
-		class="absolute px-[2px] lg:hidden"
+		class="absolute px-0.5 lg:hidden"
 		:class="disableChips ? 'hidden' : 'block'"
 		:style="style"
 	>

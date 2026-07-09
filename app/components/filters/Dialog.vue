@@ -137,7 +137,7 @@ watch(isOpen, (open) => {
 					v-if="filtersStore.activeCount > 0"
 					class="bg-warning text-warning-foreground ring-background absolute -top-1.5
 						-right-1.5 flex h-4 min-w-4 items-center justify-center rounded-full p-0.5
-						text-[10px] font-medium ring-2"
+						text-[0.625rem] font-medium ring-2"
 				>
 					{{ filtersStore.activeCount }}
 				</span>

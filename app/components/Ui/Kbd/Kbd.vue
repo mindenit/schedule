@@ -47,9 +47,9 @@ const styles = tv({
 	],
 	variants: {
 		size: {
-			xs: "h-4 px-1 text-[11px]",
+			xs: "h-4 px-1 text-[0.688rem]",
 			sm: "h-5 px-1 text-xs",
-			md: "h-[22px] px-1 text-sm",
+			md: "h-[1.375rem] px-1 text-sm",
 		},
 		variant: {
 			solid: "bg-muted text-foreground/80",

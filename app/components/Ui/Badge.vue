@@ -50,7 +50,7 @@ const badgeVariants = tv({
 		},
 		size: {
 			sm: "px-2 py-0.5 text-xs font-medium",
-			md: "px-2.5 py-[3px] text-sm font-medium",
+			md: "px-2.5 py-0.75 text-sm font-medium",
 			lg: "px-2.5 py-1 text-sm font-semibold",
 		},
 	},

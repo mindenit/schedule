@@ -258,7 +258,7 @@ const handleCardClick = (item: GenericScheduleItem) => {
 									scrollRefs[tabType].value = el as HTMLElement | undefined
 								}
 							"
-							class="custom-scrollbar h-[400px] overflow-y-auto"
+							class="custom-scrollbar h-100 overflow-y-auto"
 							style="
 								scrollbar-width: thin;
 								scrollbar-color: var(--border) transparent;

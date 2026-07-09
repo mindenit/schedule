@@ -23,10 +23,7 @@ const displayDescription = computed(() => truncate(props.description, 160))
 </script>
 
 <template>
-	<div
-		class="flex h-full w-full flex-row items-center justify-between bg-[#090f1f] px-[80px]
-			py-[40px]"
-	>
+	<div class="flex h-full w-full flex-row items-center justify-between bg-[#090f1f] px-20 py-10">
 		<!-- background blob -->
 		<svg
 			class="absolute top-0 right-0"
@@ -64,21 +61,21 @@ const displayDescription = computed(() => truncate(props.description, 160))
 		</svg>
 
 		<!-- content -->
-		<div class="relative flex w-[620px] flex-col gap-5">
+		<div class="relative flex w-155 flex-col gap-5">
 			<p
-				class="m-0 text-[20px] font-semibold tracking-widest text-[#57668F] uppercase"
+				class="m-0 text-xl font-semibold tracking-widest text-[#57668F] uppercase"
 				style="font-family: Inter, sans-serif"
 			>
 				{{ headline }}
 			</p>
 			<h1
-				class="m-0 text-[64px] leading-none font-bold text-white"
+				class="m-0 text-6xl leading-none font-bold text-white"
 				style="font-family: Inter, sans-serif"
 			>
 				{{ displayTitle }}
 			</h1>
 			<p
-				class="m-0 text-[28px] leading-snug text-[#a1a1aa]"
+				class="m-0 text-3xl leading-snug text-[#a1a1aa]"
 				style="font-family: Inter, sans-serif"
 			>
 				{{ displayDescription }}
@@ -87,11 +84,7 @@ const displayDescription = computed(() => truncate(props.description, 160))
 
 		<!-- logo -->
 		<div class="relative shrink-0">
-			<img
-				src="/logo.svg"
-				alt="Mindenit logo"
-				class="size-[200px] rounded-[32px] drop-shadow-2xl"
-			/>
+			<img src="/logo.svg" alt="Mindenit logo" class="size-50 rounded-4xl drop-shadow-2xl" />
 		</div>
 	</div>
 </template>

@@ -18,8 +18,8 @@
 					<div
 						v-if="!hideKnob"
 						data-slot="drawer-knob"
-						class="bg-muted mx-auto mt-4 h-1.5 w-[60px] shrink-0 cursor-grab
-							rounded-full active:cursor-grabbing"
+						class="bg-muted mx-auto mt-4 h-1.5 w-15 shrink-0 cursor-grab rounded-full
+							active:cursor-grabbing"
 					/>
 				</slot>
 

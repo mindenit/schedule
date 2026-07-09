@@ -32,6 +32,6 @@ const props = defineProps<
 >()
 const forwarded = reactiveOmit(props, "class")
 const styles = tv({
-	base: "absolute bottom-0 left-0 h-[3px] rounded-full px-2 transition-[width,transform] duration-300",
+	base: "absolute bottom-0 left-0 h-0.75 rounded-full px-2 transition-[width,transform] duration-300",
 })
 </script>

@@ -59,7 +59,7 @@ const WEEK_INITIALS = ["М", "П", "С", "Ч", "П", "С", "Н"]
 		<!-- Month header — click to navigate to month view (interactive only) -->
 		<component
 			:is="interactive ? 'button' : 'span'"
-			class="mb-1 text-left text-[10px] leading-tight font-semibold capitalize lg:text-xs"
+			class="mb-1 text-left text-[0.625rem] leading-tight font-semibold capitalize lg:text-xs"
 			:class="[
 				interactive ? 'cursor-pointer' : '',
 				month.isThisMonth
@@ -80,7 +80,7 @@ const WEEK_INITIALS = ["М", "П", "С", "Ч", "П", "С", "Н"]
 			<span
 				v-for="initial in WEEK_INITIALS"
 				:key="initial"
-				class="text-muted-foreground flex items-center justify-center text-[9px]
+				class="text-muted-foreground flex items-center justify-center text-[0.625rem]
 					leading-none font-medium"
 			>
 				{{ initial }}
@@ -88,7 +88,7 @@ const WEEK_INITIALS = ["М", "П", "С", "Ч", "П", "С", "Н"]
 		</div>
 
 		<!-- Day cells grid -->
-		<div class="grid grid-cols-7 gap-[2px] lg:min-h-0 lg:flex-1">
+		<div class="grid grid-cols-7 gap-0.5 lg:min-h-0 lg:flex-1">
 			<component
 				:is="interactive ? 'button' : 'div'"
 				v-for="(cell, i) in month.cells"
@@ -105,9 +105,9 @@ const WEEK_INITIALS = ["М", "П", "С", "Ч", "П", "С", "Н"]
 				@click="interactive && cell.currentMonth && emit('dayClick', cell.date)"
 			>
 				<span
-					class="flex aspect-square w-[14px] items-center justify-center rounded-full
-						text-[7px] font-medium lg:w-full lg:max-w-[18px] lg:rounded-sm
-						lg:text-[9px]"
+					class="flex aspect-square w-3.5 items-center justify-center rounded-full
+						text-[0.438rem] font-medium lg:w-full lg:max-w-4.5 lg:rounded-sm
+						lg:text-[0.563px]"
 					:class="[
 						interactive ? 'lg:group-hover:ring-1 lg:group-hover:ring-offset-0' : '',
 						cell.isToday

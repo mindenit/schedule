@@ -41,7 +41,7 @@ const hours = CALENDAR_HOURS
 </script>
 
 <template>
-	<div class="flex flex-1 flex-col lg:min-w-[800px]">
+	<div class="flex flex-1 flex-col lg:min-w-200">
 		<!-- Day-name + date-number header -->
 		<div
 			role="row"
@@ -55,11 +55,11 @@ const hours = CALENDAR_HOURS
 					role="columnheader"
 					:aria-label="capitalize(format(day, 'EEEE d MMMM', { locale: uk }))"
 					class="text-muted-foreground flex flex-col items-center gap-0.5 py-1 text-center
-						text-xs font-medium transition-colors duration-200 lg:min-w-[100px] lg:gap-1
+						text-xs font-medium transition-colors duration-200 lg:min-w-25 lg:gap-1
 						lg:py-2"
 				>
 					<!-- Mobile: single-letter initial (П В С Ч П С Н), sm: abbreviated, lg+: full name -->
-					<span class="block text-[10px] sm:hidden">
+					<span class="block text-[0.625rem] sm:hidden">
 						{{ capitalize(format(day, "EEEEE", { locale: uk })) }}
 					</span>
 					<span class="hidden sm:block lg:hidden">
@@ -69,7 +69,7 @@ const hours = CALENDAR_HOURS
 						{{ capitalize(format(day, "EEEE", { locale: uk })) }}
 					</span>
 					<span
-						class="flex size-4 items-center justify-center rounded-full text-[10px]
+						class="flex size-4 items-center justify-center rounded-full text-[0.625rem]
 							font-semibold lg:size-5 lg:text-sm"
 						:class="{
 							'bg-primary text-foreground':
@@ -95,7 +95,8 @@ const hours = CALENDAR_HOURS
 					<div class="absolute -top-3 right-0.5 flex h-6 items-center lg:right-2">
 						<span
 							v-if="index !== 0"
-							class="text-muted-foreground text-[10px] whitespace-nowrap lg:text-xs"
+							class="text-muted-foreground text-[0.625rem] whitespace-nowrap
+								lg:text-xs"
 						>
 							{{ formatHour(hour) }}
 						</span>
@@ -111,7 +112,7 @@ const hours = CALENDAR_HOURS
 						:key="day.getTime()"
 						role="gridcell"
 						:aria-label="format(day, 'd MMMM', { locale: uk })"
-						class="relative lg:min-w-[100px]"
+						class="relative lg:min-w-25"
 					>
 						<div class="flex h-full flex-col gap-1">
 							<div

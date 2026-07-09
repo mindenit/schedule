@@ -31,8 +31,8 @@ const { trackEvent } = useAnalytics()
 
 const blockClasses = computed(() => [
 	props.interactive
-		? "flex flex-col gap-0.5 select-none rounded-md px-1 text-[11px] leading-tight focus-visible:outline-offset-2 transition-colors duration-200 cursor-pointer overflow-hidden min-w-0 h-full lg:px-2 lg:text-xs"
-		: "flex flex-col gap-0.5 select-none rounded-md px-1 text-[11px] leading-tight overflow-hidden min-w-0 h-full lg:px-2 lg:text-xs",
+		? "flex flex-col gap-0.5 select-none rounded-md px-1 text-[0.688rem] leading-tight focus-visible:outline-offset-2 transition-colors duration-200 cursor-pointer overflow-hidden min-w-0 h-full lg:px-2 lg:text-xs"
+		: "flex flex-col gap-0.5 select-none rounded-md px-1 text-[0.688rem] leading-tight overflow-hidden min-w-0 h-full lg:px-2 lg:text-xs",
 	props.detailed ? "items-start justify-start pt-1.5" : "items-center justify-center",
 	getEventTypeColor(props.event.type),
 	props.class,

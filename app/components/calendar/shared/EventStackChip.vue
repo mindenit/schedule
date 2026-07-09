@@ -76,7 +76,7 @@ const ariaLabel = computed(() => {
 				<!-- Centered count pill -->
 				<span class="absolute inset-0 flex items-center justify-center" aria-hidden="true">
 					<span
-						class="rounded-sm bg-black/30 px-1 py-0.5 text-[10px] leading-none
+						class="rounded-sm bg-black/30 px-1 py-0.5 text-[0.625rem] leading-none
 							font-semibold text-white"
 					>
 						{{ count }}
@@ -109,7 +109,7 @@ const ariaLabel = computed(() => {
 		/>
 		<span class="absolute inset-0 flex items-center justify-center">
 			<span
-				class="rounded-sm bg-black/30 px-1 py-0.5 text-[10px] leading-none font-semibold
+				class="rounded-sm bg-black/30 px-1 py-0.5 text-[0.625rem] leading-none font-semibold
 					text-white"
 			>
 				{{ count }}
