@@ -49,47 +49,101 @@ const teacherText = computed(() => {
 </script>
 
 <template>
-	<!-- v-if="interactive": skip mounting UiPopover tree on the non-interactive incoming panel. -->
-	<UiPopover v-if="interactive">
-		<UiPopoverTrigger as-child>
-			<div
-				role="button"
-				tabindex="0"
-				:aria-label="`${event.subject.title}, ${formattedTimeRange}`"
-				:class="blockClasses"
-				@click="trackEvent('event_opened', { lesson_type: event.type })"
-				@keydown.enter.prevent="trackEvent('event_opened', { lesson_type: event.type })"
-				@keydown.space.prevent="($event.currentTarget as HTMLElement).click()"
-			>
-				<!-- Compact mode (week/year views): brief + time on desktop -->
-				<template v-if="!detailed">
-					<p class="w-full truncate text-center font-semibold">
-						{{ event.subject.brief }}
-					</p>
-					<p class="hidden w-full truncate text-center lg:block">
-						{{ formattedTimeRange }}
-					</p>
-				</template>
+	<!--
+		Interactive path: dual-render Drawer (mobile) + Popover (desktop).
+		Both wrappers use CSS display:contents so they don't affect layout.
+		Only one trigger is tappable per breakpoint — overlays portal to body
+		so class="hidden" on the wrapper cannot suppress them; instead we split
+		into two fully independent interactive trees.
+		v-if="interactive": skip both trees entirely on the non-interactive
+		incoming animation panel (no Popover/Drawer mount overhead).
+	-->
+	<template v-if="interactive">
+		<!-- Mobile (< lg): Drawer slides up from bottom -->
+		<div class="contents lg:hidden">
+			<UiDrawer>
+				<UiDrawerTrigger as-child>
+					<div
+						role="button"
+						tabindex="0"
+						:aria-label="`${event.subject.title}, ${formattedTimeRange}`"
+						:class="blockClasses"
+						@click="trackEvent('event_opened', { lesson_type: event.type })"
+						@keydown.enter.prevent="
+							trackEvent('event_opened', { lesson_type: event.type })
+						"
+						@keydown.space.prevent="($event.currentTarget as HTMLElement).click()"
+					>
+						<template v-if="!detailed">
+							<p class="w-full truncate text-center font-semibold">
+								{{ event.subject.brief }}
+							</p>
+						</template>
+						<template v-else>
+							<p class="w-full truncate font-semibold">{{ event.subject.brief }}</p>
+							<p class="w-full truncate text-white/85">{{ formattedTimeRange }}</p>
+							<p v-if="auditoriumText" class="mt-0.5 w-full truncate text-white/70">
+								{{ auditoriumText }}
+							</p>
+							<p v-if="teacherText" class="w-full truncate text-white/70">
+								{{ teacherText }}
+							</p>
+						</template>
+					</div>
+				</UiDrawerTrigger>
+				<UiDrawerContent>
+					<UiDrawerTitle class="sr-only">{{ event.subject.title }}</UiDrawerTitle>
+					<UiDrawerDescription class="sr-only">Деталі заняття</UiDrawerDescription>
+					<div class="mx-auto w-full max-w-md overflow-y-auto px-4 pt-2 pb-8">
+						<BigCalendarEventPopover :event />
+					</div>
+				</UiDrawerContent>
+			</UiDrawer>
+		</div>
 
-				<!-- Detailed mode (day view): brief + time + auditorium + teacher -->
-				<template v-else>
-					<p class="w-full truncate font-semibold">{{ event.subject.brief }}</p>
-					<p class="w-full truncate text-white/85">{{ formattedTimeRange }}</p>
-					<p v-if="auditoriumText" class="mt-0.5 w-full truncate text-white/70">
-						{{ auditoriumText }}
-					</p>
-					<p v-if="teacherText" class="w-full truncate text-white/70">
-						{{ teacherText }}
-					</p>
-				</template>
-			</div>
-		</UiPopoverTrigger>
-		<UiPopoverContent class="w-80">
-			<BigCalendarEventPopover :event />
-		</UiPopoverContent>
-	</UiPopover>
+		<!-- Desktop (lg+): anchored Popover -->
+		<div class="hidden lg:contents">
+			<UiPopover>
+				<UiPopoverTrigger as-child>
+					<div
+						role="button"
+						tabindex="0"
+						:aria-label="`${event.subject.title}, ${formattedTimeRange}`"
+						:class="blockClasses"
+						@click="trackEvent('event_opened', { lesson_type: event.type })"
+						@keydown.enter.prevent="
+							trackEvent('event_opened', { lesson_type: event.type })
+						"
+						@keydown.space.prevent="($event.currentTarget as HTMLElement).click()"
+					>
+						<template v-if="!detailed">
+							<p class="w-full truncate text-center font-semibold">
+								{{ event.subject.brief }}
+							</p>
+							<p class="hidden w-full truncate text-center lg:block">
+								{{ formattedTimeRange }}
+							</p>
+						</template>
+						<template v-else>
+							<p class="w-full truncate font-semibold">{{ event.subject.brief }}</p>
+							<p class="w-full truncate text-white/85">{{ formattedTimeRange }}</p>
+							<p v-if="auditoriumText" class="mt-0.5 w-full truncate text-white/70">
+								{{ auditoriumText }}
+							</p>
+							<p v-if="teacherText" class="w-full truncate text-white/70">
+								{{ teacherText }}
+							</p>
+						</template>
+					</div>
+				</UiPopoverTrigger>
+				<UiPopoverContent class="w-80">
+					<BigCalendarEventPopover :event />
+				</UiPopoverContent>
+			</UiPopover>
+		</div>
+	</template>
 
-	<!-- Static (non-interactive) render — same markup, no Popover overhead. -->
+	<!-- Static (non-interactive) render — same markup, no Drawer/Popover overhead. -->
 	<div v-else :class="blockClasses" aria-hidden="true">
 		<template v-if="!detailed">
 			<p class="w-full truncate text-center font-semibold">{{ event.subject.brief }}</p>

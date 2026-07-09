@@ -50,9 +50,9 @@ const ariaLabel = computed(() => {
 </script>
 
 <template>
-	<!-- Interactive: popover with full event list -->
-	<UiPopover v-if="interactive">
-		<UiPopoverTrigger as-child>
+	<!-- Interactive: drawer slides up with event list (chip is mobile-only anyway) -->
+	<UiDrawer v-if="interactive">
+		<UiDrawerTrigger as-child>
 			<div
 				role="button"
 				tabindex="0"
@@ -83,11 +83,17 @@ const ariaLabel = computed(() => {
 					</span>
 				</span>
 			</div>
-		</UiPopoverTrigger>
-		<UiPopoverContent class="w-80">
-			<BigCalendarMoreEventsPopover :events="events" :date="day" />
-		</UiPopoverContent>
-	</UiPopover>
+		</UiDrawerTrigger>
+		<UiDrawerContent>
+			<UiDrawerTitle class="sr-only">{{ count }} занять</UiDrawerTitle>
+			<UiDrawerDescription class="sr-only"
+				>Список занять у цьому часовому слоті</UiDrawerDescription
+			>
+			<div class="mx-auto w-full max-w-md overflow-y-auto px-4 pt-2 pb-8">
+				<BigCalendarMoreEventsPopover :events="events" :date="day" />
+			</div>
+		</UiDrawerContent>
+	</UiDrawer>
 
 	<!-- Static (non-interactive) render during animation — no Popover overhead -->
 	<div
