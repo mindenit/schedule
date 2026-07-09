@@ -96,29 +96,16 @@ onMounted(() => {
 <template>
 	<div ref="weekRoot" class="relative flex h-full flex-col">
 		<!-- ----------------------------------------------------------------
-			 Mobile layout (< lg): single scrollable grid, no slide animation.
-			 Horizontal day-scroll + DateNavigator buttons handle navigation.
+			 Shared two-panel layout: mobile + desktop.
+			 On mobile the grid is no longer horizontally scrollable —
+			 7 columns compress to fit the screen width (Google Calendar style).
+			 Swipe left/right navigates between weeks on all screen sizes.
 			 ---------------------------------------------------------------- -->
-		<div class="relative flex flex-1 overflow-x-auto overflow-y-hidden lg:hidden">
-			<BigCalendarWeekGrid
-				:week-days="currentPanel.weekDays"
-				:grouped-events-by-day="currentPanel.groupedEventsByDay"
-				:tz="effectiveTimezone"
-				:panel-time="currentPanel.date.getTime()"
-				:client-today="clientToday"
-				:show-timeline="true"
-			/>
-		</div>
-
-		<!-- ----------------------------------------------------------------
-			 Desktop layout (lg+): absolute two-panel slide + drag-to-swipe.
-			 At lg+ the 800px grid fits inside the calendar area so horizontal
-			 scroll does not compete with the swipe gesture.
-			 ---------------------------------------------------------------- -->
-		<div class="relative hidden flex-1 overflow-hidden lg:flex lg:flex-col">
+		<div class="relative flex-1 overflow-hidden">
 			<!-- Incoming panel (non-interactive during animation) -->
 			<motion.div
 				v-if="incomingPanel"
+				aria-hidden="true"
 				class="absolute inset-0 flex flex-col overflow-x-auto"
 				:style="{ x: incomingX, willChange: 'transform', contain: 'layout paint' }"
 			>

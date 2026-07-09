@@ -98,6 +98,8 @@ const hasEvents = computed(() => currentPanel.value.groupedEvents.length > 0)
 					:tz="effectiveTimezone"
 					:interactive="false"
 					:renderer-key="incomingPanel.key"
+					disable-chips
+					detailed
 				/>
 			</motion.div>
 
@@ -119,6 +121,8 @@ const hasEvents = computed(() => currentPanel.value.groupedEvents.length > 0)
 					:tz="effectiveTimezone"
 					:show-timeline="isToday"
 					:renderer-key="currentPanel.key"
+					disable-chips
+					detailed
 				/>
 			</motion.div>
 		</div>

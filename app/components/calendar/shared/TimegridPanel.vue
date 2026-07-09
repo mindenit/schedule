@@ -24,12 +24,24 @@ interface Props {
 	 * and needs to force a re-mount on date change (e.g. DayView after navigation).
 	 */
 	rendererKey?: string | number
+	/**
+	 * When true, simultaneous events always render as individual blocks (no chips).
+	 * Pass true in DayView where the wide single column makes chips unnecessary.
+	 */
+	disableChips?: boolean
+	/**
+	 * When true, EventBlock renders extra detail lines (time, auditorium, teacher).
+	 * Use in DayView where blocks are wide and tall enough to show this comfortably.
+	 */
+	detailed?: boolean
 }
 
 withDefaults(defineProps<Props>(), {
 	interactive: true,
 	showTimeline: false,
 	rendererKey: undefined,
+	disableChips: false,
+	detailed: false,
 })
 
 const { formatHour } = useEventFormatting()
@@ -68,6 +80,8 @@ const hours = CALENDAR_HOURS
 					:day="day"
 					:tz="tz"
 					:interactive="interactive"
+					:disable-chips="disableChips"
+					:detailed="detailed"
 				/>
 			</div>
 			<BigCalendarTimeline v-if="showTimeline" />
