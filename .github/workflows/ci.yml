@@ -37,9 +37,6 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-        env:
-          # nuxt prepare runs as postinstall; nuxt.config.ts checks for this in production
-          NUXT_OG_IMAGE_SECRET: "ci-placeholder-not-a-real-secret"
 
       - name: Check formatting
         run: pnpm prettier
@@ -52,5 +49,3 @@ jobs:
         env:
           # Silence the Nuxt telemetry prompt in CI
           NUXT_TELEMETRY_DISABLED: "1"
-          # Satisfy the prod env-var check in nuxt.config.ts
-          NUXT_OG_IMAGE_SECRET: "ci-placeholder-not-a-real-secret"

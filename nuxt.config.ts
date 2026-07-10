@@ -9,15 +9,6 @@ function generateBuildId(): string {
 	return Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join("")
 }
 
-// Validate required environment variables at build time (production only).
-// Fails fast — catching a missing secret here is far cheaper than a broken deploy.
-if (process.env.NODE_ENV === "production" && !process.env.NUXT_OG_IMAGE_SECRET) {
-	throw new Error(
-		"[nuxt.config] NUXT_OG_IMAGE_SECRET is required in production. " +
-			"Set it in your .env file or deployment environment before building."
-	)
-}
-
 export default defineNuxtConfig({
 	compatibilityDate: "2024-11-01",
 	devtools: { enabled: true },
