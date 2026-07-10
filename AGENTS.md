@@ -115,10 +115,9 @@ Beyond Nuxt's defaults, `nuxt.config` adds:
 ## Modules
 
 ```
-@openpanel/nuxt           # analytics (OpenPanel self-hosted)
+@nuxt/scripts             # third-party script loading (includes useScriptGoogleAnalytics)
 @nuxt/eslint              # ESLint with generated .nuxt/eslint.config.mjs
 @nuxt/icon                # icon component, iconify provider, lucide bundled
-@nuxt/scripts             # third-party script loading
 @nuxtjs/color-mode        # dark/light/system mode via .dark class
 @vueuse/nuxt              # VueUse composables auto-imported
 @pinia/nuxt               # Pinia state management
@@ -201,9 +200,8 @@ const myRef = skipHydrate(useStorage(STORAGE_KEYS.myKey, defaultValue))
 | Var / Const | Where | Purpose |
 |---|---|---|
 | `MAINTENANCE=true` | env | Enables maintenance mode (`runtimeConfig.public.maintenance`) |
-| `NUXT_OG_IMAGE_SECRET` | env | **Required in production** — build throws if missing |
-| `NUXT_PUBLIC_OPENPANEL_CLIENT_ID` | env | OpenPanel analytics client ID |
-| `NUXT_PUBLIC_OPENPANEL_API_URL` | env | OpenPanel self-hosted API URL |
+| `NUXT_OG_IMAGE_SECRET` | env | **Required in production** — server refuses to start if missing (checked in `server/plugins/env-check.ts` at runtime, not build time) |
+| `NUXT_PUBLIC_GA_MEASUREMENT_ID` | env | GA4 measurement ID (`G-XXXXXXXXXX`). Empty = analytics disabled, no script loaded. |
 | `SHOW_HIRING_BANNER` | `constants/index.ts` | Set to `false` to hide hiring banner without deleting code |
 
 **Runtime config public keys** (accessible anywhere as `useRuntimeConfig().public.*`):
@@ -269,12 +267,16 @@ auto-populate the merge commit message without extra manual steps.
 
 ## Analytics
 
-OpenPanel via `@openpanel/nuxt`. Configured in the `openpanel` block of `nuxt.config`:
-- `clientId` / `apiUrl` are read from `NUXT_PUBLIC_OPENPANEL_CLIENT_ID` / `NUXT_PUBLIC_OPENPANEL_API_URL`.
-- `proxy: false` — intentional. `proxy: true` is hard-coded to OpenPanel Cloud and cannot target a self-hosted instance. The browser SDK calls `apiUrl` directly; CORS on the analytics server allows the origin.
-- `trackScreenViews`, `trackOutgoingLinks`, `trackAttributes` all enabled.
+Google Analytics 4 via `@nuxt/scripts` `useScriptGoogleAnalytics()`. No separate Nuxt module — GA is loaded dynamically in `app/composables/useAnalytics.ts`.
 
-Do not add a manual analytics `<script>` to `app.head` — the module handles everything.
+- **Enabled only when** `NUXT_PUBLIC_GA_MEASUREMENT_ID` is set. Empty = no script, no banner, no data.
+- **Consent Mode v2:** GA4 script initialises with `analytics_storage: "denied"`. Data only flows after the user accepts the consent banner (`ConsentBanner.vue`).
+- **Consent state** persisted in `localStorage` under `STORAGE_KEYS.analyticsConsent` (`"mindenit:analytics-consent"`). Banner is shown once; choice is honoured on all subsequent visits.
+- **Anonymous user_id:** a stable UUID is stored in `localStorage` under `STORAGE_KEYS.analyticsId` (`"mindenit:anon-id"`). Migrates the old `op-anon-id` key on first load.
+- **Auto-tracking** (page_view, outbound clicks, scroll, file_download, video) via GA4 Enhanced Measurement — must be enabled in GA4 dashboard: Admin → Data Streams → Web stream → Enhanced measurement → all on.
+- **Custom events** — all tracked via `useAnalytics().trackEvent(name, properties)`. Type registry in `app/types/analytics.ts` (32 event kinds). The composable no-ops when consent is not granted or when the measurement ID is empty.
+
+Do not add a manual `<script>` for gtag to `app.head` — `useScriptGoogleAnalytics` handles injection.
 
 ---
 
