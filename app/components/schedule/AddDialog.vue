@@ -9,7 +9,7 @@ import { ITEMS_PER_PAGE } from "~/constants/schedule"
 import type { ScheduleTabType, GenericScheduleItem } from "~/types/schedule"
 
 const scheduleStore = useScheduleStore()
-const { trackEvent, incrementProfile } = useAnalytics()
+const { trackEvent } = useAnalytics()
 
 const searchQuery = ref("")
 const activeTab = ref<ScheduleTabType>("group")
@@ -203,7 +203,6 @@ const handleCardClick = (item: GenericScheduleItem) => {
 	)
 	scheduleStore.addSchedule(item)
 	trackEvent("schedule_added", { type: item.type })
-	incrementProfile("schedules_added_total")
 	if (alreadyExists) {
 		useSonner("Розклад вже збережено", {
 			description: `«${item.name}» вже є у вашому списку — переключено на нього`,

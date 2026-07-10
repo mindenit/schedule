@@ -52,27 +52,12 @@ export default defineNuxtConfig({
 			// buildId (below) is a timestamp; buildTag is a short human-readable stamp per deploy.
 			appVersion: pkg.version,
 			commitSha: generateBuildId(),
-			// OpenPanel analytics — override via NUXT_PUBLIC_OPENPANEL_CLIENT_ID / NUXT_PUBLIC_OPENPANEL_API_URL
-			openpanelClientId: "",
-			openpanelApiUrl: "",
+			// Google Analytics 4 — override via NUXT_PUBLIC_GA_MEASUREMENT_ID (G-XXXXXXXXXX).
+			// When empty, analytics is completely disabled and no script is loaded.
+			gaMeasurementId: "",
 		},
 	},
-	openpanel: {
-		// clientId and apiUrl are read from runtimeConfig at runtime via env vars:
-		//   NUXT_PUBLIC_OPENPANEL_CLIENT_ID
-		//   NUXT_PUBLIC_OPENPANEL_API_URL  (your self-hosted instance, e.g. https://op.mindenit.org)
-		clientId: process.env.NUXT_PUBLIC_OPENPANEL_CLIENT_ID ?? "",
-		apiUrl: process.env.NUXT_PUBLIC_OPENPANEL_API_URL ?? "",
-		trackScreenViews: true,
-		trackOutgoingLinks: true,
-		trackAttributes: true,
-		// proxy:true is hardcoded to OpenPanel cloud (api.openpanel.dev) and cannot target a
-		// self-hosted instance — it causes "Invalid cors or secret". Keep false so the browser
-		// SDK calls apiUrl (analytics.mindenit.org/api) directly; CORS allowlist handles origins.
-		proxy: false,
-	},
 	modules: [
-		"@openpanel/nuxt",
 		"@nuxt/eslint",
 		"@nuxt/icon",
 		"@nuxt/scripts",

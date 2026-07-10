@@ -34,6 +34,12 @@ export const STORAGE_KEYS = {
 
 	// Maintenance bypass cookie (set via /maintenance dev access flow)
 	devAccess: "mindenit:dev-access",
+
+	// Analytics consent ("accepted" | "declined" | null means not yet decided)
+	analyticsConsent: "mindenit:analytics-consent",
+
+	// Anonymous analytics ID — stable UUID persisted across sessions for GA4 user_id
+	analyticsId: "mindenit:anon-id",
 } as const
 
 export type StorageKey = (typeof STORAGE_KEYS)[keyof typeof STORAGE_KEYS]

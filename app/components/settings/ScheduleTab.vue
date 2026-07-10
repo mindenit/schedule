@@ -7,6 +7,15 @@ const scheduleStore = useScheduleStore()
 const settingsStore = useSettingsStore()
 const { trackEvent } = useAnalytics()
 const { isSnowEnabled, isUrlSyncEnabled, timezone } = storeToRefs(settingsStore)
+
+// Analytics consent toggle — only shown when GA is configured
+const config = useRuntimeConfig()
+const isAnalyticsConfigured = !!config.public.gaMeasurementId
+const { hasConsent, acceptConsent, declineConsent } = useConsent()
+const isAnalyticsEnabled = computed({
+	get: () => hasConsent.value,
+	set: (value: boolean) => (value ? acceptConsent() : declineConsent()),
+})
 const { effectiveTimezone } = useTimezone()
 const { selectedSchedule } = storeToRefs(scheduleStore)
 const { exportAcademicYearSchedule, isLoading } = useScheduleIcsExport()
@@ -67,6 +76,24 @@ const handleIcsExportAcademicYear = async () => {
 				v-model="isUrlSyncEnabled"
 				@update:model-value="
 					trackEvent('settings_changed', { setting: 'url_sync', value: $event })
+				"
+			/>
+		</div>
+
+		<div
+			v-if="isAnalyticsConfigured"
+			class="mt-3 flex items-center justify-between rounded-lg border p-4"
+		>
+			<div class="flex flex-col gap-1">
+				<div class="text-sm font-medium">Аналітика використання</div>
+				<div class="text-muted-foreground text-xs">
+					Надсилати анонімні дані про використання для покращення застосунку
+				</div>
+			</div>
+			<UiSwitch
+				v-model="isAnalyticsEnabled"
+				@update:model-value="
+					trackEvent('settings_changed', { setting: 'analytics', value: $event })
 				"
 			/>
 		</div>

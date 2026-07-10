@@ -6,7 +6,8 @@ import type { TCalendarView } from "./calendar"
  * Key   = event name passed to trackEvent()
  * Value = payload shape (use `never` for events with no properties)
  *
- * OpenPanel auto-tracks: screen views, outgoing-link clicks, data-track attributes.
+ * GA4 Enhanced Measurement auto-tracks: page_view, outbound clicks, scroll, file_download, video.
+ * Enable Enhanced Measurement in GA4: Admin → Data Streams → Web stream → Enhanced measurement.
  * Everything here is our custom instrumentation on top of that baseline.
  */
 
