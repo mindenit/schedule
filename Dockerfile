@@ -7,7 +7,7 @@ FROM base AS build
 
 RUN npm i -g pnpm
 
-COPY --link package.json pnpm-lock.yaml ./
+COPY --link package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 RUN pnpm install --frozen-lockfile
 
