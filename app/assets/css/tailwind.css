@@ -104,7 +104,23 @@
 	}
 }
 
+@keyframes blob-drift {
+	0%,
+	100% {
+		transform: translate(0, 0) scale(1);
+	}
+
+	33% {
+		transform: translate(30px, -20px) scale(1.05);
+	}
+
+	66% {
+		transform: translate(-20px, 15px) scale(0.97);
+	}
+}
+
 @theme inline {
+	--animate-blob-drift: blob-drift 12s ease-in-out infinite alternate;
 	--radius-sm: calc(var(--radius) - 4px);
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-lg: var(--radius);
