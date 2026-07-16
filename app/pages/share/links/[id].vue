@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { SharableLink } from "~/composables/useSharableLinks"
+import { countBlobLinks } from "~/utils/buildSharableLinkBlob"
 
 useSeo({
 	title: "Імпорт спільних посилань",
@@ -12,13 +12,15 @@ definePageMeta({
 })
 
 const route = useRoute()
-const { getSharableLink, acceptSharableLink, isLoading } = useSharableLinks()
+const { getSharableLink, isLoading } = useSharableLinks()
+const linksStore = useLinksStore()
 const { trackEvent } = useAnalytics()
 
 const linkId = route.params.id as string
-const sharableData = ref<SharableLink | null>(null)
+const sharableData = ref<SharableLinkBundle | null>(null)
 const loadingData = ref(true)
 const accepted = ref(false)
+const expired = ref(false)
 const error = ref<string | null>(null)
 
 onMounted(async () => {
@@ -27,7 +29,7 @@ onMounted(async () => {
 		if (data) {
 			sharableData.value = data
 		} else {
-			error.value = "Не вдалося завантажити посилання"
+			expired.value = true
 		}
 	} catch {
 		error.value = "Сталась помилка при завантаженні посилань"
@@ -36,132 +38,154 @@ onMounted(async () => {
 	}
 })
 
-const handleAccept = async () => {
-	const success = await acceptSharableLink(linkId)
-	if (success) {
-		accepted.value = true
-		trackEvent("links_share_accepted", { count: sharableData.value?.links.length ?? 0 })
-	}
+const totalLinks = computed(() =>
+	sharableData.value ? countBlobLinks(sharableData.value.links) : 0
+)
+
+const handleImport = () => {
+	if (!sharableData.value) return
+	linksStore.mergeBlobIntoLinks(sharableData.value.links)
+	accepted.value = true
+	trackEvent("links_share_accepted", { count: totalLinks.value })
+	useSonner.success("Успішно", { description: "Посилання імпортовано до вашого розпорядження" })
 }
 </script>
 
 <template>
-	<div
-		class="from-background to-muted flex min-h-screen items-center justify-center
-			bg-gradient-to-br p-4"
-	>
-		<div class="w-full max-w-2xl">
-			<div v-if="loadingData" class="text-center">
-				<TheLoader />
-				<p class="text-muted-foreground mt-4">Завантаження посилань...</p>
-			</div>
+	<div class="mx-auto w-full max-w-2xl pt-6">
+		<!-- Loading -->
+		<div v-if="loadingData" class="flex flex-col items-center gap-3 py-16">
+			<TheLoader />
+			<p class="text-muted-foreground text-sm">Завантаження посилань...</p>
+		</div>
 
-			<div
-				v-else-if="error"
-				class="bg-destructive/10 border-destructive rounded-lg border p-8 text-center"
-			>
-				<AppIcon
-					name="lucide:alert-circle"
-					class="text-destructive mx-auto mb-2"
-					size="lg"
-				/>
-				<h2 class="text-destructive text-lg font-semibold">Помилка</h2>
-				<p class="text-muted-foreground mt-2">{{ error }}</p>
-			</div>
+		<!-- Generic error -->
+		<div v-else-if="error" class="py-16 text-center">
+			<AppIcon name="lucide:alert-circle" class="text-destructive mx-auto mb-3" size="lg" />
+			<h2 class="text-destructive font-semibold">Помилка</h2>
+			<p class="text-muted-foreground mt-1 text-sm">{{ error }}</p>
+		</div>
 
-			<div
-				v-else-if="accepted"
-				class="rounded-lg border border-green-200 bg-green-50 p-8 text-center
-					dark:border-green-800 dark:bg-green-950"
-			>
-				<AppIcon
-					name="lucide:check-circle-2"
-					class="mx-auto mb-4 text-green-600 dark:text-green-400"
-					size="xl"
-				/>
-				<h2 class="text-2xl font-bold text-green-900 dark:text-green-100">Успішно!</h2>
-				<p class="mt-2 text-green-800 dark:text-green-200">
-					Посилання успішно імпортовані до вашого розпорядження
+		<!-- Expired / not found -->
+		<div v-else-if="expired" class="py-16 text-center">
+			<AppIcon
+				name="lucide:link-2-off"
+				class="text-muted-foreground mx-auto mb-3"
+				size="lg"
+			/>
+			<h2 class="font-semibold">Посилання недоступне</h2>
+			<p class="text-muted-foreground mt-1 text-sm">
+				Термін дії цього посилання закінчився або воно не існує.
+			</p>
+			<NuxtLink to="/">
+				<UiButton class="mt-6" variant="outline" size="sm">
+					<AppIcon name="lucide:arrow-left" />
+					На головну
+				</UiButton>
+			</NuxtLink>
+		</div>
+
+		<!-- Success -->
+		<div v-else-if="accepted" class="py-16 text-center">
+			<AppIcon
+				name="lucide:check-circle-2"
+				class="mx-auto mb-3 text-green-500 dark:text-green-400"
+				size="lg"
+			/>
+			<h2 class="font-semibold">Імпорт завершено</h2>
+			<p class="text-muted-foreground mt-1 text-sm">
+				{{ totalLinks }}
+				{{ pluralUk(totalLinks, "посилання", "посилання", "посилань") }} додано до вашого
+				розпорядження
+			</p>
+			<NuxtLink to="/">
+				<UiButton class="mt-6" size="sm">
+					<AppIcon name="lucide:arrow-left" />
+					На головну
+				</UiButton>
+			</NuxtLink>
+		</div>
+
+		<!-- Preview -->
+		<div v-else-if="sharableData" class="space-y-5">
+			<div>
+				<h1 class="text-xl font-semibold">Імпорт посилань</h1>
+				<p class="text-muted-foreground mt-0.5 text-sm">
+					{{ totalLinks }}
+					{{ pluralUk(totalLinks, "посилання", "посилання", "посилань") }} від іншого
+					користувача
 				</p>
-				<NuxtLink to="/">
-					<UiButton class="mt-6">
-						<AppIcon name="lucide:arrow-left" class="mr-2" />
-						Повернутися на головну
-					</UiButton>
-				</NuxtLink>
 			</div>
 
-			<div v-else-if="sharableData" class="space-y-6">
-				<div class="space-y-2 text-center">
-					<h1 class="text-3xl font-bold">Поділена колекція посилань</h1>
-					<p class="text-muted-foreground">
-						Вам запропоновано імпортувати {{ sharableData.links.length }}
-						{{
-							pluralUk(
-								sharableData.links.length,
-								"посилання",
-								"посилання",
-								"посилань"
-							)
-						}}
-					</p>
-				</div>
+			<!-- Nested: subject → event type → links -->
+			<div class="space-y-3">
+				<div
+					v-for="(subjectData, subjectKey) in sharableData.links"
+					:key="subjectKey"
+					class="bg-card overflow-hidden rounded-lg border"
+				>
+					<!-- Subject header -->
+					<div class="border-b px-4 py-2.5">
+						<p class="text-sm leading-tight font-medium">
+							{{ subjectData.subject.title }}
+						</p>
+						<p class="text-muted-foreground text-xs">{{ subjectData.subject.brief }}</p>
+					</div>
 
-				<div class="bg-card divide-y overflow-hidden rounded-lg border">
-					<div
-						v-for="link in sharableData.links"
-						:key="link.id"
-						class="hover:bg-muted/50 p-4 transition-colors"
-					>
-						<div class="flex items-start justify-between gap-4">
-							<div class="min-w-0 flex-1">
-								<p class="line-clamp-1 font-medium">{{ link.label }}</p>
-								<p class="text-muted-foreground line-clamp-2 text-sm">
-									{{ link.url }}
-								</p>
-								<div class="mt-2 flex items-center gap-2">
-									<UiBadge variant="outline">{{ link.type }}</UiBadge>
-									<UiBadge variant="secondary">ID: {{ link.subjectId }}</UiBadge>
+					<!-- Event types -->
+					<div class="divide-y">
+						<div
+							v-for="(eventLinks, eventType) in subjectData.events"
+							:key="eventType"
+							class="px-4 py-3"
+						>
+							<p
+								class="text-muted-foreground mb-2 text-xs font-medium tracking-wide
+									uppercase"
+							>
+								{{ eventType }}
+							</p>
+
+							<!-- Links -->
+							<div class="space-y-1.5">
+								<div
+									v-for="link in eventLinks"
+									:key="link.id"
+									class="flex items-center gap-3"
+								>
+									<div class="min-w-0 flex-1">
+										<p class="line-clamp-1 text-sm font-medium">
+											{{ link.name }}
+										</p>
+										<p class="text-muted-foreground line-clamp-1 text-xs">
+											{{ link.url }}
+										</p>
+									</div>
+									<a
+										:href="link.url"
+										target="_blank"
+										rel="noopener noreferrer"
+										class="shrink-0"
+									>
+										<UiButton size="sm" variant="ghost">
+											<AppIcon name="lucide:external-link" />
+										</UiButton>
+									</a>
 								</div>
 							</div>
-							<a
-								:href="link.url"
-								target="_blank"
-								rel="noopener noreferrer"
-								class="shrink-0"
-							>
-								<UiButton size="sm" variant="ghost">
-									<AppIcon name="lucide:external-link" />
-								</UiButton>
-							</a>
 						</div>
 					</div>
 				</div>
+			</div>
 
-				<div class="flex gap-4">
-					<UiButton class="flex-1" size="lg" :disabled="isLoading" @click="handleAccept">
-						<AppIcon name="lucide:download" class="mr-2" />
-						Імпортувати {{ sharableData.links.length }}
-						{{
-							pluralUk(
-								sharableData.links.length,
-								"посилання",
-								"посилання",
-								"посилань"
-							)
-						}}
-					</UiButton>
-					<NuxtLink to="/">
-						<UiButton variant="outline" size="lg">
-							<AppIcon name="lucide:x" class="mr-2" />
-							Скасувати
-						</UiButton>
-					</NuxtLink>
-				</div>
-
-				<p class="text-muted-foreground text-center text-xs">
-					Все посилання будуть завантажені до вашого розпорядження
-				</p>
+			<div class="flex gap-2">
+				<UiButton :disabled="isLoading" @click="handleImport">
+					<AppIcon name="lucide:download" />
+					Імпортувати
+				</UiButton>
+				<NuxtLink to="/">
+					<UiButton variant="ghost">Скасувати</UiButton>
+				</NuxtLink>
 			</div>
 		</div>
 	</div>

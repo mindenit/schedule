@@ -3,6 +3,7 @@ import { useStorage } from "@vueuse/core"
 import type { Subject } from "nurekit"
 import { STORAGE_KEYS } from "~/constants/storage"
 import { downloadFile } from "~/utils/download"
+import type { SharableLinkBlob } from "~/types/sharableLinks"
 
 export interface Link {
 	id: string
@@ -207,6 +208,35 @@ export const useLinksStore = defineStore("links", () => {
 		return links.value[subjectId.toString()]?.subject || null
 	}
 
+	/**
+	 * Merges a SharableLinkBlob (from GET /api/sharable-links/:id) into the local store.
+	 * Skips any link whose ID already exists in the matching bucket to prevent duplicates.
+	 * Does NOT replace existing data — safe to call multiple times.
+	 */
+	function mergeBlobIntoLinks(blob: SharableLinkBlob): void {
+		for (const [subjectKey, subjectData] of Object.entries(blob)) {
+			if (!links.value[subjectKey]) {
+				links.value[subjectKey] = { subject: subjectData.subject, events: {} }
+			} else {
+				// Keep subject metadata up-to-date
+				links.value[subjectKey].subject = subjectData.subject
+			}
+
+			for (const [eventType, eventLinks] of Object.entries(subjectData.events)) {
+				if (!links.value[subjectKey].events[eventType]) {
+					links.value[subjectKey].events[eventType] = []
+				}
+
+				const existing = links.value[subjectKey].events[eventType]!
+				for (const link of eventLinks) {
+					if (!existing.some((l) => l.id === link.id)) {
+						existing.push({ id: link.id, url: link.url, name: link.name })
+					}
+				}
+			}
+		}
+	}
+
 	return {
 		links,
 		getLinks,
@@ -216,6 +246,7 @@ export const useLinksStore = defineStore("links", () => {
 		exportLinks,
 		exportSelectedLinks,
 		importLinks,
+		mergeBlobIntoLinks,
 		getSubjectInfo,
 	}
 })

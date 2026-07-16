@@ -7,4 +7,4 @@
 
 /** Share-links flow (ShareLinksDialog + "Поділитися" button in links management).
  *  The backend endpoint is not yet available in production. */
-export const SHARE_LINKS = false
+export const SHARE_LINKS = true
