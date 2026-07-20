@@ -9,10 +9,6 @@ watch(isOnline, (online) => {
 		showReconnected.value = false
 	} else if (wasOffline.value) {
 		showReconnected.value = true
-		useSonner("З'єднання відновлено", {
-			description: "Дані оновлюються...",
-			duration: 3000,
-		})
 		setTimeout(() => {
 			showReconnected.value = false
 			wasOffline.value = false
@@ -37,7 +33,7 @@ watch(isOnline, (online) => {
 			role="alert"
 			aria-live="assertive"
 		>
-			<Icon name="lucide:wifi-off" class="size-4 shrink-0" aria-hidden="true" />
+			<AppIcon name="lucide:wifi-off" class="shrink-0" aria-hidden="true" />
 			<span>Без з'єднання — показано збережені дані</span>
 		</div>
 	</Transition>

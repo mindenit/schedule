@@ -51,7 +51,7 @@ const hasEvents = computed(() => todayEvents.value.length > 0)
 						aria-label="Попередній день"
 						@click="previewDate = subDays(previewDate, 1)"
 					>
-						<Icon name="lucide:chevron-left" class="size-3" />
+						<AppIcon name="lucide:chevron-left" size="xs" />
 					</UiButton>
 					<UiButton
 						v-if="!isPreviewToday"
@@ -61,7 +61,7 @@ const hasEvents = computed(() => todayEvents.value.length > 0)
 						aria-label="Сьогодні"
 						@click="previewDate = new Date()"
 					>
-						<Icon name="lucide:rotate-ccw" class="size-3" />
+						<AppIcon name="lucide:rotate-ccw" size="xs" />
 					</UiButton>
 					<UiButton
 						size="icon"
@@ -70,7 +70,7 @@ const hasEvents = computed(() => todayEvents.value.length > 0)
 						aria-label="Наступний день"
 						@click="previewDate = addDays(previewDate, 1)"
 					>
-						<Icon name="lucide:chevron-right" class="size-3" />
+						<AppIcon name="lucide:chevron-right" size="xs" />
 					</UiButton>
 				</template>
 			</div>
