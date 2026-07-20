@@ -138,12 +138,12 @@ function _bootstrapUser() {
 		try {
 			profileId = JSON.parse(legacyRaw) as string
 		} catch {
-			profileId = crypto.randomUUID()
+			profileId = randomUUID()
 		}
 		localStorage.removeItem("op-anon-id")
 		localStorage.setItem(STORAGE_KEYS.analyticsId, JSON.stringify(profileId))
 	} else {
-		const stored = useStorage<string>(STORAGE_KEYS.analyticsId, () => crypto.randomUUID())
+		const stored = useStorage<string>(STORAGE_KEYS.analyticsId, () => randomUUID())
 		profileId = stored.value
 	}
 
