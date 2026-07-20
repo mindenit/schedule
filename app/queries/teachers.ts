@@ -10,7 +10,7 @@ type TeacherScheduleFilters = {
 
 const teachersOptions = () => {
 	const { $nurekit } = useNuxtApp()
-	return listOptions("teachers", () => $nurekit.teachers.findMany())
+	return listOptions("teachers", () => $nurekit.teachers.getAll())
 }
 
 const teacherScheduleOptions = (

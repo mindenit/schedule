@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { countBlobLinks } from "~/utils/buildSharableLinkBlob"
+import type { SharableLink } from "@mindenit/nurekit"
 
 useSeo({
 	title: "Імпорт спільних посилань",
@@ -17,7 +17,7 @@ const linksStore = useLinksStore()
 const { trackEvent } = useAnalytics()
 
 const linkId = route.params.id as string
-const sharableData = ref<SharableLinkBundle | null>(null)
+const sharableData = ref<SharableLink | null>(null)
 const loadingData = ref(true)
 const accepted = ref(false)
 const expired = ref(false)
@@ -38,9 +38,16 @@ onMounted(async () => {
 	}
 })
 
-const totalLinks = computed(() =>
-	sharableData.value ? countBlobLinks(sharableData.value.links) : 0
-)
+const totalLinks = computed(() => {
+	if (!sharableData.value) return 0
+	let count = 0
+	for (const entry of Object.values(sharableData.value.links)) {
+		for (const links of Object.values(entry.events)) {
+			count += links?.length ?? 0
+		}
+	}
+	return count
+})
 
 const handleImport = () => {
 	if (!sharableData.value) return

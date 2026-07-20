@@ -1,6 +1,6 @@
 import { useQueryClient } from "@tanstack/vue-query"
 import { format, isValid, parseISO } from "date-fns"
-import type { Group, Teacher, Auditorium } from "nurekit"
+import type { Group, Teacher, Auditorium } from "@mindenit/nurekit"
 import type { ScheduleTabType } from "~/types/schedule"
 
 // Derived from shared constants — single source of truth.
@@ -47,17 +47,17 @@ async function resolveEntityName(
 	// AddDialog as a side-effect (uses the same key).
 	try {
 		if (type === "group") {
-			const list = await nurekit.groups.findMany()
+			const list = await nurekit.groups.getAll()
 			queryClient.setQueryData(["groups"], list)
 			return list.find((g) => g.id === id)?.name ?? ""
 		}
 		if (type === "teacher") {
-			const list = await nurekit.teachers.findMany()
+			const list = await nurekit.teachers.getAll()
 			queryClient.setQueryData(["teachers"], list)
 			return list.find((t) => t.id === id)?.shortName ?? ""
 		}
 		if (type === "auditorium") {
-			const list = await nurekit.auditoriums.findMany()
+			const list = await nurekit.auditoriums.getAll()
 			queryClient.setQueryData(["auditoriums"], list)
 			return list.find((a) => a.id === id)?.name ?? ""
 		}

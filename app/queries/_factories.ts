@@ -45,7 +45,7 @@ type ScheduleFetcherArgs = {
 	id: number
 	startedAt: number
 	endedAt: number
-	filters?: Record<string, number[] | string[]>
+	filters: Record<string, number[] | string[]>
 }
 
 /** Schedule options — id + window + optional filters. */
@@ -78,7 +78,7 @@ export const scheduleOptions = <T>(
 				id: Number(resolvedId),
 				startedAt: Number(resolvedStartedAt),
 				endedAt: Number(resolvedEndedAt),
-				...(Object.keys(resolvedFilters).length > 0 && { filters: resolvedFilters }),
+				filters: resolvedFilters,
 			})
 		},
 		staleTime: STALE_TIME_SCHEDULE,

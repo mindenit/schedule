@@ -10,7 +10,7 @@ type AuditoriumScheduleFilters = {
 
 const auditoriumsOptions = () => {
 	const { $nurekit } = useNuxtApp()
-	return listOptions("auditoriums", () => $nurekit.auditoriums.findMany())
+	return listOptions("auditoriums", () => $nurekit.auditoriums.getAll())
 }
 
 const auditoriumScheduleOptions = (

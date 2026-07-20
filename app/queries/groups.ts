@@ -10,7 +10,7 @@ type GroupScheduleFilters = {
 
 const groupsOptions = () => {
 	const { $nurekit } = useNuxtApp()
-	return listOptions("groups", () => $nurekit.groups.findMany())
+	return listOptions("groups", () => $nurekit.groups.getAll())
 }
 
 const groupScheduleOptions = (

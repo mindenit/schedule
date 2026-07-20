@@ -1,5 +1,5 @@
 import { useLinksStore, type Link } from "~/stores/links"
-import type { Subject } from "nurekit"
+import type { Subject } from "@mindenit/nurekit"
 
 /**
  * Centralised link CRUD with consistent toast feedback.

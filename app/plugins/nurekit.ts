@@ -1,4 +1,4 @@
-import { Nurekit } from "nurekit"
+import { Nurekit } from "@mindenit/nurekit"
 
 declare module "#app" {
 	interface NuxtApp {

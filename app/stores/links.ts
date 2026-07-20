@@ -1,9 +1,8 @@
 import { defineStore, skipHydrate } from "pinia"
 import { useStorage } from "@vueuse/core"
-import type { Subject } from "nurekit"
+import type { Subject, SharableBundle } from "@mindenit/nurekit"
 import { STORAGE_KEYS } from "~/constants/storage"
 import { downloadFile } from "~/utils/download"
-import type { SharableLinkBlob } from "~/types/sharableLinks"
 
 export interface Link {
 	id: string
@@ -209,11 +208,11 @@ export const useLinksStore = defineStore("links", () => {
 	}
 
 	/**
-	 * Merges a SharableLinkBlob (from GET /api/sharable-links/:id) into the local store.
+	 * Merges a SharableBundle (from GET /api/sharable-links/:id) into the local store.
 	 * Skips any link whose ID already exists in the matching bucket to prevent duplicates.
 	 * Does NOT replace existing data — safe to call multiple times.
 	 */
-	function mergeBlobIntoLinks(blob: SharableLinkBlob): void {
+	function mergeBlobIntoLinks(blob: SharableBundle): void {
 		for (const [subjectKey, subjectData] of Object.entries(blob)) {
 			if (!links.value[subjectKey]) {
 				links.value[subjectKey] = { subject: subjectData.subject, events: {} }
