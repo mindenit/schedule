@@ -61,7 +61,10 @@ const handleImport = () => {
 <template>
 	<div class="mx-auto w-full max-w-2xl pt-6">
 		<!-- Loading -->
-		<div v-if="loadingData" class="flex flex-col items-center gap-3 py-16">
+		<div
+			v-if="loadingData"
+			class="flex min-h-[70dvh] flex-col items-center justify-center gap-3"
+		>
 			<TheLoader />
 			<p class="text-muted-foreground text-sm">Завантаження посилань...</p>
 		</div>

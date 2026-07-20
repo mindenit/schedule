@@ -56,7 +56,7 @@ const handleClose = () => {
 
 <template>
 	<UiDialog v-model:open="isOpen">
-		<UiDialogContent class="max-w-md">
+		<UiDialogContent class="sm:max-w-md">
 			<UiDialogHeader>
 				<UiDialogTitle class="flex items-center gap-2">
 					<AppIcon name="lucide:share-2" />

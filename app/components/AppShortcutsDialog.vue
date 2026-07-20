@@ -4,7 +4,7 @@ const open = defineModel<boolean>("open", { required: true })
 
 <template>
 	<UiDialog v-model:open="open">
-		<UiDialogContent class="max-w-sm">
+		<UiDialogContent class="sm:max-w-sm">
 			<UiDialogHeader>
 				<UiDialogTitle class="flex items-center gap-2">
 					<AppIcon name="lucide:keyboard" />
