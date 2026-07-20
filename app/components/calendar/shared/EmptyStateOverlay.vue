@@ -18,7 +18,7 @@ const { trackEvent } = useAnalytics()
 function resetFilters() {
 	filtersStore.clearAll()
 	trackEvent("empty_state_filters_reset")
-	useSonner("Фільтри скинуто", { duration: 2000 })
+	useSonner.info("Фільтри скинуто")
 }
 </script>
 

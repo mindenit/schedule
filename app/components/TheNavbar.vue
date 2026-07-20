@@ -1,6 +1,9 @@
 <template>
-	<div class="bg-muted/50 grid w-full max-w-full grid-cols-3 items-center px-2 py-2 md:hidden">
-		<div class="flex shrink-0 items-center">
+	<div
+		class="bg-muted/50 flex w-full items-center gap-0.5 px-1 py-2 md:hidden [&_button]:size-8
+			[&_button_svg]:size-3.5"
+	>
+		<div class="shrink-0">
 			<UiDrawer direction="left">
 				<UiDrawerTrigger as-child>
 					<UiButton variant="ghost" size="icon" aria-label="Відкрити меню">
@@ -15,14 +18,14 @@
 			</UiDrawer>
 		</div>
 
-		<div class="flex items-center justify-center">
+		<div class="min-w-0 flex-1 overflow-hidden">
 			<BigCalendarDateNavigator />
 		</div>
 
-		<div class="flex items-center justify-end gap-3">
-			<div class="max-w-fit shrink-0">
-				<ThemeSwitcher />
-			</div>
+		<div class="flex shrink-0 items-center gap-1">
+			<FiltersDialog variant="ghost" />
+			<BigCalendarViewSwitcher variant="iconOnly" />
+			<ThemeSwitcher />
 		</div>
 	</div>
 

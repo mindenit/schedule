@@ -25,9 +25,8 @@ const removeActiveSchedule = () => {
 			type: removed.type,
 			total_remaining: allSchedules.value.length,
 		})
-		useSonner("Розклад видалено", {
+		useSonner.info("Розклад видалено", {
 			description: `«${removed.name}» більше не відстежується`,
-			duration: 3000,
 		})
 	}
 	showDialog.value = false

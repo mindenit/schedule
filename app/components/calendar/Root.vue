@@ -150,7 +150,7 @@ const overlayContent = computed(() => {
 					class="pointer-events-auto"
 				>
 					<template #actions>
-						<UiButton size="sm" @click="isAddDialogOpen = true">
+						<UiButton class="max-md:hidden" size="sm" @click="isAddDialogOpen = true">
 							<AppIcon name="lucide:plus" />
 							Додати розклад
 						</UiButton>

@@ -204,14 +204,12 @@ const handleCardClick = (item: GenericScheduleItem) => {
 	scheduleStore.addSchedule(item)
 	trackEvent("schedule_added", { type: item.type })
 	if (alreadyExists) {
-		useSonner("Розклад вже збережено", {
+		useSonner.info("Розклад вже збережено", {
 			description: `«${item.name}» вже є у вашому списку — переключено на нього`,
-			duration: 3000,
 		})
 	} else {
 		useSonner.success("Розклад додано", {
 			description: `«${item.name}» збережено`,
-			duration: 3000,
 		})
 	}
 	isDialogOpen.value = false

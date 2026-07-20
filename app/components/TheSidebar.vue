@@ -24,7 +24,6 @@ defineProps<Props>()
 			</div>
 		</div>
 		<div v-else class="flex flex-col gap-2">
-			<BigCalendarViewSwitcher />
 			<div class="flex items-center gap-2">
 				<ClientOnly>
 					<ScheduleSelect />
@@ -50,7 +49,6 @@ defineProps<Props>()
 				<AuthorsDialog />
 			</div>
 			<div class="flex shrink-0 items-center gap-2">
-				<FiltersDialog class="md:hidden" />
 				<SettingsDialog />
 			</div>
 		</div>

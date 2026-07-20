@@ -18,7 +18,7 @@ import {
 	auditoriumSubjectsOptions,
 } from "~/queries/auditoriums"
 
-const props = defineProps<{ class?: string }>()
+const props = defineProps<{ class?: string; variant?: "default" | "ghost" }>()
 
 const filtersStore = useFiltersStore()
 const scheduleStore = useScheduleStore()
@@ -121,7 +121,7 @@ watch(isOpen, (open) => {
 	<UiDialog v-model:open="isOpen">
 		<div :class="['relative inline-flex shrink-0', props.class]">
 			<UiDialogTrigger as-child>
-				<UiButton variant="default" size="icon" aria-label="Фільтри">
+				<UiButton :variant="props.variant ?? 'default'" size="icon" aria-label="Фільтри">
 					<AppIcon name="lucide:filter" />
 				</UiButton>
 			</UiDialogTrigger>
@@ -284,7 +284,7 @@ watch(isOpen, (open) => {
 						() => {
 							filtersStore.clearAll()
 							trackEvent('filters_reset')
-							useSonner('Фільтри скинуто', { duration: 2000 })
+							useSonner.info('Фільтри скинуто')
 						}
 					"
 				>

@@ -5,7 +5,7 @@
 		rich-colors
 		:visible-toasts="5"
 		close-button
-		:duration="7000"
+		:duration="3000"
 		:theme="$colorMode.value == 'dark' ? 'dark' : 'light'"
 		:style="{
 			'--normal-bg': 'var(--popover)',
