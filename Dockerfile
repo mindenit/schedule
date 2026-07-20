@@ -1,4 +1,4 @@
-ARG NODE_VERSION=22
+ARG NODE_VERSION=22.23.1
 FROM node:${NODE_VERSION}-slim AS base
 
 WORKDIR /src
@@ -7,7 +7,7 @@ FROM base AS build
 
 RUN npm i -g pnpm
 
-COPY --link package.json pnpm-lock.yaml ./
+COPY --link package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 
 RUN pnpm install --frozen-lockfile
 

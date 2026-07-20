@@ -1,0 +1,30 @@
+<template>
+	<UiDialogContent>
+		<UiDialogHeader>
+			<UiDialogTitle class="flex items-center gap-2">
+				<AppIcon name="logos:android-icon" size="lg" />
+				Наш Android додаток
+			</UiDialogTitle>
+			<UiDialogDescription>Завантажте наш офіційний додаток для Android</UiDialogDescription>
+		</UiDialogHeader>
+		<div class="flex w-full flex-col gap-4">
+			<div class="flex items-center gap-3">
+				<div
+					class="bg-muted flex size-10 items-center justify-center rounded-full
+						max-sm:hidden"
+				>
+					<AppIcon name="lucide:zap" size="lg" class="text-primary" />
+				</div>
+				<div>
+					<p class="font-medium">Встановіть наш додаток на Android</p>
+					<p class="text-muted-foreground text-sm">
+						Зручний доступ до розкладу з вашого телефону
+					</p>
+				</div>
+			</div>
+			<div class="grid w-full grid-cols-1 gap-2">
+				<PlayMarketButton :switch-on-mobile="false" />
+			</div>
+		</div>
+	</UiDialogContent>
+</template>

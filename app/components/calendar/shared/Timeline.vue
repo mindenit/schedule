@@ -1,0 +1,107 @@
+<script setup lang="ts">
+import { isSameDay } from "date-fns"
+import { CALENDAR_START_HOUR, CALENDAR_END_HOUR } from "~/constants/calendar"
+
+interface Props {
+	weekDays?: Date[]
+}
+
+const props = defineProps<Props>()
+
+// Avoid hydration mismatch: new Date() diverges between SSR and client.
+// null means "not yet mounted" — all computeds return sentinel "hidden" values
+// so SSR and the initial client frame both render nothing, then the timer
+// populates currentTime after mount and the timeline appears client-side only.
+const currentTime = ref<Date | null>(null)
+
+const getCurrentTimePosition = computed(() => {
+	if (currentTime.value === null) return -1
+
+	const hour = currentTime.value.getHours()
+	const minutes = currentTime.value.getMinutes()
+
+	if (hour < CALENDAR_START_HOUR || hour > CALENDAR_END_HOUR) {
+		return -1
+	}
+
+	const totalMinutes = hour * 60 + minutes
+	const startMinutes = CALENDAR_START_HOUR * 60
+	const endMinutes = (CALENDAR_END_HOUR + 1) * 60
+	const workingMinutes = totalMinutes - startMinutes
+	const totalWorkingMinutes = endMinutes - startMinutes
+
+	return (workingMinutes / totalWorkingMinutes) * 100
+})
+
+const shouldShowTimeline = computed(() => {
+	if (currentTime.value === null) return false
+
+	const position = getCurrentTimePosition.value
+	if (position === -1) return false
+
+	if (!props.weekDays || props.weekDays.length === 0) {
+		return true
+	}
+
+	return props.weekDays.some((day) => isSameDay(day, currentTime.value!))
+})
+
+const getTodayColumnIndex = computed(() => {
+	if (currentTime.value === null) return -1
+	if (!props.weekDays || props.weekDays.length === 0) return -1
+
+	return props.weekDays.findIndex((day) => isSameDay(day, currentTime.value!))
+})
+
+const getTimelineStyle = computed(() => {
+	const position = getCurrentTimePosition.value
+	if (position === -1) return { display: "none" }
+
+	const baseStyle = { top: `${position}%` }
+
+	if (!props.weekDays || props.weekDays.length === 0) {
+		return baseStyle
+	}
+
+	const todayIndex = getTodayColumnIndex.value
+	if (todayIndex === -1) return baseStyle
+
+	const columnWidth = 100 / 7
+	const leftOffset = todayIndex * columnWidth
+
+	return {
+		...baseStyle,
+		left: `${leftOffset}%`,
+		width: `${columnWidth}%`,
+		right: "auto",
+	}
+})
+
+const getTimelineClasses = computed(() => {
+	const baseClasses = "border-primary pointer-events-none absolute z-50 border-t"
+
+	if (!props.weekDays || props.weekDays.length === 0) {
+		return `${baseClasses} inset-x-0`
+	}
+
+	return baseClasses
+})
+
+function updateTime() {
+	currentTime.value = new Date()
+}
+
+// Initialise after mount (not at setup time) so SSR and the first hydration
+// frame both see currentTime === null and render nothing. useIntervalFn then
+// ticks every minute to keep the position accurate.
+onMounted(() => {
+	updateTime()
+	useIntervalFn(updateTime, 60 * 1000)
+})
+</script>
+
+<template>
+	<div v-if="shouldShowTimeline" :class="getTimelineClasses" :style="getTimelineStyle">
+		<div class="bg-primary absolute -top-1.5 -left-1.5 size-3 rounded-full" />
+	</div>
+</template>
