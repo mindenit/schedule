@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Schedule } from "nurekit"
+import type { Schedule } from "@mindenit/nurekit"
 
 /**
  * EventStackChip — mobile-only chip for 2+ events overlapping in the same time slot.

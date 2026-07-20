@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Schedule } from "nurekit"
+import type { Schedule } from "@mindenit/nurekit"
 import { motion } from "motion-v"
 import { isSameDay, isSameMonth } from "date-fns"
 import type { ICalendarCell } from "~/types/calendar"

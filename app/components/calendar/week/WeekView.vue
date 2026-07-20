@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { isSameWeek, startOfWeek, getISOWeek, getYear } from "date-fns"
-import type { Schedule } from "nurekit"
+import type { Schedule } from "@mindenit/nurekit"
 import { motion } from "motion-v"
 import { WEEK_OPTIONS } from "~/constants/calendar"
 

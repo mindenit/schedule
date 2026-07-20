@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Schedule } from "nurekit"
+import type { Schedule } from "@mindenit/nurekit"
 import { storeToRefs } from "pinia"
 
 interface Props {

@@ -1,5 +1,5 @@
 import { uk } from "date-fns/locale"
-import type { Schedule } from "nurekit"
+import type { Schedule } from "@mindenit/nurekit"
 import type { TEventType } from "~/types/calendar"
 import { EVENT_TYPE_COLORS, EVENT_TYPE_LABELS } from "~/constants/calendar"
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Schedule, Subject } from "nurekit"
+import type { Schedule, Subject } from "@mindenit/nurekit"
 import { useLinksStore, type Link } from "~/stores/links"
 
 interface Props {

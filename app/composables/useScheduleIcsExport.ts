@@ -1,4 +1,4 @@
-import type { Schedule } from "nurekit"
+import type { Schedule } from "@mindenit/nurekit"
 import { useIcsExport } from "./useIcsExport"
 import { ref, readonly } from "vue"
 import { useQueryClient } from "@tanstack/vue-query"

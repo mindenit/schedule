@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useQuery } from "@tanstack/vue-query"
-import type { Group, Teacher, Auditorium, Subject } from "nurekit"
+import type { Group, Teacher, Auditorium, Subject } from "@mindenit/nurekit"
 import { FILTERS_LESSON_TYPES } from "~/constants/filters"
 import {
 	groupTeachersOptions,

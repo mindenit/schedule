@@ -4,7 +4,7 @@ import { useInfiniteScroll } from "@vueuse/core"
 import { groupsOptions } from "~/queries/groups"
 import { teachersOptions } from "~/queries/teachers"
 import { auditoriumsOptions } from "~/queries/auditoriums"
-import type { Group, Teacher, Auditorium } from "nurekit"
+import type { Group, Teacher, Auditorium } from "@mindenit/nurekit"
 import { ITEMS_PER_PAGE } from "~/constants/schedule"
 import type { ScheduleTabType, GenericScheduleItem } from "~/types/schedule"
 

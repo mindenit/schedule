@@ -1,6 +1,6 @@
 import { differenceInMinutes, startOfMonth, endOfMonth, startOfWeek, endOfWeek } from "date-fns"
 import { formatInTimeZone, toZonedTime } from "date-fns-tz"
-import type { Schedule } from "nurekit"
+import type { Schedule } from "@mindenit/nurekit"
 import { WEEK_OPTIONS, CALENDAR_START_HOUR, CALENDAR_END_HOUR } from "~/constants/calendar"
 
 // ---------------------------------------------------------------------------

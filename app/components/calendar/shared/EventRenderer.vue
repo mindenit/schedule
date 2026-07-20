@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { areIntervalsOverlapping } from "date-fns"
-import type { Schedule } from "nurekit"
+import type { Schedule } from "@mindenit/nurekit"
 
 interface Props {
 	groupedEvents: Schedule[][]

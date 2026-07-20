@@ -34,6 +34,7 @@
 		]
 	},
 	"dependencies": {
+		"@mindenit/nurekit": "^1.0.0",
 		"@nuxt/a11y": "1.0.0-alpha.1",
 		"@nuxt/eslint": "^1.16.0",
 		"@nuxt/fonts": "0.14.0",

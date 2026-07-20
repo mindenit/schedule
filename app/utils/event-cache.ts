@@ -19,7 +19,7 @@
  * is required.
  */
 
-import type { Schedule } from "nurekit"
+import type { Schedule } from "@mindenit/nurekit"
 import { formatInTimeZone, toZonedTime } from "date-fns-tz"
 import { uk } from "date-fns/locale"
 

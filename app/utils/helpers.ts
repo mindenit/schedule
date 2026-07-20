@@ -19,7 +19,7 @@ import {
 	isValid,
 } from "date-fns"
 import { uk } from "date-fns/locale"
-import type { Schedule } from "nurekit"
+import type { Schedule } from "@mindenit/nurekit"
 import type { TCalendarView } from "~/types/calendar"
 import { WEEK_OPTIONS } from "~/constants/calendar"
 

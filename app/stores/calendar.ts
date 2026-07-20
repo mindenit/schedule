@@ -1,6 +1,6 @@
 import { defineStore, storeToRefs } from "pinia"
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, startOfYear, endOfYear } from "date-fns"
-import type { Schedule } from "nurekit"
+import type { Schedule } from "@mindenit/nurekit"
 import type { TCalendarView } from "~/types/calendar"
 import { WEEK_OPTIONS } from "~/constants/calendar"
 import { STORAGE_KEYS } from "~/constants/storage"

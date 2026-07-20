@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { format, isSameDay } from "date-fns"
 import { uk } from "date-fns/locale"
-import type { Schedule } from "nurekit"
+import type { Schedule } from "@mindenit/nurekit"
 import { CALENDAR_HOURS } from "~/constants/calendar"
 
 interface Props {

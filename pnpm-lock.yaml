@@ -10,6 +10,9 @@ overrides:
 importers:
   .:
     dependencies:
+      "@mindenit/nurekit":
+        specifier: ^1.0.0
+        version: 1.0.0
       "@nuxt/a11y":
         specifier: 1.0.0-alpha.1
         version: 1.0.0-alpha.1(magicast@0.5.3)(vite@7.3.5(@types/node@22.15.30)(jiti@2.7.0)(lightningcss@1.32.0)(terser@5.41.0)(yaml@2.9.0))
@@ -2012,6 +2015,13 @@ packages:
       }
     engines: { node: ">=18" }
     hasBin: true
+
+  "@mindenit/nurekit@1.0.0":
+    resolution:
+      {
+        integrity: sha512-aEabTMqbAU87ZfhGKD4fAqR/ZxF+QL93NIQ2/Rl5kWHawF5MDV/EGV1vs+IgVF9fbkvtaLT/9svsJNKuxKDpZw==,
+      }
+    engines: { node: ">= 18.x.x" }
 
   "@napi-rs/wasm-runtime@1.1.5":
     resolution:
@@ -13436,6 +13446,8 @@ snapshots:
     transitivePeerDependencies:
       - encoding
       - supports-color
+
+  "@mindenit/nurekit@1.0.0": {}
 
   "@napi-rs/wasm-runtime@1.1.5(@emnapi/core@1.10.0)(@emnapi/runtime@1.10.0)":
     dependencies:

@@ -1,7 +1,7 @@
 import { ref, watch, onMounted, onBeforeUnmount, type Ref } from "vue"
 import { animate, useMotionValue, type AnimationPlaybackControls } from "motion-v"
 import { storeToRefs } from "pinia"
-import type { Schedule } from "nurekit"
+import type { Schedule } from "@mindenit/nurekit"
 import type { TCalendarView } from "~/types/calendar"
 import { SWIPE_TWEEN_TRANSITION } from "~/constants"
 

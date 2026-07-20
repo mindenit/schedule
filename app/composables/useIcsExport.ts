@@ -1,4 +1,4 @@
-import type { Schedule } from "nurekit"
+import type { Schedule } from "@mindenit/nurekit"
 import { formatInTimeZone } from "date-fns-tz"
 import { storeToRefs } from "pinia"
 import { downloadFile } from "~/utils/download"

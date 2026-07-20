@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { startOfDay } from "date-fns"
 import { useResizeObserver } from "@vueuse/core"
-import type { Schedule } from "nurekit"
+import type { Schedule } from "@mindenit/nurekit"
 import type { ICalendarCell, TCalendarView } from "~/types/calendar"
 
 interface BadgeData {

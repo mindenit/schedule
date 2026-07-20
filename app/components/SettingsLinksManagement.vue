@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useLinksStore, type Link } from "~/stores/links"
 import ShareLinksDialog from "~/components/links/ShareLinksDialog.vue"
-import type { Subject } from "nurekit"
+import type { Subject } from "@mindenit/nurekit"
 import { SHARE_LINKS } from "~/constants/features"
 
 const linksStore = useLinksStore()

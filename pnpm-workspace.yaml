@@ -19,7 +19,7 @@ overrides:
 # minimumReleaseAge: "10080 minutes"
 # Our own package — exempt from embargo regardless.
 minimumReleaseAgeExclude:
-  - nurekit
+  - "@mindenit/nurekit"
 
 # Block transitive dependencies from using git URLs or direct tarball links.
 # All deps must resolve from the registry.
