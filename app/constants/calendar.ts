@@ -16,6 +16,7 @@ export const EVENT_TYPE_COLORS: Record<TEventType, string> = {
 	Зал: "bg-event-credit",
 	Екз: "bg-event-exam",
 	Конс: "bg-event-consultation",
+	"КП/КР": "bg-event-coursework",
 }
 
 export const EVENT_TYPE_BORDERS: Record<TEventType, string> = {
@@ -25,6 +26,7 @@ export const EVENT_TYPE_BORDERS: Record<TEventType, string> = {
 	Зал: "border-event-credit",
 	Екз: "border-event-exam",
 	Конс: "border-event-consultation",
+	"КП/КР": "border-event-coursework",
 }
 
 export const EVENT_TYPE_LABELS: Record<TEventType, string> = {
@@ -34,6 +36,7 @@ export const EVENT_TYPE_LABELS: Record<TEventType, string> = {
 	Зал: "Залік",
 	Екз: "Екзамен",
 	Конс: "Консультація",
+	"КП/КР": "Курсова робота / Проект",
 }
 
 export const VIEW_OPTIONS = [

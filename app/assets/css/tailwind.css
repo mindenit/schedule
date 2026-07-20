@@ -222,6 +222,7 @@
 	--color-event-lab: var(--event-lab);
 	--color-event-practise: var(--event-practise);
 	--color-event-consultation: var(--event-consultation);
+	--color-event-coursework: var(--event-coursework);
 }
 
 :root {
@@ -277,6 +278,7 @@
 	--event-lab: #ceb3dd;
 	--event-practise: #acc89a;
 	--event-consultation: #a5c4cf;
+	--event-coursework: #e09fc8;
 }
 
 .dark {
@@ -323,6 +325,7 @@
 	--event-lab: #513066;
 	--event-practise: #3d572f;
 	--event-consultation: #234e5c;
+	--event-coursework: #6a2050;
 }
 
 @layer base {

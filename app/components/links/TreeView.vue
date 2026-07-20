@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useLinksStore, type Link } from "~/stores/links"
-import type { Subject } from "nurekit"
+import type { Subject } from "@mindenit/nurekit"
 
 // ─── Props & emits ────────────────────────────────────────────────────────────
 
@@ -169,6 +169,7 @@ const EVENT_TYPE_TEXT: Record<string, string> = {
 	Зал: "text-event-credit",
 	Екз: "text-event-exam",
 	Конс: "text-event-consultation",
+	"КП/КР": "text-event-coursework",
 }
 
 const EVENT_TYPE_BG: Record<string, string> = {
@@ -178,6 +179,7 @@ const EVENT_TYPE_BG: Record<string, string> = {
 	Зал: "bg-event-credit/10",
 	Екз: "bg-event-exam/10",
 	Конс: "bg-event-consultation/10",
+	"КП/КР": "bg-event-coursework/10",
 }
 </script>
 
