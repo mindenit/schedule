@@ -38,17 +38,28 @@ const calendarStore = useCalendarStore()
 
 const { trackEvent } = useAnalytics()
 
-// dayClasses and containerClasses are still lightweight computeds — they derive
-// from cell.currentMonth / isDateToday which are already resolved props.
-const dayClasses = computed(() => ({
-	"text-muted-foreground/50": !props.cell.currentMonth,
-	"text-muted-foreground": props.cell.currentMonth && !props.isDateToday,
-	"bg-primary ": props.isDateToday && props.cell.currentMonth,
-}))
+// cn() merges static + conditional classes into a single deterministic string on
+// both SSR and client. Split static/dynamic bindings cause class-order divergence:
+// SSR serializer puts object keys first; client patchClass appends them after static.
+const dayClasses = computed(() =>
+	cn("flex size-6 items-center justify-center rounded-full text-xs font-medium", {
+		"text-muted-foreground/50": !props.cell.currentMonth,
+		"text-muted-foreground": props.cell.currentMonth && !props.isDateToday,
+		"bg-primary": props.isDateToday && props.cell.currentMonth,
+	})
+)
 
-const containerClasses = computed(() => ({
-	"opacity-80": !props.cell.currentMonth,
-}))
+const containerClasses = computed(() =>
+	cn("bg-card flex h-full flex-col overflow-hidden p-2.5", {
+		"opacity-80": !props.cell.currentMonth,
+	})
+)
+
+const eventAreaClasses = computed(() =>
+	cn("flex flex-1 gap-1 overflow-hidden lg:flex-col lg:gap-1", {
+		"opacity-50": !props.cell.currentMonth,
+	})
+)
 
 // ── Dynamic slot calculation ─────────────────────────────────────────────────
 // Each badge row is h-6 (24px) with gap-1 (4px) between rows.
@@ -167,23 +178,15 @@ const badgeMap = computed(() => {
 				: '')
 		"
 		:aria-selected="isDateToday"
-		class="bg-card flex h-full flex-col overflow-hidden p-2.5"
 		:class="containerClasses"
 	>
 		<div class="flex h-8 w-full shrink-0 items-center justify-center">
-			<span
-				class="flex size-6 items-center justify-center rounded-full text-xs font-medium"
-				:class="dayClasses"
-			>
+			<span :class="dayClasses">
 				{{ cell.day }}
 			</span>
 		</div>
 
-		<div
-			ref="eventArea"
-			class="flex flex-1 gap-1 overflow-hidden lg:flex-col lg:gap-1"
-			:class="{ 'opacity-50': !cell.currentMonth }"
-		>
+		<div ref="eventArea" :class="eventAreaClasses">
 			<!-- Mobile: tap whole cell → day view -->
 			<div
 				class="flex w-full flex-wrap justify-center gap-1 lg:hidden"

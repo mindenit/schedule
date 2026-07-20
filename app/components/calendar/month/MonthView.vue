@@ -19,11 +19,19 @@ const { effectiveTimezone } = useTimezone()
 
 const { getCalendarCells, getWeekDays } = useCalendarCells()
 
-// Reactive "today" — updates every minute so the today-highlight stays correct
-// if the tab is left open across midnight. Avoids baking isToday into snapshots
-// (which would go stale until the user navigates).
-const now = useNow({ interval: 60_000 })
-const today = computed(() => now.value)
+// Reactive "today" — null on server and during hydration so both sides agree
+// (no cell is highlighted until after mount). Populated in onMounted, then
+// refreshed every minute so the highlight stays correct if the tab is left open
+// across midnight. useNow() is NOT used here because it calls new Date() at
+// composition time (shallowRef(new Date()) in VueUse source), which diverges
+// between SSR and client → hydration mismatch on every page load.
+const today = ref<Date | null>(null)
+onMounted(() => {
+	today.value = new Date()
+	useIntervalFn(() => {
+		today.value = new Date()
+	}, 60_000)
+})
 
 const hasEvents = computed(() => props.events.length > 0)
 const weekDays = computed(() => getWeekDays(selectedDate.value))
@@ -188,7 +196,7 @@ const { currentPanel, incomingPanel, currentX, incomingX, onDragStart, onDrag, o
 					v-for="(snapshot, index) in incomingPanel.cellSnapshots"
 					:key="index"
 					:cell="snapshot.cell"
-					:is-date-today="isSameDay(snapshot.cell.date, today)"
+					:is-date-today="today !== null && isSameDay(snapshot.cell.date, today)"
 					:all-groups="snapshot.allGroups"
 					:all-badges="snapshot.allBadges"
 					:total-events-count="snapshot.totalEventsCount"
@@ -220,7 +228,7 @@ const { currentPanel, incomingPanel, currentX, incomingX, onDragStart, onDrag, o
 					v-for="(snapshot, index) in currentPanel.cellSnapshots"
 					:key="index"
 					:cell="snapshot.cell"
-					:is-date-today="isSameDay(snapshot.cell.date, today)"
+					:is-date-today="today !== null && isSameDay(snapshot.cell.date, today)"
 					:all-groups="snapshot.allGroups"
 					:all-badges="snapshot.allBadges"
 					:total-events-count="snapshot.totalEventsCount"

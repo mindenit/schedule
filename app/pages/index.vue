@@ -70,7 +70,6 @@ const {
 	data: scheduleData,
 	error,
 	isLoading,
-	refetch,
 } = useScheduleQuery(scheduleId, startTimestamp, endTimestamp)
 
 // Identify the active schedule by a stable string key — avoids a deep object watch.
@@ -108,6 +107,5 @@ watch(
 		:is-loading="isLoading"
 		:error="error"
 		:schedule-name="selectedSchedule?.name"
-		@refetch="refetch"
 	/>
 </template>

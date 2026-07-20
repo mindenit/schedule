@@ -19,15 +19,19 @@ const hasEvents = computed(() => props.events.length > 0)
 
 /**
  * Richer cell shape — pre-baked at buildPanel time so MonthMini.vue doesn't
- * call isToday() or colorByDayKey.get() per render.
+ * call colorByDayKey.get() per render.
  *
- * - isToday: eliminates ~420 date-fns isToday() calls per Year panel (12 months × ~35 cells)
  * - colorClass: eliminates reactive Map.get() per cell (was tracking as a dep)
+ *
+ * Note: isToday is intentionally NOT pre-baked here. Baking it at build time
+ * embeds new Date() into the SSR snapshot, which diverges from the client's
+ * new Date() at hydration → hydration mismatch on every page load.
+ * Instead, todayKey is a reactive ref initialised in onMounted and compared
+ * in the MonthMini template (O(1) integer comparison, same perf, SSR-safe).
  */
 interface MonthMiniCell {
 	date: Date
 	currentMonth: boolean
-	isToday: boolean
 	/** Dominant event-type bg class for this day, or undefined if no events. */
 	colorClass: string | undefined
 }
@@ -67,25 +71,22 @@ function getDominantColor(events: Schedule[]): string {
 
 /**
  * Build a fully frozen MonthMini for the given month.
- * All per-cell derived values (isToday, colorClass) are pre-baked here
- * so MonthMini.vue never calls date-fns or does Map lookups at render time.
+ * Per-cell colorClass is pre-baked here so MonthMini.vue never does Map
+ * lookups at render time.
  *
- * todayKey: Unix ms of today's midnight in local JS time. Comparing
- * c.date.getTime() === todayKey is O(1) and avoids ~420 isToday() calls
- * per year panel (12 months × ~35 cells).
+ * isToday is NOT pre-baked — it is compared at render time in MonthMini.vue
+ * using the reactive todayKey ref to avoid SSR/client hydration mismatches.
  */
 function buildMonthMini(
 	year: number,
 	monthIndex: number,
-	colorByDayKey: Map<number, string>,
-	todayKey: number
+	colorByDayKey: Map<number, string>
 ): MonthMiniData {
 	const date = new Date(year, monthIndex, 1)
 	const thisMonth = isThisMonth(date)
 	const cells: MonthMiniCell[] = getCalendarCells(date).map((c) => ({
 		date: c.date,
 		currentMonth: c.currentMonth,
-		isToday: c.date.getTime() === todayKey,
 		colorClass: colorByDayKey.get(c.date.getTime()) || undefined,
 	}))
 	return {
@@ -106,16 +107,10 @@ function buildPanelImpl(seedDate: Date): YearPanel {
 		if (color) colorByDayKey.set(key, color)
 	}
 
-	// Single today-midnight key replaces ~420 isToday() date-fns calls per panel.
-	const now = new Date()
-	const todayKey = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
-
 	return {
 		date: new Date(year, 0, 1),
 		year,
-		months: Array.from({ length: 12 }, (_, i) =>
-			buildMonthMini(year, i, colorByDayKey, todayKey)
-		),
+		months: Array.from({ length: 12 }, (_, i) => buildMonthMini(year, i, colorByDayKey)),
 	}
 }
 
@@ -143,6 +138,17 @@ function buildPanel(seedDate: Date): YearPanel {
 	panelCache.set(year, { eventsRef, panel })
 	return panel
 }
+
+// Reactive today-midnight key: null on server and during hydration so both
+// sides agree. Populated in onMounted so isToday comparisons in MonthMini
+// only apply after hydration is complete, eliminating the SSR mismatch.
+// A midnight timer in useSwipeNavigator already rebuilds panels at 00:00:01;
+// todayKey only needs a one-time onMounted initialisation here.
+const todayKey = ref<number | null>(null)
+onMounted(() => {
+	const n = new Date()
+	todayKey.value = new Date(n.getFullYear(), n.getMonth(), n.getDate()).getTime()
+})
 
 const yearRootEl = useTemplateRef("yearRoot")
 
@@ -183,6 +189,7 @@ function onMonthClick(date: Date) {
 					v-for="month in currentPanel.months"
 					:key="month.date.getTime()"
 					:month="month"
+					:today-key="todayKey"
 					@day-click="onDayClick"
 					@month-click="onMonthClick"
 				/>
@@ -203,6 +210,7 @@ function onMonthClick(date: Date) {
 					v-for="month in incomingPanel.months"
 					:key="month.date.getTime()"
 					:month="month"
+					:today-key="todayKey"
 					:interactive="false"
 				/>
 			</motion.div>
@@ -223,6 +231,7 @@ function onMonthClick(date: Date) {
 					v-for="month in currentPanel.months"
 					:key="month.date.getTime()"
 					:month="month"
+					:today-key="todayKey"
 					@day-click="onDayClick"
 					@month-click="onMonthClick"
 				/>

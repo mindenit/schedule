@@ -12,7 +12,7 @@
 				skeuomorphic: props.skeuomorphic,
 			})
 		"
-		:disabled="disabled || loading"
+		:disabled="disabled || loading || undefined"
 		v-bind="forwarded"
 	>
 		<slot name="iconLeft">

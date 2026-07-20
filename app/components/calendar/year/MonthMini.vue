@@ -2,16 +2,19 @@
 /**
  * MonthMini — a compact month calendar used in the Year view.
  *
- * All per-cell derived values (isToday, colorClass, isThisMonth) are
- * pre-baked by YearView.buildMonthMini so this component does zero
- * date-fns or Map calls at render time.
+ * colorClass and isThisMonth are pre-baked by YearView.buildMonthMini so this
+ * component avoids Map lookups at render time.
+ *
+ * isToday is intentionally NOT pre-baked (see YearView.vue for rationale).
+ * Instead, todayKey (Unix ms of today's midnight) is passed as a prop from
+ * YearView and compared per-cell inline: O(1) integer comparison, same perf.
+ * null = not yet mounted (SSR / hydration) → no cell is highlighted as today,
+ * which exactly matches the SSR output and prevents a hydration mismatch.
  */
 
 interface MonthMiniCell {
 	date: Date
 	currentMonth: boolean
-	/** Pre-baked by buildMonthMini — avoids date-fns isToday() per cell. */
-	isToday: boolean
 	/** Pre-baked dominant event-type color class, or undefined when no events. */
 	colorClass: string | undefined
 }
@@ -26,6 +29,11 @@ interface MonthMiniData {
 
 interface Props {
 	month: MonthMiniData
+	/**
+	 * Unix ms of today's midnight in local JS time. null before onMounted so
+	 * both SSR and the initial client frame agree (no cell marked as today yet).
+	 */
+	todayKey: number | null
 	/**
 	 * When false (incoming panel during slide animation), interactive affordances
 	 * are stripped: month header and day cells render as plain divs/spans,
@@ -107,10 +115,10 @@ const WEEK_INITIALS = ["М", "П", "С", "Ч", "П", "С", "Н"]
 				<span
 					class="flex aspect-square w-3.5 items-center justify-center rounded-full
 						text-[0.438rem] font-medium lg:w-full lg:max-w-4.5 lg:rounded-sm
-						lg:text-[0.563px]"
+						lg:text-[0.563rem]"
 					:class="[
 						interactive ? 'lg:group-hover:ring-1 lg:group-hover:ring-offset-0' : '',
-						cell.isToday
+						todayKey !== null && cell.date.getTime() === todayKey
 							? [
 									'bg-primary text-primary-foreground',
 									interactive ? 'lg:group-hover:ring-primary/40' : '',

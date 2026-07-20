@@ -8,9 +8,15 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const currentTime = ref(new Date())
+// Avoid hydration mismatch: new Date() diverges between SSR and client.
+// null means "not yet mounted" — all computeds return sentinel "hidden" values
+// so SSR and the initial client frame both render nothing, then the timer
+// populates currentTime after mount and the timeline appears client-side only.
+const currentTime = ref<Date | null>(null)
 
 const getCurrentTimePosition = computed(() => {
+	if (currentTime.value === null) return -1
+
 	const hour = currentTime.value.getHours()
 	const minutes = currentTime.value.getMinutes()
 
@@ -28,6 +34,8 @@ const getCurrentTimePosition = computed(() => {
 })
 
 const shouldShowTimeline = computed(() => {
+	if (currentTime.value === null) return false
+
 	const position = getCurrentTimePosition.value
 	if (position === -1) return false
 
@@ -35,13 +43,14 @@ const shouldShowTimeline = computed(() => {
 		return true
 	}
 
-	return props.weekDays.some((day) => isSameDay(day, currentTime.value))
+	return props.weekDays.some((day) => isSameDay(day, currentTime.value!))
 })
 
 const getTodayColumnIndex = computed(() => {
+	if (currentTime.value === null) return -1
 	if (!props.weekDays || props.weekDays.length === 0) return -1
 
-	return props.weekDays.findIndex((day) => isSameDay(day, currentTime.value))
+	return props.weekDays.findIndex((day) => isSameDay(day, currentTime.value!))
 })
 
 const getTimelineStyle = computed(() => {
@@ -82,9 +91,13 @@ function updateTime() {
 	currentTime.value = new Date()
 }
 
-// useIntervalFn handles mount/unmount lifecycle automatically.
-// Align to the next minute boundary so updates fire just after :00 seconds.
-useIntervalFn(updateTime, 60 * 1000, { immediateCallback: true })
+// Initialise after mount (not at setup time) so SSR and the first hydration
+// frame both see currentTime === null and render nothing. useIntervalFn then
+// ticks every minute to keep the position accurate.
+onMounted(() => {
+	updateTime()
+	useIntervalFn(updateTime, 60 * 1000)
+})
 </script>
 
 <template>
