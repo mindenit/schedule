@@ -48,7 +48,6 @@
 		"@tailwindcss/vite": "^4.3.2",
 		"@tanstack/query-persist-client-core": "^5.101.2",
 		"@tanstack/vue-query": "^5.101.2",
-		"@tanstack/vue-table": "^8.21.3",
 		"@unhead/vue": "^2.0.3 || ^3.0.0",
 		"@vueuse/core": "^14.3.0",
 		"@vueuse/nuxt": "^14.3.0",

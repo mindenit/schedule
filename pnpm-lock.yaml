@@ -52,9 +52,6 @@ importers:
       "@tanstack/vue-query":
         specifier: ^5.101.2
         version: 5.101.2(vue@3.5.39(typescript@5.9.3))
-      "@tanstack/vue-table":
-        specifier: ^8.21.3
-        version: 8.21.3(vue@3.5.39(typescript@5.9.3))
       "@unhead/vue":
         specifier: ^2.0.3 || ^3.0.0
         version: 2.1.15(vue@3.5.39(typescript@5.9.3))
