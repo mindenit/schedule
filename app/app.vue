@@ -7,7 +7,7 @@ import { defineAsyncComponent } from "vue"
  * toggle the setting pay nothing for it. Wrapped in <ClientOnly> already, so
  * SSR doesn't try to resolve the dynamic import.
  */
-const SnowEffect = defineAsyncComponent(() => import("~/components/SnowEffect.vue"))
+const SnowEffect = defineAsyncComponent(() => import("~/components/backgrounds/SnowEffect.vue"))
 
 const { isSnowEnabled, isShortcutsOpen } = useAppShell()
 </script>
