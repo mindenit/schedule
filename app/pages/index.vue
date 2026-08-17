@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { skipHydrate } from "pinia"
 import { storeToRefs } from "pinia"
 import { useScheduleQuery } from "~/composables/useScheduleQuery"
 
@@ -9,7 +10,8 @@ const { trackEvent } = useAnalytics()
 useUrlState()
 
 // Fire once on the very first visit when no schedules are configured.
-const hasSeenFirstVisit = useLocalStorage("op-first-visit-seen", false)
+// skipHydrate prevents SSR/client mismatch (matches pattern in other stores/pages).
+const hasSeenFirstVisit = skipHydrate(useLocalStorage(STORAGE_KEYS.firstVisitSeen, false))
 onMounted(() => {
 	if (!hasSeenFirstVisit.value && scheduleStore.allSchedules.length === 0) {
 		hasSeenFirstVisit.value = true
