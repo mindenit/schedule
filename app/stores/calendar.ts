@@ -1,18 +1,15 @@
-import { defineStore, storeToRefs } from "pinia"
+import { defineStore } from "pinia"
 import { startOfMonth, endOfMonth, startOfWeek, endOfWeek, startOfYear, endOfYear } from "date-fns"
 import type { Schedule } from "@mindenit/nurekit"
 import type { TCalendarView } from "~/types/calendar"
 import { WEEK_OPTIONS } from "~/constants/calendar"
 import { STORAGE_KEYS } from "~/constants/storage"
-import { resolveTimezone } from "~/constants/timezones"
 import { getEventDayKey } from "~/utils/event-cache"
 
 const VALID_VIEWS: TCalendarView[] = ["month", "week", "day", "year"]
 
 export const useCalendarStore = defineStore("calendar", () => {
-	const settingsStore = useSettingsStore()
-	const { timezone } = storeToRefs(settingsStore)
-	const effectiveTimezone = computed(() => resolveTimezone(timezone.value))
+	const { effectiveTimezone } = useTimezone()
 
 	const allEvents = ref<Schedule[]>([])
 	// useState keeps the value stable across SSR → client hydration.

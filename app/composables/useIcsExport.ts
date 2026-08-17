@@ -1,10 +1,7 @@
 import type { Schedule } from "@mindenit/nurekit"
 import { formatInTimeZone } from "date-fns-tz"
-import { storeToRefs } from "pinia"
 import { downloadFile } from "~/utils/download"
 import { EVENT_TYPE_LABELS } from "~/constants/calendar"
-import { resolveTimezone } from "~/constants/timezones"
-import { useSettingsStore } from "~/stores/settings"
 
 export interface IcsExportOptions {
 	academicYearStart?: Date
@@ -13,8 +10,7 @@ export interface IcsExportOptions {
 }
 
 export const useIcsExport = () => {
-	const { timezone } = storeToRefs(useSettingsStore())
-	const effectiveTimezone = computed(() => resolveTimezone(timezone.value))
+	const { effectiveTimezone } = useTimezone()
 
 	/**
 	 * Format a Unix seconds timestamp as an ICS datetime string.
