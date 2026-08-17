@@ -16,3 +16,10 @@ export const DIALOGS_CONFIG: DialogConfig[] = [
 		component: "AppDialog",
 	},
 ]
+
+/** useState keys for cross-component dialog open state. */
+export const DIALOG_KEYS = {
+	settings: "settings:open",
+	shortcuts: "shortcuts:open",
+	scheduleAdd: "schedule:add-dialog:open",
+} as const

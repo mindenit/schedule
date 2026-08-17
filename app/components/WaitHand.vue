@@ -1,4 +1,4 @@
-<script lang="ts" setup></script>
+<script setup lang="ts"></script>
 <template>
 	<div
 		class="relative mt-24 ml-20 h-15 w-20"

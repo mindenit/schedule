@@ -14,7 +14,7 @@ const props = defineProps<Props>()
 const calendarStore = useCalendarStore()
 const { view } = storeToRefs(calendarStore)
 const { trackEvent } = useAnalytics()
-const isAddDialogOpen = useState("schedule:add-dialog:open", () => false)
+const isAddDialogOpen = useState(DIALOG_KEYS.scheduleAdd, () => false)
 
 // SSR renders the calendar with no localStorage access, so hasActiveSchedule is
 // always false on the server. This causes a hydration mismatch on blur-sm and the

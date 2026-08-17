@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 const isOnline = useOnline()
 const wasOffline = ref(false)
 const showReconnected = ref(false)

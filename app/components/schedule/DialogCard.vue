@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { SCHEDULE_ICONS } from "~/constants/schedule"
 import type { ScheduleTabType } from "~/types/schedule"
 

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const { trackEvent } = useAnalytics()
 
-const isOpen = useState("settings:open", () => false)
+const isOpen = useState(DIALOG_KEYS.settings, () => false)
 
 function onOpenChange(open: boolean) {
 	isOpen.value = open

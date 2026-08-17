@@ -5,7 +5,7 @@ interface Props {
 
 defineProps<Props>()
 
-const isDialogOpen = useState("schedule:add-dialog:open", () => false)
+const isDialogOpen = useState(DIALOG_KEYS.scheduleAdd, () => false)
 </script>
 
 <template>
