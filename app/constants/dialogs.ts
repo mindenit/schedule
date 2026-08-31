@@ -1,11 +1,6 @@
-export interface DialogConfig {
-	id: string
-	version: number
-	priority: number // Lower number means higher priority
-	enabled: boolean
-	component: string
-	minShowInterval?: number
-}
+import type { DialogConfig } from "~/types/dialogs"
+
+export type { DialogConfig }
 
 export const DIALOGS_CONFIG: DialogConfig[] = [
 	{
