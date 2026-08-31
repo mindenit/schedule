@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 useSeo({
 	title: "Виявлено шкідливий браузер",
 	noindex: true,

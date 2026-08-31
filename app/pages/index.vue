@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { storeToRefs } from "pinia"
+import { skipHydrate, storeToRefs } from "pinia"
 import { useScheduleQuery } from "~/composables/useScheduleQuery"
 
 const calendarStore = useCalendarStore()
@@ -9,7 +9,8 @@ const { trackEvent } = useAnalytics()
 useUrlState()
 
 // Fire once on the very first visit when no schedules are configured.
-const hasSeenFirstVisit = useLocalStorage("op-first-visit-seen", false)
+// skipHydrate prevents SSR/client mismatch (matches pattern in other stores/pages).
+const hasSeenFirstVisit = skipHydrate(useLocalStorage(STORAGE_KEYS.firstVisitSeen, false))
 onMounted(() => {
 	if (!hasSeenFirstVisit.value && scheduleStore.allSchedules.length === 0) {
 		hasSeenFirstVisit.value = true
@@ -38,19 +39,14 @@ const hasActiveSchedule = computed(() => !!selectedSchedule.value)
 const scheduleId = computed(() => selectedSchedule.value?.id)
 
 const getAcademicYearRange = (date: Date) => {
-	const year = date.getFullYear()
-	const currentDate = new Date(date)
-
-	if (currentDate.getMonth() < 8) {
-		return {
-			start: new Date(year - 1, 8, 1, 0, 0, 0, 0),
-			end: new Date(year, 8, 1, 23, 59, 59, 999),
-		}
-	}
-
+	// Academic year: Sept 1 → Sept 1. Pad ±7 days so month/week grid cells
+	// that overhang the boundary (up to 6 days in either direction) still have
+	// events fetched. Without the pad, September cells in August's grid and
+	// August cells in September's grid render empty.
+	const startYear = date.getMonth() < 8 ? date.getFullYear() - 1 : date.getFullYear()
 	return {
-		start: new Date(year, 8, 1, 0, 0, 0, 0),
-		end: new Date(year + 1, 8, 1, 23, 59, 59, 999),
+		start: new Date(startYear, 8, 1 - 7, 0, 0, 0, 0),
+		end: new Date(startYear + 1, 8, 1 + 7, 23, 59, 59, 999),
 	}
 }
 
@@ -70,7 +66,20 @@ const {
 	data: scheduleData,
 	error,
 	isLoading,
+	// dataUpdatedAt — Unix ms of the last successful fetch; 0 when never fetched.
+	// Comes from TanStack Query directly; no extra work needed.
+	dataUpdatedAt,
+	// fetchStatus: "fetching" | "paused" | "idle"
+	// status: "pending" | "error" | "success"
+	// "paused" + "pending" = network offline, query never resolved yet.
+	fetchStatus,
+	status,
 } = useScheduleQuery(scheduleId, startTimestamp, endTimestamp)
+
+// Offline AND no cached data yet (TanStack v5 networkMode: "online" default:
+// the query pauses instead of erroring when connectivity is absent).
+// Must be a separate computed so Root.vue can pick the right overlay branch.
+const isOfflineNoData = computed(() => fetchStatus.value === "paused" && status.value === "pending")
 
 // Identify the active schedule by a stable string key — avoids a deep object watch.
 const scheduleKey = computed(() =>
@@ -92,9 +101,9 @@ watch(scheduleKey, (newKey, oldKey) => {
 // is already populated but the watcher never fires — allEvents stays [] and
 // no events render until the next query refetch or server restart.
 watch(
-	scheduleData,
-	(data) => {
-		if (data) calendarStore.setEvents(data)
+	[scheduleData, dataUpdatedAt],
+	([data, updatedAt]) => {
+		if (data) calendarStore.setEvents(data, updatedAt)
 	},
 	{ immediate: true }
 )
@@ -105,6 +114,7 @@ watch(
 		:events="filteredEvents"
 		:has-active-schedule="!!hasActiveSchedule"
 		:is-loading="isLoading"
+		:is-offline-no-data="isOfflineNoData"
 		:error="error"
 		:schedule-name="selectedSchedule?.name"
 	/>

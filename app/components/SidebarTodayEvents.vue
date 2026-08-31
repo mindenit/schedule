@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 import { addDays, subDays, isToday } from "date-fns"
 import { formatInTimeZone } from "date-fns-tz"
 import { storeToRefs } from "pinia"

@@ -16,7 +16,7 @@ const activeTab = ref<ScheduleTabType>("group")
 
 // useState makes the open state globally accessible — e.g. Root.vue's
 // "no schedule" CTA can open this dialog without prop drilling.
-const isDialogOpen = useState("schedule:add-dialog:open", () => false)
+const isDialogOpen = useState(DIALOG_KEYS.scheduleAdd, () => false)
 
 const {
 	data: groups,

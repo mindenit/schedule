@@ -1,3 +1,5 @@
+import { useStorage } from "@vueuse/core"
+import { skipHydrate } from "pinia"
 import { STORAGE_KEYS } from "~/constants/storage"
 
 type FilterKey = "lessonTypes" | "teachers" | "auditoriums" | "subjects" | "groups"
@@ -20,29 +22,13 @@ const emptyState = (): FilterState => ({
 	groups: [],
 })
 
-export const useFiltersStore = defineStore("filters", () => {
-	const state = ref<FilterState>(emptyState())
+const ensureArray = <T>(v: unknown): T[] => (Array.isArray(v) ? (v as T[]) : [])
 
-	let currentStorageKey = ""
-
-	const ensureArray = <T>(v: unknown): T[] => (Array.isArray(v) ? (v as T[]) : [])
-
-	const loadFilters = (scheduleId: string | number, scheduleType: string) => {
-		const key = STORAGE_KEYS.filters(scheduleType, scheduleId)
-		if (key === currentStorageKey) return
-		currentStorageKey = key
-
-		if (!import.meta.client) return
-
-		const saved = localStorage.getItem(key)
-		if (!saved) {
-			state.value = emptyState()
-			return
-		}
-
+const filterSerializer = {
+	read: (raw: string): FilterState => {
 		try {
-			const parsed = JSON.parse(saved) as Partial<FilterState>
-			state.value = {
+			const parsed = JSON.parse(raw) as Partial<FilterState>
+			return {
 				lessonTypes: ensureArray<string>(parsed.lessonTypes),
 				teachers: ensureArray<number>(parsed.teachers),
 				auditoriums: ensureArray<number>(parsed.auditoriums),
@@ -50,13 +36,28 @@ export const useFiltersStore = defineStore("filters", () => {
 				groups: ensureArray<number>(parsed.groups),
 			}
 		} catch {
-			state.value = emptyState()
+			return emptyState()
 		}
-	}
+	},
+	write: (val: FilterState): string => JSON.stringify(val),
+}
 
-	const saveFilters = () => {
-		if (!import.meta.client || !currentStorageKey) return
-		localStorage.setItem(currentStorageKey, JSON.stringify(state.value))
+export const useFiltersStore = defineStore("filters", () => {
+	// Reactive storage key — swapped by loadFilters() when the user changes schedule.
+	const storageKey = ref("")
+
+	// useStorage is re-evaluated reactively when storageKey changes.
+	// skipHydrate prevents SSR/client mismatch (same pattern as other stores).
+	const state = skipHydrate(
+		useStorage<FilterState>(storageKey, emptyState, undefined, {
+			serializer: filterSerializer,
+		})
+	)
+
+	const loadFilters = (scheduleId: string | number, scheduleType: string) => {
+		const key = STORAGE_KEYS.filters(scheduleType, scheduleId)
+		if (key === storageKey.value) return
+		storageKey.value = key
 	}
 
 	const toggle = <K extends FilterKey>(key: K, value: FilterValue<K>) => {
@@ -64,7 +65,6 @@ export const useFiltersStore = defineStore("filters", () => {
 		const index = arr.indexOf(value)
 		if (index > -1) arr.splice(index, 1)
 		else arr.push(value)
-		saveFilters()
 	}
 
 	const isActive = <K extends FilterKey>(key: K, value: FilterValue<K>) => {
@@ -73,7 +73,6 @@ export const useFiltersStore = defineStore("filters", () => {
 
 	const clearAll = () => {
 		state.value = emptyState()
-		saveFilters()
 	}
 
 	// Per-type computed refs for reactive reads in templates and queries.
@@ -169,7 +168,6 @@ export const useFiltersStore = defineStore("filters", () => {
 		hasActive,
 		activeCount,
 		loadFilters,
-		saveFilters,
 		toggle,
 		isActive,
 		filtersForType,

@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup lang="ts">
 const open = defineModel<boolean>("open", { required: true })
 </script>
 

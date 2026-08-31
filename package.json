@@ -1,6 +1,6 @@
 {
 	"name": "mindenit-schedule",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"private": true,
 	"type": "module",
 	"scripts": {
@@ -9,7 +9,7 @@
 		"build": "nuxt build",
 		"dev": "nuxt dev",
 		"generate": "nuxt generate",
-		"preview": "nuxt preview",
+		"preview": "nuxt preview --port 3001",
 		"postinstall": "nuxt prepare",
 		"lint": "eslint .",
 		"lint:fix": "eslint . --fix",
@@ -48,7 +48,6 @@
 		"@tailwindcss/vite": "^4.3.2",
 		"@tanstack/query-persist-client-core": "^5.101.2",
 		"@tanstack/vue-query": "^5.101.2",
-		"@tanstack/vue-table": "^8.21.3",
 		"@unhead/vue": "^2.0.3 || ^3.0.0",
 		"@vueuse/core": "^14.3.0",
 		"@vueuse/nuxt": "^14.3.0",
@@ -77,6 +76,11 @@
 	"devDependencies": {
 		"@commitlint/cli": "^21.2.0",
 		"@commitlint/config-conventional": "^21.2.0",
+		"@iconify-json/brandico": "^1.2.3",
+		"@iconify-json/logos": "^1.2.13",
+		"@iconify-json/lucide": "^1.2.127",
+		"@iconify-json/mingcute": "^1.2.8",
+		"@iconify-json/ph": "^1.2.2",
 		"@popperjs/core": "^2.11.8",
 		"@yuta-inoue-ph/nuxt-vcalendar": "^1.1.4",
 		"eslint-config-prettier": "^10.1.8",

@@ -10,7 +10,7 @@ Repo-specific only. Global rules live in `~/.config/opencode/AGENTS.md`.
 pnpm dev              # dev server (port 3000)
 pnpm build            # production build → .output/
 pnpm generate         # static generation
-pnpm preview          # preview .output/
+pnpm preview          # preview .output/ on port 3001 (separate origin from dev — prevents SW from leaking into dev mode)
 
 pnpm lint             # eslint (exit 0 on warnings-only)
 pnpm lint:fix         # eslint --fix
@@ -92,13 +92,12 @@ app/
     tanstack-table.ts # valueUpdater helper for @tanstack/vue-table
     tw-helper.ts      # tw() tagged template for Tailwind autocomplete
   plugins/
-    nurekit.ts        # provides $nurekit (dev: /api proxy; prod: sh.mindenit.org/api)
+    nurekit.ts        # provides $nurekit — SDK default baseUrl: https://sh.mindenit.org/api
     vue-query.ts      # TanStack Query client + IndexedDB persistence
   assets/css/
     tailwind.css      # single canonical CSS — Tailwind v4 + UI Thing base + full token/palette set
 server/
-  api/[...any].ts     # dev-only reverse proxy → https://sh.mindenit.org/api (404 in prod)
-  routes/             # server routes (currently empty)
+  routes/             # server routes (health, ready)
 ```
 
 ---
@@ -117,7 +116,7 @@ Beyond Nuxt's defaults, `nuxt.config` adds:
 ```
 @nuxt/scripts             # third-party script loading (includes useScriptGoogleAnalytics)
 @nuxt/eslint              # ESLint with generated .nuxt/eslint.config.mjs
-@nuxt/icon                # icon component, iconify provider, lucide bundled
+@nuxt/icon                # icon component; client bundle (18 KB) holds all 59 used icons inline
 @nuxtjs/color-mode        # dark/light/system mode via .dark class
 @vueuse/nuxt              # VueUse composables auto-imported
 @pinia/nuxt               # Pinia state management
@@ -132,6 +131,14 @@ vue-sonner/nuxt           # toast notifications
 ```
 
 `@nuxtjs/seo` bundles: sitemap (`/sitemap.xml`), robots, nuxt-schema-org, og-image (1200×630, 7-day cache). All configured in `nuxt.config`.
+
+### Icon strategy
+
+All 59 used icons are inlined in the client JS bundle (18 KB, scan-generated at build time). Rendering order: **client bundle → same-origin `/_icons` server route (SW SWR-cached) → api.iconify.design CDN (online fallback only)**.
+
+`serverBundle: false` — no full collection JSONs in the Nitro server bundle (logos + ph alone would add 12 MB). Icons render client-side after hydration; no SSR flash for these small icons.
+
+**Adding an icon from a new collection:** install its `@iconify-json/<name>` package as a devDep (`pnpm add -D @iconify-json/<name>`) and add the collection name to `icon.serverBundle.collections` in `nuxt.config.ts` only if you want SSR rendering for that collection.
 
 ---
 
@@ -163,7 +170,7 @@ vue-sonner/nuxt           # toast notifications
 
 ### API client — `$nurekit`
 
-Injected by `app/plugins/nurekit.ts`. In dev it points at `window.location.origin/api` (proxied by `server/api/[...any].ts` to `https://sh.mindenit.org/api`); in prod it uses the SDK's default. Always access via `useNuxtApp().$nurekit` inside query factories.
+Injected by `app/plugins/nurekit.ts`. Uses the SDK default baseUrl (`https://sh.mindenit.org/api`) in both dev and prod — no server-side proxy. Always access via `useNuxtApp().$nurekit` inside query factories.
 
 ### Server state — TanStack Vue Query
 

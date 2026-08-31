@@ -1,12 +1,6 @@
 import type { MaybeRefOrGetter } from "vue"
+import type { ScheduleFilters } from "~/types/schedule"
 import { listOptions, metadataOptions, scheduleOptions } from "./_factories"
-
-type TeacherScheduleFilters = {
-	lessonTypes?: MaybeRefOrGetter<string[]>
-	groups?: MaybeRefOrGetter<number[]>
-	auditoriums?: MaybeRefOrGetter<number[]>
-	subjects?: MaybeRefOrGetter<number[]>
-}
 
 const teachersOptions = () => {
 	const { $nurekit } = useNuxtApp()
@@ -17,7 +11,7 @@ const teacherScheduleOptions = (
 	teacherId: MaybeRefOrGetter<number | string>,
 	startedAt: MaybeRefOrGetter<number | string>,
 	endedAt: MaybeRefOrGetter<number | string>,
-	filters: TeacherScheduleFilters = {}
+	filters: ScheduleFilters = {}
 ) => {
 	const { $nurekit } = useNuxtApp()
 	return scheduleOptions("teacherSchedule", teacherId, startedAt, endedAt, filters, (args) =>

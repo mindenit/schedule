@@ -52,9 +52,6 @@ importers:
       "@tanstack/vue-query":
         specifier: ^5.101.2
         version: 5.101.2(vue@3.5.39(typescript@5.9.3))
-      "@tanstack/vue-table":
-        specifier: ^8.21.3
-        version: 8.21.3(vue@3.5.39(typescript@5.9.3))
       "@unhead/vue":
         specifier: ^2.0.3 || ^3.0.0
         version: 2.1.15(vue@3.5.39(typescript@5.9.3))
@@ -134,6 +131,21 @@ importers:
       "@commitlint/config-conventional":
         specifier: ^21.2.0
         version: 21.2.0
+      "@iconify-json/brandico":
+        specifier: ^1.2.3
+        version: 1.2.3
+      "@iconify-json/logos":
+        specifier: ^1.2.13
+        version: 1.2.13
+      "@iconify-json/lucide":
+        specifier: ^1.2.127
+        version: 1.2.127
+      "@iconify-json/mingcute":
+        specifier: ^1.2.8
+        version: 1.2.8
+      "@iconify-json/ph":
+        specifier: ^1.2.2
+        version: 1.2.2
       "@popperjs/core":
         specifier: ^2.11.8
         version: 2.11.8
@@ -1419,10 +1431,40 @@ packages:
       }
     engines: { node: ">=18.18" }
 
+  "@iconify-json/brandico@1.2.3":
+    resolution:
+      {
+        integrity: sha512-frfO6v+vKBfYssfqHtZUMrewPuaDxZrjbp4lHXYpjwKC9gx4CFQkY94tboHk6iqsHuyTgt4cKXHt3KjUEzjgMg==,
+      }
+
   "@iconify-json/carbon@1.2.23":
     resolution:
       {
         integrity: sha512-7apXetbRmEiWDXIQyikFJZyq7pCVBKHYRzmeLdtT7wWoHYdWHwnFcBAzpuLoSh+ZEAfXZapSWEe8iuS6dUqf+Q==,
+      }
+
+  "@iconify-json/logos@1.2.13":
+    resolution:
+      {
+        integrity: sha512-Up54ZnIuiuBgGAsuzhR1nvKqwq8VE6YM3XLwVB6IgY+7NAasz6WKu9Ay5hGfAkfuOKowodfwDC8ozReEBYrWRg==,
+      }
+
+  "@iconify-json/lucide@1.2.127":
+    resolution:
+      {
+        integrity: sha512-7KuCCpkly00kefna4wEnCr8l2HFRkbn4mD4zRib8wCSbrBmnR/l57ExpU6j5jv/Bo+qHpWuHpDtcqceQ0ptArw==,
+      }
+
+  "@iconify-json/mingcute@1.2.8":
+    resolution:
+      {
+        integrity: sha512-J8VXpRwTpx5yzOzyhx3T4IXnfXIKTWFl3rZ9okcW4c+NMMuwkLvdmM4rkjB83tnYIhg5+kkeMpmw8tvSnxd4rQ==,
+      }
+
+  "@iconify-json/ph@1.2.2":
+    resolution:
+      {
+        integrity: sha512-PgkEZNtqa8hBGjHXQa4pMwZa93hmfu8FUSjs/nv4oUU6yLsgv+gh9nu28Kqi8Fz9CCVu4hj1MZs9/60J57IzFw==,
       }
 
   "@iconify/collections@1.0.707":
@@ -7704,6 +7746,7 @@ packages:
         integrity: sha512-XoMjdBOwe/esVgEvLmNsD3IRHkm7fbKIUGvrleloJXUZgDHig2IPWNniv+GwjyJXzuNqVjlr5+4yVUZjycJwfQ==,
       }
     engines: { node: ^18.18.0 || ^20.9.0 || >=21.1.0 }
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
     peerDependencies:
       jiti: "*"
@@ -13150,7 +13193,27 @@ snapshots:
 
   "@humanwhocodes/retry@0.4.3": {}
 
+  "@iconify-json/brandico@1.2.3":
+    dependencies:
+      "@iconify/types": 2.0.0
+
   "@iconify-json/carbon@1.2.23":
+    dependencies:
+      "@iconify/types": 2.0.0
+
+  "@iconify-json/logos@1.2.13":
+    dependencies:
+      "@iconify/types": 2.0.0
+
+  "@iconify-json/lucide@1.2.127":
+    dependencies:
+      "@iconify/types": 2.0.0
+
+  "@iconify-json/mingcute@1.2.8":
+    dependencies:
+      "@iconify/types": 2.0.0
+
+  "@iconify-json/ph@1.2.2":
     dependencies:
       "@iconify/types": 2.0.0
 

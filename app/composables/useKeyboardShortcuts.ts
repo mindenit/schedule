@@ -1,3 +1,5 @@
+import { DIALOG_KEYS } from "~/constants/dialogs"
+
 /**
  * Registers global keyboard shortcuts for calendar navigation.
  *
@@ -13,7 +15,7 @@ export function useKeyboardShortcuts() {
 	const { trackEvent } = useAnalytics()
 
 	// useState keeps one shared ref across all composable call-sites (app.vue + settings).
-	const isShortcutsOpen = useState("shortcuts:open", () => false)
+	const isShortcutsOpen = useState(DIALOG_KEYS.shortcuts, () => false)
 
 	function isInInteractiveContext(e: KeyboardEvent): boolean {
 		const target = e.target as HTMLElement

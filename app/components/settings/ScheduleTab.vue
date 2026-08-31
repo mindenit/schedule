@@ -21,8 +21,8 @@ const { selectedSchedule } = storeToRefs(scheduleStore)
 const { exportAcademicYearSchedule, isLoading } = useScheduleIcsExport()
 
 // Shared state — useState keys keep one ref across all call-sites.
-const isShortcutsOpen = useState("shortcuts:open", () => false)
-const isSettingsOpen = useState("settings:open", () => false)
+const isShortcutsOpen = useState(DIALOG_KEYS.shortcuts, () => false)
+const isSettingsOpen = useState(DIALOG_KEYS.settings, () => false)
 
 async function openShortcuts() {
 	// Close settings first; wait a tick so Reka tears down its overlay before

@@ -35,6 +35,9 @@ export const STORAGE_KEYS = {
 	// Maintenance bypass cookie (set via /maintenance dev access flow)
 	devAccess: "mindenit:dev-access",
 
+	// One-time first-visit tracking (set true after first-ever page load)
+	firstVisitSeen: "mindenit:first-visit-seen",
+
 	// Analytics consent ("accepted" | "declined" | null means not yet decided)
 	analyticsConsent: "mindenit:analytics-consent",
 
