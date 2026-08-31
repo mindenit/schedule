@@ -1,10 +1,23 @@
 /**
  * Service worker registration — client-side only.
- * Skipped in dev: a SW over Vite's dev server causes stale-module chaos
- * (old hashed chunk URLs become unreachable when Vite invalidates them).
+ * In dev: actively unregister any existing SW and clear mindenit-* caches so
+ * a previously-installed prod/preview SW cannot intercept Vite's dev URLs.
  */
 export default defineNuxtPlugin(() => {
-	if (import.meta.dev || !("serviceWorker" in navigator)) return
+	if (!("serviceWorker" in navigator)) return
+
+	if (import.meta.dev) {
+		// Tear down any leftover SW from a previous preview/prod run.
+		navigator.serviceWorker
+			.getRegistrations()
+			.then((regs) => regs.forEach((r) => r.unregister()))
+		caches
+			.keys()
+			.then((keys) =>
+				keys.filter((k) => k.startsWith("mindenit-")).forEach((k) => caches.delete(k))
+			)
+		return
+	}
 
 	window.addEventListener("load", () => {
 		navigator.serviceWorker.register("/sw.js").catch((err) => {

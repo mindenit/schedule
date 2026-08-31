@@ -88,13 +88,19 @@ export default defineNuxtConfig({
 		},
 	},
 	icon: {
-		provider: "iconify",
 		// Move off the default /api/_nuxt_icon path so the service worker can
 		// distinguish Nuxt icon requests from the backend API at /api/* and apply
 		// different caching strategies to each.
 		localApiEndpoint: "/_icons",
-		serverBundle: {
-			collections: ["lucide"],
+		// All 59 used icons are in the client bundle (18 KB) — no need to also
+		// bundle full collection JSONs (14 MB) into the Nitro server for SSR.
+		// ponytail: icons render client-side after hydration; add serverBundle
+		// if SSR icon rendering becomes a measurable CLS issue.
+		serverBundle: false,
+		clientBundle: {
+			// Scan .ts too — SCHEDULE_ICONS in app/constants/schedule.ts has
+			// lucide:building and lucide:user-check as string literals.
+			scan: { globInclude: ["app/**/*.{vue,ts}"] },
 		},
 	},
 	colorMode: {

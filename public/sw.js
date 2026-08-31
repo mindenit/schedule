@@ -13,7 +13,7 @@
  * until they regain connectivity.
  */
 
-const CACHE_VERSION = "v2"
+const CACHE_VERSION = "v3"
 const SHELL_CACHE = `mindenit-shell-${CACHE_VERSION}`
 const ASSET_CACHE = `mindenit-assets-${CACHE_VERSION}`
 // Max static-asset entries so old deploy chunks don't accumulate indefinitely.
@@ -110,22 +110,37 @@ async function cacheFirstAsset(request) {
 	const cached = await cache.match(request)
 	if (cached) return cached
 
-	const response = await fetch(request)
-	if (response.ok) {
-		cache.put(request, response.clone())
-		trimCache(cache, ASSET_CACHE_MAX)
+	try {
+		const response = await fetch(request)
+		if (response.ok) {
+			cache.put(request, response.clone())
+			trimCache(cache, ASSET_CACHE_MAX)
+		}
+		return response
+	} catch {
+		return new Response("Asset unavailable offline", {
+			status: 503,
+			headers: { "Content-Type": "text/plain" },
+		})
 	}
-	return response
 }
 
 async function staleWhileRevalidate(request, cacheName) {
 	const cache = await caches.open(cacheName)
 	const cached = await cache.match(request)
 
-	const fetchPromise = fetch(request).then((response) => {
-		if (response.ok) cache.put(request, response.clone())
-		return response
-	})
+	const fetchPromise = fetch(request)
+		.then((response) => {
+			if (response.ok) cache.put(request, response.clone())
+			return response
+		})
+		.catch(
+			() =>
+				new Response("Resource unavailable offline", {
+					status: 503,
+					headers: { "Content-Type": "text/plain" },
+				})
+		)
 
 	return cached ?? fetchPromise
 }
