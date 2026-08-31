@@ -13,7 +13,7 @@
  * until they regain connectivity.
  */
 
-const CACHE_VERSION = "v1"
+const CACHE_VERSION = "v2"
 const SHELL_CACHE = `mindenit-shell-${CACHE_VERSION}`
 const ASSET_CACHE = `mindenit-assets-${CACHE_VERSION}`
 // Max static-asset entries so old deploy chunks don't accumulate indefinitely.
@@ -86,15 +86,17 @@ self.addEventListener("fetch", (event) => {
 
 async function networkFirstShell(request) {
 	const cache = await caches.open(SHELL_CACHE)
+	// Key by pathname only — query params (view, date, schedule, type) are read
+	// client-side by useUrlState after hydration, so different URLs share the
+	// same shell HTML. Prevents unbounded entry growth per query-string combo.
+	const key = new URL(request.url).pathname
 	try {
 		const response = await fetch(request)
-		if (response.ok) {
-			cache.put(request, response.clone())
-		}
+		if (response.ok) cache.put(key, response.clone())
 		return response
 	} catch {
-		// Network failed — try the exact URL, then fall back to root shell.
-		const cached = (await cache.match(request)) ?? (await cache.match("/"))
+		// Network failed — try the exact path, then fall back to root shell.
+		const cached = (await cache.match(key)) ?? (await cache.match("/"))
 		if (cached) return cached
 		return new Response("Offline — no cached shell available", {
 			status: 503,
