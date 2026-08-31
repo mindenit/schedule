@@ -3,6 +3,14 @@ const isOnline = useOnline()
 const wasOffline = ref(false)
 const showReconnected = ref(false)
 
+const calendarStore = useCalendarStore()
+const { lastUpdatedAt } = storeToRefs(calendarStore)
+const { tzFormat } = useTimezone()
+
+const lastFetchTime = computed(() =>
+	lastUpdatedAt.value > 0 ? tzFormat(new Date(lastUpdatedAt.value), "HH:mm") : null
+)
+
 watch(isOnline, (online) => {
 	if (!online) {
 		wasOffline.value = true
@@ -34,7 +42,11 @@ watch(isOnline, (online) => {
 			aria-live="assertive"
 		>
 			<AppIcon name="lucide:wifi-off" class="shrink-0" aria-hidden="true" />
-			<span>Без з'єднання — показано збережені дані</span>
+			<span>
+				Без з'єднання —
+				<template v-if="lastFetchTime">дані від {{ lastFetchTime }}</template>
+				<template v-else>показано збережені дані</template>
+			</span>
 		</div>
 	</Transition>
 </template>

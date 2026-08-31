@@ -92,13 +92,12 @@ app/
     tanstack-table.ts # valueUpdater helper for @tanstack/vue-table
     tw-helper.ts      # tw() tagged template for Tailwind autocomplete
   plugins/
-    nurekit.ts        # provides $nurekit (dev: /api proxy; prod: sh.mindenit.org/api)
+    nurekit.ts        # provides $nurekit — SDK default baseUrl: https://sh.mindenit.org/api
     vue-query.ts      # TanStack Query client + IndexedDB persistence
   assets/css/
     tailwind.css      # single canonical CSS — Tailwind v4 + UI Thing base + full token/palette set
 server/
-  api/[...any].ts     # dev-only reverse proxy → https://sh.mindenit.org/api (404 in prod)
-  routes/             # server routes (currently empty)
+  routes/             # server routes (health, ready)
 ```
 
 ---
@@ -163,7 +162,7 @@ vue-sonner/nuxt           # toast notifications
 
 ### API client — `$nurekit`
 
-Injected by `app/plugins/nurekit.ts`. In dev it points at `window.location.origin/api` (proxied by `server/api/[...any].ts` to `https://sh.mindenit.org/api`); in prod it uses the SDK's default. Always access via `useNuxtApp().$nurekit` inside query factories.
+Injected by `app/plugins/nurekit.ts`. Uses the SDK default baseUrl (`https://sh.mindenit.org/api`) in both dev and prod — no server-side proxy. Always access via `useNuxtApp().$nurekit` inside query factories.
 
 ### Server state — TanStack Vue Query
 

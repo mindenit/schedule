@@ -6,6 +6,7 @@ interface Props {
 	events: Schedule[]
 	hasActiveSchedule: boolean
 	isLoading: boolean
+	isOfflineNoData: boolean
 	error: Error | null
 	scheduleName?: string
 }
@@ -52,13 +53,15 @@ watch(
 
 const showOverlay = computed(() => {
 	if (isHydrating.value) return true
-	return !props.hasActiveSchedule || props.isLoading || !!props.error
+	return !props.hasActiveSchedule || props.isLoading || props.isOfflineNoData || !!props.error
 })
 
 const overlayContent = computed(() => {
 	if (isHydrating.value) return "loading"
 	if (!props.hasActiveSchedule) return "no-schedule"
 	if (props.isLoading) return "loading"
+	// Offline and TanStack query never resolved (no cached data in IDB).
+	if (props.isOfflineNoData) return "offline-no-data"
 	if (props.error) return "error"
 	return null
 })
@@ -160,6 +163,15 @@ const overlayContent = computed(() => {
 				<TheLoader
 					v-else-if="overlayContent === 'loading'"
 					size="lg"
+					class="pointer-events-auto"
+				/>
+
+				<AppEmptyState
+					v-else-if="overlayContent === 'offline-no-data'"
+					variant="card"
+					icon="lucide:wifi-off"
+					title="Немає з'єднання"
+					description="Збережених даних для цього розкладу немає"
 					class="pointer-events-auto"
 				/>
 

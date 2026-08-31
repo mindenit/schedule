@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { skipHydrate } from "pinia"
-import { storeToRefs } from "pinia"
+import { skipHydrate, storeToRefs } from "pinia"
 import { useScheduleQuery } from "~/composables/useScheduleQuery"
 
 const calendarStore = useCalendarStore()
@@ -72,7 +71,20 @@ const {
 	data: scheduleData,
 	error,
 	isLoading,
+	// dataUpdatedAt — Unix ms of the last successful fetch; 0 when never fetched.
+	// Comes from TanStack Query directly; no extra work needed.
+	dataUpdatedAt,
+	// fetchStatus: "fetching" | "paused" | "idle"
+	// status: "pending" | "error" | "success"
+	// "paused" + "pending" = network offline, query never resolved yet.
+	fetchStatus,
+	status,
 } = useScheduleQuery(scheduleId, startTimestamp, endTimestamp)
+
+// Offline AND no cached data yet (TanStack v5 networkMode: "online" default:
+// the query pauses instead of erroring when connectivity is absent).
+// Must be a separate computed so Root.vue can pick the right overlay branch.
+const isOfflineNoData = computed(() => fetchStatus.value === "paused" && status.value === "pending")
 
 // Identify the active schedule by a stable string key — avoids a deep object watch.
 const scheduleKey = computed(() =>
@@ -94,9 +106,9 @@ watch(scheduleKey, (newKey, oldKey) => {
 // is already populated but the watcher never fires — allEvents stays [] and
 // no events render until the next query refetch or server restart.
 watch(
-	scheduleData,
-	(data) => {
-		if (data) calendarStore.setEvents(data)
+	[scheduleData, dataUpdatedAt],
+	([data, updatedAt]) => {
+		if (data) calendarStore.setEvents(data, updatedAt)
 	},
 	{ immediate: true }
 )
@@ -107,6 +119,7 @@ watch(
 		:events="filteredEvents"
 		:has-active-schedule="!!hasActiveSchedule"
 		:is-loading="isLoading"
+		:is-offline-no-data="isOfflineNoData"
 		:error="error"
 		:schedule-name="selectedSchedule?.name"
 	/>

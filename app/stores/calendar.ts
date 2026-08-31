@@ -12,6 +12,12 @@ export const useCalendarStore = defineStore("calendar", () => {
 	const { effectiveTimezone } = useTimezone()
 
 	const allEvents = ref<Schedule[]>([])
+	// Unix ms timestamp of the last successful schedule fetch.
+	// 0 = never fetched (or cache not yet restored from IDB).
+	// Fed from TanStack Query's dataUpdatedAt in pages/index.vue.
+	// Not persisted — IDB cache restoration restores the real dataUpdatedAt
+	// on every page load, so index.vue sets this immediately after hydration.
+	const lastUpdatedAt = ref(0)
 	// useState keeps the value stable across SSR → client hydration.
 	// ref(new Date()) would differ between server render time and client
 	// hydration time, causing a hydration mismatch on every page load.
@@ -140,8 +146,9 @@ export const useCalendarStore = defineStore("calendar", () => {
 		})
 	}
 
-	function setEvents(initialEvents: Schedule[]) {
+	function setEvents(initialEvents: Schedule[], updatedAt?: number) {
 		allEvents.value = initialEvents
+		if (updatedAt) lastUpdatedAt.value = updatedAt
 	}
 
 	function setView(newView: TCalendarView) {
@@ -160,6 +167,7 @@ export const useCalendarStore = defineStore("calendar", () => {
 
 	return {
 		allEvents,
+		lastUpdatedAt,
 		selectedDate,
 		view,
 		filteredEvents,

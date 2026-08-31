@@ -89,6 +89,10 @@ export default defineNuxtConfig({
 	},
 	icon: {
 		provider: "iconify",
+		// Move off the default /api/_nuxt_icon path so the service worker can
+		// distinguish Nuxt icon requests from the backend API at /api/* and apply
+		// different caching strategies to each.
+		localApiEndpoint: "/_icons",
 		serverBundle: {
 			collections: ["lucide"],
 		},
@@ -117,6 +121,10 @@ export default defineNuxtConfig({
 		"/blocked": { robots: false, sitemap: false },
 		"/maintenance": { robots: false, sitemap: false },
 		"/share/**": { robots: false, sitemap: false },
+		// Service worker must never be cached by a CDN or proxy — browsers already
+		// check the SW byte-for-byte on every page load, but a stale cached response
+		// would prevent the browser from seeing an updated worker.
+		"/sw.js": { headers: { "cache-control": "no-cache, no-store, must-revalidate" } },
 	},
 	robots: {
 		sitemap: "/sitemap.xml",
