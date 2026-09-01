@@ -1,6 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
-	layout: "without-navbar",
+	layout: "dash",
 })
 
 useHead({ title: "Dashboard" })
@@ -227,10 +227,22 @@ function isRemovedSpike(run: SyncRun): boolean {
 	if (run.totalEvents === 0) return false
 	return run.removedEvents / run.totalEvents > REMOVED_SPIKE_RATIO
 }
+
+const STEP_LABELS: Record<string, string> = {
+	a: "Аудиторії",
+	g: "Групи",
+	t: "Викладачі",
+}
+
+function stepTitle(name: string, step: StepResult): string {
+	const label = STEP_LABELS[name[0].toLowerCase()] ?? name
+	const status = step.ok ? "OK" : `Помилка: ${step.error ?? "невідома"}`
+	return `${label}: ${step.count} оброблено — ${status}`
+}
 </script>
 
 <template>
-	<div class="space-y-6 py-4">
+	<div class="min-w-0 space-y-6 py-4">
 		<!-- Header -->
 		<div class="flex items-center justify-between">
 			<h1 class="text-2xl font-semibold tracking-tight">Schedule Dashboard</h1>
@@ -253,7 +265,7 @@ function isRemovedSpike(run: SyncRun): boolean {
 		</div>
 
 		<!-- Summary cards -->
-		<div v-if="summary" class="grid grid-cols-2 gap-4 md:grid-cols-4">
+		<div v-if="summary" class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
 			<div class="space-y-1 rounded-lg border p-4">
 				<p class="text-muted-foreground text-xs">Статус</p>
 				<UiBadge :variant="statusVariant(summary.currentStatus)" class="capitalize">
@@ -289,19 +301,19 @@ function isRemovedSpike(run: SyncRun): boolean {
 			<div class="border-b px-4 py-3">
 				<h2 class="font-medium">Останні запуски</h2>
 			</div>
-			<UiTableTable>
+			<UiTableTable class="table-fixed">
 				<UiTableHeader>
 					<UiTableRow>
-						<UiTableHead>ID</UiTableHead>
-						<UiTableHead>Статус</UiTableHead>
-						<UiTableHead>Тригер</UiTableHead>
-						<UiTableHead>Початок</UiTableHead>
-						<UiTableHead>Тривалість</UiTableHead>
-						<UiTableHead>Групи (провал)</UiTableHead>
-						<UiTableHead>Подій всього</UiTableHead>
-						<UiTableHead>Видалено</UiTableHead>
-						<UiTableHead>Кроки</UiTableHead>
-						<UiTableHead />
+						<UiTableHead class="w-[13%]">ID</UiTableHead>
+						<UiTableHead class="w-[8%]">Статус</UiTableHead>
+						<UiTableHead class="w-[7%]">Тригер</UiTableHead>
+						<UiTableHead class="w-[14%]">Початок</UiTableHead>
+						<UiTableHead class="w-[8%]">Тривалість</UiTableHead>
+						<UiTableHead class="w-[10%]">Групи (провал)</UiTableHead>
+						<UiTableHead class="w-[9%]">Подій всього</UiTableHead>
+						<UiTableHead class="w-[7%]">Видалено</UiTableHead>
+						<UiTableHead class="w-[15%]">Кроки</UiTableHead>
+						<UiTableHead class="w-[9%]" />
 					</UiTableRow>
 				</UiTableHeader>
 				<UiTableBody>
@@ -311,7 +323,9 @@ function isRemovedSpike(run: SyncRun): boolean {
 						:key="run.id"
 						:class="selectedRunId === run.id ? 'bg-muted/50' : ''"
 					>
-						<UiTableCell class="font-mono text-xs">{{ run.id }}</UiTableCell>
+						<UiTableCell class="font-mono text-xs" :title="String(run.id)">
+							{{ run.id }}
+						</UiTableCell>
 						<UiTableCell>
 							<UiBadge :variant="statusVariant(run.status)" class="capitalize">
 								{{ run.status }}
@@ -346,14 +360,16 @@ function isRemovedSpike(run: SyncRun): boolean {
 							<span
 								v-for="(step, name) in run.steps"
 								:key="name"
+								:title="stepTitle(String(name), step)"
 								:class="
 									step.ok
 										? 'text-green-600 dark:text-green-400'
 										: 'text-destructive'
 								"
-								class="mr-2"
+								class="mr-2 cursor-help"
 							>
-								{{ name[0].toUpperCase() }}:{{ step.count }}{{ step.ok ? "" : "✗" }}
+								{{ String(name)[0].toUpperCase() }}:{{ step.count
+								}}{{ step.ok ? "" : "✗" }}
 							</span>
 						</UiTableCell>
 						<UiTableCell>
@@ -384,15 +400,15 @@ function isRemovedSpike(run: SyncRun): boolean {
 			<p v-if="loadingGroups" class="text-muted-foreground px-4 py-3 text-sm">
 				Завантаження…
 			</p>
-			<UiTableTable v-else>
+			<UiTableTable v-else class="table-fixed">
 				<UiTableHeader>
 					<UiTableRow>
-						<UiTableHead>Група ID</UiTableHead>
-						<UiTableHead>Статус</UiTableHead>
-						<UiTableHead>Подій</UiTableHead>
-						<UiTableHead>Δ</UiTableHead>
-						<UiTableHead>Час</UiTableHead>
-						<UiTableHead>Помилка</UiTableHead>
+						<UiTableHead class="w-[12%]">Група ID</UiTableHead>
+						<UiTableHead class="w-[10%]">Статус</UiTableHead>
+						<UiTableHead class="w-[8%]">Подій</UiTableHead>
+						<UiTableHead class="w-[8%]">Δ</UiTableHead>
+						<UiTableHead class="w-[18%]">Час</UiTableHead>
+						<UiTableHead class="w-[44%]">Помилка</UiTableHead>
 					</UiTableRow>
 				</UiTableHeader>
 				<UiTableBody>
@@ -417,7 +433,7 @@ function isRemovedSpike(run: SyncRun): boolean {
 							{{ deltaLabel(g.eventsCount, g.prevEventsCount) || "—" }}
 						</UiTableCell>
 						<UiTableCell class="text-xs">{{ fmt(g.finishedAt) }}</UiTableCell>
-						<UiTableCell class="text-destructive max-w-xs truncate text-xs">
+						<UiTableCell class="text-destructive truncate text-xs">
 							{{ g.error ?? "—" }}
 						</UiTableCell>
 					</UiTableRow>
@@ -435,13 +451,13 @@ function isRemovedSpike(run: SyncRun): boolean {
 					</span>
 				</h2>
 			</div>
-			<UiTableTable>
+			<UiTableTable class="table-fixed">
 				<UiTableHeader>
 					<UiTableRow>
-						<UiTableHead>Запуск ID</UiTableHead>
-						<UiTableHead>Група ID</UiTableHead>
-						<UiTableHead>Час</UiTableHead>
-						<UiTableHead>Помилка</UiTableHead>
+						<UiTableHead class="w-[18%]">Запуск ID</UiTableHead>
+						<UiTableHead class="w-[12%]">Група ID</UiTableHead>
+						<UiTableHead class="w-[20%]">Час</UiTableHead>
+						<UiTableHead class="w-[50%]">Помилка</UiTableHead>
 					</UiTableRow>
 				</UiTableHeader>
 				<UiTableBody>
@@ -449,7 +465,7 @@ function isRemovedSpike(run: SyncRun): boolean {
 						<UiTableCell class="font-mono text-xs">{{ f.runId }}</UiTableCell>
 						<UiTableCell class="font-mono text-xs">{{ f.groupId }}</UiTableCell>
 						<UiTableCell class="text-xs">{{ fmt(f.finishedAt) }}</UiTableCell>
-						<UiTableCell class="text-destructive max-w-md truncate text-xs">
+						<UiTableCell class="text-destructive truncate text-xs">
 							{{ f.error ?? "—" }}
 						</UiTableCell>
 					</UiTableRow>
@@ -462,12 +478,12 @@ function isRemovedSpike(run: SyncRun): boolean {
 			<div class="border-b px-4 py-3">
 				<h2 class="font-medium">Розмір таблиць БД</h2>
 			</div>
-			<UiTableTable>
+			<UiTableTable class="table-fixed">
 				<UiTableHeader>
 					<UiTableRow>
-						<UiTableHead>Таблиця</UiTableHead>
-						<UiTableHead>Рядків</UiTableHead>
-						<UiTableHead>Розмір</UiTableHead>
+						<UiTableHead class="w-[60%]">Таблиця</UiTableHead>
+						<UiTableHead class="w-[20%]">Рядків</UiTableHead>
+						<UiTableHead class="w-[20%]">Розмір</UiTableHead>
 					</UiTableRow>
 				</UiTableHeader>
 				<UiTableBody>
