@@ -80,7 +80,7 @@ async function fetchSummary() {
 async function fetchRuns() {
 	try {
 		const res = await $fetch<ApiResponse<SyncRun[]>>("/dash-api/runs?limit=30")
-		runs.value = res.data
+		runs.value = res.data ?? []
 	} catch (e) {
 		error.value = e instanceof Error ? e.message : String(e)
 	}
@@ -90,7 +90,7 @@ async function fetchGroups(runId: number) {
 	loadingGroups.value = true
 	try {
 		const res = await $fetch<ApiResponse<SyncRunGroup[]>>(`/dash-api/runs/${runId}/groups`)
-		selectedRunGroups.value = res.data
+		selectedRunGroups.value = res.data ?? []
 		selectedRunId.value = runId
 	} catch (e) {
 		error.value = e instanceof Error ? e.message : String(e)
