@@ -3,7 +3,8 @@ definePageMeta({
 	layout: "without-navbar",
 })
 
-useSeo({ title: "Dashboard", noindex: true })
+useHead({ title: "Dashboard" })
+useServerSeoMeta({ robots: "noindex, nofollow" })
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
