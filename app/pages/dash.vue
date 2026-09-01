@@ -301,21 +301,19 @@ function stepTitle(name: string, step: StepResult): string {
 			<div class="border-b px-4 py-3">
 				<h2 class="font-medium">Останні запуски</h2>
 			</div>
-			<UiTable class="table-fixed">
+			<UiTable class="min-w-[900px]">
 				<UiTableHeader>
 					<UiTableRow>
-						<UiTableHead class="w-[15%] md:w-[13%]">ID</UiTableHead>
-						<UiTableHead class="w-[12%] md:w-[8%]">Статус</UiTableHead>
-						<UiTableHead class="hidden md:table-cell md:w-[7%]">Тригер</UiTableHead>
-						<UiTableHead class="w-[22%] md:w-[14%]">Початок</UiTableHead>
-						<UiTableHead class="w-[13%] md:w-[8%]">Тривалість</UiTableHead>
-						<UiTableHead class="w-[18%] md:w-[10%]">Групи (провал)</UiTableHead>
-						<UiTableHead class="hidden md:table-cell md:w-[9%]"
-							>Подій всього</UiTableHead
-						>
-						<UiTableHead class="hidden md:table-cell md:w-[7%]">Видалено</UiTableHead>
-						<UiTableHead class="hidden md:table-cell md:w-[15%]">Кроки</UiTableHead>
-						<UiTableHead class="w-[20%] md:w-[9%]" />
+						<UiTableHead>ID</UiTableHead>
+						<UiTableHead>Статус</UiTableHead>
+						<UiTableHead>Тригер</UiTableHead>
+						<UiTableHead>Початок</UiTableHead>
+						<UiTableHead>Тривалість</UiTableHead>
+						<UiTableHead>Групи (провал)</UiTableHead>
+						<UiTableHead>Подій всього</UiTableHead>
+						<UiTableHead>Видалено</UiTableHead>
+						<UiTableHead>Кроки</UiTableHead>
+						<UiTableHead />
 					</UiTableRow>
 				</UiTableHeader>
 				<UiTableBody>
@@ -333,9 +331,7 @@ function stepTitle(name: string, step: StepResult): string {
 								{{ run.status }}
 							</UiBadge>
 						</UiTableCell>
-						<UiTableCell class="hidden text-xs md:table-cell">{{
-							run.trigger
-						}}</UiTableCell>
+						<UiTableCell class="text-xs">{{ run.trigger }}</UiTableCell>
 						<UiTableCell class="text-xs">{{ fmt(run.startedAt) }}</UiTableCell>
 						<UiTableCell class="font-mono text-xs">
 							{{ duration(run.startedAt, run.finishedAt) }}
@@ -346,10 +342,8 @@ function stepTitle(name: string, step: StepResult): string {
 								({{ run.failedGroups }} ✗)
 							</span>
 						</UiTableCell>
-						<UiTableCell class="hidden font-mono text-xs md:table-cell">{{
-							run.totalEvents
-						}}</UiTableCell>
-						<UiTableCell class="hidden text-xs md:table-cell">
+						<UiTableCell class="font-mono text-xs">{{ run.totalEvents }}</UiTableCell>
+						<UiTableCell class="text-xs">
 							<span
 								:class="isRemovedSpike(run) ? 'text-destructive font-semibold' : ''"
 							>
@@ -362,7 +356,7 @@ function stepTitle(name: string, step: StepResult): string {
 								</span>
 							</span>
 						</UiTableCell>
-						<UiTableCell class="hidden text-xs md:table-cell">
+						<UiTableCell class="text-xs">
 							<span
 								v-for="(step, name) in run.steps"
 								:key="name"
@@ -406,15 +400,15 @@ function stepTitle(name: string, step: StepResult): string {
 			<p v-if="loadingGroups" class="text-muted-foreground px-4 py-3 text-sm">
 				Завантаження…
 			</p>
-			<UiTable v-else class="table-fixed">
+			<UiTable v-else class="min-w-[600px]">
 				<UiTableHeader>
 					<UiTableRow>
-						<UiTableHead class="w-[12%]">Група ID</UiTableHead>
-						<UiTableHead class="w-[10%]">Статус</UiTableHead>
-						<UiTableHead class="w-[8%]">Подій</UiTableHead>
-						<UiTableHead class="w-[8%]">Δ</UiTableHead>
-						<UiTableHead class="w-[18%]">Час</UiTableHead>
-						<UiTableHead class="w-[44%]">Помилка</UiTableHead>
+						<UiTableHead>Група ID</UiTableHead>
+						<UiTableHead>Статус</UiTableHead>
+						<UiTableHead>Подій</UiTableHead>
+						<UiTableHead>Δ</UiTableHead>
+						<UiTableHead>Час</UiTableHead>
+						<UiTableHead>Помилка</UiTableHead>
 					</UiTableRow>
 				</UiTableHeader>
 				<UiTableBody>
@@ -439,7 +433,7 @@ function stepTitle(name: string, step: StepResult): string {
 							{{ deltaLabel(g.eventsCount, g.prevEventsCount) || "—" }}
 						</UiTableCell>
 						<UiTableCell class="text-xs">{{ fmt(g.finishedAt) }}</UiTableCell>
-						<UiTableCell class="text-destructive truncate text-xs">
+						<UiTableCell class="text-destructive max-w-xs truncate text-xs">
 							{{ g.error ?? "—" }}
 						</UiTableCell>
 					</UiTableRow>
@@ -457,13 +451,13 @@ function stepTitle(name: string, step: StepResult): string {
 					</span>
 				</h2>
 			</div>
-			<UiTable class="table-fixed">
+			<UiTable class="min-w-[600px]">
 				<UiTableHeader>
 					<UiTableRow>
-						<UiTableHead class="w-[18%]">Запуск ID</UiTableHead>
-						<UiTableHead class="w-[12%]">Група ID</UiTableHead>
-						<UiTableHead class="w-[20%]">Час</UiTableHead>
-						<UiTableHead class="w-[50%]">Помилка</UiTableHead>
+						<UiTableHead>Запуск ID</UiTableHead>
+						<UiTableHead>Група ID</UiTableHead>
+						<UiTableHead>Час</UiTableHead>
+						<UiTableHead>Помилка</UiTableHead>
 					</UiTableRow>
 				</UiTableHeader>
 				<UiTableBody>
@@ -471,7 +465,7 @@ function stepTitle(name: string, step: StepResult): string {
 						<UiTableCell class="font-mono text-xs">{{ f.runId }}</UiTableCell>
 						<UiTableCell class="font-mono text-xs">{{ f.groupId }}</UiTableCell>
 						<UiTableCell class="text-xs">{{ fmt(f.finishedAt) }}</UiTableCell>
-						<UiTableCell class="text-destructive truncate text-xs">
+						<UiTableCell class="text-destructive max-w-xs truncate text-xs">
 							{{ f.error ?? "—" }}
 						</UiTableCell>
 					</UiTableRow>
@@ -484,12 +478,12 @@ function stepTitle(name: string, step: StepResult): string {
 			<div class="border-b px-4 py-3">
 				<h2 class="font-medium">Розмір таблиць БД</h2>
 			</div>
-			<UiTable class="table-fixed">
+			<UiTable>
 				<UiTableHeader>
 					<UiTableRow>
-						<UiTableHead class="w-[60%]">Таблиця</UiTableHead>
-						<UiTableHead class="w-[20%]">Рядків</UiTableHead>
-						<UiTableHead class="w-[20%]">Розмір</UiTableHead>
+						<UiTableHead>Таблиця</UiTableHead>
+						<UiTableHead>Рядків</UiTableHead>
+						<UiTableHead>Розмір</UiTableHead>
 					</UiTableRow>
 				</UiTableHeader>
 				<UiTableBody>
