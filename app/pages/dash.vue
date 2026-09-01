@@ -29,6 +29,7 @@ interface SyncRun {
 	totalGroups: number
 	failedGroups: number
 	removedEvents: number
+	totalEvents: number
 	steps: SyncSteps
 }
 
@@ -37,8 +38,23 @@ interface SyncRunGroup {
 	groupId: number
 	status: "success" | "failed"
 	eventsCount: number
+	prevEventsCount: number | null
 	error: string | null
 	finishedAt: string
+}
+
+interface FailedGroupEntry {
+	runId: number
+	groupId: number
+	error: string | null
+	finishedAt: string
+}
+
+interface TableSizeEntry {
+	tableName: string
+	rowCount: number
+	sizePretty: string
+	sizeBytes: number
 }
 
 interface Summary {
@@ -61,9 +77,13 @@ interface ApiResponse<T> {
 
 const POLL_RUNNING = 5_000
 const POLL_IDLE = 60_000
+// Spike: flag removedEvents when it exceeds this fraction of total events
+const REMOVED_SPIKE_RATIO = 0.05
 
 const summary = ref<Summary | null>(null)
 const runs = ref<SyncRun[]>([])
+const failures = ref<FailedGroupEntry[]>([])
+const tableSizes = ref<TableSizeEntry[]>([])
 const selectedRunId = ref<number | null>(null)
 const selectedRunGroups = ref<SyncRunGroup[]>([])
 const loadingGroups = ref(false)
@@ -100,9 +120,26 @@ async function fetchGroups(runId: number) {
 	}
 }
 
+async function fetchFailures() {
+	try {
+		const res = await $fetch<ApiResponse<FailedGroupEntry[]>>("/dash-api/failures?limit=50")
+		failures.value = res.data ?? []
+	} catch (e) {
+		error.value = e instanceof Error ? e.message : String(e)
+	}
+}
+
+async function fetchTableSizes() {
+	try {
+		const res = await $fetch<ApiResponse<TableSizeEntry[]>>("/dash-api/table-sizes")
+		tableSizes.value = res.data ?? []
+	} catch (e) {
+		error.value = e instanceof Error ? e.message : String(e)
+	}
+}
+
 async function refresh() {
-	await Promise.all([fetchSummary(), fetchRuns()])
-	// refresh groups panel if a run is selected
+	await Promise.all([fetchSummary(), fetchRuns(), fetchFailures(), fetchTableSizes()])
 	if (selectedRunId.value !== null) {
 		await fetchGroups(selectedRunId.value)
 	}
@@ -170,6 +207,25 @@ function duration(start: string, end: string | null): string {
 	if (h > 0) return `${h}г ${m % 60}хв`
 	if (m > 0) return `${m}хв ${s % 60}с`
 	return `${s}с`
+}
+
+function deltaLabel(curr: number, prev: number | null): string {
+	if (prev === null) return ""
+	const diff = curr - prev
+	if (diff === 0) return ""
+	return diff > 0 ? `+${diff}` : String(diff)
+}
+
+function deltaClass(curr: number, prev: number | null): string {
+	if (prev === null) return ""
+	const diff = curr - prev
+	if (diff === 0) return ""
+	return diff > 0 ? "text-green-600 dark:text-green-400" : "text-destructive"
+}
+
+function isRemovedSpike(run: SyncRun): boolean {
+	if (run.totalEvents === 0) return false
+	return run.removedEvents / run.totalEvents > REMOVED_SPIKE_RATIO
 }
 </script>
 
@@ -242,13 +298,14 @@ function duration(start: string, end: string | null): string {
 						<UiTableHead>Початок</UiTableHead>
 						<UiTableHead>Тривалість</UiTableHead>
 						<UiTableHead>Групи (провал)</UiTableHead>
-						<UiTableHead>Видалено подій</UiTableHead>
+						<UiTableHead>Подій всього</UiTableHead>
+						<UiTableHead>Видалено</UiTableHead>
 						<UiTableHead>Кроки</UiTableHead>
 						<UiTableHead />
 					</UiTableRow>
 				</UiTableHeader>
 				<UiTableBody>
-					<UiTableEmpty v-if="!runs.length" :colspan="9">Немає даних</UiTableEmpty>
+					<UiTableEmpty v-if="!runs.length" :colspan="10">Немає даних</UiTableEmpty>
 					<UiTableRow
 						v-for="run in runs"
 						:key="run.id"
@@ -271,7 +328,20 @@ function duration(start: string, end: string | null): string {
 								({{ run.failedGroups }} ✗)
 							</span>
 						</UiTableCell>
-						<UiTableCell class="text-xs">{{ run.removedEvents }}</UiTableCell>
+						<UiTableCell class="font-mono text-xs">{{ run.totalEvents }}</UiTableCell>
+						<UiTableCell class="text-xs">
+							<span
+								:class="isRemovedSpike(run) ? 'text-destructive font-semibold' : ''"
+							>
+								{{ run.removedEvents }}
+								<span
+									v-if="isRemovedSpike(run)"
+									title="Spike: >5% of events removed"
+								>
+									⚠
+								</span>
+							</span>
+						</UiTableCell>
 						<UiTableCell class="text-xs">
 							<span
 								v-for="(step, name) in run.steps"
@@ -320,12 +390,13 @@ function duration(start: string, end: string | null): string {
 						<UiTableHead>Група ID</UiTableHead>
 						<UiTableHead>Статус</UiTableHead>
 						<UiTableHead>Подій</UiTableHead>
+						<UiTableHead>Δ</UiTableHead>
 						<UiTableHead>Час</UiTableHead>
 						<UiTableHead>Помилка</UiTableHead>
 					</UiTableRow>
 				</UiTableHeader>
 				<UiTableBody>
-					<UiTableEmpty v-if="!selectedRunGroups.length" :colspan="5">
+					<UiTableEmpty v-if="!selectedRunGroups.length" :colspan="6">
 						Немає даних
 					</UiTableEmpty>
 					<UiTableRow v-for="g in selectedRunGroups" :key="g.groupId">
@@ -338,11 +409,74 @@ function duration(start: string, end: string | null): string {
 								{{ g.status }}
 							</UiBadge>
 						</UiTableCell>
-						<UiTableCell class="text-xs">{{ g.eventsCount }}</UiTableCell>
+						<UiTableCell class="font-mono text-xs">{{ g.eventsCount }}</UiTableCell>
+						<UiTableCell
+							class="font-mono text-xs"
+							:class="deltaClass(g.eventsCount, g.prevEventsCount)"
+						>
+							{{ deltaLabel(g.eventsCount, g.prevEventsCount) || "—" }}
+						</UiTableCell>
 						<UiTableCell class="text-xs">{{ fmt(g.finishedAt) }}</UiTableCell>
 						<UiTableCell class="text-destructive max-w-xs truncate text-xs">
 							{{ g.error ?? "—" }}
 						</UiTableCell>
+					</UiTableRow>
+				</UiTableBody>
+			</UiTableTable>
+		</div>
+
+		<!-- Failures feed -->
+		<div v-if="failures.length" class="rounded-lg border">
+			<div class="border-b px-4 py-3">
+				<h2 class="font-medium">
+					Останні помилки груп
+					<span class="text-muted-foreground ml-1 text-sm font-normal">
+						(останні 50)
+					</span>
+				</h2>
+			</div>
+			<UiTableTable>
+				<UiTableHeader>
+					<UiTableRow>
+						<UiTableHead>Запуск ID</UiTableHead>
+						<UiTableHead>Група ID</UiTableHead>
+						<UiTableHead>Час</UiTableHead>
+						<UiTableHead>Помилка</UiTableHead>
+					</UiTableRow>
+				</UiTableHeader>
+				<UiTableBody>
+					<UiTableRow v-for="f in failures" :key="`${f.runId}-${f.groupId}`">
+						<UiTableCell class="font-mono text-xs">{{ f.runId }}</UiTableCell>
+						<UiTableCell class="font-mono text-xs">{{ f.groupId }}</UiTableCell>
+						<UiTableCell class="text-xs">{{ fmt(f.finishedAt) }}</UiTableCell>
+						<UiTableCell class="text-destructive max-w-md truncate text-xs">
+							{{ f.error ?? "—" }}
+						</UiTableCell>
+					</UiTableRow>
+				</UiTableBody>
+			</UiTableTable>
+		</div>
+
+		<!-- Table sizes -->
+		<div v-if="tableSizes.length" class="rounded-lg border">
+			<div class="border-b px-4 py-3">
+				<h2 class="font-medium">Розмір таблиць БД</h2>
+			</div>
+			<UiTableTable>
+				<UiTableHeader>
+					<UiTableRow>
+						<UiTableHead>Таблиця</UiTableHead>
+						<UiTableHead>Рядків</UiTableHead>
+						<UiTableHead>Розмір</UiTableHead>
+					</UiTableRow>
+				</UiTableHeader>
+				<UiTableBody>
+					<UiTableRow v-for="t in tableSizes" :key="t.tableName">
+						<UiTableCell class="font-mono text-xs">{{ t.tableName }}</UiTableCell>
+						<UiTableCell class="font-mono text-xs">
+							{{ t.rowCount.toLocaleString("uk-UA") }}
+						</UiTableCell>
+						<UiTableCell class="font-mono text-xs">{{ t.sizePretty }}</UiTableCell>
 					</UiTableRow>
 				</UiTableBody>
 			</UiTableTable>
