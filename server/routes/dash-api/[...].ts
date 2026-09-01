@@ -12,10 +12,13 @@
 export default defineEventHandler(async (event) => {
 	const config = useRuntimeConfig()
 	const base = (config.dashApiBaseUrl as string | undefined) || "http://localhost:8080"
+	const apiKey = (config.dashApiKey as string | undefined) || ""
 
 	// Strip /dash-api prefix, keep the rest (e.g. /summary, /runs, /runs/123/groups)
 	const path = event.path.replace(/^\/dash-api/, "") || "/"
 	const target = `${base.replace(/\/$/, "")}/api/dash${path}`
 
-	return proxyRequest(event, target)
+	return proxyRequest(event, target, {
+		headers: { "x-dash-key": apiKey },
+	})
 })
