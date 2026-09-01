@@ -304,16 +304,18 @@ function stepTitle(name: string, step: StepResult): string {
 			<UiTable class="table-fixed">
 				<UiTableHeader>
 					<UiTableRow>
-						<UiTableHead class="w-[13%]">ID</UiTableHead>
-						<UiTableHead class="w-[8%]">Статус</UiTableHead>
-						<UiTableHead class="w-[7%]">Тригер</UiTableHead>
-						<UiTableHead class="w-[14%]">Початок</UiTableHead>
-						<UiTableHead class="w-[8%]">Тривалість</UiTableHead>
-						<UiTableHead class="w-[10%]">Групи (провал)</UiTableHead>
-						<UiTableHead class="w-[9%]">Подій всього</UiTableHead>
-						<UiTableHead class="w-[7%]">Видалено</UiTableHead>
-						<UiTableHead class="w-[15%]">Кроки</UiTableHead>
-						<UiTableHead class="w-[9%]" />
+						<UiTableHead class="w-[15%] md:w-[13%]">ID</UiTableHead>
+						<UiTableHead class="w-[12%] md:w-[8%]">Статус</UiTableHead>
+						<UiTableHead class="hidden md:table-cell md:w-[7%]">Тригер</UiTableHead>
+						<UiTableHead class="w-[22%] md:w-[14%]">Початок</UiTableHead>
+						<UiTableHead class="w-[13%] md:w-[8%]">Тривалість</UiTableHead>
+						<UiTableHead class="w-[18%] md:w-[10%]">Групи (провал)</UiTableHead>
+						<UiTableHead class="hidden md:table-cell md:w-[9%]"
+							>Подій всього</UiTableHead
+						>
+						<UiTableHead class="hidden md:table-cell md:w-[7%]">Видалено</UiTableHead>
+						<UiTableHead class="hidden md:table-cell md:w-[15%]">Кроки</UiTableHead>
+						<UiTableHead class="w-[20%] md:w-[9%]" />
 					</UiTableRow>
 				</UiTableHeader>
 				<UiTableBody>
@@ -331,7 +333,9 @@ function stepTitle(name: string, step: StepResult): string {
 								{{ run.status }}
 							</UiBadge>
 						</UiTableCell>
-						<UiTableCell class="text-xs">{{ run.trigger }}</UiTableCell>
+						<UiTableCell class="hidden text-xs md:table-cell">{{
+							run.trigger
+						}}</UiTableCell>
 						<UiTableCell class="text-xs">{{ fmt(run.startedAt) }}</UiTableCell>
 						<UiTableCell class="font-mono text-xs">
 							{{ duration(run.startedAt, run.finishedAt) }}
@@ -342,8 +346,10 @@ function stepTitle(name: string, step: StepResult): string {
 								({{ run.failedGroups }} ✗)
 							</span>
 						</UiTableCell>
-						<UiTableCell class="font-mono text-xs">{{ run.totalEvents }}</UiTableCell>
-						<UiTableCell class="text-xs">
+						<UiTableCell class="hidden font-mono text-xs md:table-cell">{{
+							run.totalEvents
+						}}</UiTableCell>
+						<UiTableCell class="hidden text-xs md:table-cell">
 							<span
 								:class="isRemovedSpike(run) ? 'text-destructive font-semibold' : ''"
 							>
@@ -356,7 +362,7 @@ function stepTitle(name: string, step: StepResult): string {
 								</span>
 							</span>
 						</UiTableCell>
-						<UiTableCell class="text-xs">
+						<UiTableCell class="hidden text-xs md:table-cell">
 							<span
 								v-for="(step, name) in run.steps"
 								:key="name"
