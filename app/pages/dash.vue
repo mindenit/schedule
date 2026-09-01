@@ -234,19 +234,19 @@ function duration(start: string, end: string | null): string {
 				<h2 class="font-medium">Останні запуски</h2>
 			</div>
 			<UiTableTable>
-				<UiTableHead>
+				<UiTableHeader>
 					<UiTableRow>
-						<UiTableHeader>ID</UiTableHeader>
-						<UiTableHeader>Статус</UiTableHeader>
-						<UiTableHeader>Тригер</UiTableHeader>
-						<UiTableHeader>Початок</UiTableHeader>
-						<UiTableHeader>Тривалість</UiTableHeader>
-						<UiTableHeader>Групи (провал)</UiTableHeader>
-						<UiTableHeader>Видалено подій</UiTableHeader>
-						<UiTableHeader>Кроки</UiTableHeader>
-						<UiTableHeader />
+						<UiTableHead>ID</UiTableHead>
+						<UiTableHead>Статус</UiTableHead>
+						<UiTableHead>Тригер</UiTableHead>
+						<UiTableHead>Початок</UiTableHead>
+						<UiTableHead>Тривалість</UiTableHead>
+						<UiTableHead>Групи (провал)</UiTableHead>
+						<UiTableHead>Видалено подій</UiTableHead>
+						<UiTableHead>Кроки</UiTableHead>
+						<UiTableHead />
 					</UiTableRow>
-				</UiTableHead>
+				</UiTableHeader>
 				<UiTableBody>
 					<UiTableEmpty v-if="!runs.length" :colspan="9">Немає даних</UiTableEmpty>
 					<UiTableRow
@@ -315,15 +315,15 @@ function duration(start: string, end: string | null): string {
 				Завантаження…
 			</p>
 			<UiTableTable v-else>
-				<UiTableHead>
+				<UiTableHeader>
 					<UiTableRow>
-						<UiTableHeader>Група ID</UiTableHeader>
-						<UiTableHeader>Статус</UiTableHeader>
-						<UiTableHeader>Подій</UiTableHeader>
-						<UiTableHeader>Час</UiTableHeader>
-						<UiTableHeader>Помилка</UiTableHeader>
+						<UiTableHead>Група ID</UiTableHead>
+						<UiTableHead>Статус</UiTableHead>
+						<UiTableHead>Подій</UiTableHead>
+						<UiTableHead>Час</UiTableHead>
+						<UiTableHead>Помилка</UiTableHead>
 					</UiTableRow>
-				</UiTableHead>
+				</UiTableHeader>
 				<UiTableBody>
 					<UiTableEmpty v-if="!selectedRunGroups.length" :colspan="5">
 						Немає даних
