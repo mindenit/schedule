@@ -301,7 +301,7 @@ function stepTitle(name: string, step: StepResult): string {
 			<div class="border-b px-4 py-3">
 				<h2 class="font-medium">Останні запуски</h2>
 			</div>
-			<UiTableTable class="table-fixed">
+			<UiTable class="table-fixed">
 				<UiTableHeader>
 					<UiTableRow>
 						<UiTableHead class="w-[13%]">ID</UiTableHead>
@@ -383,7 +383,7 @@ function stepTitle(name: string, step: StepResult): string {
 						</UiTableCell>
 					</UiTableRow>
 				</UiTableBody>
-			</UiTableTable>
+			</UiTable>
 		</div>
 
 		<!-- Group results panel -->
@@ -400,7 +400,7 @@ function stepTitle(name: string, step: StepResult): string {
 			<p v-if="loadingGroups" class="text-muted-foreground px-4 py-3 text-sm">
 				Завантаження…
 			</p>
-			<UiTableTable v-else class="table-fixed">
+			<UiTable v-else class="table-fixed">
 				<UiTableHeader>
 					<UiTableRow>
 						<UiTableHead class="w-[12%]">Група ID</UiTableHead>
@@ -438,7 +438,7 @@ function stepTitle(name: string, step: StepResult): string {
 						</UiTableCell>
 					</UiTableRow>
 				</UiTableBody>
-			</UiTableTable>
+			</UiTable>
 		</div>
 
 		<!-- Failures feed -->
@@ -451,7 +451,7 @@ function stepTitle(name: string, step: StepResult): string {
 					</span>
 				</h2>
 			</div>
-			<UiTableTable class="table-fixed">
+			<UiTable class="table-fixed">
 				<UiTableHeader>
 					<UiTableRow>
 						<UiTableHead class="w-[18%]">Запуск ID</UiTableHead>
@@ -470,7 +470,7 @@ function stepTitle(name: string, step: StepResult): string {
 						</UiTableCell>
 					</UiTableRow>
 				</UiTableBody>
-			</UiTableTable>
+			</UiTable>
 		</div>
 
 		<!-- Table sizes -->
@@ -478,7 +478,7 @@ function stepTitle(name: string, step: StepResult): string {
 			<div class="border-b px-4 py-3">
 				<h2 class="font-medium">Розмір таблиць БД</h2>
 			</div>
-			<UiTableTable class="table-fixed">
+			<UiTable class="table-fixed">
 				<UiTableHeader>
 					<UiTableRow>
 						<UiTableHead class="w-[60%]">Таблиця</UiTableHead>
@@ -495,7 +495,7 @@ function stepTitle(name: string, step: StepResult): string {
 						<UiTableCell class="font-mono text-xs">{{ t.sizePretty }}</UiTableCell>
 					</UiTableRow>
 				</UiTableBody>
-			</UiTableTable>
+			</UiTable>
 		</div>
 	</div>
 </template>
