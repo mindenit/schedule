@@ -35,6 +35,16 @@ export default defineNuxtConfig({
 		],
 	},
 	runtimeConfig: {
+		// Backend URL for the dashboard proxy — server-side only, never exposed to client.
+		// Override via NUXT_DASH_API_BASE_URL env var.
+		dashApiBaseUrl: "http://localhost:8080",
+		// Shared secret forwarded to the backend as x-dash-key.
+		// Override via NUXT_DASH_API_KEY env var.
+		dashApiKey: "change_me_to_a_strong_random_secret",
+		// HTTP Basic Auth for the /dash page — browser prompt.
+		// Override via NUXT_DASH_USER / NUXT_DASH_PASSWORD env vars.
+		dashUser: "admin",
+		dashPassword: "change_me",
 		public: {
 			maintenance: false,
 			// Bumped on every build — used to bust the IndexedDB query cache on deploy
@@ -131,6 +141,10 @@ export default defineNuxtConfig({
 		// check the SW byte-for-byte on every page load, but a stale cached response
 		// would prevent the browser from seeing an updated worker.
 		"/sw.js": { headers: { "cache-control": "no-cache, no-store, must-revalidate" } },
+		// Dashboard — internal ops page, no robots, no SSR, no caching.
+		"/dash": { robots: false, sitemap: false, ssr: false },
+		// Proxy route for dashboard API — same auth boundary as /dash.
+		"/dash-api/**": { robots: false },
 	},
 	robots: {
 		sitemap: "/sitemap.xml",
