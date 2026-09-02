@@ -1,501 +1,182 @@
 <script setup lang="ts">
-definePageMeta({
-	layout: "dash",
-})
+import { useQuery, useQueryClient } from "@tanstack/vue-query"
+import {
+	dashSummaryOptions,
+	dashRunsOptions,
+	dashFailuresOptions,
+	dashTableSizesOptions,
+} from "~/queries/dash"
+import { durationMs } from "~/composables/useDash"
 
+definePageMeta({ layout: "dash" })
 useHead({ title: "Dashboard" })
 useServerSeoMeta({ robots: "noindex, nofollow" })
 
-// ── Types ────────────────────────────────────────────────────────────────────
+// ── Queries ───────────────────────────────────────────────────────────────────
 
-interface StepResult {
-	ok: boolean
-	count: number
-	error?: string
-}
+const isRunning = ref(false)
 
-interface SyncSteps {
-	auditoriums: StepResult
-	groups: StepResult
-	teachers: StepResult
-}
+const {
+	data: summary,
+	isPending: summaryPending,
+	isFetching: summaryFetching,
+} = useQuery(dashSummaryOptions(isRunning))
 
-interface SyncRun {
-	id: number
-	startedAt: string
-	finishedAt: string | null
-	status: "running" | "success" | "partial" | "failed"
-	trigger: "cron" | "bootstrap"
-	totalGroups: number
-	failedGroups: number
-	removedEvents: number
-	totalEvents: number
-	steps: SyncSteps
-}
+// Keep isRunning in sync so polling adapts
+watchEffect(() => {
+	isRunning.value = summary.value?.isRunning ?? false
+})
 
-interface SyncRunGroup {
-	runId: number
-	groupId: number
-	status: "success" | "failed"
-	eventsCount: number
-	prevEventsCount: number | null
-	error: string | null
-	finishedAt: string
-}
+const { data: runs, isPending: runsPending } = useQuery(dashRunsOptions(30))
+const { data: failures, isPending: failuresPending } = useQuery(dashFailuresOptions(50))
+const { data: tableSizes, isPending: tableSizesPending } = useQuery(dashTableSizesOptions())
 
-interface FailedGroupEntry {
-	runId: number
-	groupId: number
-	error: string | null
-	finishedAt: string
-}
+// ── Refresh ───────────────────────────────────────────────────────────────────
 
-interface TableSizeEntry {
-	tableName: string
-	rowCount: number
-	sizePretty: string
-	sizeBytes: number
-}
-
-interface Summary {
-	currentStatus: "running" | "success" | "partial" | "failed" | "unknown"
-	isRunning: boolean
-	lastRun: SyncRun | null
-	lastSuccessfulRun: SyncRun | null
-	nextCronAt: string | null
-	totalRuns: number
-	progress: { current: number; total: number } | null
-}
-
-interface ApiResponse<T> {
-	success: boolean
-	data: T
-	error: null | { code: string; message: string }
-}
-
-// ── Fetching ─────────────────────────────────────────────────────────────────
-
-const POLL_RUNNING = 5_000
-const POLL_IDLE = 60_000
-// Spike: flag removedEvents when it exceeds this fraction of total events
-const REMOVED_SPIKE_RATIO = 0.05
-
-const summary = ref<Summary | null>(null)
-const runs = ref<SyncRun[]>([])
-const failures = ref<FailedGroupEntry[]>([])
-const tableSizes = ref<TableSizeEntry[]>([])
-const selectedRunId = ref<number | null>(null)
-const selectedRunGroups = ref<SyncRunGroup[]>([])
-const loadingGroups = ref(false)
-const error = ref<string | null>(null)
-
-async function fetchSummary() {
-	try {
-		const res = await $fetch<ApiResponse<Summary>>("/dash-api/summary")
-		summary.value = res.data
-	} catch (e) {
-		error.value = e instanceof Error ? e.message : String(e)
-	}
-}
-
-async function fetchRuns() {
-	try {
-		const res = await $fetch<ApiResponse<SyncRun[]>>("/dash-api/runs?limit=30")
-		runs.value = res.data ?? []
-	} catch (e) {
-		error.value = e instanceof Error ? e.message : String(e)
-	}
-}
-
-async function fetchGroups(runId: number) {
-	loadingGroups.value = true
-	try {
-		const res = await $fetch<ApiResponse<SyncRunGroup[]>>(`/dash-api/runs/${runId}/groups`)
-		selectedRunGroups.value = res.data ?? []
-		selectedRunId.value = runId
-	} catch (e) {
-		error.value = e instanceof Error ? e.message : String(e)
-	} finally {
-		loadingGroups.value = false
-	}
-}
-
-async function fetchFailures() {
-	try {
-		const res = await $fetch<ApiResponse<FailedGroupEntry[]>>("/dash-api/failures?limit=50")
-		failures.value = res.data ?? []
-	} catch (e) {
-		error.value = e instanceof Error ? e.message : String(e)
-	}
-}
-
-async function fetchTableSizes() {
-	try {
-		const res = await $fetch<ApiResponse<TableSizeEntry[]>>("/dash-api/table-sizes")
-		tableSizes.value = res.data ?? []
-	} catch (e) {
-		error.value = e instanceof Error ? e.message : String(e)
-	}
-}
+const queryClient = useQueryClient()
 
 async function refresh() {
-	await Promise.all([fetchSummary(), fetchRuns(), fetchFailures(), fetchTableSizes()])
-	if (selectedRunId.value !== null) {
-		await fetchGroups(selectedRunId.value)
-	}
+	await queryClient.invalidateQueries({ queryKey: ["dash"] })
 }
 
-// ── Polling ───────────────────────────────────────────────────────────────────
+// ── Runs list ─────────────────────────────────────────────────────────────────
 
-let pollTimer: ReturnType<typeof setTimeout> | null = null
+// Accordion: which run id is expanded (single)
+const openRunId = ref<number | null>(null)
 
-function schedulePoll() {
-	if (pollTimer) clearTimeout(pollTimer)
-	const interval = summary.value?.isRunning ? POLL_RUNNING : POLL_IDLE
-	pollTimer = setTimeout(async () => {
-		await refresh()
-		schedulePoll()
-	}, interval)
+function toggleRun(id: number) {
+	openRunId.value = openRunId.value === id ? null : id
 }
 
-onMounted(async () => {
-	await refresh()
-	schedulePoll()
+// Sparkbar: max duration across loaded runs
+const maxDurationMs = computed(() => {
+	const list = runs.value ?? []
+	return Math.max(1, ...list.map((r) => durationMs(r.startedAt, r.finishedAt)))
 })
 
-onUnmounted(() => {
-	if (pollTimer) clearTimeout(pollTimer)
+// Status filter
+const statusFilter = ref<string>("all")
+const filteredRuns = computed(() => {
+	const list = runs.value ?? []
+	if (statusFilter.value === "all") return list
+	return list.filter((r) => r.status === statusFilter.value)
 })
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
-function statusVariant(
-	status: SyncRun["status"] | Summary["currentStatus"]
-): "success" | "warning" | "destructive" | "secondary" | "info" {
-	switch (status) {
-		case "success":
-			return "success"
-		case "partial":
-			return "warning"
-		case "failed":
-			return "destructive"
-		case "running":
-			return "info"
-		default:
-			return "secondary"
-	}
-}
-
-function fmt(iso: string | null | undefined): string {
-	if (!iso) return "—"
-	return new Date(iso).toLocaleString("uk-UA", {
-		day: "2-digit",
-		month: "2-digit",
-		year: "numeric",
-		hour: "2-digit",
-		minute: "2-digit",
-		second: "2-digit",
-	})
-}
-
-function duration(start: string, end: string | null): string {
-	if (!end) return "—"
-	const ms = new Date(end).getTime() - new Date(start).getTime()
-	const s = Math.floor(ms / 1000)
-	const m = Math.floor(s / 60)
-	const h = Math.floor(m / 60)
-	if (h > 0) return `${h}г ${m % 60}хв`
-	if (m > 0) return `${m}хв ${s % 60}с`
-	return `${s}с`
-}
-
-function deltaLabel(curr: number, prev: number | null): string {
-	if (prev === null) return ""
-	const diff = curr - prev
-	if (diff === 0) return ""
-	return diff > 0 ? `+${diff}` : String(diff)
-}
-
-function deltaClass(curr: number, prev: number | null): string {
-	if (prev === null) return ""
-	const diff = curr - prev
-	if (diff === 0) return ""
-	return diff > 0 ? "text-green-600 dark:text-green-400" : "text-destructive"
-}
-
-function isRemovedSpike(run: SyncRun): boolean {
-	if (run.totalEvents === 0) return false
-	return run.removedEvents / run.totalEvents > REMOVED_SPIKE_RATIO
-}
-
-const STEP_LABELS: Record<string, string> = {
-	a: "Аудиторії",
-	g: "Групи",
-	t: "Викладачі",
-}
-
-function stepTitle(name: string, step: StepResult): string {
-	const label = STEP_LABELS[name[0].toLowerCase()] ?? name
-	const status = step.ok ? "OK" : `Помилка: ${step.error ?? "невідома"}`
-	return `${label}: ${step.count} оброблено — ${status}`
-}
+// Failure count badge
+const failureCount = computed(() => failures.value?.length ?? 0)
 </script>
 
 <template>
-	<div class="min-w-0 space-y-6 py-4">
-		<!-- Header -->
-		<div class="flex items-center justify-between">
-			<h1 class="text-2xl font-semibold tracking-tight">Schedule Dashboard</h1>
-			<button
-				class="text-muted-foreground hover:text-foreground text-sm underline-offset-4
-					hover:underline"
-				@click="refresh"
-			>
-				Оновити
-			</button>
-		</div>
+	<div class="min-w-0 space-y-4 py-4">
+		<!-- Hero -->
+		<DashHero
+			:summary="summary"
+			:is-pending="summaryPending"
+			:is-fetching="summaryFetching"
+			:on-refresh="refresh"
+		/>
 
-		<!-- Error banner -->
-		<div
-			v-if="error"
-			class="rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700
-				dark:border-red-700 dark:bg-red-950 dark:text-red-400"
-		>
-			{{ error }}
-		</div>
+		<!-- Metrics strip -->
+		<DashMetrics
+			:summary="summary"
+			:runs="runs ?? []"
+			:failures="failures ?? []"
+			:is-pending="summaryPending || runsPending"
+		/>
 
-		<!-- Summary cards -->
-		<div v-if="summary" class="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
-			<div class="space-y-1 rounded-lg border p-4">
-				<p class="text-muted-foreground text-xs">Статус</p>
-				<UiBadge :variant="statusVariant(summary.currentStatus)" class="capitalize">
-					{{ summary.currentStatus }}
-				</UiBadge>
-			</div>
-
-			<div class="space-y-1 rounded-lg border p-4">
-				<p class="text-muted-foreground text-xs">Прогрес</p>
-				<p class="font-mono text-sm font-medium">
-					<template v-if="summary.isRunning && summary.progress">
-						{{ summary.progress.current }} / {{ summary.progress.total }} груп
-					</template>
-					<template v-else>—</template>
-				</p>
-			</div>
-
-			<div class="space-y-1 rounded-lg border p-4">
-				<p class="text-muted-foreground text-xs">Останній успіх</p>
-				<p class="font-mono text-sm">
-					{{ fmt(summary.lastSuccessfulRun?.finishedAt) }}
-				</p>
-			</div>
-
-			<div class="space-y-1 rounded-lg border p-4">
-				<p class="text-muted-foreground text-xs">Наступний запуск (cron)</p>
-				<p class="font-mono text-sm">{{ fmt(summary.nextCronAt) }}</p>
-			</div>
-		</div>
-
-		<!-- Runs table -->
-		<div class="rounded-lg border">
-			<div class="border-b px-4 py-3">
-				<h2 class="font-medium">Останні запуски</h2>
-			</div>
-			<UiTable class="min-w-[900px]">
-				<UiTableHeader>
-					<UiTableRow>
-						<UiTableHead>ID</UiTableHead>
-						<UiTableHead>Статус</UiTableHead>
-						<UiTableHead>Тригер</UiTableHead>
-						<UiTableHead>Початок</UiTableHead>
-						<UiTableHead>Тривалість</UiTableHead>
-						<UiTableHead>Групи (провал)</UiTableHead>
-						<UiTableHead>Подій всього</UiTableHead>
-						<UiTableHead>Видалено</UiTableHead>
-						<UiTableHead>Кроки</UiTableHead>
-						<UiTableHead />
-					</UiTableRow>
-				</UiTableHeader>
-				<UiTableBody>
-					<UiTableEmpty v-if="!runs.length" :colspan="10">Немає даних</UiTableEmpty>
-					<UiTableRow
-						v-for="run in runs"
-						:key="run.id"
-						:class="selectedRunId === run.id ? 'bg-muted/50' : ''"
+		<!-- Tabs -->
+		<UiTabs default-value="runs">
+			<UiTabsList class="w-full sm:w-auto">
+				<UiTabsTrigger value="runs">Прогони</UiTabsTrigger>
+				<UiTabsTrigger value="failures" class="gap-1.5">
+					Провали
+					<UiBadge
+						v-if="failureCount"
+						variant="destructive"
+						class="h-4 min-w-4 px-1.5 py-0 text-[10px]"
 					>
-						<UiTableCell class="font-mono text-xs" :title="String(run.id)">
-							{{ run.id }}
-						</UiTableCell>
-						<UiTableCell>
-							<UiBadge :variant="statusVariant(run.status)" class="capitalize">
-								{{ run.status }}
-							</UiBadge>
-						</UiTableCell>
-						<UiTableCell class="text-xs">{{ run.trigger }}</UiTableCell>
-						<UiTableCell class="text-xs">{{ fmt(run.startedAt) }}</UiTableCell>
-						<UiTableCell class="font-mono text-xs">
-							{{ duration(run.startedAt, run.finishedAt) }}
-						</UiTableCell>
-						<UiTableCell class="text-xs">
-							{{ run.totalGroups }}
-							<span v-if="run.failedGroups" class="text-destructive ml-1">
-								({{ run.failedGroups }} ✗)
-							</span>
-						</UiTableCell>
-						<UiTableCell class="font-mono text-xs">{{ run.totalEvents }}</UiTableCell>
-						<UiTableCell class="text-xs">
-							<span
-								:class="isRemovedSpike(run) ? 'text-destructive font-semibold' : ''"
-							>
-								{{ run.removedEvents }}
-								<span
-									v-if="isRemovedSpike(run)"
-									title="Spike: >5% of events removed"
-								>
-									⚠
-								</span>
-							</span>
-						</UiTableCell>
-						<UiTableCell class="text-xs">
-							<span
-								v-for="(step, name) in run.steps"
-								:key="name"
-								:title="stepTitle(String(name), step)"
-								:class="
-									step.ok
-										? 'text-green-600 dark:text-green-400'
-										: 'text-destructive'
-								"
-								class="mr-2 cursor-help"
-							>
-								{{ String(name)[0].toUpperCase() }}:{{ step.count
-								}}{{ step.ok ? "" : "✗" }}
-							</span>
-						</UiTableCell>
-						<UiTableCell>
-							<button
-								class="text-muted-foreground hover:text-foreground text-xs
-									underline-offset-2 hover:underline"
-								@click="fetchGroups(run.id)"
-							>
-								Групи
-							</button>
-						</UiTableCell>
-					</UiTableRow>
-				</UiTableBody>
-			</UiTable>
-		</div>
+						{{ failureCount }}
+					</UiBadge>
+				</UiTabsTrigger>
+				<UiTabsTrigger value="db">База даних</UiTabsTrigger>
+			</UiTabsList>
 
-		<!-- Group results panel -->
-		<div v-if="selectedRunId !== null" class="rounded-lg border">
-			<div class="flex items-center justify-between border-b px-4 py-3">
-				<h2 class="font-medium">Групи — запуск {{ selectedRunId }}</h2>
-				<button
-					class="text-muted-foreground hover:text-foreground text-xs"
-					@click="selectedRunId = null"
-				>
-					✕
-				</button>
-			</div>
-			<p v-if="loadingGroups" class="text-muted-foreground px-4 py-3 text-sm">
-				Завантаження…
-			</p>
-			<UiTable v-else class="min-w-[600px]">
-				<UiTableHeader>
-					<UiTableRow>
-						<UiTableHead>Група ID</UiTableHead>
-						<UiTableHead>Статус</UiTableHead>
-						<UiTableHead>Подій</UiTableHead>
-						<UiTableHead>Δ</UiTableHead>
-						<UiTableHead>Час</UiTableHead>
-						<UiTableHead>Помилка</UiTableHead>
-					</UiTableRow>
-				</UiTableHeader>
-				<UiTableBody>
-					<UiTableEmpty v-if="!selectedRunGroups.length" :colspan="6">
-						Немає даних
-					</UiTableEmpty>
-					<UiTableRow v-for="g in selectedRunGroups" :key="g.groupId">
-						<UiTableCell class="font-mono text-xs">{{ g.groupId }}</UiTableCell>
-						<UiTableCell>
-							<UiBadge
-								:variant="g.status === 'success' ? 'success' : 'destructive'"
-								class="capitalize"
-							>
-								{{ g.status }}
-							</UiBadge>
-						</UiTableCell>
-						<UiTableCell class="font-mono text-xs">{{ g.eventsCount }}</UiTableCell>
-						<UiTableCell
-							class="font-mono text-xs"
-							:class="deltaClass(g.eventsCount, g.prevEventsCount)"
-						>
-							{{ deltaLabel(g.eventsCount, g.prevEventsCount) || "—" }}
-						</UiTableCell>
-						<UiTableCell class="text-xs">{{ fmt(g.finishedAt) }}</UiTableCell>
-						<UiTableCell class="text-destructive max-w-xs truncate text-xs">
-							{{ g.error ?? "—" }}
-						</UiTableCell>
-					</UiTableRow>
-				</UiTableBody>
-			</UiTable>
-		</div>
+			<!-- Runs tab -->
+			<UiTabsContent value="runs">
+				<UiCard class="gap-0 overflow-hidden py-0">
+					<!-- Filter bar -->
+					<div class="flex items-center gap-3 border-b px-4 py-3">
+						<p class="text-muted-foreground shrink-0 text-xs font-medium">Статус:</p>
+						<UiSelect v-model="statusFilter">
+							<UiSelectTrigger class="h-8 w-40 text-xs">
+								<UiSelectValue />
+							</UiSelectTrigger>
+							<UiSelectContent>
+								<UiSelectItem value="all">Всі</UiSelectItem>
+								<UiSelectItem value="success">Успіх</UiSelectItem>
+								<UiSelectItem value="partial">Частковий</UiSelectItem>
+								<UiSelectItem value="failed">Помилка</UiSelectItem>
+								<UiSelectItem value="running">Виконується</UiSelectItem>
+							</UiSelectContent>
+						</UiSelect>
+					</div>
 
-		<!-- Failures feed -->
-		<div v-if="failures.length" class="rounded-lg border">
-			<div class="border-b px-4 py-3">
-				<h2 class="font-medium">
-					Останні помилки груп
-					<span class="text-muted-foreground ml-1 text-sm font-normal">
-						(останні 50)
-					</span>
-				</h2>
-			</div>
-			<UiTable class="min-w-[600px]">
-				<UiTableHeader>
-					<UiTableRow>
-						<UiTableHead>Запуск ID</UiTableHead>
-						<UiTableHead>Група ID</UiTableHead>
-						<UiTableHead>Час</UiTableHead>
-						<UiTableHead>Помилка</UiTableHead>
-					</UiTableRow>
-				</UiTableHeader>
-				<UiTableBody>
-					<UiTableRow v-for="f in failures" :key="`${f.runId}-${f.groupId}`">
-						<UiTableCell class="font-mono text-xs">{{ f.runId }}</UiTableCell>
-						<UiTableCell class="font-mono text-xs">{{ f.groupId }}</UiTableCell>
-						<UiTableCell class="text-xs">{{ fmt(f.finishedAt) }}</UiTableCell>
-						<UiTableCell class="text-destructive max-w-xs truncate text-xs">
-							{{ f.error ?? "—" }}
-						</UiTableCell>
-					</UiTableRow>
-				</UiTableBody>
-			</UiTable>
-		</div>
+					<!-- Run list -->
+					<template v-if="runsPending">
+						<div class="divide-y">
+							<div v-for="i in 8" :key="i" class="flex items-center gap-3 px-4 py-3">
+								<UiSkeleton class="size-4 rounded-full" />
+								<UiSkeleton class="h-3 w-12 rounded" />
+								<UiSkeleton class="hidden h-2 w-20 rounded-full sm:block" />
+								<UiSkeleton class="hidden h-3 w-16 rounded sm:block" />
+							</div>
+						</div>
+					</template>
 
-		<!-- Table sizes -->
-		<div v-if="tableSizes.length" class="rounded-lg border">
-			<div class="border-b px-4 py-3">
-				<h2 class="font-medium">Розмір таблиць БД</h2>
-			</div>
-			<UiTable>
-				<UiTableHeader>
-					<UiTableRow>
-						<UiTableHead>Таблиця</UiTableHead>
-						<UiTableHead>Рядків</UiTableHead>
-						<UiTableHead>Розмір</UiTableHead>
-					</UiTableRow>
-				</UiTableHeader>
-				<UiTableBody>
-					<UiTableRow v-for="t in tableSizes" :key="t.tableName">
-						<UiTableCell class="font-mono text-xs">{{ t.tableName }}</UiTableCell>
-						<UiTableCell class="font-mono text-xs">
-							{{ t.rowCount.toLocaleString("uk-UA") }}
-						</UiTableCell>
-						<UiTableCell class="font-mono text-xs">{{ t.sizePretty }}</UiTableCell>
-					</UiTableRow>
-				</UiTableBody>
-			</UiTable>
-		</div>
+					<template v-else-if="!filteredRuns.length">
+						<div class="py-10">
+							<AppEmptyState
+								icon="ph:list-dashes"
+								title="Немає прогонів"
+								description="Жодного прогону не відповідає фільтру."
+								variant="inline"
+							/>
+						</div>
+					</template>
+
+					<template v-else>
+						<DashRunItem
+							v-for="run in filteredRuns"
+							:key="run.id"
+							:run="run"
+							:max-duration-ms="maxDurationMs"
+							:open="openRunId === run.id"
+							@toggle="toggleRun(run.id)"
+						/>
+					</template>
+				</UiCard>
+			</UiTabsContent>
+
+			<!-- Failures tab -->
+			<UiTabsContent value="failures">
+				<UiCard class="gap-0 py-4">
+					<UiCardContent class="px-4 pb-0">
+						<DashFailures :failures="failures ?? []" :is-pending="failuresPending" />
+					</UiCardContent>
+				</UiCard>
+			</UiTabsContent>
+
+			<!-- DB tab -->
+			<UiTabsContent value="db">
+				<UiCard class="gap-0 py-4">
+					<UiCardContent class="px-4 pb-0">
+						<DashTableSizes
+							:table-sizes="tableSizes ?? []"
+							:is-pending="tableSizesPending"
+						/>
+					</UiCardContent>
+				</UiCard>
+			</UiTabsContent>
+		</UiTabs>
 	</div>
 </template>
