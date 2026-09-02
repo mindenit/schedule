@@ -20,6 +20,7 @@ const {
 	data: summary,
 	isPending: summaryPending,
 	isFetching: summaryFetching,
+	isError: summaryError,
 } = useQuery(dashSummaryOptions(isRunning))
 
 // Keep isRunning in sync so polling adapts
@@ -73,6 +74,7 @@ const failureCount = computed(() => failures.value?.length ?? 0)
 			:summary="summary"
 			:is-pending="summaryPending"
 			:is-fetching="summaryFetching"
+			:is-error="summaryError"
 			:on-refresh="refresh"
 		/>
 
@@ -86,19 +88,18 @@ const failureCount = computed(() => failures.value?.length ?? 0)
 
 		<!-- Tabs -->
 		<UiTabs default-value="runs">
-			<UiTabsList class="w-full sm:w-auto">
-				<UiTabsTrigger value="runs">Прогони</UiTabsTrigger>
-				<UiTabsTrigger value="failures" class="gap-1.5">
+			<UiTabsList class="grid w-full grid-cols-3 sm:inline-flex sm:w-fit">
+				<UiTabsTrigger value="runs" class="w-full sm:w-auto">Прогони</UiTabsTrigger>
+				<UiTabsTrigger value="failures" class="w-full gap-1.5 sm:w-auto">
 					Провали
 					<UiBadge
 						v-if="failureCount"
 						variant="destructive"
 						class="h-4 min-w-4 px-1.5 py-0 text-[10px]"
+						>{{ failureCount }}</UiBadge
 					>
-						{{ failureCount }}
-					</UiBadge>
 				</UiTabsTrigger>
-				<UiTabsTrigger value="db">База даних</UiTabsTrigger>
+				<UiTabsTrigger value="db" class="w-full sm:w-auto">База даних</UiTabsTrigger>
 			</UiTabsList>
 
 			<!-- Runs tab -->

@@ -20,6 +20,7 @@ export default defineNuxtConfig({
 		{ path: "~/components/schedule", prefix: "Schedule", pathPrefix: false },
 		{ path: "~/components/filters", prefix: "Filters", pathPrefix: false },
 		{ path: "~/components/links", prefix: "Links", pathPrefix: false },
+		{ path: "~/components/dash", prefix: "Dash", pathPrefix: false },
 		{ path: "~/components", pathPrefix: false, extensions: [".vue"] },
 	],
 	imports: {

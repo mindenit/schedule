@@ -6,6 +6,7 @@ defineProps<{
 	summary: DashSummary | undefined
 	isPending: boolean
 	isFetching: boolean
+	isError: boolean
 	onRefresh: () => void
 }>()
 </script>
@@ -65,6 +66,15 @@ defineProps<{
 		</UiCardHeader>
 
 		<UiCardContent class="space-y-3 px-5 pb-0">
+			<!-- Error state -->
+			<UiAlert v-if="isError && !isPending" variant="destructive">
+				<AppIcon name="ph:warning-circle" class="size-4" />
+				<UiAlertTitle>Помилка завантаження</UiAlertTitle>
+				<UiAlertDescription>
+					Не вдалося отримати дані з сервера. Спробуйте оновити.
+				</UiAlertDescription>
+			</UiAlert>
+
 			<!-- Progress bar (only while running) -->
 			<template v-if="summary?.isRunning && summary.progress">
 				<div class="space-y-1">
