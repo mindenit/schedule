@@ -65,6 +65,8 @@ const { copy, copied } = useClipboard({ legacy: true })
 		<button
 			class="hover:bg-muted/40 flex w-full items-center gap-3 px-4 py-3 text-left
 				transition-colors"
+			:aria-label="`${open ? 'Згорнути' : 'Розгорнути'} прогін ${fmtShort(run.startedAt)}`"
+			:aria-expanded="open"
 			@click="emit('toggle')"
 		>
 			<!-- Status indicator -->
