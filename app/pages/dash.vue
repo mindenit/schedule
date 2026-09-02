@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useQuery, useQueryClient } from "@tanstack/vue-query"
+import type { SyncRun } from "~/queries/dash"
 import {
 	dashSummaryOptions,
 	dashRunsOptions,
@@ -68,43 +69,61 @@ const failureCount = computed(() => failures.value?.length ?? 0)
 </script>
 
 <template>
-	<div class="min-w-0 space-y-4 py-4">
+	<div class="mx-auto w-full max-w-[1400px] space-y-4 py-4">
 		<!-- Hero -->
 		<DashHero
 			:summary="summary"
 			:is-pending="summaryPending"
 			:is-fetching="summaryFetching"
 			:is-error="summaryError"
+			:failures-count="failureCount"
 			:on-refresh="refresh"
 		/>
 
-		<!-- Metrics strip -->
-		<DashMetrics
-			:summary="summary"
-			:runs="runs ?? []"
-			:failures="failures ?? []"
-			:is-pending="summaryPending || runsPending"
-		/>
-
-		<!-- Tabs -->
+		<!-- Tabs inside one shared card -->
 		<UiTabs default-value="runs">
-			<UiTabsList class="grid w-full grid-cols-3 sm:inline-flex sm:w-fit">
-				<UiTabsTrigger value="runs" class="w-full sm:w-auto">Прогони</UiTabsTrigger>
-				<UiTabsTrigger value="failures" class="w-full gap-1.5 sm:w-auto">
-					Провали
-					<UiBadge
-						v-if="failureCount"
-						variant="destructive"
-						class="h-4 min-w-4 px-1.5 py-0 text-[10px]"
-						>{{ failureCount }}</UiBadge
+			<UiCard class="gap-0 overflow-hidden py-0">
+				<!-- Tab bar — underline style, full width -->
+				<UiTabsList
+					:pill="false"
+					class="relative w-full justify-start overflow-x-auto rounded-none border-b px-2"
+				>
+					<UiTabsTrigger
+						value="runs"
+						:pill="false"
+						class="shrink-0 data-[state=active]:bg-transparent"
+						>Прогони</UiTabsTrigger
 					>
-				</UiTabsTrigger>
-				<UiTabsTrigger value="db" class="w-full sm:w-auto">База даних</UiTabsTrigger>
-			</UiTabsList>
+					<UiTabsTrigger
+						value="failures"
+						:pill="false"
+						class="shrink-0 gap-1.5 data-[state=active]:bg-transparent"
+					>
+						Провали
+						<UiBadge
+							v-if="failureCount"
+							variant="destructive"
+							class="h-4 min-w-4 px-1.5 py-0 text-[10px]"
+							>{{ failureCount }}</UiBadge
+						>
+					</UiTabsTrigger>
+					<UiTabsTrigger
+						value="groups"
+						:pill="false"
+						class="shrink-0 data-[state=active]:bg-transparent"
+						>Групи</UiTabsTrigger
+					>
+					<UiTabsTrigger
+						value="db"
+						:pill="false"
+						class="shrink-0 data-[state=active]:bg-transparent"
+						>База даних</UiTabsTrigger
+					>
+					<UiTabsIndicator />
+				</UiTabsList>
 
-			<!-- Runs tab -->
-			<UiTabsContent value="runs">
-				<UiCard class="gap-0 overflow-hidden py-0">
+				<!-- Runs tab -->
+				<UiTabsContent value="runs">
 					<!-- Filter bar -->
 					<div class="flex items-center gap-3 border-b px-4 py-3">
 						<p class="text-muted-foreground shrink-0 text-xs font-medium">Статус:</p>
@@ -135,7 +154,7 @@ const failureCount = computed(() => failures.value?.length ?? 0)
 					</template>
 
 					<template v-else-if="!filteredRuns.length">
-						<div class="py-10">
+						<div class="py-6">
 							<AppEmptyState
 								icon="ph:list-dashes"
 								title="Немає прогонів"
@@ -146,6 +165,24 @@ const failureCount = computed(() => failures.value?.length ?? 0)
 					</template>
 
 					<template v-else>
+						<!-- Column headers -->
+						<div
+							class="text-muted-foreground bg-muted/30 flex items-center gap-3
+								border-b px-4 py-1.5 text-[11px] font-medium"
+						>
+							<span class="size-4 shrink-0" aria-hidden="true" />
+							<span class="min-w-0 shrink-0">Початок</span>
+							<span
+								class="hidden shrink-0 md:block"
+								style="width: 80px"
+								aria-hidden="true"
+							/>
+							<span class="hidden w-20 shrink-0 sm:block">Тривалість</span>
+							<span class="hidden shrink-0 md:inline-flex">Тригер</span>
+							<span class="hidden shrink-0 sm:block">Групи</span>
+							<span class="ml-auto" aria-hidden="true" />
+							<span class="size-4 shrink-0" aria-hidden="true" />
+						</div>
 						<DashRunItem
 							v-for="run in filteredRuns"
 							:key="run.id"
@@ -155,29 +192,28 @@ const failureCount = computed(() => failures.value?.length ?? 0)
 							@toggle="toggleRun(run.id)"
 						/>
 					</template>
-				</UiCard>
-			</UiTabsContent>
+				</UiTabsContent>
 
-			<!-- Failures tab -->
-			<UiTabsContent value="failures">
-				<UiCard class="gap-0 py-4">
-					<UiCardContent class="px-4 pb-0">
-						<DashFailures :failures="failures ?? []" :is-pending="failuresPending" />
-					</UiCardContent>
-				</UiCard>
-			</UiTabsContent>
+				<!-- Failures tab -->
+				<UiTabsContent value="failures" class="px-4 py-4">
+					<DashFailures :failures="failures ?? []" :is-pending="failuresPending" />
+				</UiTabsContent>
 
-			<!-- DB tab -->
-			<UiTabsContent value="db">
-				<UiCard class="gap-0 py-4">
-					<UiCardContent class="px-4 pb-0">
+				<!-- Groups tab -->
+				<UiTabsContent value="groups">
+					<DashGroups :runs="(runs ?? []) as SyncRun[]" :runs-pending="runsPending" />
+				</UiTabsContent>
+
+				<!-- DB tab -->
+				<UiTabsContent value="db">
+					<div class="overflow-x-auto px-4 py-4">
 						<DashTableSizes
 							:table-sizes="tableSizes ?? []"
 							:is-pending="tableSizesPending"
 						/>
-					</UiCardContent>
-				</UiCard>
-			</UiTabsContent>
+					</div>
+				</UiTabsContent>
+			</UiCard>
 		</UiTabs>
 	</div>
 </template>

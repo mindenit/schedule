@@ -42,6 +42,17 @@ export function statusVariant(
 
 // ── Formatting ────────────────────────────────────────────────────────────────
 
+/** dd.MM HH:mm — for collapsed run rows */
+export function fmtShort(iso: string | null | undefined): string {
+	if (!iso) return "—"
+	return new Date(iso).toLocaleString("uk-UA", {
+		day: "2-digit",
+		month: "2-digit",
+		hour: "2-digit",
+		minute: "2-digit",
+	})
+}
+
 export function fmt(iso: string | null | undefined): string {
 	if (!iso) return "—"
 	return new Date(iso).toLocaleString("uk-UA", {

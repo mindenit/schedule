@@ -8,8 +8,6 @@ const props = defineProps<{
 
 // Sort by size descending
 const sorted = computed(() => [...props.tableSizes].sort((a, b) => b.sizeBytes - a.sizeBytes))
-
-const maxBytes = computed(() => sorted.value[0]?.sizeBytes ?? 1)
 </script>
 
 <template>
@@ -52,9 +50,6 @@ const maxBytes = computed(() => sorted.value[0]?.sizeBytes ?? 1)
 							>
 								Розмір
 							</th>
-							<th class="text-muted-foreground w-32 px-4 py-2.5 text-xs font-medium">
-								<!-- bar column -->
-							</th>
 						</tr>
 					</thead>
 					<tbody class="divide-y">
@@ -69,14 +64,6 @@ const maxBytes = computed(() => sorted.value[0]?.sizeBytes ?? 1)
 							</td>
 							<td class="px-4 py-2.5 text-right font-mono text-xs font-medium">
 								{{ t.sizePretty }}
-							</td>
-							<td class="px-4 py-2.5">
-								<div class="bg-muted h-1.5 overflow-hidden rounded-full">
-									<div
-										class="bg-primary/50 h-full rounded-full transition-[width]"
-										:style="{ width: `${(t.sizeBytes / maxBytes) * 100}%` }"
-									/>
-								</div>
 							</td>
 						</tr>
 					</tbody>

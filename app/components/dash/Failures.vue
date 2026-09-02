@@ -80,6 +80,11 @@ function copyError(key: string, text: string) {
 									? 'Скопійовано!'
 									: 'Копіювати'
 							"
+							:aria-label="
+								copiedId === `${f.runId}-${f.groupId}`
+									? 'Скопійовано!'
+									: 'Копіювати помилку'
+							"
 							@click="copyError(`${f.runId}-${f.groupId}`, f.error ?? '')"
 						>
 							<AppIcon

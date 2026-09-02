@@ -6,6 +6,7 @@ import {
 	TRIGGER_LABELS,
 	STEP_LABELS,
 	fmt,
+	fmtShort,
 	duration,
 	durationMs,
 	deltaLabel,
@@ -86,14 +87,14 @@ const { copy, copied } = useClipboard({ legacy: true })
 				<AppIcon v-else name="ph:x-circle-fill" class="text-destructive size-4" />
 			</span>
 
-			<!-- Run ID -->
-			<span class="text-muted-foreground w-12 shrink-0 font-mono text-xs">
-				#{{ run.id }}
+			<!-- Start time (replaces raw id in collapsed view) -->
+			<span class="text-muted-foreground min-w-0 shrink-0 font-mono text-xs">
+				{{ fmtShort(run.startedAt) }}
 			</span>
 
 			<!-- Sparkbar (duration visual) -->
 			<span
-				class="bg-muted relative hidden h-2 shrink-0 rounded-full sm:block"
+				class="bg-muted relative hidden h-2 shrink-0 rounded-full md:block"
 				style="width: 80px"
 				aria-hidden="true"
 			>
@@ -149,6 +150,10 @@ const { copy, copied } = useClipboard({ legacy: true })
 		<div v-if="open" class="space-y-4 px-4 pb-4">
 			<!-- Meta row -->
 			<div class="text-muted-foreground flex flex-wrap gap-x-5 gap-y-1 pt-1 text-xs">
+				<span>
+					ID:
+					<span class="text-foreground font-mono">#{{ run.id }}</span>
+				</span>
 				<span>
 					Початок:
 					<span class="text-foreground font-mono">{{ fmt(run.startedAt) }}</span>
@@ -242,6 +247,7 @@ const { copy, copied } = useClipboard({ legacy: true })
 									class="text-muted-foreground hover:text-foreground absolute
 										top-1.5 right-1.5 transition-colors"
 									:title="copied ? 'Скопійовано!' : 'Копіювати'"
+									:aria-label="copied ? 'Скопійовано!' : 'Копіювати помилку'"
 									@click="copy(g.error ?? '')"
 								>
 									<AppIcon
@@ -276,31 +282,47 @@ const { copy, copied } = useClipboard({ legacy: true })
 							placeholder="Пошук групи…"
 							class="h-8 text-sm"
 						/>
-						<div class="max-h-64 divide-y overflow-y-auto rounded-lg border">
+						<div class="max-h-64 overflow-y-auto rounded-lg border">
 							<div
 								v-if="!filteredSuccess.length"
 								class="text-muted-foreground py-6 text-center text-xs"
 							>
 								Нічого не знайдено
 							</div>
-							<div
-								v-for="g in filteredSuccess"
-								:key="g.groupId"
-								class="flex items-center justify-between px-3 py-2 text-xs"
-							>
-								<span class="font-medium">{{ groupLabel(g) }}</span>
-								<span
-									class="font-mono"
-									:class="deltaClass(g.eventsCount, g.prevEventsCount)"
+							<template v-else>
+								<!-- Header -->
+								<div
+									class="text-muted-foreground bg-muted/30 flex items-center
+										justify-between border-b px-3 py-1.5 text-[11px]
+										font-medium"
 								>
-									{{ g.eventsCount }}
-									<span
-										v-if="deltaLabel(g.eventsCount, g.prevEventsCount) !== '='"
+									<span>Група</span>
+									<span>Подій</span>
+								</div>
+								<div class="divide-y">
+									<div
+										v-for="g in filteredSuccess"
+										:key="g.groupId"
+										class="flex items-center justify-between px-3 py-2 text-xs"
 									>
-										{{ deltaLabel(g.eventsCount, g.prevEventsCount) }}
-									</span>
-								</span>
-							</div>
+										<span class="font-medium">{{ groupLabel(g) }}</span>
+										<span
+											class="font-mono"
+											:class="deltaClass(g.eventsCount, g.prevEventsCount)"
+										>
+											{{ g.eventsCount }}
+											<span
+												v-if="
+													deltaLabel(g.eventsCount, g.prevEventsCount) !==
+													'='
+												"
+											>
+												{{ deltaLabel(g.eventsCount, g.prevEventsCount) }}
+											</span>
+										</span>
+									</div>
+								</div>
+							</template>
 						</div>
 					</template>
 				</div>

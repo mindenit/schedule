@@ -1,19 +1,20 @@
 <script setup lang="ts">
 import type { DashSummary } from "~/queries/dash"
-import { statusVariant, STATUS_LABELS, fmt, fmtRelative } from "~/composables/useDash"
+import { STATUS_LABELS, fmt, fmtRelative } from "~/composables/useDash"
 
 defineProps<{
 	summary: DashSummary | undefined
 	isPending: boolean
 	isFetching: boolean
 	isError: boolean
+	failuresCount: number
 	onRefresh: () => void
 }>()
 </script>
 
 <template>
 	<UiCard class="gap-4 py-5">
-		<UiCardHeader class="flex-row items-center justify-between gap-4 space-y-0 px-5 py-0">
+		<UiCardHeader class="flex items-center justify-between gap-4 space-y-0 px-5 py-0">
 			<div class="flex min-w-0 items-center gap-3">
 				<!-- Live pulse dot -->
 				<span class="relative flex size-2.5 shrink-0">
@@ -42,9 +43,6 @@ defineProps<{
 					<h1 class="truncate text-base font-semibold">
 						{{ STATUS_LABELS[summary.currentStatus] ?? summary.currentStatus }}
 					</h1>
-					<UiBadge :variant="statusVariant(summary.currentStatus)" class="shrink-0">
-						{{ STATUS_LABELS[summary.currentStatus] ?? summary.currentStatus }}
-					</UiBadge>
 				</template>
 			</div>
 
@@ -118,5 +116,38 @@ defineProps<{
 				</div>
 			</template>
 		</UiCardContent>
+		<!-- Stats footer -->
+		<div class="border-t px-5 pt-4">
+			<div class="grid grid-cols-3 gap-3 sm:flex sm:gap-0 sm:divide-x">
+				<!-- Прогонів -->
+				<div class="sm:pr-4">
+					<p class="text-muted-foreground mb-0.5 text-xs">Прогонів</p>
+					<UiSkeleton v-if="isPending" class="h-5 w-10 rounded" />
+					<p v-else class="font-mono text-base font-semibold">
+						{{ summary?.totalRuns ?? "—" }}
+					</p>
+				</div>
+				<!-- Провалів груп -->
+				<div class="sm:px-4">
+					<p class="text-muted-foreground mb-0.5 text-xs">Провалів груп</p>
+					<UiSkeleton v-if="isPending" class="h-5 w-10 rounded" />
+					<p
+						v-else
+						class="font-mono text-base font-semibold"
+						:class="failuresCount ? 'text-destructive' : ''"
+					>
+						{{ failuresCount }}
+					</p>
+				</div>
+				<!-- Подій -->
+				<div class="sm:pl-4">
+					<p class="text-muted-foreground mb-0.5 text-xs">Подій</p>
+					<UiSkeleton v-if="isPending" class="h-5 w-16 rounded" />
+					<p v-else class="font-mono text-base font-semibold">
+						{{ summary?.lastRun?.totalEvents?.toLocaleString("uk-UA") ?? "—" }}
+					</p>
+				</div>
+			</div>
+		</div>
 	</UiCard>
 </template>
