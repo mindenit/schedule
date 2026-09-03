@@ -43,9 +43,10 @@ const { trackEvent } = useAnalytics()
 // SSR serializer puts object keys first; client patchClass appends them after static.
 const dayClasses = computed(() =>
 	cn("flex size-6 items-center justify-center rounded-full text-xs font-medium", {
-		"text-muted-foreground/50": !props.cell.currentMonth,
+		"text-muted-foreground/50": !props.cell.currentMonth && !props.isDateToday,
 		"text-muted-foreground": props.cell.currentMonth && !props.isDateToday,
 		"bg-primary": props.isDateToday && props.cell.currentMonth,
+		"bg-primary/40": props.isDateToday && !props.cell.currentMonth,
 	})
 )
 
