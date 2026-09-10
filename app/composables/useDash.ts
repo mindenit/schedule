@@ -13,12 +13,15 @@ export const STATUS_LABELS: Record<string, string> = {
 export const TRIGGER_LABELS: Record<string, string> = {
 	cron: "Розклад",
 	bootstrap: "Запуск",
+	manual: "Ручний",
 }
 
 export const STEP_LABELS: Record<string, string> = {
 	auditoriums: "Аудиторії",
 	groups: "Групи",
 	teachers: "Викладачі",
+	phantomSkip: "Фантомний скіп",
+	manualRefetch: "Ручний перезапит",
 }
 
 // ── Status variant ─────────────────────────────────────────────────────────────

@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { useQueryClient } from "@tanstack/vue-query"
 import type { FailedGroupEntry } from "~/queries/dash"
+import { dismissFailure, refetchGroup } from "~/queries/dash"
 import { fmt, groupLabel } from "~/composables/useDash"
 import { useClipboard } from "@vueuse/core"
 
@@ -9,6 +11,7 @@ defineProps<{
 }>()
 
 const { copy } = useClipboard({ legacy: true })
+const queryClient = useQueryClient()
 
 // Copied tracking per entry
 const copiedId = ref<string | null>(null)
@@ -17,6 +20,47 @@ function copyError(key: string, text: string) {
 	copy(text)
 	copiedId.value = key
 	setTimeout(() => (copiedId.value = null), 2000)
+}
+
+// Per-row busy tracking for dismiss/refetch actions
+const busyKeys = ref(new Set<string>())
+
+async function handleDismiss(f: FailedGroupEntry) {
+	const key = `${f.runId}-${f.groupId}`
+	busyKeys.value.add(key)
+	try {
+		const result = await dismissFailure(f.runId, f.groupId)
+		if (result?.dismissed) {
+			useSonner.success("Приховано", { description: groupLabel(f) })
+		}
+	} catch {
+		useSonner.error("Не вдалося приховати", {
+			description: "Запис уже міг змінитися. Оновлюємо список.",
+		})
+	} finally {
+		busyKeys.value.delete(key)
+		await queryClient.invalidateQueries({ queryKey: ["dash"] })
+	}
+}
+
+async function handleRefetch(f: FailedGroupEntry) {
+	const key = `${f.runId}-${f.groupId}`
+	busyKeys.value.add(key)
+	try {
+		const result = await refetchGroup(f.groupId)
+		if (result?.ok) {
+			useSonner.success("Перезапит виконано", {
+				description: `${groupLabel(f)} — ${result.eventsCount} подій`,
+			})
+		} else {
+			useSonner.error("Перезапит не вдався", { description: result?.error ?? groupLabel(f) })
+		}
+	} catch {
+		useSonner.error("Перезапит не вдався", { description: groupLabel(f) })
+	} finally {
+		busyKeys.value.delete(key)
+		await queryClient.invalidateQueries({ queryKey: ["dash"] })
+	}
 }
 </script>
 
@@ -63,6 +107,32 @@ function copyError(key: string, text: string) {
 								>Прогін <span class="font-mono">#{{ f.runId }}</span></span
 							>
 							<span class="font-mono">{{ fmt(f.finishedAt) }}</span>
+							<UiButton
+								variant="outline"
+								size="sm"
+								class="h-6 gap-1 px-2 text-[11px]"
+								:disabled="busyKeys.has(`${f.runId}-${f.groupId}`)"
+								@click="handleRefetch(f)"
+							>
+								<AppIcon
+									name="ph:arrows-clockwise"
+									class="size-3"
+									:class="{
+										'animate-spin': busyKeys.has(`${f.runId}-${f.groupId}`),
+									}"
+								/>
+								Перезапит
+							</UiButton>
+							<UiButton
+								variant="ghost"
+								size="sm"
+								class="h-6 gap-1 px-2 text-[11px]"
+								:disabled="busyKeys.has(`${f.runId}-${f.groupId}`)"
+								@click="handleDismiss(f)"
+							>
+								<AppIcon name="ph:eye-slash" class="size-3" />
+								Приховати
+							</UiButton>
 						</div>
 					</div>
 

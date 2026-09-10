@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useQuery } from "@tanstack/vue-query"
-import type { SyncRun } from "~/queries/dash"
+import type { SyncRun, StepResult, ManualRefetchStep } from "~/queries/dash"
 import { dashRunGroupsOptions } from "~/queries/dash"
 import {
 	TRIGGER_LABELS,
@@ -36,6 +36,28 @@ const sparkWidth = computed(() => {
 	if (!props.maxDurationMs || !props.run.finishedAt) return 0
 	const ms = durationMs(props.run.startedAt, props.run.finishedAt)
 	return Math.max(2, Math.round((ms / props.maxDurationMs) * 100))
+})
+
+// Steps timeline — discriminate the three shapes that can appear in run.steps
+// (fixed StepResult keys, optional phantomSkip count-only, optional manualRefetch)
+type StepEntry =
+	| { kind: "standard"; key: string; label: string; step: StepResult }
+	| { kind: "phantomSkip"; count: number }
+	| { kind: "manualRefetch"; step: ManualRefetchStep }
+
+const stepEntries = computed<StepEntry[]>(() => {
+	const s = props.run.steps
+	const entries: StepEntry[] = (["auditoriums", "groups", "teachers"] as const)
+		.filter((key) => s[key])
+		.map((key) => ({
+			kind: "standard",
+			key,
+			label: STEP_LABELS[key] ?? key,
+			step: s[key]!,
+		}))
+	if (s.phantomSkip) entries.push({ kind: "phantomSkip", count: s.phantomSkip.count })
+	if (s.manualRefetch) entries.push({ kind: "manualRefetch", step: s.manualRefetch })
+	return entries
 })
 
 // Groups split
@@ -189,26 +211,67 @@ const { copy, copied } = useClipboard({ legacy: true })
 			<!-- Steps timeline -->
 			<div class="bg-muted/30 space-y-2 rounded-lg border p-3">
 				<p class="text-muted-foreground mb-2 text-xs font-medium">Кроки синхронізації</p>
-				<div v-for="(step, key) in run.steps" :key="key" class="flex items-start gap-2.5">
-					<AppIcon
-						:name="step.ok ? 'ph:check-circle-fill' : 'ph:x-circle-fill'"
-						class="mt-0.5 size-4 shrink-0"
-						:class="step.ok ? 'text-green-500' : 'text-destructive'"
-					/>
-					<div class="min-w-0">
-						<span class="text-sm font-medium">
-							{{ STEP_LABELS[String(key)] ?? String(key) }}
-						</span>
-						<span class="text-muted-foreground ml-1.5 text-xs">
-							{{ step.count }} оброблено
-						</span>
-						<span
-							v-if="!step.ok && step.error"
-							class="text-destructive mt-0.5 block text-xs"
-						>
-							{{ step.error }}
-						</span>
-					</div>
+				<div v-for="(entry, i) in stepEntries" :key="i" class="flex items-start gap-2.5">
+					<!-- Standard step (auditoriums / groups / teachers) -->
+					<template v-if="entry.kind === 'standard'">
+						<AppIcon
+							:name="entry.step.ok ? 'ph:check-circle-fill' : 'ph:x-circle-fill'"
+							class="mt-0.5 size-4 shrink-0"
+							:class="entry.step.ok ? 'text-green-500' : 'text-destructive'"
+						/>
+						<div class="min-w-0">
+							<span class="text-sm font-medium">{{ entry.label }}</span>
+							<span class="text-muted-foreground ml-1.5 text-xs">
+								{{ entry.step.count }} оброблено
+							</span>
+							<span
+								v-if="!entry.step.ok && entry.step.error"
+								class="text-destructive mt-0.5 block text-xs"
+							>
+								{{ entry.step.error }}
+							</span>
+						</div>
+					</template>
+
+					<!-- Phantom-skip (count only, no ok/error) -->
+					<template v-else-if="entry.kind === 'phantomSkip'">
+						<AppIcon
+							name="ph:skip-forward"
+							class="text-muted-foreground mt-0.5 size-4 shrink-0"
+						/>
+						<div class="min-w-0">
+							<span class="text-sm font-medium">
+								{{ STEP_LABELS.phantomSkip }}
+							</span>
+							<span class="text-muted-foreground ml-1.5 text-xs">
+								{{ entry.count }} пропущено
+							</span>
+						</div>
+					</template>
+
+					<!-- Manual refetch (single group/teacher, triggered outside cron) -->
+					<template v-else>
+						<AppIcon
+							:name="entry.step.ok ? 'ph:check-circle-fill' : 'ph:x-circle-fill'"
+							class="mt-0.5 size-4 shrink-0"
+							:class="entry.step.ok ? 'text-green-500' : 'text-destructive'"
+						/>
+						<div class="min-w-0">
+							<span class="text-sm font-medium">
+								{{ STEP_LABELS.manualRefetch }}
+							</span>
+							<span class="text-muted-foreground ml-1.5 text-xs">
+								{{ entry.step.entityType === "group" ? "Група" : "Викладач" }}
+								#{{ entry.step.entityId }} — {{ entry.step.eventsCount }} подій
+							</span>
+							<span
+								v-if="!entry.step.ok && entry.step.error"
+								class="text-destructive mt-0.5 block text-xs"
+							>
+								{{ entry.step.error }}
+							</span>
+						</div>
+					</template>
 				</div>
 			</div>
 
