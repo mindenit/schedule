@@ -5,6 +5,13 @@ WORKDIR /src
 
 FROM base AS build
 
+# pnpm's standalone binary (@pnpm/exe) needs libatomic.so.1 on arm64 —
+# not present by default on node:*-slim. Pin it explicitly so the build
+# doesn't depend on it being present by luck/caching.
+RUN apt-get update && \
+	apt-get install -y --no-install-recommends libatomic1 && \
+	rm -rf /var/lib/apt/lists/*
+
 RUN npm i -g pnpm
 
 COPY --link package.json pnpm-lock.yaml pnpm-workspace.yaml ./
