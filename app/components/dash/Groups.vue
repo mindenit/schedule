@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useQuery } from "@tanstack/vue-query"
-import type { SyncRun } from "~/queries/dash"
-import { dashRunGroupsOptions } from "~/queries/dash"
+import { useQuery, useQueryClient } from "@tanstack/vue-query"
+import type { SyncRun, SyncRunGroup } from "~/queries/dash"
+import { dashRunGroupsOptions, refetchGroup } from "~/queries/dash"
 import { fmt, fmtShort, deltaLabel, deltaClass, groupLabel } from "~/composables/useDash"
 
 const props = defineProps<{
@@ -41,6 +41,29 @@ const visibleGroups = computed(() => {
 })
 
 const failedCount = computed(() => (groups.value ?? []).filter((g) => g.status === "failed").length)
+
+// Manual refetch — any group, regardless of status
+const queryClient = useQueryClient()
+const busyIds = ref(new Set<number>())
+
+async function handleRefetch(g: SyncRunGroup) {
+	busyIds.value.add(g.groupId)
+	try {
+		const result = await refetchGroup(g.groupId)
+		if (result?.ok) {
+			useSonner.success("Перезапит виконано", {
+				description: `${groupLabel(g)} — ${result.eventsCount} подій`,
+			})
+		} else {
+			useSonner.error("Перезапит не вдався", { description: result?.error ?? groupLabel(g) })
+		}
+	} catch {
+		useSonner.error("Перезапит не вдався", { description: groupLabel(g) })
+	} finally {
+		busyIds.value.delete(g.groupId)
+		await queryClient.invalidateQueries({ queryKey: ["dash"] })
+	}
+}
 </script>
 
 <template>
@@ -138,6 +161,7 @@ const failedCount = computed(() => (groups.value ?? []).filter((g) => g.status =
 			<span class="min-w-0 flex-1">Група</span>
 			<span class="font-sans">Подій</span>
 			<span class="w-24 shrink-0 text-right">Оновлено</span>
+			<span class="size-6 shrink-0" />
 		</div>
 
 		<!-- Group rows — content-visibility:auto for 1000+ rows -->
@@ -179,6 +203,22 @@ const failedCount = computed(() => (groups.value ?? []).filter((g) => g.status =
 				>
 					{{ g.error }}
 				</span>
+
+				<!-- Refetch -->
+				<button
+					class="text-muted-foreground hover:text-foreground flex size-6 shrink-0
+						items-center justify-center rounded transition-colors disabled:opacity-50"
+					:disabled="busyIds.has(g.groupId)"
+					:aria-label="`Перезапит групи ${groupLabel(g)}`"
+					:title="`Перезапит групи ${groupLabel(g)}`"
+					@click="handleRefetch(g)"
+				>
+					<AppIcon
+						name="ph:arrows-clockwise"
+						class="size-3.5"
+						:class="{ 'animate-spin': busyIds.has(g.groupId) }"
+					/>
+				</button>
 			</div>
 		</div>
 	</div>
