@@ -96,7 +96,7 @@ const hours = CALENDAR_HOURS
 						<span
 							v-if="index !== 0"
 							class="text-muted-foreground text-[0.625rem] whitespace-nowrap
-								lg:text-xs"
+								tabular-nums lg:text-xs"
 						>
 							{{ formatHour(hour) }}
 						</span>

@@ -7,7 +7,7 @@
 			<UiDrawer direction="left">
 				<UiDrawerTrigger as-child>
 					<UiButton variant="ghost" size="icon" aria-label="Відкрити меню">
-						<AppIcon name="lucide:menu" />
+						<AppIcon name="ph:list-bold" />
 					</UiButton>
 				</UiDrawerTrigger>
 				<UiDrawerContent hide-knob>

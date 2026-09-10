@@ -38,12 +38,13 @@ const badgeVariants = tv({
 				"bg-destructive focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:focus-visible:ring-destructive/40 [a&]:hover:bg-destructive/90 border-transparent text-white",
 			outline: "text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
 			success:
-				"border-transparent bg-green-500 text-white focus-visible:ring-green-500/20 dark:bg-green-500/60 dark:focus-visible:ring-green-500/40 [a&]:hover:bg-green-600",
+				"bg-success text-success-foreground focus-visible:ring-success/20 dark:bg-success/60 dark:focus-visible:ring-success/40 [a&]:hover:bg-success/90 border-transparent",
 			warning:
-				"border-transparent bg-yellow-500 text-white focus-visible:ring-yellow-500/20 dark:bg-yellow-500/60 dark:focus-visible:ring-yellow-500/40 [a&]:hover:bg-yellow-600",
+				"bg-warning text-warning-foreground focus-visible:ring-warning/20 dark:bg-warning/60 dark:focus-visible:ring-warning/40 [a&]:hover:bg-warning/90 border-transparent",
+			// ponytail: no --info token exists; blue-500 stays until one is designed.
 			info: "border-transparent bg-blue-500 text-white focus-visible:ring-blue-500/20 dark:bg-blue-500/60 dark:focus-visible:ring-blue-500/40 [a&]:hover:bg-blue-600",
 			ghost: "text-foreground [a&]:hover:bg-accent/50 border-transparent bg-transparent",
-			error: "border-transparent bg-red-500 text-white focus-visible:ring-red-500/20 dark:bg-red-500/60 dark:focus-visible:ring-red-500/40 [a&]:hover:bg-red-600",
+			error: "bg-destructive text-destructive-foreground focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:focus-visible:ring-destructive/40 [a&]:hover:bg-destructive/90 border-transparent",
 		},
 		disabled: {
 			true: "cursor-not-allowed opacity-50",

@@ -221,7 +221,7 @@ const handleCardClick = (item: GenericScheduleItem) => {
 		<UiDialogContent>
 			<UiDialogHeader>
 				<UiDialogTitle class="flex items-center gap-2">
-					<AppIcon name="lucide:calendar-plus" />
+					<AppIcon name="ph:calendar-plus-bold" />
 					Оберіть розклад
 				</UiDialogTitle>
 				<UiDialogDescription>Оберіть групу, викладача або аудиторію</UiDialogDescription>

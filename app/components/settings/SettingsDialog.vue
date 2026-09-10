@@ -13,13 +13,13 @@ function onOpenChange(open: boolean) {
 	<UiDialog :open="isOpen" @update:open="onOpenChange">
 		<UiDialogTrigger as-child>
 			<UiButton size="icon" variant="ghost" aria-label="Налаштування">
-				<AppIcon name="lucide:settings" />
+				<AppIcon name="ph:gear-six-bold" />
 			</UiButton>
 		</UiDialogTrigger>
 		<UiDialogContent class="flex max-h-[80vh] flex-col overflow-x-hidden sm:max-w-2xl">
 			<UiDialogHeader>
 				<UiDialogTitle class="flex items-center gap-2">
-					<AppIcon name="lucide:settings" />
+					<AppIcon name="ph:gear-six-bold" />
 					Налаштування
 				</UiDialogTitle>
 				<UiDialogDescription

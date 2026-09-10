@@ -5,7 +5,7 @@
 		v-bind="forwarded"
 	>
 		<slot>
-			<Icon :name="icon || 'lucide:chevron-up'" class="size-4" />
+			<Icon :name="icon || 'ph:caret-up-bold'" class="size-4" />
 		</slot>
 	</SelectScrollUpButton>
 </template>

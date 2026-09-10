@@ -147,14 +147,14 @@ const overlayContent = computed(() => {
 				<AppEmptyState
 					v-if="overlayContent === 'no-schedule'"
 					variant="card"
-					icon="lucide:alert-circle"
+					icon="ph:warning-circle-bold"
 					title="Розклад не обрано"
 					description="Оберіть або додайте розклад"
 					class="pointer-events-auto"
 				>
 					<template #actions>
 						<UiButton class="max-md:hidden" size="sm" @click="isAddDialogOpen = true">
-							<AppIcon name="lucide:plus" />
+							<AppIcon name="ph:plus-bold" />
 							Додати розклад
 						</UiButton>
 					</template>
@@ -169,7 +169,7 @@ const overlayContent = computed(() => {
 				<AppEmptyState
 					v-else-if="overlayContent === 'offline-no-data'"
 					variant="card"
-					icon="lucide:wifi-off"
+					icon="ph:wifi-slash-bold"
 					title="Немає з'єднання"
 					description="Збережених даних для цього розкладу немає"
 					class="pointer-events-auto"

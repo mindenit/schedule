@@ -122,7 +122,7 @@ watch(isOpen, (open) => {
 		<div :class="['relative inline-flex shrink-0', props.class]">
 			<UiDialogTrigger as-child>
 				<UiButton :variant="props.variant ?? 'default'" size="icon" aria-label="Фільтри">
-					<AppIcon name="lucide:filter" />
+					<AppIcon name="ph:funnel-bold" />
 				</UiButton>
 			</UiDialogTrigger>
 			<Transition
@@ -147,7 +147,7 @@ watch(isOpen, (open) => {
 		<UiDialogContent>
 			<UiDialogHeader>
 				<UiDialogTitle class="flex items-center gap-2">
-					<AppIcon name="lucide:filter" />
+					<AppIcon name="ph:funnel-bold" />
 					Фільтри
 				</UiDialogTitle>
 				<UiDialogDescription>
@@ -288,12 +288,12 @@ watch(isOpen, (open) => {
 						}
 					"
 				>
-					<AppIcon name="lucide:rotate-ccw" />
+					<AppIcon name="ph:arrow-counter-clockwise-bold" />
 					Скинути
 				</UiButton>
 				<UiDialogClose as-child>
 					<UiButton>
-						<AppIcon name="lucide:check" />
+						<AppIcon name="ph:check-bold" />
 						Зберегти
 					</UiButton>
 				</UiDialogClose>

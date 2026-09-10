@@ -120,7 +120,7 @@ const failedCount = computed(() => (groups.value ?? []).filter((g) => g.status =
 		<template v-else-if="!visibleGroups.length">
 			<div class="py-10">
 				<AppEmptyState
-					icon="ph:users"
+					icon="ph:users-bold"
 					title="Немає груп"
 					description="Жодної групи не відповідає фільтру."
 					variant="inline"
@@ -150,7 +150,7 @@ const failedCount = computed(() => (groups.value ?? []).filter((g) => g.status =
 			>
 				<!-- Status dot -->
 				<AppIcon
-					:name="g.status === 'success' ? 'ph:check-circle-fill' : 'ph:x-circle-fill'"
+					:name="g.status === 'success' ? 'ph:check-circle-bold' : 'ph:x-circle-bold'"
 					class="size-3.5 shrink-0"
 					:class="g.status === 'success' ? 'text-green-500' : 'text-destructive'"
 				/>

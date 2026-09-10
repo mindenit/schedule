@@ -41,7 +41,7 @@ watch(isOnline, (online) => {
 			role="alert"
 			aria-live="assertive"
 		>
-			<AppIcon name="lucide:wifi-off" class="shrink-0" aria-hidden="true" />
+			<AppIcon name="ph:wifi-slash-bold" class="shrink-0" aria-hidden="true" />
 			<span>
 				Без з'єднання —
 				<template v-if="lastFetchTime">дані від {{ lastFetchTime }}</template>

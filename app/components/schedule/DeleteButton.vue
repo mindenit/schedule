@@ -42,13 +42,13 @@ const removeActiveSchedule = () => {
 				:disabled="!hasActiveSchedule"
 				aria-label="Видалити розклад"
 			>
-				<AppIcon name="lucide:trash" />
+				<AppIcon name="ph:trash-bold" />
 			</UiButton>
 		</UiAlertDialogTrigger>
 		<UiAlertDialogContent @open-auto-focus="onOpenAutoFocus">
 			<UiAlertDialogHeader>
 				<UiAlertDialogTitle class="flex items-center gap-2">
-					<AppIcon name="lucide:alert-triangle" class="text-destructive" />
+					<AppIcon name="ph:warning-bold" class="text-destructive" />
 					Видалити розклад
 				</UiAlertDialogTitle>
 				<UiAlertDialogDescription>
@@ -77,7 +77,7 @@ const removeActiveSchedule = () => {
 					variant="destructive"
 					@click="removeActiveSchedule"
 				>
-					<AppIcon name="lucide:trash" />
+					<AppIcon name="ph:trash-bold" />
 					Видалити
 				</UiAlertDialogAction>
 			</UiAlertDialogFooter>

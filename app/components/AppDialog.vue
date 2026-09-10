@@ -13,7 +13,7 @@
 					class="bg-muted flex size-10 items-center justify-center rounded-full
 						max-sm:hidden"
 				>
-					<AppIcon name="lucide:zap" size="lg" class="text-primary" />
+					<AppIcon name="ph:lightning-bold" size="lg" class="text-primary" />
 				</div>
 				<div>
 					<p class="font-medium">Встановіть наш додаток на Android</p>

@@ -4,7 +4,7 @@
 		:class="styles({ class: normalizeClass(props.class) || undefined })"
 		v-bind="forwarded"
 	>
-		<slot> <Icon :name="icon || 'lucide:chevron-down'" class="size-4" /></slot>
+		<slot> <Icon :name="icon || 'ph:caret-down-bold'" class="size-4" /></slot>
 	</SelectScrollDownButton>
 </template>
 

@@ -28,7 +28,7 @@ defineProps<Props>()
 				<span class="line-clamp-2 text-sm leading-tight font-semibold">{{ name }}</span>
 				<div class="text-muted-foreground flex items-center gap-1.5 text-xs">
 					<div class="flex items-center gap-1">
-						<AppIcon name="lucide:map-pin" class="shrink-0" />
+						<AppIcon name="ph:map-pin-bold" class="shrink-0" />
 						<span class="truncate">{{ auditorium }}</span>
 					</div>
 					<span class="shrink-0">•</span>

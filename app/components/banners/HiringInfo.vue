@@ -16,7 +16,7 @@ const { enabled: motionEnabled } = useMotionSafe()
 		<div class="relative flex items-center justify-center gap-4">
 			<div class="flex items-center gap-3">
 				<div class="flex h-6 w-6 items-center justify-center rounded-full bg-white/20">
-					<AppIcon name="lucide:briefcase" size="xs" class="text-white" />
+					<AppIcon name="ph:briefcase-bold" size="xs" class="text-white" />
 				</div>
 
 				<span class="text-sm font-medium"> Шукаємо людей в команду </span>
@@ -34,7 +34,7 @@ const { enabled: motionEnabled } = useMotionSafe()
 			>
 				<span class="text-xs">Долучитися</span>
 				<AppIcon
-					name="lucide:arrow-right"
+					name="ph:arrow-right-bold"
 					size="xs"
 					class="ml-1 transition-transform duration-200 group-hover:translate-x-0.5"
 				/>

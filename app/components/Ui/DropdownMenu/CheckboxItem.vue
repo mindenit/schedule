@@ -5,7 +5,7 @@
 		:class="styles({ class: normalizeClass(props.class) || undefined })"
 	>
 		<span class="text-primary absolute left-2 flex size-3.5 items-center justify-center">
-			<UiDropdownMenuItemIndicator icon="lucide:check" />
+			<UiDropdownMenuItemIndicator icon="ph:check-bold" />
 		</span>
 		<slot>
 			<span v-if="title">{{ title }}</span>

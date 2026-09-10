@@ -310,7 +310,7 @@ const EVENT_TYPE_BG: Record<string, string> = {
 										)
 									"
 								>
-									<AppIcon name="lucide:pencil" />
+									<AppIcon name="ph:pencil-simple-bold" />
 								</UiButton>
 								<UiButton
 									v-if="props.onDeleteLink"
@@ -326,7 +326,7 @@ const EVENT_TYPE_BG: Record<string, string> = {
 										)
 									"
 								>
-									<AppIcon name="lucide:trash" />
+									<AppIcon name="ph:trash-bold" />
 								</UiButton>
 							</div>
 						</div>

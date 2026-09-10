@@ -156,7 +156,7 @@ const failureCount = computed(() => failures.value?.length ?? 0)
 					<template v-else-if="!filteredRuns.length">
 						<div class="py-6">
 							<AppEmptyState
-								icon="ph:list-dashes"
+								icon="ph:list-dashes-bold"
 								title="Немає прогонів"
 								description="Жодного прогону не відповідає фільтру."
 								variant="inline"

@@ -34,7 +34,7 @@
 					focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none
 					[&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
 			>
-				<Icon name="lucide:x" class="size-4" />
+				<Icon name="ph:x-bold" class="size-4" />
 				<span class="sr-only">Close</span>
 			</UiDialogClose>
 		</DialogContent>

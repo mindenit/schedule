@@ -3,7 +3,7 @@
 		<slot>
 			<Icon
 				:class="styles({ class: normalizeClass(props.class) || undefined })"
-				:name="icon || 'lucide:chevron-down'"
+				:name="icon || 'ph:caret-down-bold'"
 			/>
 		</slot>
 	</SelectIcon>

@@ -14,7 +14,7 @@ const isDialogOpen = useState(DIALOG_KEYS.scheduleAdd, () => false)
 		class="min-w-0 flex-1 gap-1"
 		@click="isDialogOpen = true"
 	>
-		<AppIcon name="lucide:plus" /> Додати розклад
+		<AppIcon name="ph:plus-bold" /> Додати розклад
 	</UiButton>
 
 	<UiButton
@@ -24,6 +24,6 @@ const isDialogOpen = useState(DIALOG_KEYS.scheduleAdd, () => false)
 		aria-label="Додати розклад"
 		@click="isDialogOpen = true"
 	>
-		<AppIcon name="lucide:plus" size="lg" />
+		<AppIcon name="ph:plus-bold" size="lg" />
 	</UiButton>
 </template>

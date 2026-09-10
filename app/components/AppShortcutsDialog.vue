@@ -7,7 +7,7 @@ const open = defineModel<boolean>("open", { required: true })
 		<UiDialogContent class="sm:max-w-sm">
 			<UiDialogHeader>
 				<UiDialogTitle class="flex items-center gap-2">
-					<AppIcon name="lucide:keyboard" />
+					<AppIcon name="ph:keyboard-bold" />
 					Клавіатурні скорочення
 				</UiDialogTitle>
 				<UiDialogDescription>Швидка навігація по календарю</UiDialogDescription>

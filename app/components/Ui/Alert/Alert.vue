@@ -77,17 +77,18 @@ export const alertStyles = tv({
 				base: "border-destructive/50 text-destructive dark:border-destructive",
 				icon: "text-destructive",
 			},
+			// ponytail: no --info token exists; blue stays until one is designed.
 			info: {
 				base: "border-blue-500/50 text-blue-600",
 				icon: "text-blue-600",
 			},
 			success: {
-				base: "border-emerald-500/50 text-emerald-600",
-				icon: "text-emerald-500",
+				base: "border-success/50 text-success",
+				icon: "text-success",
 			},
 			warning: {
-				base: "border-amber-500/50 text-amber-600",
-				icon: "text-amber-600",
+				base: "border-warning/50 text-warning",
+				icon: "text-warning",
 			},
 		},
 		filled: {
@@ -124,12 +125,18 @@ export const alertStyles = tv({
 		{
 			filled: true,
 			variant: "success",
-			class: { base: "bg-emerald-500 text-emerald-50 shadow-xs", icon: "text-emerald-50" },
+			class: {
+				base: "bg-success text-success-foreground shadow-xs",
+				icon: "text-success-foreground",
+			},
 		},
 		{
 			filled: true,
 			variant: "warning",
-			class: { base: "bg-amber-500 text-amber-50 shadow-xs", icon: "text-amber-50" },
+			class: {
+				base: "bg-warning text-warning-foreground shadow-xs",
+				icon: "text-warning-foreground",
+			},
 		},
 	],
 })

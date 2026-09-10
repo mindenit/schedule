@@ -114,7 +114,7 @@ const handleMainImport = (event: Event) => {
 				variant="outline"
 				@click="showShareDialog = true"
 			>
-				<AppIcon name="lucide:share-2" />
+				<AppIcon name="ph:share-network-bold" />
 				Поділитися ({{ selectedLinkIds.length }})
 			</UiButton>
 			<UiButton
@@ -136,7 +136,7 @@ const handleMainImport = (event: Event) => {
 					}
 				"
 			>
-				<AppIcon name="lucide:download" />
+				<AppIcon name="ph:download-simple-bold" />
 				{{
 					selectedLinkIds.length > 0
 						? `Експортувати (${selectedLinkIds.length})`
@@ -144,7 +144,7 @@ const handleMainImport = (event: Event) => {
 				}}
 			</UiButton>
 			<UiButton size="sm" variant="outline" @click="triggerImport">
-				<AppIcon name="lucide:upload" />
+				<AppIcon name="ph:upload-simple-bold" />
 				Імпортувати
 			</UiButton>
 		</div>

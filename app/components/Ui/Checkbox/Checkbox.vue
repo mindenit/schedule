@@ -26,13 +26,13 @@ const props = defineProps<
 		/**
 		 * Icon to display when the checkbox is checked.
 		 *
-		 * @default lucide:check
+		 * @default ph:check-bold
 		 */
 		icon?: string
 		/**
 		 * Icon to display when the checkbox is in indeterminate state.
 		 *
-		 * @default lucide:minus
+		 * @default ph:minus-bold
 		 */
 		indeterminateIcon?: string
 	}

@@ -21,7 +21,7 @@ function handleClick() {
 		aria-label="Сьогодні"
 		@click="handleClick"
 	>
-		<AppIcon name="lucide:calendar-days" />
+		<AppIcon name="ph:calendar-dots-bold" />
 	</UiButton>
 
 	<UiButton variant="outline" class="max-md:hidden" @click="handleClick"> Сьогодні </UiButton>

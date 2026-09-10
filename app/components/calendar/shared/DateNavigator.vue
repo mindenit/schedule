@@ -40,19 +40,22 @@ function handleNext() {
 
 <template>
 	<div class="flex min-w-0 items-center gap-1">
-		<span class="min-w-0 truncate text-sm font-semibold whitespace-nowrap md:text-lg">
+		<span
+			class="font-accent min-w-0 truncate text-base font-semibold whitespace-nowrap
+				md:text-xl"
+		>
 			{{ title }}
 		</span>
 
 		<div class="flex shrink-0 items-center gap-0.5 md:gap-1">
 			<UiButton variant="outline" size="icon" aria-label="Попередній" @click="handlePrevious">
-				<AppIcon name="lucide:chevron-left" />
+				<AppIcon name="ph:caret-left-bold" />
 			</UiButton>
 
 			<BigCalendarTodayButton />
 
 			<UiButton variant="outline" size="icon" aria-label="Наступний" @click="handleNext">
-				<AppIcon name="lucide:chevron-right" />
+				<AppIcon name="ph:caret-right-bold" />
 			</UiButton>
 		</div>
 	</div>

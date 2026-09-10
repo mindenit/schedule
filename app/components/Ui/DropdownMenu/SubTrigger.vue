@@ -10,7 +10,7 @@
 		</slot>
 		<Icon
 			class="text-muted-foreground ml-auto size-4"
-			:name="trailingIcon || 'lucide:chevron-right'"
+			:name="trailingIcon || 'ph:caret-right-bold'"
 		/>
 	</DropdownMenuSubTrigger>
 </template>

@@ -223,7 +223,7 @@ const copyAllSchedulesToClipboard = async () => {
 				:disabled="allSchedules.length === 0"
 				@click="copyAllSchedulesToClipboard"
 			>
-				<AppIcon name="lucide:copy" />
+				<AppIcon name="ph:copy-bold" />
 				Скопіювати для звіту
 			</UiButton>
 		</div>

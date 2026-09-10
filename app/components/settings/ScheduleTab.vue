@@ -59,7 +59,7 @@ const handleIcsExportAcademicYear = async () => {
 				</div>
 			</div>
 			<UiButton size="sm" :disabled="isLoading" @click="handleIcsExportAcademicYear">
-				<AppIcon name="lucide:calendar-arrow-down" />
+				<AppIcon name="ph:export-bold" />
 				Експорт
 			</UiButton>
 		</div>
@@ -165,7 +165,7 @@ const handleIcsExportAcademicYear = async () => {
 				</div>
 			</div>
 			<UiButton size="sm" variant="outline" @click="openShortcuts">
-				<AppIcon name="lucide:keyboard" />
+				<AppIcon name="ph:keyboard-bold" />
 				Переглянути
 			</UiButton>
 		</div>

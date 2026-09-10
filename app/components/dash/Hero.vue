@@ -55,7 +55,7 @@ defineProps<{
 				@click="onRefresh"
 			>
 				<AppIcon
-					name="ph:arrows-clockwise"
+					name="ph:arrows-clockwise-bold"
 					class="size-4 transition-transform"
 					:class="{ 'animate-spin': isFetching }"
 				/>
@@ -66,7 +66,7 @@ defineProps<{
 		<UiCardContent class="space-y-3 px-5 pb-0">
 			<!-- Error state -->
 			<UiAlert v-if="isError && !isPending" variant="destructive">
-				<AppIcon name="ph:warning-circle" class="size-4" />
+				<AppIcon name="ph:warning-circle-bold" class="size-4" />
 				<UiAlertTitle>Помилка завантаження</UiAlertTitle>
 				<UiAlertDescription>
 					Не вдалося отримати дані з сервера. Спробуйте оновити.

@@ -20,7 +20,7 @@ const sorted = computed(() => [...props.tableSizes].sort((a, b) => b.sizeBytes -
 
 		<template v-else-if="!tableSizes.length">
 			<AppEmptyState
-				icon="ph:database"
+				icon="ph:database-bold"
 				title="Немає даних"
 				description="Інформація про розміри таблиць недоступна."
 				variant="card"

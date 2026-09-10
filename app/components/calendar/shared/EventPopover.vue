@@ -89,14 +89,18 @@ const deleteLink = (linkId: string) => {
 
 		<div class="bg-muted/50 space-y-1.5 rounded-lg p-2.5 text-xs">
 			<div class="flex items-center gap-2">
-				<AppIcon name="lucide:clock" size="3.5" class="text-muted-foreground shrink-0" />
+				<AppIcon name="ph:clock-bold" size="3.5" class="text-muted-foreground shrink-0" />
 				<span class="font-medium">{{ formattedTimeRange }}</span>
 				<span class="text-muted-foreground">·</span>
 				<span class="text-muted-foreground">{{ pairNumber }}</span>
 			</div>
 
 			<div class="flex items-center gap-2">
-				<AppIcon name="lucide:calendar" size="3.5" class="text-muted-foreground shrink-0" />
+				<AppIcon
+					name="ph:calendar-bold"
+					size="3.5"
+					class="text-muted-foreground shrink-0"
+				/>
 				<span>{{ formattedDate }}</span>
 				<span class="text-muted-foreground">·</span>
 				<span class="text-muted-foreground">{{ pairIndexText }}</span>
@@ -107,7 +111,7 @@ const deleteLink = (linkId: string) => {
 			<div class="grid grid-cols-2 gap-3">
 				<div class="flex items-start gap-2">
 					<AppIcon
-						name="lucide:map-pin"
+						name="ph:map-pin-bold"
 						size="3.5"
 						class="text-muted-foreground mt-0.5 shrink-0"
 					/>
@@ -119,7 +123,7 @@ const deleteLink = (linkId: string) => {
 
 				<div class="flex items-start gap-2">
 					<AppIcon
-						name="lucide:user"
+						name="ph:user-bold"
 						size="3.5"
 						class="text-muted-foreground mt-0.5 shrink-0"
 					/>
@@ -134,7 +138,7 @@ const deleteLink = (linkId: string) => {
 
 			<div class="flex items-start gap-2">
 				<AppIcon
-					name="lucide:users"
+					name="ph:users-bold"
 					size="3.5"
 					class="text-muted-foreground mt-0.5 shrink-0"
 				/>
@@ -151,7 +155,7 @@ const deleteLink = (linkId: string) => {
 		<div class="border-t pt-3">
 			<div class="mb-2 flex items-center justify-between">
 				<h4 class="flex items-center gap-1.5 text-xs font-semibold">
-					<AppIcon name="lucide:link" size="3.5" />
+					<AppIcon name="ph:link-bold" size="3.5" />
 					Посилання
 				</h4>
 				<UiButton
@@ -161,7 +165,7 @@ const deleteLink = (linkId: string) => {
 					aria-label="Додати посилання"
 					@click="addLink"
 				>
-					<AppIcon name="lucide:plus" size="3.5" />
+					<AppIcon name="ph:plus-bold" size="3.5" />
 				</UiButton>
 			</div>
 			<div v-if="eventLinks.length" class="max-h-35 space-y-1 overflow-auto">
@@ -187,7 +191,7 @@ const deleteLink = (linkId: string) => {
 							aria-label="Редагувати посилання"
 							@click="editLink(link)"
 						>
-							<AppIcon name="lucide:pencil" size="xs" />
+							<AppIcon name="ph:pencil-simple-bold" size="xs" />
 						</UiButton>
 						<UiButton
 							size="icon"
@@ -196,7 +200,7 @@ const deleteLink = (linkId: string) => {
 							aria-label="Видалити посилання"
 							@click="deleteLink(link.id)"
 						>
-							<AppIcon name="lucide:trash" size="xs" />
+							<AppIcon name="ph:trash-bold" size="xs" />
 						</UiButton>
 					</div>
 				</div>

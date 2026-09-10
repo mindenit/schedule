@@ -22,7 +22,7 @@ defineEmits<Emits>()
 			@input="$emit('update:modelValue', $event.target.value)"
 		/>
 		<span class="absolute inset-y-0 start-0 flex items-center justify-center px-2">
-			<AppIcon name="lucide:search" class="text-muted-foreground" />
+			<AppIcon name="ph:magnifying-glass-bold" class="text-muted-foreground" />
 		</span>
 	</div>
 </template>

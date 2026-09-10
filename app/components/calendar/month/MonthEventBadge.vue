@@ -35,12 +35,12 @@ const _timezone = !props.timeRange && props.event ? useTimezone() : null
 
 // Interactive base — includes cursor, hover shadow, transition.
 const BASE_CLASSES =
-	"group flex w-full h-6.5 select-none items-center gap-1 rounded-md px-2 text-xs font-medium cursor-pointer transition-shadow duration-200 hover:shadow-sm"
+	"group flex w-full h-6.5 select-none items-center gap-1 rounded-xs px-2 text-xs font-medium cursor-pointer transition-shadow duration-200 hover:shadow-sm"
 
 // Non-interactive base — same layout, no interactivity affordances.
 // Used when :interactive=false (incoming panel during animation).
 const BASE_CLASSES_STATIC =
-	"group flex w-full h-6.5 select-none items-center gap-1 rounded-md px-2 text-xs font-medium"
+	"group flex w-full h-6.5 select-none items-center gap-1 rounded-xs px-2 text-xs font-medium"
 
 const FALLBACK_COLOR = "bg-muted text-muted-foreground w-full"
 

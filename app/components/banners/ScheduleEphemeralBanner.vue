@@ -52,7 +52,7 @@ function dismiss() {
 		>
 			<div class="flex w-full flex-col gap-0.5">
 				<UiAlertTitle class="flex items-center gap-1.5">
-					<AppIcon name="lucide:link" class="shrink-0" aria-hidden="true" />
+					<AppIcon name="ph:link-bold" class="shrink-0" aria-hidden="true" />
 					{{ selectedSchedule?.name }}
 				</UiAlertTitle>
 				<UiAlertDescription>
@@ -73,7 +73,11 @@ function dismiss() {
 			class="bg-muted border-border flex items-center gap-3 border-b px-4 py-2 text-sm"
 			role="status"
 		>
-			<AppIcon name="lucide:link" class="text-muted-foreground shrink-0" aria-hidden="true" />
+			<AppIcon
+				name="ph:link-bold"
+				class="text-muted-foreground shrink-0"
+				aria-hidden="true"
+			/>
 			<span class="min-w-0 flex-1 leading-tight">
 				<strong class="text-foreground block truncate">{{ selectedSchedule?.name }}</strong>
 				<span class="text-muted-foreground text-xs">не збережено до списку</span>
@@ -86,7 +90,7 @@ function dismiss() {
 				aria-label="Закрити"
 				@click="dismiss"
 			>
-				<AppIcon name="lucide:x" size="3.5" aria-hidden="true" />
+				<AppIcon name="ph:x-bold" size="3.5" aria-hidden="true" />
 			</UiButton>
 		</div>
 	</Transition>

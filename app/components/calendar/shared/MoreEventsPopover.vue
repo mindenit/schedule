@@ -98,7 +98,7 @@ onBeforeUnmount(() => {
 							text-xs transition-colors"
 						@click="collapseEvent"
 					>
-						<AppIcon name="lucide:chevron-left" size="3.5" />
+						<AppIcon name="ph:caret-left-bold" size="3.5" />
 						Назад
 					</button>
 					<BigCalendarEventPopover :event="expandedEvent" />
@@ -142,7 +142,7 @@ onBeforeUnmount(() => {
 								</p>
 							</div>
 							<AppIcon
-								name="lucide:chevron-right"
+								name="ph:caret-right-bold"
 								size="3.5"
 								class="text-muted-foreground shrink-0"
 							/>

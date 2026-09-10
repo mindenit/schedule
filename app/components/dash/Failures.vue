@@ -32,7 +32,7 @@ function copyError(key: string, text: string) {
 		<!-- Empty state -->
 		<template v-else-if="!failures.length">
 			<AppEmptyState
-				icon="ph:check-circle"
+				icon="ph:check-circle-bold"
 				title="Помилок немає"
 				description="За останні прогони провалів груп не зафіксовано."
 				variant="card"
@@ -51,7 +51,7 @@ function copyError(key: string, text: string) {
 					<div class="mb-2 flex flex-wrap items-center justify-between gap-2">
 						<div class="flex min-w-0 items-center gap-2">
 							<AppIcon
-								name="ph:x-circle-fill"
+								name="ph:x-circle-bold"
 								class="text-destructive size-4 shrink-0"
 							/>
 							<span class="truncate text-sm font-semibold">
@@ -89,7 +89,9 @@ function copyError(key: string, text: string) {
 						>
 							<AppIcon
 								:name="
-									copiedId === `${f.runId}-${f.groupId}` ? 'ph:check' : 'ph:copy'
+									copiedId === `${f.runId}-${f.groupId}`
+										? 'ph:check-bold'
+										: 'ph:copy-bold'
 								"
 								class="size-3.5"
 							/>

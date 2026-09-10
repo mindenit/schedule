@@ -11,14 +11,14 @@ const meta = computed(() =>
 	is404.value
 		? {
 				code: "404",
-				icon: "lucide:map-minus",
+				icon: "ph:map-trifold-bold",
 				title: "Сторінку не знайдено",
 				description:
 					"Вибачте, ми не можемо знайти сторінку, яку ви шукаєте. Можливо, її було переміщено або видалено.",
 			}
 		: {
 				code: String(props.error?.statusCode ?? 500),
-				icon: "lucide:server-crash",
+				icon: "ph:cloud-warning-bold",
 				title: "Щось пішло не так",
 				description:
 					"Сталася неочікувана помилка. Спробуйте оновити сторінку або повернутися пізніше.",
@@ -87,7 +87,7 @@ const stackTrace = computed(() => {
 			<div class="flex flex-col items-center gap-3 sm:flex-row">
 				<NuxtLink to="/">
 					<UiButton size="lg">
-						<AppIcon name="lucide:home" />
+						<AppIcon name="ph:house-bold" />
 						Повернутися на головну
 					</UiButton>
 				</NuxtLink>
@@ -98,7 +98,7 @@ const stackTrace = computed(() => {
 					:disabled="!isOnline"
 					@click="handleClearError"
 				>
-					<AppIcon :name="isOnline ? 'lucide:refresh-cw' : 'lucide:wifi-off'" />
+					<AppIcon :name="isOnline ? 'ph:arrows-clockwise-bold' : 'ph:wifi-slash-bold'" />
 					{{ isOnline ? "Спробувати ще раз" : "Немає з'єднання" }}
 				</UiButton>
 			</div>

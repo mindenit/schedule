@@ -6,14 +6,14 @@ import { AUTHORS } from "~/constants"
 	<UiDialog>
 		<UiDialogTrigger as-child>
 			<UiButton variant="ghost" size="sm" class="w-full justify-start gap-2">
-				<AppIcon name="lucide:info" />
+				<AppIcon name="ph:info-bold" />
 				Про авторів
 			</UiButton>
 		</UiDialogTrigger>
 		<UiDialogContent class="sm:max-w-md">
 			<UiDialogHeader>
 				<UiDialogTitle class="flex items-center gap-2">
-					<AppIcon name="lucide:users" />
+					<AppIcon name="ph:users-bold" />
 					Про авторів
 				</UiDialogTitle>
 				<UiDialogDescription>
@@ -66,7 +66,7 @@ import { AUTHORS } from "~/constants"
 
 			<UiDialogFooter class="flex items-center justify-center">
 				<div class="text-muted-foreground flex items-center gap-2 text-sm">
-					<AppIcon name="lucide:heart" class="text-red-500" />
+					<AppIcon name="ph:heart-bold" class="text-red-500" />
 					Зроблено з любов'ю
 				</div>
 			</UiDialogFooter>

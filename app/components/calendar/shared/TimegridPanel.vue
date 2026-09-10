@@ -62,7 +62,7 @@ const hours = CALENDAR_HOURS
 				:key="hour"
 				class="bg-muted/50 relative flex flex-1 items-start justify-end pr-2"
 			>
-				<span v-if="index !== 0" class="text-muted-foreground text-xs">
+				<span v-if="index !== 0" class="text-muted-foreground text-xs tabular-nums">
 					{{ formatHour(hour) }}
 				</span>
 			</div>

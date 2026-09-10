@@ -71,7 +71,11 @@ const handleImport = () => {
 
 		<!-- Generic error -->
 		<div v-else-if="error" class="py-16 text-center">
-			<AppIcon name="lucide:alert-circle" class="text-destructive mx-auto mb-3" size="lg" />
+			<AppIcon
+				name="ph:warning-circle-bold"
+				class="text-destructive mx-auto mb-3"
+				size="lg"
+			/>
 			<h2 class="text-destructive font-semibold">Помилка</h2>
 			<p class="text-muted-foreground mt-1 text-sm">{{ error }}</p>
 		</div>
@@ -79,7 +83,7 @@ const handleImport = () => {
 		<!-- Expired / not found -->
 		<div v-else-if="expired" class="py-16 text-center">
 			<AppIcon
-				name="lucide:link-2-off"
+				name="ph:link-break-bold"
 				class="text-muted-foreground mx-auto mb-3"
 				size="lg"
 			/>
@@ -89,7 +93,7 @@ const handleImport = () => {
 			</p>
 			<NuxtLink to="/">
 				<UiButton class="mt-6" variant="outline" size="sm">
-					<AppIcon name="lucide:arrow-left" />
+					<AppIcon name="ph:arrow-left-bold" />
 					На головну
 				</UiButton>
 			</NuxtLink>
@@ -98,7 +102,7 @@ const handleImport = () => {
 		<!-- Success -->
 		<div v-else-if="accepted" class="py-16 text-center">
 			<AppIcon
-				name="lucide:check-circle-2"
+				name="ph:check-circle-bold"
 				class="mx-auto mb-3 text-green-500 dark:text-green-400"
 				size="lg"
 			/>
@@ -110,7 +114,7 @@ const handleImport = () => {
 			</p>
 			<NuxtLink to="/">
 				<UiButton class="mt-6" size="sm">
-					<AppIcon name="lucide:arrow-left" />
+					<AppIcon name="ph:arrow-left-bold" />
 					На головну
 				</UiButton>
 			</NuxtLink>
@@ -178,7 +182,7 @@ const handleImport = () => {
 										class="shrink-0"
 									>
 										<UiButton size="sm" variant="ghost">
-											<AppIcon name="lucide:external-link" />
+											<AppIcon name="ph:arrow-square-out-bold" />
 										</UiButton>
 									</a>
 								</div>
@@ -190,7 +194,7 @@ const handleImport = () => {
 
 			<div class="flex gap-2">
 				<UiButton :disabled="isLoading" @click="handleImport">
-					<AppIcon name="lucide:download" />
+					<AppIcon name="ph:download-simple-bold" />
 					Імпортувати
 				</UiButton>
 				<NuxtLink to="/">

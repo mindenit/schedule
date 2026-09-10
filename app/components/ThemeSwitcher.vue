@@ -8,7 +8,7 @@ const handleClick = () => {
 	trackEvent("theme_changed", { theme: next })
 }
 
-const themeIcon = computed(() => (colorMode.value !== "light" ? "lucide:moon" : "lucide:sun"))
+const themeIcon = computed(() => (colorMode.value !== "light" ? "ph:moon-bold" : "ph:sun-bold"))
 </script>
 
 <template>

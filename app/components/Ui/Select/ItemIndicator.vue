@@ -7,7 +7,7 @@
 		<slot>
 			<Icon
 				:class="styles({ class: normalizeClass(props.class) || undefined })"
-				:name="icon || 'lucide:check'"
+				:name="icon || 'ph:check-bold'"
 			/>
 		</slot>
 	</SelectItemIndicator>

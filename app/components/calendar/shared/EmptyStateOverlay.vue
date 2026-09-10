@@ -7,7 +7,7 @@ interface Props {
 }
 
 withDefaults(defineProps<Props>(), {
-	icon: "lucide:calendar-x",
+	icon: "ph:calendar-x-bold",
 	title: "Немає пар",
 	description: "Немає запланованих занять",
 })
@@ -49,7 +49,7 @@ function resetFilters() {
 				</div>
 				<div v-if="filtersStore.hasActive" class="mt-4 flex justify-end">
 					<UiButton size="sm" variant="outline" @click="resetFilters">
-						<AppIcon name="lucide:rotate-ccw" />
+						<AppIcon name="ph:arrow-counter-clockwise-bold" />
 						Скинути фільтри
 					</UiButton>
 				</div>

@@ -137,9 +137,6 @@ importers:
       "@iconify-json/logos":
         specifier: ^1.2.13
         version: 1.2.13
-      "@iconify-json/lucide":
-        specifier: ^1.2.127
-        version: 1.2.127
       "@iconify-json/mingcute":
         specifier: ^1.2.8
         version: 1.2.8
@@ -1447,12 +1444,6 @@ packages:
     resolution:
       {
         integrity: sha512-Up54ZnIuiuBgGAsuzhR1nvKqwq8VE6YM3XLwVB6IgY+7NAasz6WKu9Ay5hGfAkfuOKowodfwDC8ozReEBYrWRg==,
-      }
-
-  "@iconify-json/lucide@1.2.127":
-    resolution:
-      {
-        integrity: sha512-7KuCCpkly00kefna4wEnCr8l2HFRkbn4mD4zRib8wCSbrBmnR/l57ExpU6j5jv/Bo+qHpWuHpDtcqceQ0ptArw==,
       }
 
   "@iconify-json/mingcute@1.2.8":
@@ -13202,10 +13193,6 @@ snapshots:
       "@iconify/types": 2.0.0
 
   "@iconify-json/logos@1.2.13":
-    dependencies:
-      "@iconify/types": 2.0.0
-
-  "@iconify-json/lucide@1.2.127":
     dependencies:
       "@iconify/types": 2.0.0
 

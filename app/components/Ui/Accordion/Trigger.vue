@@ -46,7 +46,7 @@ const props = withDefaults(
 	{
 		class: undefined,
 		title: "",
-		icon: "lucide:chevron-down",
+		icon: "ph:caret-down-bold",
 	}
 )
 

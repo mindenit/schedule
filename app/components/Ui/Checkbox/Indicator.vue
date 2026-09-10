@@ -31,20 +31,20 @@ const props = withDefaults(
 			/**
 			 * Icon to display when the checkbox is checked.
 			 *
-			 * @default lucide:check
+			 * @default ph:check-bold
 			 */
 			icon?: string
 			/**
 			 * Icon to display when the checkbox is in indeterminate state.
 			 *
-			 * @default lucide:minus
+			 * @default ph:minus-bold
 			 */
 			indeterminateIcon?: string
 		}
 	>(),
 	{
-		icon: "lucide:check",
-		indeterminateIcon: "lucide:minus",
+		icon: "ph:check-bold",
+		indeterminateIcon: "ph:minus-bold",
 	}
 )
 const forwarded = reactiveOmit(props, "class", "icon")

@@ -35,7 +35,7 @@ const save = () => {
 		<UiDialogContent>
 			<UiDialogHeader>
 				<UiDialogTitle class="flex items-center gap-2">
-					<AppIcon :name="link ? 'lucide:pencil' : 'lucide:link'" />
+					<AppIcon :name="link ? 'ph:pencil-simple-bold' : 'ph:link-bold'" />
 					{{ link ? "Редагувати" : "Додати" }} посилання
 				</UiDialogTitle>
 				<UiDialogDescription>

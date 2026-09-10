@@ -110,7 +110,7 @@ export default defineNuxtConfig({
 		serverBundle: false,
 		clientBundle: {
 			// Scan .ts too — SCHEDULE_ICONS in app/constants/schedule.ts has
-			// lucide:building and lucide:user-check as string literals.
+			// ph:door-open-bold and ph:chalkboard-teacher-bold as string literals.
 			scan: { globInclude: ["app/**/*.{vue,ts}"] },
 		},
 	},

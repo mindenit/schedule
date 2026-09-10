@@ -59,7 +59,7 @@ const handleClose = () => {
 		<UiDialogContent class="sm:max-w-md">
 			<UiDialogHeader>
 				<UiDialogTitle class="flex items-center gap-2">
-					<AppIcon name="lucide:share-2" />
+					<AppIcon name="ph:share-network-bold" />
 					Поділіться посиланнями
 				</UiDialogTitle>
 				<UiDialogDescription
@@ -77,7 +77,7 @@ const handleClose = () => {
 					:disabled="isLoading || selectedLinkIds.length === 0"
 					@click="handleCreateLink"
 				>
-					<AppIcon name="lucide:share-2" class="mr-2" />
+					<AppIcon name="ph:share-network-bold" class="mr-2" />
 					Створити посилання для поділу
 				</UiButton>
 			</div>
@@ -96,7 +96,7 @@ const handleClose = () => {
 							:aria-label="copied ? 'Скопійовано' : 'Копіювати посилання'"
 							@click="copyToClipboard"
 						>
-							<AppIcon :name="copied ? 'lucide:check' : 'lucide:copy'" />
+							<AppIcon :name="copied ? 'ph:check-bold' : 'ph:copy-bold'" />
 						</UiButton>
 					</div>
 				</div>

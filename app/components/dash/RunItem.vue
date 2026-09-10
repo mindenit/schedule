@@ -73,20 +73,20 @@ const { copy, copied } = useClipboard({ legacy: true })
 			<span class="shrink-0">
 				<AppIcon
 					v-if="run.status === 'success'"
-					name="ph:check-circle-fill"
+					name="ph:check-circle-bold"
 					class="size-4 text-green-500"
 				/>
 				<AppIcon
 					v-else-if="run.status === 'running'"
-					name="ph:spinner"
+					name="ph:spinner-bold"
 					class="size-4 animate-spin text-blue-500"
 				/>
 				<AppIcon
 					v-else-if="run.status === 'partial'"
-					name="ph:warning-fill"
+					name="ph:warning-bold"
 					class="size-4 text-yellow-500"
 				/>
-				<AppIcon v-else name="ph:x-circle-fill" class="text-destructive size-4" />
+				<AppIcon v-else name="ph:x-circle-bold" class="text-destructive size-4" />
 			</span>
 
 			<!-- Start time (replaces raw id in collapsed view) -->
@@ -142,7 +142,7 @@ const { copy, copied } = useClipboard({ legacy: true })
 
 			<!-- Chevron -->
 			<AppIcon
-				name="ph:caret-down"
+				name="ph:caret-down-bold"
 				class="text-muted-foreground size-4 shrink-0 transition-transform"
 				:class="{ 'rotate-180': open }"
 			/>
@@ -191,7 +191,7 @@ const { copy, copied } = useClipboard({ legacy: true })
 				<p class="text-muted-foreground mb-2 text-xs font-medium">Кроки синхронізації</p>
 				<div v-for="(step, key) in run.steps" :key="key" class="flex items-start gap-2.5">
 					<AppIcon
-						:name="step.ok ? 'ph:check-circle-fill' : 'ph:x-circle-fill'"
+						:name="step.ok ? 'ph:check-circle-bold' : 'ph:x-circle-bold'"
 						class="mt-0.5 size-4 shrink-0"
 						:class="step.ok ? 'text-green-500' : 'text-destructive'"
 					/>
@@ -224,7 +224,7 @@ const { copy, copied } = useClipboard({ legacy: true })
 				<!-- Failed groups — always shown first, expanded -->
 				<div v-if="failedGroups.length" class="space-y-2">
 					<p class="text-destructive flex items-center gap-1.5 text-xs font-medium">
-						<AppIcon name="ph:x-circle" class="size-3.5" />
+						<AppIcon name="ph:x-circle-bold" class="size-3.5" />
 						Провали ({{ failedGroups.length }})
 					</p>
 					<div class="space-y-2">
@@ -253,7 +253,7 @@ const { copy, copied } = useClipboard({ legacy: true })
 									@click="copy(g.error ?? '')"
 								>
 									<AppIcon
-										:name="copied ? 'ph:check' : 'ph:copy'"
+										:name="copied ? 'ph:check-bold' : 'ph:copy-bold'"
 										class="size-3.5"
 									/>
 								</button>
@@ -270,11 +270,11 @@ const { copy, copied } = useClipboard({ legacy: true })
 						@click="showSuccess = !showSuccess"
 					>
 						<AppIcon
-							name="ph:caret-right"
+							name="ph:caret-right-bold"
 							class="size-3.5 transition-transform"
 							:class="{ 'rotate-90': showSuccess }"
 						/>
-						<AppIcon name="ph:check-circle" class="size-3.5 text-green-500" />
+						<AppIcon name="ph:check-circle-bold" class="size-3.5 text-green-500" />
 						{{ successGroups.length }} груп успішно
 					</button>
 

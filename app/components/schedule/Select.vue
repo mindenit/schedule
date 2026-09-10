@@ -30,7 +30,7 @@ const selectedValue = computed({
 			<UiSelectValue>
 				<template v-if="!scheduleStore.isInitialized || isResolvingUrl">
 					<div class="flex items-center gap-2">
-						<AppIcon name="lucide:loader-2" class="animate-spin" />
+						<AppIcon name="ph:spinner-bold" class="animate-spin" />
 						<span class="text-muted-foreground">Завантаження...</span>
 					</div>
 				</template>
@@ -48,7 +48,7 @@ const selectedValue = computed({
 		<UiSelectContent>
 			<template v-if="!scheduleStore.isInitialized">
 				<div class="flex items-center justify-center gap-2 p-4">
-					<AppIcon name="lucide:loader-2" class="animate-spin" />
+					<AppIcon name="ph:spinner-bold" class="animate-spin" />
 					<span class="text-muted-foreground text-sm">Завантаження...</span>
 				</div>
 			</template>

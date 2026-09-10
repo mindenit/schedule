@@ -18,7 +18,7 @@ const emit = defineEmits<{
 		class="text-xs"
 		@click="emit('toggle')"
 	>
-		<AppIcon v-if="isActive" name="lucide:check" size="xs" />
+		<AppIcon v-if="isActive" name="ph:check-bold" size="xs" />
 		{{ label }}
 	</UiButton>
 </template>

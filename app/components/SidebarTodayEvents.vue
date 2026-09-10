@@ -69,7 +69,7 @@ const hasEvents = computed(() => todayEvents.value.length > 0)
 						aria-label="Попередній день"
 						@click="previewDate = subDays(previewDate, 1)"
 					>
-						<AppIcon name="lucide:chevron-left" size="xs" />
+						<AppIcon name="ph:caret-left-bold" size="xs" />
 					</UiButton>
 					<UiButton
 						v-if="!isPreviewToday"
@@ -79,7 +79,7 @@ const hasEvents = computed(() => todayEvents.value.length > 0)
 						aria-label="Сьогодні"
 						@click="previewDate = new Date()"
 					>
-						<AppIcon name="lucide:rotate-ccw" size="xs" />
+						<AppIcon name="ph:arrow-counter-clockwise-bold" size="xs" />
 					</UiButton>
 					<UiButton
 						size="icon"
@@ -88,7 +88,7 @@ const hasEvents = computed(() => todayEvents.value.length > 0)
 						aria-label="Наступний день"
 						@click="previewDate = addDays(previewDate, 1)"
 					>
-						<AppIcon name="lucide:chevron-right" size="xs" />
+						<AppIcon name="ph:caret-right-bold" size="xs" />
 					</UiButton>
 				</template>
 			</div>
@@ -154,7 +154,7 @@ const hasEvents = computed(() => todayEvents.value.length > 0)
 						>
 							<AppEmptyState
 								variant="sidebar"
-								icon="lucide:smile"
+								icon="ph:smiley-bold"
 								title="Пар на сьогодні немає"
 							/>
 						</motion.div>
@@ -170,7 +170,7 @@ const hasEvents = computed(() => todayEvents.value.length > 0)
 						>
 							<AppEmptyState
 								variant="sidebar"
-								icon="lucide:calendar-plus"
+								icon="ph:calendar-plus-bold"
 								title="Оберіть розклад для перегляду пар"
 							/>
 						</motion.div>

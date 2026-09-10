@@ -15,73 +15,13 @@
 		ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New",
 		monospace;
 	--font-accent: "Afacad", "sans-serif";
-	--font-display--font-feature-settings: "cv02", "cv03", "cv04", "cv11";
 
-	--animate-shine: shine 3s ease-out infinite;
-	--animate-gradient-flow: gradientFlow 10s ease 0s infinite normal none running;
-	--animate-meteor: meteor 5s linear infinite;
-	--animate-background-position-spin: background-position-spin 3000ms infinite alternate;
-	--animate-grid: grid 15s linear infinite;
+	/* ponytail: neutralizes shadow-xs across ~8 Ui/ form components without forking them.
+	   shadow-sm/md/lg/xl/2xl stay intact — dialogs, popovers and toasts need real elevation. */
+	--shadow-xs: 0 0 #0000;
+
 	--animate-accordion-down: accordion-down 0.2s ease-out;
 	--animate-accordion-up: accordion-up 0.2s ease-out;
-
-	@keyframes grid {
-		0% {
-			transform: translateY(-50%);
-		}
-
-		100% {
-			transform: translateY(0);
-		}
-	}
-
-	@keyframes shine {
-		0% {
-			background-position: 200% 0;
-		}
-
-		25%,
-		100% {
-			background-position: -200% 0;
-		}
-	}
-
-	@keyframes gradientFlow {
-		50% {
-			background-position: 100% 50%;
-		}
-
-		0%,
-		100% {
-			background-position: 0% 50%;
-		}
-	}
-
-	@keyframes meteor {
-		0% {
-			transform: rotate(var(--angle)) translateX(0);
-			opacity: 1;
-		}
-
-		70% {
-			opacity: 1;
-		}
-
-		100% {
-			transform: rotate(var(--angle)) translateX(-500px);
-			opacity: 0;
-		}
-	}
-
-	@keyframes background-position-spin {
-		0% {
-			background-position: top center;
-		}
-
-		100% {
-			background-position: bottom center;
-		}
-	}
 
 	@keyframes accordion-down {
 		from {
@@ -121,10 +61,13 @@
 
 @theme inline {
 	--animate-blob-drift: blob-drift 12s ease-in-out infinite alternate;
-	--radius-sm: calc(var(--radius) - 4px);
-	--radius-md: calc(var(--radius) - 2px);
-	--radius-lg: var(--radius);
-	--radius-xl: calc(var(--radius) + 4px);
+	/* Explicit ratio scale — "soft chrome, hard grid": soft radii on chrome,
+	   tight radii (xs) on the dense calendar grid. Not derived from --radius. */
+	--radius-xs: 0.25rem; /* 4px — calendar event blocks, grid cells */
+	--radius-sm: 0.5rem; /* 8px — badges, dropdown items, small controls */
+	--radius-md: 0.75rem; /* 12px — buttons, inputs, selects, tabs */
+	--radius-lg: 1rem; /* 16px — cards, popovers, panels */
+	--radius-xl: 1.5rem; /* 24px — dialogs, drawers */
 
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
@@ -155,11 +98,6 @@
 	--color-sidebar-border: var(--sidebar-border);
 	--color-sidebar-ring: var(--sidebar-ring);
 	--color-sidebar-input: var(--sidebar-input);
-
-	--color-gradient-lime: var(--gradient-lime);
-	--color-gradient-ocean: var(--gradient-ocean);
-	--color-gradient-wine: var(--gradient-wine);
-	--color-gradient-rust: var(--gradient-rust);
 
 	/* Palette scales */
 	--color-royal-blue-50: oklch(96.57% 0.0161 272.48);
@@ -226,14 +164,6 @@
 }
 
 :root {
-	/* Gradient slide show Colors */
-	--gradient-lime: oklch(67.287% 0.1546 116.644);
-	--gradient-ocean: oklch(44.56% 0.10114 242.813);
-	--gradient-wine: oklch(32.332% 0.12034 5.266);
-	--gradient-rust: oklch(55.695% 0.19944 34.155);
-}
-
-:root {
 	--background: var(--color-fiord-50);
 	--foreground: var(--color-fiord-900);
 	--card: var(--color-fiord-100);
@@ -258,7 +188,7 @@
 	--chart-3: oklch(0.398 0.07 227.392);
 	--chart-4: oklch(0.828 0.189 84.429);
 	--chart-5: oklch(0.769 0.188 70.08);
-	--radius: 0.625rem;
+	--radius: 1rem;
 	--sidebar: var(--color-fiord-50);
 	--sidebar-foreground: var(--color-fiord-900);
 	--sidebar-primary: var(--color-royal-blue-500);
@@ -344,6 +274,8 @@
 
 	body {
 		@apply bg-background text-foreground;
+		/* Inter cv11 — single-storey 'a'. House voice, not stock Inter. */
+		font-feature-settings: "cv11" 1;
 	}
 
 	::-webkit-scrollbar {
@@ -400,4 +332,24 @@
 	&::-webkit-scrollbar {
 		display: none;
 	}
+}
+
+/* ---------------------------------------------------------------------------
+   Unlayered rules — these outrank everything inside @layer utilities/base,
+   regardless of specificity. Used so the house look lives in CSS and survives
+   a `ui-thing add` re-scaffold of app/components/Ui/.
+   ponytail: keeps house focus ring + accent titles out of Ui/ entirely.
+   --------------------------------------------------------------------------- */
+
+:where(button, a, input, select, textarea, summary, [tabindex]):focus-visible {
+	outline: 2px solid var(--ring);
+	outline-offset: 2px;
+	/* kill the shadcn ring-[3px] box-shadow so only ONE focus indicator shows */
+	--tw-ring-shadow: 0 0 #0000;
+	--tw-ring-offset-shadow: 0 0 #0000;
+}
+
+[data-slot="dialog-title"],
+[data-slot="drawer-title"] {
+	font-family: var(--font-accent);
 }

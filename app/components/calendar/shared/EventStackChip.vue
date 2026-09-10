@@ -57,7 +57,7 @@ const ariaLabel = computed(() => {
 				role="button"
 				tabindex="0"
 				:aria-label="ariaLabel"
-				class="relative flex h-full w-full min-w-0 cursor-pointer overflow-hidden rounded-md
+				class="relative flex h-full w-full min-w-0 cursor-pointer overflow-hidden rounded-xs
 					transition-transform duration-100 select-none active:scale-[0.97]"
 				@click="trackEvent('event_opened', { lesson_type: uniqueTypes.join('+') })"
 				@keydown.enter.prevent="
@@ -99,7 +99,7 @@ const ariaLabel = computed(() => {
 	<div
 		v-else
 		aria-hidden="true"
-		class="relative flex h-full w-full min-w-0 overflow-hidden rounded-md"
+		class="relative flex h-full w-full min-w-0 overflow-hidden rounded-xs"
 	>
 		<span
 			v-for="type in uniqueTypes"

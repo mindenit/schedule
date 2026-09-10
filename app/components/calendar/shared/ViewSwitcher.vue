@@ -30,7 +30,7 @@ function updateView(newView: unknown) {
 		<UiDropdownMenu>
 			<UiDropdownMenuTrigger as-child>
 				<UiButton variant="ghost" size="icon" :aria-label="`Вид: ${viewLabel}`">
-					<AppIcon name="lucide:layout-grid" />
+					<AppIcon name="ph:squares-four-bold" />
 				</UiButton>
 			</UiDropdownMenuTrigger>
 			<UiDropdownMenuContent align="end">
@@ -39,7 +39,7 @@ function updateView(newView: unknown) {
 						v-for="option in VIEW_OPTIONS"
 						:key="option.value"
 						:value="option.value"
-						icon="lucide:check"
+						icon="ph:check-bold"
 					>
 						{{ option.label }}
 					</UiDropdownMenuRadioItem>
