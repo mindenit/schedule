@@ -1,5 +1,11 @@
 import type { DehydratedState, VueQueryPluginOptions } from "@tanstack/vue-query"
-import { VueQueryPlugin, QueryClient, hydrate, dehydrate } from "@tanstack/vue-query"
+import {
+	VueQueryPlugin,
+	QueryClient,
+	hydrate,
+	dehydrate,
+	defaultShouldDehydrateQuery,
+} from "@tanstack/vue-query"
 import { persistQueryClient } from "@tanstack/query-persist-client-core"
 import { createStore, get, set, del } from "idb-keyval"
 
@@ -60,6 +66,11 @@ export default defineNuxtPlugin(async (nuxt) => {
 			persister,
 			maxAge: IDB_MAX_AGE,
 			buster: config.public.buildId,
+			dehydrateOptions: {
+				// Queries with meta.persist === false (ops data, see queries/dash.ts) never reach IndexedDB.
+				shouldDehydrateQuery: (query) =>
+					defaultShouldDehydrateQuery(query) && query.meta?.persist !== false,
+			},
 		})
 
 		await restorePromise
