@@ -6,6 +6,7 @@
  *   /_nuxt/, /_fonts/  → CacheFirst  (content-hashed, immutable)
  *   /_icons/           → StaleWhileRevalidate (icon bundles, server-rendered)
  *   /api/              → bypass      (TanStack IDB owns all schedule data)
+ *   /dash              → bypass      (ops page, never served from the cached shell)
  *   everything else    → bypass
  *
  * ponytail: CACHE_VERSION bump required when SW logic changes; activating a new
@@ -13,7 +14,7 @@
  * until they regain connectivity.
  */
 
-const CACHE_VERSION = "v3"
+const CACHE_VERSION = "v4"
 const SHELL_CACHE = `mindenit-shell-${CACHE_VERSION}`
 const ASSET_CACHE = `mindenit-assets-${CACHE_VERSION}`
 // Max static-asset entries so old deploy chunks don't accumulate indefinitely.
@@ -63,6 +64,9 @@ self.addEventListener("fetch", (event) => {
 
 	// /api/* — never touch; TanStack Query + IndexedDB own schedule freshness.
 	if (path.startsWith("/api/")) return
+
+	// /dash — ops page, never serve the cached shell for it.
+	if (path === "/dash") return
 
 	if (request.mode === "navigate") {
 		event.respondWith(networkFirstShell(request))

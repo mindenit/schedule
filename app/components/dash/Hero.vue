@@ -144,7 +144,11 @@ defineProps<{
 					<p class="text-muted-foreground mb-0.5 text-xs">Подій</p>
 					<UiSkeleton v-if="isPending" class="h-5 w-16 rounded" />
 					<p v-else class="font-mono text-base font-semibold">
-						{{ summary?.lastRun?.totalEvents?.toLocaleString("uk-UA") ?? "—" }}
+						{{
+							(summary?.totalEvents ?? summary?.lastRun?.totalEvents)?.toLocaleString(
+								"uk-UA"
+							) ?? "—"
+						}}
 					</p>
 				</div>
 			</div>

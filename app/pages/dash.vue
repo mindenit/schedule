@@ -6,6 +6,8 @@ import {
 	dashRunsOptions,
 	dashFailuresOptions,
 	dashTableSizesOptions,
+	dashCistHealthOptions,
+	DASH_CIST_HEALTH_KEY,
 } from "~/queries/dash"
 import { durationMs } from "~/composables/useDash"
 
@@ -32,13 +34,24 @@ watchEffect(() => {
 const { data: runs, isPending: runsPending } = useQuery(dashRunsOptions(30))
 const { data: failures, isPending: failuresPending } = useQuery(dashFailuresOptions(50))
 const { data: tableSizes, isPending: tableSizesPending } = useQuery(dashTableSizesOptions())
+const {
+	data: cistHealth,
+	isPending: cistHealthPending,
+	isFetching: cistHealthFetching,
+	isError: cistHealthError,
+} = useQuery(dashCistHealthOptions())
 
 // ── Refresh ───────────────────────────────────────────────────────────────────
 
 const queryClient = useQueryClient()
 
 async function refresh() {
-	await queryClient.invalidateQueries({ queryKey: ["dash"] })
+	await Promise.all([
+		queryClient.invalidateQueries({ queryKey: ["dash"] }),
+		// Separate root key (see dashCistHealthOptions): refetched only here and on page load.
+		// cancelRefetch: false — reuse a probe already in flight instead of starting another against CIST.
+		queryClient.refetchQueries({ queryKey: DASH_CIST_HEALTH_KEY }, { cancelRefetch: false }),
+	])
 }
 
 // ── Runs list ─────────────────────────────────────────────────────────────────
@@ -64,8 +77,9 @@ const filteredRuns = computed(() => {
 	return list.filter((r) => r.status === statusFilter.value)
 })
 
-// Failure count badge
-const failureCount = computed(() => failures.value?.length ?? 0)
+// Failure count badge: real backend count.
+// shortcut: falls back to the (capped) list length on backends without failingGroups, drop with DashSummary.failingGroups?
+const failureCount = computed(() => summary.value?.failingGroups ?? failures.value?.length ?? 0)
 </script>
 
 <template>
@@ -74,10 +88,18 @@ const failureCount = computed(() => failures.value?.length ?? 0)
 		<DashHero
 			:summary="summary"
 			:is-pending="summaryPending"
-			:is-fetching="summaryFetching"
+			:is-fetching="summaryFetching || cistHealthFetching"
 			:is-error="summaryError"
 			:failures-count="failureCount"
 			:on-refresh="refresh"
+		/>
+
+		<!-- CIST servers / keys -->
+		<DashCistHealth
+			:health="cistHealth"
+			:is-pending="cistHealthPending"
+			:is-fetching="cistHealthFetching"
+			:is-error="cistHealthError"
 		/>
 
 		<!-- Tabs inside one shared card -->
@@ -196,6 +218,12 @@ const failureCount = computed(() => failures.value?.length ?? 0)
 
 				<!-- Failures tab -->
 				<UiTabsContent value="failures" class="px-4 py-4">
+					<p
+						v-if="failures && failureCount > failures.length"
+						class="text-muted-foreground mb-3 text-xs"
+					>
+						Показано {{ failures.length }} з {{ failureCount }}
+					</p>
 					<DashFailures :failures="failures ?? []" :is-pending="failuresPending" />
 				</UiTabsContent>
 
